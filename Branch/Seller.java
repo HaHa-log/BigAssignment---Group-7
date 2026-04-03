@@ -1,2 +1,2 @@
-public class Seller extends User{
+public class Seller extends User {
 }
