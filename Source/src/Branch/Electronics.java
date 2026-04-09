@@ -1,2 +1,2 @@
-public class Electronics extends Item{
+public class Electronics extends Item {
 }

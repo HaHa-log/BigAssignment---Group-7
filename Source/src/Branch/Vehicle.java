@@ -1,2 +1,2 @@
-public class Vehicle extends Item{
+public class Vehicle extends Item {
 }

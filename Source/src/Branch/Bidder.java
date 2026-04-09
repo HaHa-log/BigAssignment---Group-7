@@ -1,2 +1,3 @@
-public class Bidder extends User{
+public interface Bidder {
+    void placeBid(int auctionId, double amount);
 }
