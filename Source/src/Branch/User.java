@@ -1,3 +1,5 @@
+package Branch;
+
 public abstract class User extends Entity {
     private String firstName;
     private String lastName;
@@ -10,6 +12,26 @@ public abstract class User extends Entity {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.password = password;
+    }
+
+    public void setFirstName(String fstName) {
+        this.firstName = fstName;
+    }
+
+    public void setLastName(String lstName) {
+        this.lastName = lastName;
+    }
+
+    public void setEmail(String userEmail) {
+        this.email = userEmail;
+    }
+
+    public void setPhoneNumber(String contactNumber) {
+        this.phoneNumber = contactNumber;
+    }
+
+    public void setPassword(String pass) {
+        this.password = pass;
     }
 
     public String getFirstName() {

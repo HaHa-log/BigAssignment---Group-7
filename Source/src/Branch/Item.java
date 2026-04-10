@@ -1,8 +1,37 @@
-public abstract class Item extends Entity {
-    private String startPrice;
+package Branch;
 
-    public Item(int id, String name, String startPrice) {
+public abstract class Item extends Entity {
+    private float startingPrice;
+    private String description;
+
+    public Item(int id, String name, float startingPrice, String description) {
         super(id, name);
-        this.startPrice = startPrice;
+        this.startingPrice = startingPrice;
+        this.description = description;
+    }
+
+    public void setStartingPrice(float startPrice) {
+        this.startingPrice = startPrice;
+    }
+
+    public void setDescription(String narrative) {
+        this.description = narrative;
+    }
+
+    public float getStartingPrice() {
+        return startingPrice;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public String toString() {
+        return "Item{" +
+                "startingPrice=" + startingPrice +
+                ", name='" + getName() + '\'' +
+                ", description='" + description + '\'' +
+                '}';
     }
 }

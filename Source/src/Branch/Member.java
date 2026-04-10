@@ -1,3 +1,5 @@
+package Branch;
+
 public class Member extends User implements Bidder, Seller {
     public Member(int id, String firstName, String lastName, String email, String phoneNumber, String password) {
         super(id, firstName, lastName, email, phoneNumber,password);

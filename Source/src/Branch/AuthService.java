@@ -1,3 +1,5 @@
+package Branch;
+
 public class AuthService {
     public String registerNewUser(String firstName, String lastName, String email, String phoneNumber, String password) {
         if (email.isEmpty() || password.length() < 6) {
