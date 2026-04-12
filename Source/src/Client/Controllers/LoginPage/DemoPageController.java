@@ -12,6 +12,15 @@ public class DemoPageController{
     @FXML
     private StackPane ContentPane;
 
+    public void initialize() {
+        try {
+            showLogin();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void openDemoPage() throws IOException {
         FXMLLoader demoPage = new FXMLLoader(getClass().getResource("/Client/resources/LoginFXML/DemoPage.fxml"));
         Parent demoPageRoot = demoPage.load();
@@ -37,7 +46,7 @@ public class DemoPageController{
         FXMLLoader loginLoad = new FXMLLoader(getClass().getResource("/Client/resources/LoginFXML/Login.fxml"));
         Parent loginContent = loginLoad.load();
 
-        RegisterController controller = loginLoad.getController();
+        LoginController controller = loginLoad.getController();
         controller.setMainController(this);
 
         ContentPane.getChildren().setAll(loginContent);
