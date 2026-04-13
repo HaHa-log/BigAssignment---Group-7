@@ -1,7 +1,7 @@
 package Branch;
 
 public class AuthService {
-    public String registerNewUser(String firstName, String lastName, String email, String phoneNumber, String password) {
+    public static String registerNewUser(String firstName, String lastName, String email, String phoneNumber, String password) {
         if (email.isEmpty() || password.length() < 6) {
             return "Failure: email and a password length >= 6 are required";
         }

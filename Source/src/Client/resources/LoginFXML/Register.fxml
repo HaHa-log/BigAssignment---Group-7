@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
@@ -13,9 +14,14 @@
 </padding>
 
     <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="CREATE ACCOUNT" />
-
-    <TextField fx:id="nameField" promptText="Name" />
+   <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="0.0" prefWidth="200.0" style="-fx-spacing: 10px;" VBox.vgrow="ALWAYS">
+      <children>
+         <TextField fx:id="firstNameField" maxWidth="1.7976931348623157E308" promptText="Name" text="First name" HBox.hgrow="ALWAYS" />
+         <TextField fx:id="lastNameField" maxWidth="1.7976931348623157E308" promptText="Name" style="-fx-alignment: right;" text="Last name" HBox.hgrow="ALWAYS" />
+      </children>
+   </HBox>
     <TextField fx:id="emailField" promptText="Email" />
+   <TextField fx:id="phoneNumberField" layoutX="30.0" layoutY="107.0" promptText="Phone number" />
     <PasswordField fx:id="passwordField" promptText="Password" />
 
     <Button onAction="#handleRegister" text="Register" /> <Label fx:id="messageLabel" textFill="red" />
