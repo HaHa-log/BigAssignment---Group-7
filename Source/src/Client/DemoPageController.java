@@ -5,13 +5,21 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.io.IOException;
 
 public class DemoPageController{
     @FXML
     private StackPane ContentPane;
+
+    public void initialize() {
+        try {
+            showLogin();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void openDemoPage() throws IOException {
         FXMLLoader demoPage = new FXMLLoader(getClass().getResource("/Client/resources/LoginFXML/DemoPage.fxml"));
@@ -38,25 +46,9 @@ public class DemoPageController{
         FXMLLoader loginLoad = new FXMLLoader(getClass().getResource("/Client/resources/LoginFXML/Login.fxml"));
         Parent loginContent = loginLoad.load();
 
-        RegisterController controller = loginLoad.getController();
+        LoginController controller = loginLoad.getController();
         controller.setMainController(this);
 
         ContentPane.getChildren().setAll(loginContent);
-    }
-
-    @FXML
-    private StackPane mainContentPane;
-
-    @FXML
-    public void initialize() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Client/resources/LoginFXML/Login.fxml"));
-            VBox loginNode = loader.load();
-
-            ContentPane.getChildren().clear();
-            ContentPane.getChildren().add(loginNode);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }
