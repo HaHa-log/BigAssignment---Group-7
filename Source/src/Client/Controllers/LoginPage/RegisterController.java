@@ -1,11 +1,22 @@
 package Client.Controllers.LoginPage;
 
+import Branch.AuthService;
 import javafx.fxml.FXML;
-
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import java.io.IOException;
 
 public class RegisterController {
-
+    @FXML
+    private TextField firstNameField;
+    @FXML
+    private TextField lastNameField;
+    @FXML
+    private TextField emailField;
+    @FXML
+    private TextField phoneNumberField;
+    @FXML
+    private PasswordField passwordField;
     private DemoPageController mainController;
 
     public void setMainController(DemoPageController mainController) {
@@ -19,6 +30,11 @@ public class RegisterController {
 
     @FXML
     private void handleRegister() {
-        System.out.println("Register");
+        String firstName = firstNameField.getText();
+        String lastName = lastNameField.getText();
+        String email = emailField.getText();
+        String phoneNumber = phoneNumberField.getText();
+        String password = passwordField.getText();
+        System.out.println(AuthService.registerNewUser(firstName, lastName, email, phoneNumber, password));
     }
 }
