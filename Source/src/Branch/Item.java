@@ -1,7 +1,7 @@
 package Branch;
 
 public abstract class Item extends Entity {
-    private float startingPrice;
+    private double startingPrice;
     private String description;
 
     public Item(int id, String name, float startingPrice, String description) {
@@ -18,7 +18,7 @@ public abstract class Item extends Entity {
         this.description = narrative;
     }
 
-    public float getStartingPrice() {
+    public double getStartingPrice() {
         return startingPrice;
     }
 
