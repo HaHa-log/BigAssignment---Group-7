@@ -15,11 +15,8 @@
             <Font name=".VnBlackH" size="20.0" />
          </font>
       </Label>
-      <StackPane fx:id="ContentPane" layoutX="328.0" layoutY="90.0" prefHeight="275.0" prefWidth="246.0" style="-fx-background-color: lightblue; -fx-opacity: 70%; -fx-border-radius: 30px; -fx-background-radius: 30px;">
-         <children>
-            <fx:include source="Login.fxml" />
-         </children>
-      </StackPane>      <Text accessibleRole="BUTTON" layoutX="400.0" layoutY="75.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Create an account" />
+      <StackPane fx:id="ContentPane" layoutX="328.0" layoutY="90.0" prefHeight="275.0" prefWidth="246.0" style="-fx-background-color: lightblue; -fx-opacity: 70%; -fx-border-radius: 30px; -fx-background-radius: 30px;" />
+      <Text accessibleRole="BUTTON" layoutX="400.0" layoutY="75.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Create an account" />
       <Region layoutX="-14.0" layoutY="-164.0" prefHeight="200.0" prefWidth="614.0" />
    </children>
 </AnchorPane>
