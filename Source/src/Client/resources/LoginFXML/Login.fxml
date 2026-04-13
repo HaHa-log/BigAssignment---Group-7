@@ -13,5 +13,5 @@
     <TextField fx:id="usernameField" promptText="Tên đăng nhập"/>
     <PasswordField fx:id="passwordField" promptText="Mật khẩu"/>
 
-    <!--<Button text="Đăng nhập" onAction="#handleLogin"/> <Label fx:id="messageLabel" textFill="red"/>-->
+    <Button text="Đăng nhập" onAction="#handleLogin"/> <Label fx:id="messageLabel" textFill="red"/>
 </VBox>

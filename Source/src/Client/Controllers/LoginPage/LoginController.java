@@ -1,5 +1,6 @@
 package Client.Controllers.LoginPage;
 
+import javafx.event.Event;
 import javafx.fxml.FXML;
 
 import java.io.IOException;
@@ -15,5 +16,10 @@ public class LoginController {
     @FXML
     private void goToRegister() throws IOException {
         mainController.showRegister();
+    }
+
+    @FXML
+    private void handleLogin () {
+        System.out.println("Login");
     }
 }
