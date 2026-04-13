@@ -9,6 +9,8 @@ public abstract class User extends Entity {
 
     public User(int id, String firstName, String lastName, String email, String phoneNumber, String password) {
         super(id, firstName + " " + lastName);
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.password = password;
@@ -19,7 +21,7 @@ public abstract class User extends Entity {
     }
 
     public void setLastName(String lstName) {
-        this.lastName = lastName;
+        this.lastName = lstName;
     }
 
     public void setEmail(String userEmail) {

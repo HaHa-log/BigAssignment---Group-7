@@ -87,4 +87,8 @@ public class Auction implements Serializable {
             lock.unlock();
         }
     }
+
+    public void setStartingPrice(double startingPrice) {
+        this.currentPrice = startingPrice;
+    }
 }

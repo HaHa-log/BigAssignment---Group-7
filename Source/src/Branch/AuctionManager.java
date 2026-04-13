@@ -20,6 +20,7 @@ public class AuctionManager {
 
     public void createAuction(Item item, double startingPrice) {
         Auction session = new Auction();
+        session.setStartingPrice(startingPrice);
         activeSessions.add(session);
 
         System.out.println("New auction session for " + item.getName());
