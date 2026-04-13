@@ -1,8 +1,8 @@
 package Client;
 
+import Client.Controllers.LoginPage.DemoPageController;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import Client.Controllers.LoginPage.DemoPageController;
 
 import java.io.IOException;
 

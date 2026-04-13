@@ -16,4 +16,9 @@ public class RegisterController {
     private void goToLogin() throws IOException {
         mainController.showLogin();
     }
+
+    @FXML
+    private void handleRegister() {
+        System.out.println("Register");
+    }
 }

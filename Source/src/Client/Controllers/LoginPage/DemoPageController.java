@@ -12,19 +12,28 @@ public class DemoPageController{
     @FXML
     private StackPane ContentPane;
 
+    public void initialize() {
+        try {
+            showLogin();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void openDemoPage() throws IOException {
-        FXMLLoader demoPage = new FXMLLoader(getClass().getResource("/Client/resources/DemoPage.fxml"));
+        FXMLLoader demoPage = new FXMLLoader(getClass().getResource("/Client/resources/LoginFXML/DemoPage.fxml"));
         Parent demoPageRoot = demoPage.load();
         Scene demoPageScene = new Scene(demoPageRoot);
 
         Stage demoPageStage = new Stage();
-        demoPageStage.setFullScreen(true);
+        demoPageStage.setResizable(false);
         demoPageStage.setScene(demoPageScene);
         demoPageStage.show();
     }
 
     public void showRegister() throws IOException {
-        FXMLLoader registerLoad = new FXMLLoader(getClass().getResource("/Client/resources/Register.fxml"));
+        FXMLLoader registerLoad = new FXMLLoader(getClass().getResource("/Client/resources/LoginFXML/Register.fxml"));
         Parent registerContent = registerLoad.load();
 
         RegisterController controller = registerLoad.getController();
@@ -34,10 +43,10 @@ public class DemoPageController{
     }
 
     public void showLogin() throws IOException {
-        FXMLLoader loginLoad = new FXMLLoader(getClass().getResource("/Client/resources/Login.fxml"));
+        FXMLLoader loginLoad = new FXMLLoader(getClass().getResource("/Client/resources/LoginFXML/Login.fxml"));
         Parent loginContent = loginLoad.load();
 
-        RegisterController controller = loginLoad.getController();
+        LoginController controller = loginLoad.getController();
         controller.setMainController(this);
 
         ContentPane.getChildren().setAll(loginContent);
