@@ -13,4 +13,17 @@ public class AuthService {
 
         return "You've created a new account!";
     }
+
+    public String login(String name, String email, String password) {
+        for (User user : TempDatabase.getAllUsers()) {
+            boolean isMatch = user.getEmail().equals(email) ||
+                    (user.getName() != null && user.getName().equals(name));
+
+            if (isMatch && user.getPassword().equals(password)) {
+                return "Login succesful. Welcome back, " + user.getFirstName();
+            }
+        }
+
+        return "Failure: Invalid email/username or password.";
+    }
 }

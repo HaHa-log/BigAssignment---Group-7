@@ -14,5 +14,8 @@ public class TempDatabase {
         return userDatabase.get(email);
     }
 
+    public static java.util.Collection<User> getAllUsers() {
+        return userDatabase.values();
+    }
     //Database accesses account via email, auction accesses account via user id
 }
