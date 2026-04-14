@@ -13,9 +13,9 @@ public abstract class User extends Entity {
         super(id, firstName + " " + lastName);
         this.firstName = firstName;
         this.lastName = lastName;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.password = password;
+        this.setEmail(email);
+        this.setPhoneNumber(phoneNumber);
+        this.setPassword(password);
     }
 
     public void setFirstName(String fstName) {
@@ -26,16 +26,13 @@ public abstract class User extends Entity {
         this.lastName = lstName;
     }
 
-    public class EmailValidator {
-        private static final String EMAIL_PATTERN = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
-
-        public static boolean isValid(String email) {
-            return Pattern.compile(EMAIL_PATTERN).matcher(email).matches();
-        }
+    public static boolean isValid(String email) {
+        String EMAIL_PATTERN = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+        return Pattern.compile(EMAIL_PATTERN).matcher(email).matches();
     }
 
     public void setEmail(String userEmail) {
-        if (EmailValidator.isValid(userEmail)) {
+        if (isValid(userEmail) == true) {
             this.email = userEmail;
         } else {
             System.out.println("[Error]: Invalid email format");
@@ -56,7 +53,11 @@ public abstract class User extends Entity {
     }
 
     public void setPassword(String pass) {
-        this.password = pass;
+        if (password.length() >= 6) {
+            this.password = pass;
+        } else {
+            System.out.println("[Error]: Password must have more than 6 digits");
+        }
     }
 
     public String getFirstName() {
