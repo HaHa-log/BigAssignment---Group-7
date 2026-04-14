@@ -1,5 +1,7 @@
 package Branch;
 
+import java.util.regex.Pattern;
+
 public abstract class User extends Entity {
     private String firstName;
     private String lastName;
@@ -24,12 +26,33 @@ public abstract class User extends Entity {
         this.lastName = lstName;
     }
 
+    public class EmailValidator {
+        private static final String EMAIL_PATTERN = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+
+        public static boolean isValid(String email) {
+            return Pattern.compile(EMAIL_PATTERN).matcher(email).matches();
+        }
+    }
+
     public void setEmail(String userEmail) {
-        this.email = userEmail;
+        if (EmailValidator.isValid(userEmail)) {
+            this.email = userEmail;
+        } else {
+            System.out.println("[Error]: Invalid email format");
+        }
+    }
+
+    public boolean isValidPhoneNumber(String phone) {
+        String regex = "^0\\d{9}$";
+        return phone != null && phone.matches(regex);
     }
 
     public void setPhoneNumber(String contactNumber) {
-        this.phoneNumber = contactNumber;
+        if (isValidPhoneNumber(contactNumber) == true) {
+            this.phoneNumber = contactNumber;
+        } else {
+            System.out.println("[Error]: Invalid phone number format");
+        }
     }
 
     public void setPassword(String pass) {
