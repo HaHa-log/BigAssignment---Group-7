@@ -40,7 +40,7 @@
     <VBox alignment="CENTER" spacing="1.0">
         <children>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 11px;" text="Already have an account?" />
-            <Text accessibleRole="BUTTON" fill="#26306e" onMouseClicked="#goToLogin" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 11px; -fx-underline: true;" text="Click here to login" />
+            <Text accessibleRole="BUTTON" fill="#26306e" onMouseClicked="#goToLogin" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 11px;" text="Click here to login" />
         </children>
     </VBox>
 
