@@ -2,12 +2,12 @@ package Branch;
 
 public class AuthService {
     public static String registerNewUser(String firstName, String lastName, String email, String phoneNumber, String password) {
-        if (email.isEmpty() || password.length() < 6) {
-            return "[Failure]: email and a password length >= 6 are required";
+        if (email.isEmpty()) {
+            return "[Failure]: An email is required";
         }
 
         if (TempDatabase.getUserByEmail(email) != null) {
-            return "[Failure]: an account with this email already exists";
+            return "[Failure]: An account with this email already exists";
         }
 
         int id = (int) (Math.random() * 1000);
