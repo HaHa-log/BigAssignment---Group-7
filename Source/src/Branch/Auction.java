@@ -6,26 +6,35 @@ import java.io.Serializable;
 
 public class Auction implements Serializable {
     private int auctionId;
-    private String owner;
-    private LocalDateTime createdAt;
-    private LocalDateTime terminateAt;
+    private Member owner;
+    private final LocalDateTime createdAt;
+    private LocalDateTime terminatedAt;
     private boolean isInCountDown;
+    private Item item;
     private AuctionStatus status;
     public enum AuctionStatus {
         OPEN, RUNNING, FINISHED, PAID, CANCELED
     }
     private double currentPrice;
-    private String winner;
-    private final ReentrantLock lock = new ReentrantLock(); //Để xử lý concurrency
+    private Member winner;
+    private final transient ReentrantLock lock = new ReentrantLock(); //Để xử lý concurrency
+    //Thêm transient vì ReentrantLock không thể serialize trực tiếp
 
-    public Auction() {
+    public Auction(Member owner, Item item) {
         this.status = AuctionStatus.OPEN;
         this.createdAt = LocalDateTime.now();
+        isInCountDown = false;
+        this.owner = owner;
+        this.item = item;
+        this.winner = null;
     }
 
     public String start() {
-        transitionTo(AuctionStatus.RUNNING);
-        return "Starting an auction...";
+        if (transitionTo(AuctionStatus.RUNNING)) {
+            return "Starting an auction...";
+        } else {
+            return "Failed to start auction. Current status: " + status;
+        }
     }
 
     private boolean isValidTransition(AuctionStatus next) {
@@ -45,14 +54,21 @@ public class Auction implements Serializable {
     }
 
 
-    public void transitionTo(AuctionStatus nextStatus) {
+    public boolean transitionTo(AuctionStatus nextStatus) {
         lock.lock();
         try {
             if (isValidTransition(nextStatus)) {
                 System.out.println("[Auction] Status changing from: " + status + " to " + nextStatus);
                 this.status = nextStatus;
+
+                if (nextStatus == AuctionStatus.FINISHED) {
+                    this.terminatedAt = LocalDateTime.now();
+                }
+                return true;
+
             } else {
                 System.out.println("[Auction] Cannot change from " + status + " to " + nextStatus);
+                return false;
             }
         } finally {
             lock.unlock();
@@ -63,11 +79,11 @@ public class Auction implements Serializable {
         return status;
     }
 
-    public String notifyAllBidders(String bidderName, double bidderAmount) {
-        return "[System] " + "Bidder: " + bidderName + " has the highest bid of " + bidderAmount;
+    public void notifyAllBidders(Member bidder, double bidderAmount) {
+        System.out.println("[System] Bidder: " + bidder.getName() + " has the highest bid of " + bidderAmount);
     }
 
-    public void placeBid(String bidderName, double bidAmount) {
+    public void placeBid(Member bidder, double bidAmount) {
         lock.lock();
         try {
             if (status != AuctionStatus.RUNNING) {
@@ -75,11 +91,16 @@ public class Auction implements Serializable {
                 return;
             }
 
+            if (bidder.equals(owner)) {
+                System.out.println("Auction owner cannot place bid");
+                return;
+            }
+
             if (bidAmount > currentPrice) {
                 currentPrice = bidAmount;
-                winner = bidderName;
+                winner = bidder;
 
-                notifyAllBidders(bidderName, bidAmount);
+                notifyAllBidders(bidder, bidAmount);
             } else {
                 System.out.println("Bid price has to be greater than the current price");
             }
@@ -88,7 +109,57 @@ public class Auction implements Serializable {
         }
     }
 
+    public void setAuctionId(int idOfAuction) {
+        lock.lock();
+        try { this.auctionId = idOfAuction; } finally { lock.unlock(); }
+    }
+
     public void setStartingPrice(double startingPrice) {
-        this.currentPrice = startingPrice;
+        lock.lock();
+        try {
+            if (status == AuctionStatus.OPEN) {
+                this.currentPrice = startingPrice;
+            } else {
+                System.out.println("[Auction system]: Cannot change startingPrice when the auction is already started");
+            }
+        }
+        finally {
+            lock.unlock();
+        }
+    }
+
+    public void setOwner(Member clientOwner) {
+        lock.lock();
+        try {
+            this.owner = clientOwner;
+        }
+        finally {
+            lock.unlock(); }
+    }
+
+    public void setItem(Item newItem) {
+        lock.lock();
+        try {
+            this.item = newItem;
+        }
+        finally {
+            lock.unlock();
+        }
+    }
+
+    public int getAuctionId() {
+        return auctionId;
+    }
+
+    public double getStartingPrice() {
+        return currentPrice;
+    }
+
+    public Member getOwner() {
+        return owner;
+    }
+
+    public Item getItem() {
+        return item;
     }
 }

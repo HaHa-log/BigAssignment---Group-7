@@ -6,6 +6,10 @@ public class AuthService {
             return "Failure: email and a password length >= 6 are required";
         }
 
+        if (TempDatabase.getUserByEmail(email) != null) {
+            return "Failure: an account with this email already exists";
+        }
+
         int id = (int) (Math.random() * 1000);
         Member member = new Member(id, firstName, lastName, email, phoneNumber, password);
 
