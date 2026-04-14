@@ -27,7 +27,6 @@ public class DemoPageController{
         Scene demoPageScene = new Scene(demoPageRoot);
 
         Stage demoPageStage = new Stage();
-        demoPageStage.setResizable(false);
         demoPageStage.setScene(demoPageScene);
         demoPageStage.show();
     }
