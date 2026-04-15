@@ -1,13 +1,15 @@
 package Branch;
 
 public class AuthService {
-    public static String registerNewUser(String firstName, String lastName, String email, String phoneNumber, String password) {
+    public static Member registerNewUser(String firstName, String lastName, String email, String phoneNumber, String password) {
         if (email.isEmpty()) {
-            return "[Failure]: An email is required";
+            //return "[Failure]: An email is required";
+            return null;
         }
 
         if (TempDatabase.getUserByEmail(email) != null) {
-            return "[Failure]: An account with this email already exists";
+            //return "[Failure]: An account with this email already exists";
+            return null;
         }
 
         int id = (int) (Math.random() * 1000);
@@ -15,7 +17,8 @@ public class AuthService {
 
         TempDatabase.saveUser(member);
 
-        return "You've created a new account!";
+        //return "You've created a new account!";
+        return member;
     }
 
     public static User login(String email, String password) {

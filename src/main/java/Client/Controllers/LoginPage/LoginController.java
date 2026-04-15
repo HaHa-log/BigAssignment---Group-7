@@ -1,7 +1,5 @@
 package Client.Controllers.LoginPage;
 
-import Client.Controllers.SceneManager;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -37,7 +35,7 @@ public class LoginController {
             mainController.onSuccessfulLogin();
         }
         else {
-            System.out.println("Login failed");
+            System.out.println("Login failed!");
         }
     }
 }

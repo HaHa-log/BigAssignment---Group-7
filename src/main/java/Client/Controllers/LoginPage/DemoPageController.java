@@ -43,6 +43,7 @@ public class DemoPageController{
     }
 
     public void onSuccessfulLogin() {
-        SceneManager.switchScene("/MainFXML/HomePage.fxml");
+        SceneManager.loadLayout();
+        SceneManager.switchContent("/MainFXML/HomePage.fxml");
     }
 }

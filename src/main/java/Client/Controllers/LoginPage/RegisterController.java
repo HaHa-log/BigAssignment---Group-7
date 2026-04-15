@@ -1,6 +1,7 @@
 package Client.Controllers.LoginPage;
 
 import Branch.AuthService;
+import Branch.Member;
 import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -35,6 +36,17 @@ public class RegisterController {
         String email = emailField.getText();
         String phoneNumber = phoneNumberField.getText();
         String password = passwordField.getText();
-        System.out.println(AuthService.registerNewUser(firstName, lastName, email, phoneNumber, password));
+        Member member = AuthService.registerNewUser(firstName, lastName, email, phoneNumber, password);
+
+        try {
+            if (member != null) {
+                goToLogin();
+            }
+            else {
+                System.out.println("Registration failed!");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -6,6 +6,7 @@ module BigAssignment.Group7 {
     opens Client to javafx.graphics, javafx.fxml;
 
     // Permissions for FXML to access controllers
+    opens Client.Controllers to javafx.fxml;
     opens Client.Controllers.LoginPage to javafx.fxml;
     opens Client.Controllers.AuctionPage to javafx.fxml;
     opens Client.Controllers.MainPage to javafx.fxml;
