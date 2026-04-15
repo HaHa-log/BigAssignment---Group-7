@@ -1,24 +1,53 @@
 package Branch;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class AuthService {
     public static Member registerNewUser(String firstName, String lastName, String email, String phoneNumber, String password) {
+        List<String> errors = new ArrayList<>();
+
+        //Testing: Ban đầu chỉ in lỗi tuần tự chứ không in ra hết lỗi -> đã sửa bên dưới
+
+        if (firstName.isEmpty() || lastName.isEmpty()) {
+            errors.add("[Error: Full Name is required");
+        }
         if (email.isEmpty()) {
-            //return "[Failure]: An email is required";
+            errors.add("[Error]: Email is required");
+        } else if (!User.isValidEmail(email)) {
+            errors.add("[Error]: Invalid email format");
+        } else if (TempDatabase.getUserByEmail(email) != null) {
+            errors.add("[Error]: An account with this email already exists");
+        }
+        if (!User.isValidPhoneNumber(phoneNumber)) {
+            errors.add("[Error]: Invalid phone number format");
+        }
+        if (password.length() < 6) {
+            errors.add("[Error]: Password must have at least 6 characters");
+        }
+
+        boolean allEmpty = firstName.isEmpty() && lastName.isEmpty() &&
+                email.isEmpty() && phoneNumber.isEmpty() && password.isEmpty();
+        if (allEmpty) {
+            System.out.println("[Error]: Missing information");
+            return null;
+        }
+        if (!errors.isEmpty()) {
+            errors.forEach(System.out::println);
             return null;
         }
 
-        if (TempDatabase.getUserByEmail(email) != null) {
-            //return "[Failure]: An account with this email already exists";
+        try {
+            double balance = 0.0;
+            int id = (int) (Math.random() * 1000);
+            Member member = new Member(id, firstName, lastName, email, phoneNumber, password, balance);
+            TempDatabase.saveUser(member);
+            //return "[System]: You've created a new account!";
+            return member;
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
             return null;
         }
-
-        int id = (int) (Math.random() * 1000);
-        Member member = new Member(id, firstName, lastName, email, phoneNumber, password);
-
-        TempDatabase.saveUser(member);
-
-        //return "You've created a new account!";
-        return member;
     }
 
     public static User login(String email, String password) {

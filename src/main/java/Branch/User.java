@@ -8,14 +8,16 @@ public abstract class User extends Entity {
     private String email;
     private String phoneNumber;
     private String password;
+    private double balance;
 
-    public User(int id, String firstName, String lastName, String email, String phoneNumber, String password) {
+    public User(int id, String firstName, String lastName, String email, String phoneNumber, String password, double balance) {
         super(id, firstName + " " + lastName);
         this.firstName = firstName;
         this.lastName = lastName;
         this.setEmail(email);
         this.setPhoneNumber(phoneNumber);
         this.setPassword(password);
+        this.setBalance(balance);
     }
 
     public void setFirstName(String fstName) {
@@ -26,20 +28,20 @@ public abstract class User extends Entity {
         this.lastName = lstName;
     }
 
-    public static boolean isValid(String email) {
-        String EMAIL_PATTERN = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+    public static boolean isValidEmail(String email) {
+        String EMAIL_PATTERN = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
         return Pattern.compile(EMAIL_PATTERN).matcher(email).matches();
     }
 
     public void setEmail(String userEmail) {
-        if (isValid(userEmail) == true) {
+        if (isValidEmail(userEmail) == true) {
             this.email = userEmail;
         } else {
-            System.out.println("[Error]: Invalid email format");
+            throw new IllegalArgumentException("[Error]: Invalid email format");
         }
     }
 
-    public boolean isValidPhoneNumber(String phone) {
+    public static boolean isValidPhoneNumber(String phone) {
         String regex = "^0\\d{9}$";
         return phone != null && phone.matches(regex);
     }
@@ -48,7 +50,7 @@ public abstract class User extends Entity {
         if (isValidPhoneNumber(contactNumber) == true) {
             this.phoneNumber = contactNumber;
         } else {
-            System.out.println("[Error]: Invalid phone number format");
+            throw new IllegalArgumentException("[Error]: Invalid phone number format");
         }
     }
 
@@ -56,7 +58,15 @@ public abstract class User extends Entity {
         if (pass.length() >= 6) {
             this.password = pass;
         } else {
-            System.out.println("[Error]: Password must have more than 6 digits");
+            throw new IllegalArgumentException("[Error]: Password must have more than 6 digits");
+        }
+    }
+
+    public void setBalance(double amount) {
+        if (amount < 0) {
+            System.out.println("[Error]: Amount must NOT be negative");
+        } else {
+            this.balance += amount;
         }
     }
 
@@ -80,4 +90,5 @@ public abstract class User extends Entity {
         return password;
     }
 
+    public double getBalance() { return balance; }
 }
