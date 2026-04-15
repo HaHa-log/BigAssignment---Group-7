@@ -1,5 +1,6 @@
 package Client.Controllers.LoginPage;
 
+import Client.Controllers.SceneManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,6 +12,7 @@ import java.io.IOException;
 public class DemoPageController{
     @FXML
     private StackPane ContentPane;
+    private SceneManager controller;
 
     public void initialize() {
         try {
@@ -19,16 +21,6 @@ public class DemoPageController{
         catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public void openDemoPage() throws IOException {
-        FXMLLoader demoPage = new FXMLLoader(getClass().getResource("/LoginFXML/DemoPage.fxml"));
-        Parent demoPageRoot = demoPage.load();
-        Scene demoPageScene = new Scene(demoPageRoot);
-
-        Stage demoPageStage = new Stage();
-        demoPageStage.setScene(demoPageScene);
-        demoPageStage.show();
     }
 
     public void showRegister() throws IOException {
@@ -49,5 +41,9 @@ public class DemoPageController{
         controller.setMainController(this);
 
         ContentPane.getChildren().setAll(loginContent);
+    }
+
+    public void onSuccessfulLogin() {
+        controller.switchScene("/MainFXML/HomePage.fxml");
     }
 }

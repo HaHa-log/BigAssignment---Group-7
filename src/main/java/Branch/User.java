@@ -53,7 +53,7 @@ public abstract class User extends Entity {
     }
 
     public void setPassword(String pass) {
-        if (password.length() >= 6) {
+        if (pass.length() >= 6) {
             this.password = pass;
         } else {
             System.out.println("[Error]: Password must have more than 6 digits");

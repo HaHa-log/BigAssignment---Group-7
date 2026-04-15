@@ -4,7 +4,6 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.effect.Blend?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
@@ -12,110 +11,65 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
-<?import javafx.scene.shape.Line?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<ScrollPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.AuctionPage.AuctionPageController">
+<ScrollPane fitToHeight="true" fitToWidth="true" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.AuctionPage.AuctionPageController">
    <content>
-      <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" style="-fx-background-color: #37427c;">
+      <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: #37427c;">
          <children>
-            <HBox alignment="CENTER_RIGHT" layoutX="-60.8" prefHeight="60.0" prefWidth="661.0" style="-fx-background-color: #37427c;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <HBox alignment="CENTER_RIGHT" prefHeight="60.0" style="-fx-background-color: #37427c;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#eaf9ff" height="40.0" stroke="BLACK" strokeType="INSIDE" width="40.0">
-                     <HBox.margin>
-                        <Insets />
-                     </HBox.margin>
-                  </Rectangle>
-                  <Region maxHeight="-Infinity" prefHeight="70.0" prefWidth="366.0" HBox.hgrow="ALWAYS">
-                     <HBox.margin>
-                        <Insets left="10.0" right="10.0" />
-                     </HBox.margin>
-                     <padding>
-                        <Insets bottom="10.0" />
-                     </padding>
-                  </Region>
-                  <Circle fill="#eaf9ff" nodeOrientation="RIGHT_TO_LEFT" radius="20.0" stroke="BLACK" strokeType="INSIDE">
-                     <HBox.margin>
-                        <Insets />
-                     </HBox.margin>
-                  </Circle>
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#eaf9ff" height="40.0" stroke="BLACK" strokeType="INSIDE" width="40.0" />
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Circle fill="#eaf9ff" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
                </children>
                <padding>
                   <Insets left="30.0" right="30.0" />
                </padding>
             </HBox>
-            <VBox alignment="CENTER" layoutX="30.399999618530273" layoutY="70.0" prefHeight="489.0" prefWidth="639.0" style="-fx-background-color: white;" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0">
+
+            <VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="80.0">
                <children>
-                  <HBox prefHeight="214.0" prefWidth="718.0">
+                  <HBox spacing="30.0" VBox.vgrow="SOMETIMES">
                      <children>
-                        <StackPane prefHeight="201.0" prefWidth="310.0" style="-fx-background-color: #37427c;">
+                        <StackPane minWidth="200.0" prefWidth="350.0" style="-fx-background-color: #37427c;" HBox.hgrow="ALWAYS">
                            <children>
-                              <ImageView fitHeight="204.0" fitWidth="318.0" pickOnBounds="true" preserveRatio="true" />
+                              <ImageView fitHeight="250.0" fitWidth="350.0" pickOnBounds="true" preserveRatio="true" />
                            </children>
                            <padding>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </padding>
-                           <HBox.margin>
-                              <Insets right="30.0" />
-                           </HBox.margin>
                         </StackPane>
-                        <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="250.0" spacing="5.0">
+
+                        <VBox spacing="10.0" HBox.hgrow="ALWAYS">
                            <children>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="ItemName" wrappingWidth="263.7367248535156">
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Item Name">
                                  <font>
-                                    <Font name=".VnCentury Schoolbook" size="40.0" />
-                                 </font>
-                                 <VBox.margin>
-                                    <Insets top="10.0" />
-                                 </VBox.margin>
-                              </Text>
-                              <Text layoutX="10.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Starting Price: " wrappingWidth="263.7367248535156">
-                                 <font>
-                                    <Font name=".VnCentury Schoolbook Bold" size="14.0" />
+                                    <Font name="System Bold" size="36.0" />
                                  </font>
                               </Text>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Current Price: " wrappingWidth="263.7367248535156">
-                                 <font>
-                                    <Font name=".VnCentury Schoolbook Bold" size="14.0" />
-                                 </font>
-                              </Text>
-                              <StackPane maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="80.0" prefWidth="230.0" style="-fx-border-color: #37427c;" />
-                              <HBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="250.0">
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Starting Price: $0.00" />
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Current Price: $0.00" />
+
+                              <StackPane maxWidth="1.7976931348623157E308" minHeight="50.0" style="-fx-border-color: #37427c;" VBox.vgrow="ALWAYS" />
+
+                              <HBox alignment="CENTER_LEFT" spacing="10.0">
                                  <children>
-                                    <Text boundsType="LOGICAL_VERTICAL_CENTER" strokeType="OUTSIDE" strokeWidth="0.0" text="Place your bid:" textOrigin="CENTER" wrappingWidth="122.93687438964844">
-                                       <font>
-                                          <Font name=".VnCentury Schoolbook Bold" size="14.0" />
-                                       </font>
-                                       <effect>
-                                          <Blend />
-                                       </effect>
-                                    </Text>
-                                    <TextField fx:id="bidAmountInput" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="130.0" />
+                                    <Text text="Place your bid:" />
+                                    <TextField fx:id="bidAmountInput" HBox.hgrow="ALWAYS" />
                                  </children>
                               </HBox>
                            </children>
                         </VBox>
                      </children>
                   </HBox>
-                  <Region prefHeight="18.0" prefWidth="623.0" />
-                  <Line endX="458.4929504394531" endY="0.5929115414619446" startX="-100.0" VBox.vgrow="ALWAYS">
-                     <VBox.margin>
-                        <Insets />
-                     </VBox.margin>
-                  </Line>
-                  <TextArea maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="220.0" prefWidth="623.0" text="Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus." wrapText="true">
-                     <font>
-                        <Font name=".VnCentury Schoolbook" size="12.0" />
-                     </font>
-                     <VBox.margin>
-                        <Insets top="20.0" />
-                     </VBox.margin>
-                  </TextArea>
+
+                  <TextArea text="Lorem ipsum..." wrapText="true" VBox.vgrow="ALWAYS" />
                </children>
                <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                  <Insets left="20.0" right="20.0" top="20.0" />
                </padding>
             </VBox>
          </children>

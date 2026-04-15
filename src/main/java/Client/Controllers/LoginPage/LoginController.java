@@ -1,11 +1,15 @@
 package Client.Controllers.LoginPage;
 
+import Client.Controllers.SceneManager;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;
+
+import static Branch.AuthService.*;
+import Branch.User;
 
 public class LoginController {
     @FXML
@@ -27,6 +31,13 @@ public class LoginController {
     private void handleLogin () {
         String emailInput = emailField.getText();
         String passwordInput = passwordField.getText();
-        System.out.println("Login");
+
+        User loginResult = login(emailInput, passwordInput);
+        if (loginResult != null) {
+            mainController.onSuccessfulLogin();
+        }
+        else {
+            System.out.println("Login failed");
+        }
     }
 }

@@ -18,16 +18,17 @@ public class AuthService {
         return "You've created a new account!";
     }
 
-    public static String login(String name, String email, String password) {
+    public static User login(String email, String password) {
         for (User user : TempDatabase.getAllUsers()) {
-            boolean isMatch = user.getEmail().equals(email) ||
-                    (user.getName() != null && user.getName().equals(name));
+            boolean isMatch = user.getEmail().equals(email);
 
             if (isMatch && user.getPassword().equals(password)) {
-                return "[System]: Login successful. Welcome back, " + user.getFirstName();
+                return user;
+                //return "[System]: Login successful. Welcome back, " + user.getFirstName();
             }
         }
 
-        return "[Failure]: Invalid email/username or password.";
+        return null;
+        //return "[Failure]: Invalid email/username or password.";
     }
 }
