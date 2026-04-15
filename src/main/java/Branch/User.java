@@ -8,14 +8,16 @@ public abstract class User extends Entity {
     private String email;
     private String phoneNumber;
     private String password;
+    private double balance;
 
-    public User(int id, String firstName, String lastName, String email, String phoneNumber, String password) {
+    public User(int id, String firstName, String lastName, String email, String phoneNumber, String password, double balance) {
         super(id, firstName + " " + lastName);
         this.firstName = firstName;
         this.lastName = lastName;
         this.setEmail(email);
         this.setPhoneNumber(phoneNumber);
         this.setPassword(password);
+        this.setBalance(balance);
     }
 
     public void setFirstName(String fstName) {
@@ -60,6 +62,14 @@ public abstract class User extends Entity {
         }
     }
 
+    public void setBalance(double amount) {
+        if (amount < 0) {
+            System.out.println("[Error]: Amount must NOT be negative");
+        } else {
+            this.balance += amount;
+        }
+    }
+
     public String getFirstName() {
         return firstName;
     }
@@ -80,4 +90,5 @@ public abstract class User extends Entity {
         return password;
     }
 
+    public double getBalance() { return balance; }
 }

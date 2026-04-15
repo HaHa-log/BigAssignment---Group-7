@@ -1,6 +1,8 @@
 package Branch;
 
-public abstract class Item extends Entity {
+//Tạm thời sửa item từ abstract thành concrete class
+
+public class Item extends Entity {
     private double startingPrice;
     private String description;
 

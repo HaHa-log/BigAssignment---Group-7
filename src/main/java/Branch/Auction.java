@@ -16,7 +16,7 @@ public class Auction implements Serializable {
         OPEN, RUNNING, FINISHED, PAID, CANCELED
     }
     private double currentPrice;
-    private Member winner;
+    private Bidder winner;
     private final transient ReentrantLock lock = new ReentrantLock(); //Để xử lý concurrency
     //Thêm transient vì ReentrantLock không thể serialize trực tiếp
 
@@ -79,21 +79,23 @@ public class Auction implements Serializable {
         return status;
     }
 
-    public void notifyAllBidders(Member bidder, double bidderAmount) {
-        System.out.println("[System] Bidder: " + bidder.getName() + " has the highest bid of " + bidderAmount);
+    public void notifyAllBidders(Bidder bidder, double bidderAmount) {
+        String name = "Unknown Bidder";
+        name = ((User) bidder).getName();
+        System.out.println("[Announcement]: " + name + " has the highest bid of " + bidderAmount);
     }
 
-    public void placeBid(Member bidder, double bidAmount) {
+    public boolean placeBid(Bidder bidder, double bidAmount) {
         lock.lock();
         try {
             if (status != AuctionStatus.RUNNING) {
                 System.out.println("The auction hasn't started or has already ended");
-                return;
+                return false;
             }
 
             if (bidder.equals(owner)) {
                 System.out.println("Auction owner cannot place bid");
-                return;
+                return false;
             }
 
             if (bidAmount > currentPrice) {
@@ -101,8 +103,10 @@ public class Auction implements Serializable {
                 winner = bidder;
 
                 notifyAllBidders(bidder, bidAmount);
+                return true;
             } else {
                 System.out.println("Bid price has to be greater than the current price");
+                return false;
             }
         } finally {
             lock.unlock();
@@ -120,7 +124,7 @@ public class Auction implements Serializable {
             if (status == AuctionStatus.OPEN) {
                 this.currentPrice = startingPrice;
             } else {
-                System.out.println("[Auction system]: Cannot change startingPrice when the auction is already started");
+                System.out.println("[System]: Cannot change startingPrice when the auction is already started");
             }
         }
         finally {
@@ -162,4 +166,6 @@ public class Auction implements Serializable {
     public Item getItem() {
         return item;
     }
+
+    public double getCurrentPrice() { return currentPrice; }
 }
