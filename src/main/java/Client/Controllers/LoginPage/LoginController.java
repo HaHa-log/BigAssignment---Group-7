@@ -1,13 +1,13 @@
 package Client.Controllers.LoginPage;
 
+import static Branch.AuthService.*;
+import Branch.User;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;
-
-import static Branch.AuthService.*;
-import Branch.User;
 
 public class LoginController {
     @FXML

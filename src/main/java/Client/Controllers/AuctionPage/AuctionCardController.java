@@ -1,4 +1,4 @@
 package Client.Controllers.AuctionPage;
 
-public class BidPageController {
+public class AuctionCardController {
 }

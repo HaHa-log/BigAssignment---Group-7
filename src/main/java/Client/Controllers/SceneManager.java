@@ -25,6 +25,8 @@ public class SceneManager {
         try {
             Parent shell = FXMLLoader.load(SceneManager.class.getResource("/Layout.fxml"));
             stage.setScene(new Scene(shell));
+            stage.setMinHeight(600);
+            stage.setMinWidth(1000);
             stage.setFullScreen(true);
             stage.show();
         } catch (IOException e) {
