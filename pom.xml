@@ -12,15 +12,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
-<<<<<<< HEAD
-<<<<<<< HEAD
         <javafx.version>17.0.6</javafx.version> </properties>
-=======
-        <javafx.version>21.0.6</javafx.version> </properties>
->>>>>>> 99d47e835fb89a3aed14e03d02f781e99c665bd7
-=======
-        <javafx.version>21.0.6</javafx.version> </properties>
->>>>>>> 99d47e835fb89a3aed14e03d02f781e99c665bd7
 
     <dependencies>
         <dependency>
@@ -40,10 +32,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
+                <version>3.11.0</version>
                 <configuration>
-                    <source>25</source>
-                    <target>25</target>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
 
