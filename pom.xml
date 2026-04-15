@@ -13,7 +13,11 @@
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
 <<<<<<< HEAD
+<<<<<<< HEAD
         <javafx.version>17.0.6</javafx.version> </properties>
+=======
+        <javafx.version>21.0.6</javafx.version> </properties>
+>>>>>>> 99d47e835fb89a3aed14e03d02f781e99c665bd7
 =======
         <javafx.version>21.0.6</javafx.version> </properties>
 >>>>>>> 99d47e835fb89a3aed14e03d02f781e99c665bd7
