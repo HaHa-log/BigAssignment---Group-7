@@ -8,8 +8,6 @@ public class LayoutController {
 
     @FXML
     private StackPane contentArea;
-    @FXML
-    private Circle profileShortcut;
 
     public void initialize() {
         // run automatically when Layout.fxml is loaded
@@ -20,4 +18,9 @@ public class LayoutController {
     public void redirectToProfile() {
         SceneManager.switchContent("/MainFXML/ProfilePage.fxml");
     };
+
+    @FXML
+    public void redirectToHomePage() {
+        SceneManager.switchContent("/MainFXML/HomePage.fxml");
+    }
 }

@@ -14,7 +14,7 @@
     <top>
         <HBox alignment="CENTER_RIGHT" prefHeight="60.0" style="-fx-background-color: #37427c;" BorderPane.alignment="CENTER">
             <children>
-                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#eaf9ff" height="40.0" stroke="BLACK" strokeType="INSIDE" width="40.0" />
+                <Rectangle fx:id="homePageShortcut" accessibleRole="BUTTON" onMouseClicked="#redirectToHomePage" arcHeight="5.0" arcWidth="5.0" fill="#eaf9ff" height="40.0" stroke="BLACK" strokeType="INSIDE" width="40.0" />
                 <Region HBox.hgrow="ALWAYS" />
                 <Circle fx:id="profileShortcut" accessibleRole="BUTTON" fill="#eaf9ff" onMouseClicked="#redirectToProfile" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
             </children>
