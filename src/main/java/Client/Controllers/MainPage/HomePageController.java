@@ -3,15 +3,12 @@ package Client.Controllers.MainPage;
 import Client.Controllers.SceneManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Label;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 
 public class HomePageController{
-    @FXML
-    private Label shortcutToAuctionList;
     @FXML
     private TilePane auctionTilePane;
 
@@ -33,11 +30,8 @@ public class HomePageController{
         }
     }
 
-    /*
     @FXML
     private void toAuctionList() {
         SceneManager.switchContent("/AuctionPageFXML/AuctionList.fxml");
     }
-    Currently NOT WORKING
-     */
 }

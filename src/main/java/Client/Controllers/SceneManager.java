@@ -37,8 +37,10 @@ public class SceneManager {
     public static void switchContent(String fxmlPath) {
         try {
             Parent node = FXMLLoader.load(SceneManager.class.getResource(fxmlPath));
-            if (contentArea != null) {
+            try {
                 contentArea.getChildren().setAll(node);
+            } catch (NullPointerException e) {
+                System.out.println("Location is null!");
             }
         } catch (IOException e) {
             e.printStackTrace();
