@@ -13,7 +13,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<ScrollPane fitToHeight="true" fitToWidth="true" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.AuctionPage.AuctionPageController">
+<ScrollPane fitToHeight="true" fitToWidth="true" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.MainPage.HomePageController">
     <content>
         <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: #37427c;">
             <children>
@@ -21,7 +21,7 @@
                     <children>
                         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#eaf9ff" height="40.0" stroke="BLACK" strokeType="INSIDE" width="40.0" />
                         <Region HBox.hgrow="ALWAYS" />
-                        <Circle fill="#eaf9ff" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                        <Circle fx:id="profileShortcut" accessibleRole="BUTTON" fill="#eaf9ff" onMouseClicked="#redirectToProfile" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
                     </children>
                     <padding>
                         <Insets left="30.0" right="30.0" />

@@ -12,7 +12,6 @@ import java.io.IOException;
 public class DemoPageController{
     @FXML
     private StackPane ContentPane;
-    private SceneManager controller;
 
     public void initialize() {
         try {
@@ -44,6 +43,6 @@ public class DemoPageController{
     }
 
     public void onSuccessfulLogin() {
-        controller.switchScene("/MainFXML/HomePage.fxml");
+        SceneManager.switchScene("/MainFXML/HomePage.fxml");
     }
 }
