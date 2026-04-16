@@ -79,4 +79,16 @@ public class TempDatabase {
         }
         return users;
     }
+
+    //Hiện chưa có database cho transaction nhé
+    private static List<Transaction> transactionDatabase = new ArrayList<>();
+
+    public static void saveTransaction(Transaction transaction) {
+        transactionDatabase.add(transaction);
+        System.out.println("[System]: Transaction saved.");
+    }
+
+    public static List<Transaction> getAuctionTransactions() {
+        return transactionDatabase;
+    }
 }
