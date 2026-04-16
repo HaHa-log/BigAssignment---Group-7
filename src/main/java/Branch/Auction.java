@@ -168,4 +168,6 @@ public class Auction implements Serializable {
     }
 
     public double getCurrentPrice() { return currentPrice; }
+
+    public Bidder getWinner() { return winner; }
 }
