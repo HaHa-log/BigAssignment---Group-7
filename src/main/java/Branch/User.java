@@ -9,9 +9,11 @@ public abstract class User extends Entity {
     private String phoneNumber;
     private String password;
     private double balance;
+    protected boolean isAdmin = false;
+    protected boolean isBlocked = false;
 
-    public User(int id, String firstName, String lastName, String email, String phoneNumber, String password, double balance) {
-        super(id, firstName + " " + lastName);
+    public User(String firstName, String lastName, String email, String phoneNumber, String password, double balance) {
+        super(firstName + " " + lastName);
         this.firstName = firstName;
         this.lastName = lastName;
         this.setEmail(email);
@@ -91,4 +93,8 @@ public abstract class User extends Entity {
     }
 
     public double getBalance() { return balance; }
+
+    public boolean isAdmin() { return isAdmin; }
+
+    public boolean isBlocked() { return isBlocked; }
 }

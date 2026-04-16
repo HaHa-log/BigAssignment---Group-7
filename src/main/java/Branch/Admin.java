@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Admin extends User {
-    public Admin(int id, String firstName, String lastName, String email, String phoneNumber, String password, double balance) {
-        super(id, firstName, lastName, email, phoneNumber,password, balance);
+    public Admin(String firstName, String lastName, String email, String phoneNumber, String password) {
+        super(firstName, lastName, email, phoneNumber,password, 0.0);
     }
 
     public void blockUser(int userId) {}
@@ -14,11 +14,11 @@ public class Admin extends User {
     public void cancelAuction(int auctionId) {}
 
     public List<Transaction> getAllTransactions() {
-        return TempDatabase.getAuctionTransactions();
+        return Database.getAuctionTransactions();
     }
 
     public void printTransactionsByMember(int memberId) {
-        List<Transaction> all = TempDatabase.getAuctionTransactions();
+        List<Transaction> all = Database.getAuctionTransactions();
         List<Transaction> result = new ArrayList<>();
 
         for (Transaction transaction : all) {

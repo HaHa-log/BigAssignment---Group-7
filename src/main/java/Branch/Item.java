@@ -6,8 +6,8 @@ public class Item extends Entity {
     private double startingPrice;
     private String description;
 
-    public Item(int id, String name, float startingPrice, String description) {
-        super(id, name);
+    public Item(String name, float startingPrice, String description) {
+        super(name);
         this.startingPrice = startingPrice;
         this.description = description;
     }

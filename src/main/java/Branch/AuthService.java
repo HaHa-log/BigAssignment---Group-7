@@ -16,7 +16,7 @@ public class AuthService {
             errors.add("[Error]: Email is required");
         } else if (!User.isValidEmail(email)) {
             errors.add("[Error]: Invalid email format");
-        } else if (TempDatabase.getUserByEmail(email) != null) {
+        } else if (Database.getUserByEmail(email) != null) {
             errors.add("[Error]: An account with this email already exists");
         }
         if (!User.isValidPhoneNumber(phoneNumber)) {
@@ -39,9 +39,8 @@ public class AuthService {
 
         try {
             double balance = 0.0;
-            int id = (int) (Math.random() * 1000);
-            Member member = new Member(id, firstName, lastName, email, phoneNumber, password, balance);
-            TempDatabase.saveUser(member);
+            Member member = new Member(firstName, lastName, email, phoneNumber, password, balance);
+            Database.saveUser(member);
             //return "[System]: You've created a new account!";
             return member;
         } catch (IllegalArgumentException e) {
@@ -51,14 +50,13 @@ public class AuthService {
     }
 
     public static User login(String email, String password) {
-        for (User user : TempDatabase.getAllUsers()) {
-            boolean isMatch = user.getEmail().equals(email);
+        User user = Database.getUserByEmail(email);
 
-            if (isMatch && user.getPassword().equals(password)) {
-                return user;
+        if (user.getPassword().equals(password)) {
+            return user;
                 //return "[System]: Login successful. Welcome back, " + user.getFirstName();
-            }
         }
+
 
         return null;
         //return "[Failure]: Invalid email/username or password.";

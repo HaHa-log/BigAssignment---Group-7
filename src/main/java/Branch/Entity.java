@@ -4,8 +4,7 @@ public abstract class Entity {
     private int id;
     private String name;
 
-    public Entity(int id, String name) {
-        this.id = id;
+    public Entity(String name) {
         this.name = name;
     }
 
@@ -16,5 +15,7 @@ public abstract class Entity {
     public String getName() {
         return name;
     }
+
+    public void setId(int id) { this.id = id; }
     //Thinking of setting conditions for setName()
 }

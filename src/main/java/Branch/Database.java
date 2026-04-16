@@ -4,25 +4,29 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TempDatabase {
-    private static final String URL = "jdbc:mysql://127.0.0.1:3306/login_schema";
-    private static final String USER = "root";
-    private static final String PASSWORD = "inLoveWeLongFor01";
+public class Database {
+    private static final String URL = "jdbc:mysql://192.168.1.162:3306/auction_system";
+    private static final String USER = System.getenv("DB_USER");
+    private static final String PASSWORD = System.getenv("DB_PASSWORD");
 
     private static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 
     public static void saveUser(User user) {
-        String sql = "INSERT INTO users (first_name, last_name, email, phone_number, password) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO users (email, phoneNumber, firstName, lastName, password, isAdmin, isBlocked, balance) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, user.getFirstName());
-            stmt.setString(2, user.getLastName());
-            stmt.setString(3, user.getEmail());
-            stmt.setString(4, user.getPhoneNumber());
+            stmt.setString(1, user.getEmail());
+            stmt.setString(2, user.getPhoneNumber());
+            stmt.setString(3, user.getFirstName());
+            stmt.setString(4, user.getLastName());
             stmt.setString(5, user.getPassword());
+            stmt.setBoolean(6, user.isAdmin());
+            stmt.setBoolean(7, user.isBlocked());
+            stmt.setDouble(8, user.getBalance());
+
             stmt.executeUpdate();
 
             System.out.println("[System]: User " + user.getFirstName() + " saved to database.");
@@ -41,13 +45,12 @@ public class TempDatabase {
 
             if (rs.next()) {
                 return new Member(
-                        0,
-                        rs.getString("first_name"),
-                        rs.getString("last_name"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
                         rs.getString("email"),
-                        rs.getString("phone_number"),
+                        rs.getString("phoneNumber"),
                         rs.getString("password"),
-                        0.0
+                        rs.getDouble("balance")
                 );
             }
         } catch (SQLException e) {
@@ -65,13 +68,12 @@ public class TempDatabase {
 
             while (rs.next()) {
                 users.add(new Member(
-                        0,
-                        rs.getString("first_name"),
-                        rs.getString("last_name"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
                         rs.getString("email"),
-                        rs.getString("phone_number"),
+                        rs.getString("phoneNumber"),
                         rs.getString("password"),
-                        0.0
+                        rs.getDouble("balance")
                 ));
             }
         } catch (SQLException e) {

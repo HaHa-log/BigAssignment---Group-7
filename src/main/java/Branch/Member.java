@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Member extends User implements Bidder, Seller {
-    public Member(int id, String firstName, String lastName, String email, String phoneNumber, String password, double balance) {
-        super(id, firstName, lastName, email, phoneNumber,password, balance);
+    public Member(String firstName, String lastName, String email, String phoneNumber, String password, double balance) {
+        super(firstName, lastName, email, phoneNumber,password, balance);
     }
 
     public List<Transaction> getMyTransactions() {
         List<Transaction> result = new ArrayList<>();
 
-        for (Transaction transaction : TempDatabase.getAuctionTransactions()) {
+        for (Transaction transaction : Database.getAuctionTransactions()) {
             if (transaction.getBuyer().equals(this) || transaction.getSeller().equals(this)) {
                 result.add(transaction);
             }

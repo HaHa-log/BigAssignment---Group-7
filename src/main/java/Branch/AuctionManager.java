@@ -42,7 +42,7 @@ public class AuctionManager {
                     session.getOwner(),
                     session.getCurrentPrice()
             );
-            TempDatabase.saveTransaction(transaction);
+            Database.saveTransaction(transaction);
         }
 
         System.out.println("Auction closed!");
