@@ -1,5 +1,9 @@
 package Branch;
 
 public interface Seller {
-    void createAuction(Item item, double startingPrice);
+    default boolean createAuction(Item item, double startingPrice) {
+        System.out.println("Selling stuff...");
+        return true;
+        //Tạm thời để như này
+    }
 }

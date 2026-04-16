@@ -35,6 +35,16 @@ public class AuctionManager {
         activeSessions.remove(session);
         completedSessions.add(session);
 
+        if (session.getWinner() != null) {
+            Transaction transaction = new Transaction(
+                    session,
+                    (Member) session.getWinner(),
+                    session.getOwner(),
+                    session.getCurrentPrice()
+            );
+            TempDatabase.saveTransaction(transaction);
+        }
+
         System.out.println("Auction closed!");
     }
 }
