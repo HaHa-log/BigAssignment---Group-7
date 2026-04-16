@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TempDatabase {
-    private static final String URL = "jdbc:mysql://(localhost:3306)/login_schema";
+    private static final String URL = "jdbc:mysql://127.0.0.1:3306/login_schema";
     private static final String USER = "root";
-    private static final String PASSWORD = "(your sql password)";
+    private static final String PASSWORD = "inLoveWeLongFor01";
 
     private static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
