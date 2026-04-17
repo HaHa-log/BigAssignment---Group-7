@@ -151,6 +151,16 @@ public class Auction implements Serializable {
         }
     }
 
+    public void setStatus(AuctionStatus status) {
+        boolean check = transitionTo(status);
+
+        if (!check) {
+            System.out.println("[System]: Status transition failure from " + this.status + " to " + status);
+        } else {
+            System.out.println("[System]: The auction is now " + this.status);
+        }
+    }
+
     public int getAuctionId() {
         return auctionId;
     }

@@ -47,4 +47,18 @@ public class AuctionManager {
 
         System.out.println("Auction closed!");
     }
+
+    public boolean cancelAuction(int auctionId) {
+        for (Auction auction: activeSessions) {
+            if (auction.getAuctionId() == auctionId) {
+                auction.transitionTo(Auction.AuctionStatus.CANCELED);
+                activeSessions.remove(auction);
+                completedSessions.add(auction);
+                System.out.println("Auction canceled!");
+                return true;
+            }
+        }
+        System.out.println("Unable to find auction id " + auctionId);
+        return false;
+    }
 }

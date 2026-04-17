@@ -9,9 +9,24 @@ public class Admin extends User {
         super(firstName, lastName, email, phoneNumber,password, 0.0);
     }
 
-    public void blockUser(int userId) {}
+    public void blockUser(int userId) {
+        List<User> userList = Database.getAllUsers();
+        for (User user: userList) {
+            if (user.getId() == userId) {
+                userList.remove(userId);
+                System.out.println("[Admin]: User with ID ");
+            }
+        }
+    }
 
-    public void cancelAuction(int auctionId) {}
+    public void cancelAuction(int auctionId, AuctionManager manager) {
+        boolean success = manager.cancelAuction(auctionId);
+        if (success) {
+            System.out.println("[Admin]: Auction " + auctionId + " has been cancelled.");
+        } else {
+            System.out.println("[Admin]: Could not find auction with ID: " + auctionId);
+        }
+    }
 
     public List<Transaction> getAllTransactions() {
         return Database.getAuctionTransactions();
