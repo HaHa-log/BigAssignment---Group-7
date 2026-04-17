@@ -111,6 +111,23 @@ public class TempDatabase {
         return users;
     }
 
+    public static Integer getUserId(User user) {
+        String sql = "SELECT * FROM users WHERE email = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, user.getEmail());
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("users_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     //Items
     public static void saveItem(Item item) {
         String sql = "INSERT INTO products (name, startingPrice, description) VALUES (?, ?, ?)";
@@ -129,23 +146,6 @@ public class TempDatabase {
         }
     }
 
-    public static Integer getUserId(User user) {
-        String sql = "SELECT * FROM users WHERE email = ?";
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, user.getEmail());
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                return rs.getInt("users_id");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     public static Integer getItemId(Item item) {
         String sql = "SELECT * FROM users WHERE name = ? and description = ?";
         try (Connection conn = getConnection();
@@ -156,7 +156,7 @@ public class TempDatabase {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return rs.getInt("users_id");
+                return rs.getInt("items_id");
             }
         } catch (SQLException e) {
             e.printStackTrace();
