@@ -1,41 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.TilePane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.MainPage.HomePageController">
+<VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.MainPage.HomePageController">
     <children>
-        <HBox prefHeight="34.0" prefWidth="474.0">
+        <StackPane maxHeight="300.0" maxWidth="1.7976931348623157E308" onMouseClicked="#toProfilePage" style="-fx-cursor: hand; -fx-border-color: #37427c;">
             <children>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Ongoing Auction" wrappingWidth="474.00396728515625">
-                    <font>
-                        <Font name="System Bold" size="36.0" />
-                    </font>
-                </Text>
+                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent; -fx-background: transparent;" vbarPolicy="ALWAYS">
+                    <content>
+                        <fx:include source="../MainFXML/ProfilePage.fxml" />
+                    </content>
+               </ScrollPane>
             </children>
-        </HBox>
-      <VBox>
-         <children>
-                <Label fx:id="shortcutToAuctionList" accessibleRole="BUTTON" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onMouseClicked="#toAuctionList" text="List of Auctions" wrapText="true" VBox.vgrow="ALWAYS">
-               <font>
-                  <Font name="System Bold" size="20.0" />
-               </font>
-            </Label>
-             <TilePane fx:id="auctionTilePane" alignment="CENTER" hgap="20.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefColumns="4" prefRows="0" style="-fx-border-color: #37427c;" tileAlignment="CENTER" vgap="20.0" VBox.vgrow="ALWAYS">
-                 <padding>
-                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                 </padding>
-                 <VBox.margin>
-                     <Insets top="10.0" />
-                 </VBox.margin>
-             </TilePane>
-         </children>
-      </VBox>
+        </StackPane>
+          <StackPane maxHeight="500.0" maxWidth="1.7976931348623157E308" onMouseClicked="#toAuctionList" style="-fx-cursor: hand; -fx-border-color: #37427c;">
+              <children>
+                  <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent; -fx-background: transparent;" vbarPolicy="ALWAYS">
+                      <content>
+                          <fx:include source="../AuctionPageFXML/AuctionList.fxml" />
+                      </content>
+                  </ScrollPane>
+              </children>
+          </StackPane>
     </children>
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
