@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Database {
-    private static final String URL = "jdbc:mysql://192.168.1.162:3306/auction_system";
-    private static final String USER = System.getenv("root");
-    private static final String PASSWORD = System.getenv("Auction@Group7");
+    private static final String URL = "jdbc:mysql://localhost:3306/auction_system";
+    private static final String USER = "root";
+    private static final String PASSWORD = "Auction@Group7";
 
     private static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
@@ -49,7 +49,7 @@ public class Database {
                         rs.getString("firstName"),
                         rs.getString("lastName"),
                         rs.getString("email"),
-                        rs.getString("phoneNumber"),
+                        rs.getString("phonenumber"),
                         rs.getString("password"),
                         rs.getDouble("balance")
                 );
