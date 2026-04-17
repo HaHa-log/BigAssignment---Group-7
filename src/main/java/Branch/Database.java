@@ -6,13 +6,14 @@ import java.util.List;
 
 public class Database {
     private static final String URL = "jdbc:mysql://192.168.1.162:3306/auction_system";
-    private static final String USER = System.getenv("DB_USER");
-    private static final String PASSWORD = System.getenv("DB_PASSWORD");
+    private static final String USER = System.getenv("root");
+    private static final String PASSWORD = System.getenv("Auction@Group7");
 
     private static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 
+    //Users
     public static void saveUser(User user) {
         String sql = "INSERT INTO users (email, phoneNumber, firstName, lastName, password, isAdmin, isBlocked, balance) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConnection();
@@ -59,6 +60,23 @@ public class Database {
         return null;
     }
 
+    public static Integer getUserId(User user) {
+        String sql = "SELECT * FROM users WHERE email = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, user.getEmail());
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("users_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
         String sql = "SELECT * FROM users";
@@ -80,6 +98,42 @@ public class Database {
             e.printStackTrace();
         }
         return users;
+    }
+
+    //Items
+    public static void saveItem(Item item) {
+        String sql = "INSERT INTO products (name, startingPrice, description) VALUES (?, ?, ?)";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, item.getName());
+            stmt.setDouble(2, item.getStartingPrice());
+            stmt.setString(3, item.getDescription());
+
+            stmt.executeUpdate();
+
+            System.out.println("[System]: User " + item.getName() + " saved to database.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Integer getItemId(Item item) {
+        String sql = "SELECT * FROM users WHERE name = ? and description = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, item.getName());
+            stmt.setString(2, item.getDescription());
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("users_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     //Hiện chưa có database cho transaction nhé

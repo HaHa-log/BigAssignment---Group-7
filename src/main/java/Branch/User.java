@@ -72,6 +72,10 @@ public abstract class User extends Entity {
         }
     }
 
+    public int getId() {
+        return Database.getUserId(this);
+    }
+
     public String getFirstName() {
         return firstName;
     }

@@ -1,21 +1,16 @@
 package Branch;
 
 public abstract class Entity {
-    private int id;
     private String name;
 
     public Entity(String name) {
         this.name = name;
     }
 
-    public int getId() {
-        return id;
-    }
+    public abstract int getId();
 
     public String getName() {
         return name;
     }
-
-    public void setId(int id) { this.id = id; }
     //Thinking of setting conditions for setName()
 }
