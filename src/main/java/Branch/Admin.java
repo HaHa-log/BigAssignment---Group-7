@@ -1,6 +1,7 @@
 package Branch;
 
 import Branch.User;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,14 +10,28 @@ public class Admin extends User {
         super(firstName, lastName, email, phoneNumber,password, 0.0);
     }
 
-    public void blockUser(int userId) {
-        List<User> userList = Database.getAllUsers();
-        for (User user: userList) {
-            if (user.getId() == userId) {
-                userList.remove(userId);
-                System.out.println("[Admin]: User with ID ");
-            }
+    public void blockUser(int userId, LocalDateTime until) {
+        User user = Database.getUserById(userId);
+
+        if (user == null) {
+            System.out.println("[Error]: User not found");
+            return;
         }
+
+        user.setBlocked(until);
+        System.out.println("[Admin]: User with ID " + user.getId() + " blocked until " + until);
+    }
+
+    public void unblockUser(int userId) {
+        User user = Database.getUserById(userId);
+
+        if (user == null) {
+            System.out.println("[Error]: User not found");
+            return;
+        }
+
+        user.isUnblocked();
+        System.out.println("[Admin]: User with ID " + user.getId() + " unblocked.");
     }
 
     public void cancelAuction(int auctionId, AuctionManager manager) {

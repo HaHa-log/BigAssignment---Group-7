@@ -60,22 +60,32 @@ public class Database {
         return null;
     }
 
-    public static Integer getUserId(User user) {
-        String sql = "SELECT * FROM users WHERE email = ?";
+    public static User getUserById(int id) {
+        String sql = "SELECT * FROM users WHERE users_id = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, user.getEmail());
+            stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return rs.getInt("users_id");
+                Member member = new Member(
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("email"),
+                        rs.getString("phoneNumber"),
+                        rs.getString("password"),
+                        rs.getDouble("balance")
+                );
+                member.setId(rs.getInt("users_id"));
+                return member;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
     }
+
 
     public static List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
@@ -116,6 +126,23 @@ public class Database {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public static Integer getUserId(User user) {
+        String sql = "SELECT * FROM users WHERE email = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, user.getEmail());
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("users_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static Integer getItemId(Item item) {

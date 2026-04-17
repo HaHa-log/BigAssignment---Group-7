@@ -1,16 +1,19 @@
 package Branch;
 
 import java.util.regex.Pattern;
+import java.time.LocalDateTime;
 
 public abstract class User extends Entity {
+    private int id;
     private String firstName;
     private String lastName;
     private String email;
     private String phoneNumber;
     private String password;
     private double balance;
-    protected boolean isAdmin = false;
-    protected boolean isBlocked = false;
+    private boolean isAdmin = false;
+    private boolean isBlocked = false;
+    private LocalDateTime blockedUntil = null;
 
     public User(String firstName, String lastName, String email, String phoneNumber, String password, double balance) {
         super(firstName + " " + lastName);
@@ -72,6 +75,11 @@ public abstract class User extends Entity {
         }
     }
 
+    public void setBlocked(LocalDateTime until) {
+        this.isBlocked = true;
+        this.blockedUntil = until;
+    }
+
     public int getId() {
         return Database.getUserId(this);
     }
@@ -100,5 +108,16 @@ public abstract class User extends Entity {
 
     public boolean isAdmin() { return isAdmin; }
 
-    public boolean isBlocked() { return isBlocked; }
+    public boolean isBlocked() {
+        if (isBlocked && blockedUntil != null && LocalDateTime.now().isAfter(blockedUntil)) {
+            isBlocked = false;
+            blockedUntil = null;
+        }
+        return isBlocked;
+    }
+
+    public void isUnblocked() {
+        this.isBlocked = false;
+        this.blockedUntil = null;
+    }
 }
