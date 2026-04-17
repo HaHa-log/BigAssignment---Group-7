@@ -1,6 +1,5 @@
 package Branch;
 
-<<<<<<< Updated upstream
 import Branch.User;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -12,7 +11,7 @@ public class Admin extends User {
     }
 
     public void blockUser(int userId, LocalDateTime until) {
-        User user = Database.getUserById(userId);
+        User user = TempDatabase.getUserById(userId);
 
         if (user == null) {
             System.out.println("[Error]: User not found");
@@ -24,7 +23,7 @@ public class Admin extends User {
     }
 
     public void unblockUser(int userId) {
-        User user = Database.getUserById(userId);
+        User user = TempDatabase.getUserById(userId);
 
         if (user == null) {
             System.out.println("[Error]: User not found");
