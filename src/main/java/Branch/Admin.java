@@ -1,5 +1,6 @@
 package Branch;
 
+<<<<<<< Updated upstream
 import Branch.User;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -44,11 +45,11 @@ public class Admin extends User {
     }
 
     public List<Transaction> getAllTransactions() {
-        return Database.getAuctionTransactions();
+        return TempDatabase.getAuctionTransactions();
     }
 
     public void printTransactionsByMember(int memberId) {
-        List<Transaction> all = Database.getAuctionTransactions();
+        List<Transaction> all = TempDatabase.getAuctionTransactions();
         List<Transaction> result = new ArrayList<>();
 
         for (Transaction transaction : all) {

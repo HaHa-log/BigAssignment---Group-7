@@ -16,7 +16,7 @@ public class AuthService {
             errors.add("[Error]: Email is required");
         } else if (!User.isValidEmail(email)) {
             errors.add("[Error]: Invalid email format");
-        } else if (Database.getUserByEmail(email) != null) {
+        } else if (TempDatabase.getUserByEmail(email) != null) {
             errors.add("[Error]: An account with this email already exists");
         }
         if (!User.isValidPhoneNumber(phoneNumber)) {
@@ -40,7 +40,7 @@ public class AuthService {
         try {
             double balance = 0.0;
             Member member = new Member(firstName, lastName, email, phoneNumber, password, balance);
-            Database.saveUser(member);
+            TempDatabase.saveUser(member);
             //return "[System]: You've created a new account!";
             return member;
         } catch (IllegalArgumentException e) {
@@ -50,7 +50,7 @@ public class AuthService {
     }
 
     public static User login(String email, String password) {
-        User user = Database.getUserByEmail(email);
+        User user = TempDatabase.getUserByEmail(email);
 
         if (user.getPassword().equals(password)) {
             return user;

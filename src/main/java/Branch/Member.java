@@ -11,7 +11,7 @@ public class Member extends User implements Bidder, Seller {
     public List<Transaction> getMyTransactions() {
         List<Transaction> result = new ArrayList<>();
 
-        for (Transaction transaction : Database.getAuctionTransactions()) {
+        for (Transaction transaction : TempDatabase.getAuctionTransactions()) {
             if (transaction.getBuyer().equals(this) || transaction.getSeller().equals(this)) {
                 result.add(transaction);
             }

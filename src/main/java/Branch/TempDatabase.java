@@ -4,7 +4,11 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+<<<<<<< Updated upstream:src/main/java/Branch/Database.java
 public class Database {
+=======
+public class TempDatabase {
+>>>>>>> Stashed changes:src/main/java/Branch/TempDatabase.java
     private static final String URL = "jdbc:mysql://localhost:3306/auction_system";
     private static final String USER = "root";
     private static final String PASSWORD = "Auction@Group7";

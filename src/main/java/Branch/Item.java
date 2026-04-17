@@ -29,7 +29,7 @@ public class Item extends Entity {
     }
 
     public int getId() {
-        return Database.getItemId(this);
+        return TempDatabase.getItemId(this);
     }
 
     @Override
