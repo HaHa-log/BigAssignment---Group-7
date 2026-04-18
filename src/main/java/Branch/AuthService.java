@@ -53,6 +53,7 @@ public class AuthService {
         User user = TempDatabase.getUserByEmail(email);
 
         if (user.getPassword().equals(password)) {
+            SessionManager.loginCurrentUser(user);
             return user;
                 //return "[System]: Login successful. Welcome back, " + user.getFirstName();
         }

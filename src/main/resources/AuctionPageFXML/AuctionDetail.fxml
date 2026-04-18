@@ -1,18 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-
-
-<VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.AuctionPage.AuctionDetailController">
+<VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.AuctionPage.AuctionDetailController">
    <children>
       <HBox spacing="30.0" VBox.vgrow="SOMETIMES">
          <children>
@@ -43,6 +37,13 @@
                         <TextField fx:id="bidAmountInput" HBox.hgrow="ALWAYS" />
                      </children>
                   </HBox>
+                  <Button alignment="CENTER_RIGHT" mnemonicParsing="false" text="Make a bid" onAction="#checkBidValidity"/>
+                  <Button fx:id="bidButton" mnemonicParsing="false" text="Make a bid" onAction="#checkBidValidity"/>
+                  <Label fx:id="statusLabel" text="" wrapText="true">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Label>
                </children>
             </VBox>
          </children>
