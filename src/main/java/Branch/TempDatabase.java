@@ -3,6 +3,7 @@ package Branch;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDateTime;
 
 
 public class TempDatabase {
@@ -179,6 +180,29 @@ public class TempDatabase {
         return null;
     }
 
+    public static Item getItemById(int id) {
+        String sql = "SELECT * FROM products WHERE products_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                Item item = new Item(
+                        rs.getString("name"),
+                        rs.getFloat("startingPrice"),
+                        rs.getString("description")
+                );
+                item.setId(rs.getInt("products_id"));
+                return item;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     //Cho transaction (đã có database)
     public static void saveTransaction(Transaction transaction) {
         String sql = "INSERT INTO transactions (auction_id, buyer_id, seller_id, finalAmount, status, paidAt, completedAt) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -224,4 +248,73 @@ public class TempDatabase {
         return result;
     }
 
+    //Đối với Auction database
+    public static void saveAuction(Auction auction) {
+        String sql = "INSERT INTO auctions (owner_id, products_id, startingPrice, currentPrice, status, createdAt, terminatedAt, winner_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            stmt.setInt(1, auction.getOwner().getId());
+            stmt.setInt(2, auction.getItem().getId());
+            stmt.setDouble(3, auction.getStartingPrice());
+            stmt.setDouble(4, auction.getCurrentPrice());
+            stmt.setString(5, auction.getStatus().name());
+            stmt.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
+            stmt.setNull(7, Types.TIMESTAMP);
+            stmt.setNull(8, Types.INTEGER);
+
+            int generatedId = executeInsert(stmt);
+            if (generatedId != -1) {
+                auction.setAuctionId(generatedId);
+            }
+
+            System.out.println("[System]: Auction saved to database.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void updateAuction(Auction auction) {
+        String sql = "UPDATE auctions SET currentPrice=?, status=?, terminatedAt=?, winner_id=? WHERE auction_id=?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setDouble(1, auction.getCurrentPrice());
+            stmt.setString(2, auction.getStatus().name());
+            stmt.setTimestamp(3, auction.getTerminatedAt() != null
+                    ? Timestamp.valueOf(auction.getTerminatedAt()) : null);
+            stmt.setObject(4, auction.getWinner() != null
+                    ? ((User) auction.getWinner()).getId() : null);
+            stmt.setInt(5, auction.getAuctionId());
+
+            stmt.executeUpdate();
+            System.out.println("[System]: Auction updated.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static List<Auction> getActiveAuctions() {
+        List<Auction> result = new ArrayList<>();
+        String sql = "SELECT * FROM auctions WHERE status = 'RUNNING' OR status = 'OPEN'";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                User owner = getUserById(rs.getInt("owner_id"));
+                Item item = getItemById(rs.getInt("products_id"));
+
+                if (owner instanceof Member && item != null) {
+                    Auction auction = new Auction((Member) owner, item);
+                    auction.setAuctionId(rs.getInt("auction_id"));
+                    auction.setStartingPrice(rs.getDouble("currentPrice"));
+                    result.add(auction);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 }

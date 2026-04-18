@@ -173,6 +173,10 @@ public class Auction implements Serializable {
         return owner;
     }
 
+    public LocalDateTime getTerminatedAt() {
+        return terminatedAt;
+    }
+
     public Item getItem() {
         return item;
     }

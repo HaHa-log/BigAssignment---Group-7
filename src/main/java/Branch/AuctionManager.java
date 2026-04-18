@@ -26,6 +26,8 @@ public class AuctionManager {
         session.setStartingPrice(startingPrice);
         activeSessions.add(session);
 
+        TempDatabase.saveAuction(session);
+
         System.out.println("New auction session for " + item.getName());
         session.start();
     }
@@ -34,6 +36,8 @@ public class AuctionManager {
         session.transitionTo(Auction.AuctionStatus.FINISHED);
         activeSessions.remove(session);
         completedSessions.add(session);
+
+        TempDatabase.updateAuction(session);
 
         if (session.getWinner() != null) {
             Transaction transaction = new Transaction(
@@ -49,14 +53,23 @@ public class AuctionManager {
     }
 
     public boolean cancelAuction(int auctionId) {
-        for (Auction auction: activeSessions) {
+        Auction canceledAuction = null;
+        for (Auction auction : activeSessions) {
             if (auction.getAuctionId() == auctionId) {
-                auction.transitionTo(Auction.AuctionStatus.CANCELED);
-                activeSessions.remove(auction);
-                completedSessions.add(auction);
-                System.out.println("Auction canceled!");
-                return true;
+                canceledAuction = auction;
+                break;
             }
+        }
+
+        if (canceledAuction != null) {
+            canceledAuction.transitionTo(Auction.AuctionStatus.CANCELED);
+            activeSessions.remove(canceledAuction);
+            completedSessions.add(canceledAuction);
+
+            TempDatabase.updateAuction(canceledAuction);
+
+            System.out.println("Auction canceled!");
+            return true;
         }
         System.out.println("Unable to find auction id " + auctionId);
         return false;
