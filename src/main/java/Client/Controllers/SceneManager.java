@@ -40,10 +40,18 @@ public class SceneManager {
             try {
                 contentArea.getChildren().setAll(node);
             } catch (NullPointerException e) {
-                System.out.println("Location is null!");
+                System.err.println("Location is null!");
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void switchContent(Parent node) {
+        try{
+            contentArea.getChildren().setAll(node);
+        } catch (NullPointerException e) {
+            System.err.println("Location is null!");
         }
     }
 

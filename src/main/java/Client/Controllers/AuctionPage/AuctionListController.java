@@ -1,5 +1,7 @@
 package Client.Controllers.AuctionPage;
 
+import Branch.Auction;
+import Branch.AuctionManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
@@ -7,6 +9,7 @@ import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
+import java.util.List;
 
 public class AuctionListController {
     @FXML
@@ -14,14 +17,30 @@ public class AuctionListController {
     @FXML
     private Label shortcutToAuctionList;
 
-    public void initialize() {
-        //4 cards
-        for (int i = 0; i < 4; i++) {
+    @FXML
+    private void initialize() {
+        this.populateList();
+        System.out.println("DEBUG: Manager Instance ID: " + System.identityHashCode(AuctionManager.getInstance()));
+    }
+
+    public void populateList() {
+        auctionTilePane.getChildren().clear();
+        AuctionManager manager = AuctionManager.getInstance();
+        List<Auction> auctions = manager.getActiveSessions();
+
+        if (auctions.isEmpty()) {
+            System.err.println("DEBUG: No active auctions found in AuctionManager.");
+            return;
+        }
+
+        for (Auction auction : auctions) {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/AuctionPageFXML/AuctionCard.fxml"));
                 VBox card = loader.load();
 
-                // Add the card to the TilePane
+                AuctionCardController cardController = loader.getController();
+                cardController.setAuctionData(auction);
+
                 auctionTilePane.getChildren().add(card);
             } catch (IOException e) {
                 e.printStackTrace();

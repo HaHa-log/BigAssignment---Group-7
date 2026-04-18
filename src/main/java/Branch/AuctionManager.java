@@ -61,4 +61,8 @@ public class AuctionManager {
         System.out.println("Unable to find auction id " + auctionId);
         return false;
     }
+
+    public List<Auction> getActiveSessions () {
+        return this.activeSessions;
+    }
 }

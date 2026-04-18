@@ -12,10 +12,15 @@ public class AuctionDetailController {
     private Label statusLabel;
     @FXML
     private TextField bidAmountInput;
-    private Bidder currentUser = (Bidder) SessionManager.getCurrentUser();
+    @FXML
+    private Label itemNameLabel;
+    @FXML
+    private Label startingPriceLabel;
+    @FXML
+    private Label currentPriceLabel;
 
-    //currently cannot be used
-    private Auction currentAuction;
+    private Bidder currentUser = (Bidder) SessionManager.getCurrentUser();
+    private Auction auction;
 
     @FXML
     private void checkBidValidity() {
@@ -27,7 +32,7 @@ public class AuctionDetailController {
 
         try {
             double bidAmount = Double.parseDouble(bidAmountString);
-            boolean isValid = currentAuction.placeBid(currentUser, bidAmount);
+            boolean isValid = auction.placeBid(currentUser, bidAmount);
 
             if (isValid) {
                 statusLabel.setText("Bid placed successfully!");
@@ -38,5 +43,12 @@ public class AuctionDetailController {
         } catch (NumberFormatException e) {
             statusLabel.setText("Invalid number format.");
         }
+    }
+
+    public void setAuctionData(Auction auction) {
+        this.auction = auction;
+        this.itemNameLabel.setText(auction.getItem().getName());
+        this.startingPriceLabel.setText("Starting price: $" + auction.getStartingPrice());
+        this.currentPriceLabel.setText("Current price: $" + auction.getCurrentPrice());
     }
 }

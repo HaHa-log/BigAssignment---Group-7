@@ -21,13 +21,13 @@
 
             <VBox spacing="10.0" HBox.hgrow="ALWAYS">
                <children>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Item Name">
+                  <Label fx:id="itemNameLabel" text="">
                      <font>
                         <Font name="System Bold" size="36.0" />
                      </font>
-                  </Text>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Starting Price: $0.00" />
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Current Price: $0.00" />
+                  </Label>
+                  <Label fx:id="startingPriceLabel" text="" />
+                  <Label fx:id="currentPriceLabel" text="" />
 
                   <StackPane maxWidth="1.7976931348623157E308" minHeight="50.0" style="-fx-border-color: #37427c;" VBox.vgrow="ALWAYS" />
 
@@ -37,7 +37,6 @@
                         <TextField fx:id="bidAmountInput" HBox.hgrow="ALWAYS" />
                      </children>
                   </HBox>
-                  <Button alignment="CENTER_RIGHT" mnemonicParsing="false" text="Make a bid" onAction="#checkBidValidity"/>
                   <Button fx:id="bidButton" mnemonicParsing="false" text="Make a bid" onAction="#checkBidValidity"/>
                   <Label fx:id="statusLabel" text="" wrapText="true">
                      <font>

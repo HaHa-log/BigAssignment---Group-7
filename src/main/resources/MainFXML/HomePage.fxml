@@ -15,15 +15,16 @@
                </ScrollPane>
             </children>
         </StackPane>
-          <StackPane maxHeight="500.0" maxWidth="1.7976931348623157E308" onMouseClicked="#toAuctionList" style="-fx-cursor: hand; -fx-border-color: #37427c;">
-              <children>
-                  <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent; -fx-background: transparent;" vbarPolicy="ALWAYS">
-                      <content>
-                          <fx:include source="../AuctionPageFXML/AuctionList.fxml" />
-                      </content>
-                  </ScrollPane>
-              </children>
-          </StackPane>
+        <StackPane fx:id="auctionContainer" VBox.vgrow="ALWAYS" maxHeight="500.0" maxWidth="1.7976931348623157E308" style="-fx-border-color: #37427c;">
+            <children>
+                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" minHeight="300.0" style="-fx-background-color: white;">
+                    <content>
+                        <fx:include fx:id="auctionList" source="../AuctionPageFXML/AuctionList.fxml" />
+                    </content>
+                </ScrollPane>
+                <Region onMouseClicked="#toAuctionList" style="-fx-cursor: hand;" />
+            </children>
+        </StackPane>
     </children>
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
