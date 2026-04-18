@@ -14,11 +14,19 @@ public class TempDatabase {
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 
-    //Users
+    private static int executeInsert(PreparedStatement stmt) throws SQLException {
+        stmt.executeUpdate();
+        ResultSet keys = stmt.getGeneratedKeys();
+        if (keys.next()) {
+            return keys.getInt(1);
+        }
+        return -1;
+    }
+
     public static void saveUser(User user) {
         String sql = "INSERT INTO users (email, phoneNumber, firstName, lastName, password, isAdmin, isBlocked, balance) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, user.getEmail());
             stmt.setString(2, user.getPhoneNumber());
@@ -29,7 +37,10 @@ public class TempDatabase {
             stmt.setBoolean(7, user.isBlocked());
             stmt.setDouble(8, user.getBalance());
 
-            stmt.executeUpdate();
+            int generatedId = executeInsert(stmt);
+            if (generatedId != -1) {
+                user.setId(generatedId);
+            }
 
             System.out.println("[System]: User " + user.getFirstName() + " saved to database.");
         } catch (SQLException e) {
@@ -46,7 +57,7 @@ public class TempDatabase {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return new Member(
+                Member member = new Member(
                         rs.getString("firstName"),
                         rs.getString("lastName"),
                         rs.getString("email"),
@@ -54,6 +65,8 @@ public class TempDatabase {
                         rs.getString("password"),
                         rs.getDouble("balance")
                 );
+                member.setId(rs.getInt("users_id"));
+                return member;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -128,7 +141,6 @@ public class TempDatabase {
         return null;
     }
 
-    //Items
     public static void saveItem(Item item) {
         String sql = "INSERT INTO products (name, startingPrice, description) VALUES (?, ?, ?)";
         try (Connection conn = getConnection();
@@ -138,7 +150,10 @@ public class TempDatabase {
             stmt.setDouble(2, item.getStartingPrice());
             stmt.setString(3, item.getDescription());
 
-            stmt.executeUpdate();
+            int generatedId = executeInsert(stmt);
+            if (generatedId != -1) {
+                item.setId(generatedId);
+            }
 
             System.out.println("[System]: User " + item.getName() + " saved to database.");
         } catch (SQLException e) {
@@ -147,7 +162,7 @@ public class TempDatabase {
     }
 
     public static Integer getItemId(Item item) {
-        String sql = "SELECT * FROM users WHERE name = ? and description = ?";
+        String sql = "SELECT products_id FROM products WHERE name = ? AND description = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -156,7 +171,7 @@ public class TempDatabase {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return rs.getInt("items_id");
+                return rs.getInt("products_id");
             }
         } catch (SQLException e) {
             e.printStackTrace();

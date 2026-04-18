@@ -4,7 +4,7 @@ public interface Bidder {
     double getBalance();
 
     default boolean placeBid(Auction auction, double amount) {
-        if (((User) this).isBlocked()) {
+        if (this instanceof User && ((User) this).isBlocked()) {
             System.out.println("[Error]: Your account is blocked");
             return false;
         }

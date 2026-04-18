@@ -34,7 +34,8 @@ public class Admin extends User {
         System.out.println("[Admin]: User with ID " + user.getId() + " unblocked.");
     }
 
-    public void cancelAuction(int auctionId, AuctionManager manager) {
+    public void cancelAuction(int auctionId) {
+        AuctionManager manager = AuctionManager.getInstance();
         boolean success = manager.cancelAuction(auctionId);
         if (success) {
             System.out.println("[Admin]: Auction " + auctionId + " has been cancelled.");

@@ -28,10 +28,6 @@ public class Item extends Entity {
         return description;
     }
 
-    public int getId() {
-        return TempDatabase.getItemId(this);
-    }
-
     @Override
     public String toString() {
         return "Item{" +

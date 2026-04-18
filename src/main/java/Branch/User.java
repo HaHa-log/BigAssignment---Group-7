@@ -4,7 +4,6 @@ import java.util.regex.Pattern;
 import java.time.LocalDateTime;
 
 public abstract class User extends Entity {
-    private int id;
     private String firstName;
     private String lastName;
     private String email;
@@ -39,7 +38,7 @@ public abstract class User extends Entity {
     }
 
     public void setEmail(String userEmail) {
-        if (isValidEmail(userEmail) == true) {
+        if (isValidEmail(userEmail)) {
             this.email = userEmail;
         } else {
             throw new IllegalArgumentException("[Error]: Invalid email format");
@@ -52,7 +51,7 @@ public abstract class User extends Entity {
     }
 
     public void setPhoneNumber(String contactNumber) {
-        if (isValidPhoneNumber(contactNumber) == true) {
+        if (isValidPhoneNumber(contactNumber)) {
             this.phoneNumber = contactNumber;
         } else {
             throw new IllegalArgumentException("[Error]: Invalid phone number format");
@@ -78,10 +77,6 @@ public abstract class User extends Entity {
     public void setBlocked(LocalDateTime until) {
         this.isBlocked = true;
         this.blockedUntil = until;
-    }
-
-    public int getId() {
-        return TempDatabase.getUserId(this);
     }
 
     public String getFirstName() {

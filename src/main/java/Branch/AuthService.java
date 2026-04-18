@@ -26,12 +26,6 @@ public class AuthService {
             errors.add("[Error]: Password must have at least 6 characters");
         }
 
-        boolean allEmpty = firstName.isEmpty() && lastName.isEmpty() &&
-                email.isEmpty() && phoneNumber.isEmpty() && password.isEmpty();
-        if (allEmpty) {
-            System.out.println("[Error]: Missing information");
-            return null;
-        }
         if (!errors.isEmpty()) {
             errors.forEach(System.out::println);
             return null;
@@ -51,6 +45,11 @@ public class AuthService {
 
     public static User login(String email, String password) {
         User user = TempDatabase.getUserByEmail(email);
+
+        if (user == null) {
+            System.out.println("[Failure]: No account found with this email.");
+            return null;
+        }
 
         if (user.getPassword().equals(password)) {
             SessionManager.loginCurrentUser(user);
