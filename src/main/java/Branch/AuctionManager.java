@@ -22,6 +22,13 @@ public class AuctionManager {
     }
 
     public void createAuction(Member owner, Item item, int ownerId, double startingPrice, LocalDateTime createdAt, LocalDateTime terminatedAt) {
+        if (!item.isAvailable()) {
+            System.out.println("[Error]: Item '" + item.getName() + "' is not available!");
+            return;
+        }
+
+        item.setStatus(Item.Status.IN_AUCTION);
+
         Auction session = new Auction(owner, item);
         session.setStartingPrice(startingPrice);
         activeSessions.add(session);
@@ -40,6 +47,11 @@ public class AuctionManager {
         TempDatabase.updateAuction(session);
 
         if (session.getWinner() != null) {
+            Item soldItem = session.getItem();
+            soldItem.setStatus(Item.Status.SOLD);
+
+            session.getOwner().getInventory().remove(soldItem);
+
             Transaction transaction = new Transaction(
                     session,
                     (Member) session.getWinner(),
@@ -47,6 +59,9 @@ public class AuctionManager {
                     session.getCurrentPrice()
             );
             TempDatabase.saveTransaction(transaction);
+
+        } else {
+            session.getItem().setStatus(Item.Status.AVAILABLE);
         }
 
         System.out.println("Auction closed!");
@@ -62,6 +77,8 @@ public class AuctionManager {
         }
 
         if (canceledAuction != null) {
+            canceledAuction.getItem().setStatus(Item.Status.AVAILABLE);
+
             canceledAuction.transitionTo(Auction.AuctionStatus.CANCELED);
             activeSessions.remove(canceledAuction);
             completedSessions.add(canceledAuction);

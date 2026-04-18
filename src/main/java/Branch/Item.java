@@ -5,6 +5,12 @@ package Branch;
 public class Item extends Entity {
     private double startingPrice;
     private String description;
+    public enum Status {
+        AVAILABLE,
+        IN_AUCTION,
+        SOLD
+    }
+    private Status status = Status.AVAILABLE;
 
     public Item(String name, float startingPrice, String description) {
         super(name);
@@ -20,6 +26,8 @@ public class Item extends Entity {
         this.description = narrative;
     }
 
+    public void setStatus(Status status) { this.status = status; }
+
     public double getStartingPrice() {
         return startingPrice;
     }
@@ -28,12 +36,19 @@ public class Item extends Entity {
         return description;
     }
 
+    public Status getStatus() { return status; }
+
+    public boolean isAvailable() {
+        return this.status == Status.AVAILABLE;
+    }
+
     @Override
     public String toString() {
         return "Item{" +
                 "startingPrice=" + startingPrice +
                 ", name='" + getName() + '\'' +
                 ", description='" + description + '\'' +
+                ", status=" + status +
                 '}';
     }
 }

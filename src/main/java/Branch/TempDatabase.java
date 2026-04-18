@@ -143,13 +143,13 @@ public class TempDatabase {
     }
 
     public static void saveItem(Item item) {
-        String sql = "INSERT INTO products (name, startingPrice, description) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO products (name, startingPrice, description, status) VALUES (?, ?, ?, ?)";
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, item.getName());
             stmt.setDouble(2, item.getStartingPrice());
             stmt.setString(3, item.getDescription());
+            stmt.setString(4, item.getStatus().name());
 
             int generatedId = executeInsert(stmt);
             if (generatedId != -1) {
@@ -162,13 +162,28 @@ public class TempDatabase {
         }
     }
 
+    public static void updateItemStatus(int itemId, Item.Status status) {
+        String sql = "UPDATE products SET status = ? WHERE products_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, status.name());
+            stmt.setInt(2, itemId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static Integer getItemId(Item item) {
-        String sql = "SELECT products_id FROM products WHERE name = ? AND description = ?";
+        String sql = "SELECT products_id FROM products WHERE name = ? AND description = ? AND status = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, item.getName());
             stmt.setString(2, item.getDescription());
+            stmt.setString(3, item.getStatus().name());
+
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
@@ -195,6 +210,12 @@ public class TempDatabase {
                         rs.getString("description")
                 );
                 item.setId(rs.getInt("products_id"));
+
+                String statusFromDB = rs.getString("status");
+                if (statusFromDB != null) {
+                    item.setStatus(Item.Status.valueOf(statusFromDB));
+                }
+
                 return item;
             }
         } catch (SQLException e) {

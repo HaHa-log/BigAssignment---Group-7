@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Member extends User implements Bidder, Seller, AuctionObserver {
+    private List<Item> inventory;
+
     public Member(String firstName, String lastName, String email, String phoneNumber, String password, double balance) {
         super(firstName, lastName, email, phoneNumber,password, balance);
     }
@@ -19,6 +21,14 @@ public class Member extends User implements Bidder, Seller, AuctionObserver {
                 + bidderName + " has bidded " + amount
                 + " in auction of ID " + auction.getAuctionId()
                 + " for " + auction.getItem().getName());
+    }
+
+    public void addItem(Item item) {
+        this.inventory.add(item);
+    }
+
+    public List<Item> getInventory() {
+        return inventory;
     }
 
     public List<Transaction> getMyTransactions() {
