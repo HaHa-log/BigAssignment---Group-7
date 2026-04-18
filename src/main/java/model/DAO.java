@@ -7,13 +7,13 @@ import java.util.List;
 
 public interface DAO<T> {
 
-    void save(T t) throws SQLException;
+    void save(T t);
 
-    void delete(T t) throws  SQLException;
+    void delete(T t);
 
-    T getById(int id) throws SQLException;
+    void update(T t);
 
-    int getId(T t) throws SQLException;
+    T getById(int id);
 
-    List<T> getAll() throws SQLException;
+    List<T> getAll();
 }
