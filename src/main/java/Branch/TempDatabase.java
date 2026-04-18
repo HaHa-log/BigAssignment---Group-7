@@ -179,15 +179,49 @@ public class TempDatabase {
         return null;
     }
 
-    //Hiện chưa có database cho transaction nhé
-    private static List<Transaction> transactionDatabase = new ArrayList<>();
-
+    //Cho transaction (đã có database)
     public static void saveTransaction(Transaction transaction) {
-        transactionDatabase.add(transaction);
-        System.out.println("[System]: Transaction saved.");
+        String sql = "INSERT INTO transactions (auction_id, buyer_id, seller_id, finalAmount, status, paidAt, completedAt) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            stmt.setInt(1, transaction.getAuction().getAuctionId());
+            stmt.setInt(2, transaction.getBuyer().getId());
+            stmt.setInt(3, transaction.getSeller().getId());
+            stmt.setDouble(4, transaction.getFinalAmount());
+            stmt.setString(5, transaction.getStatus().name());
+            stmt.setTimestamp(6, Timestamp.valueOf(transaction.getPaidAt()));
+            stmt.setTimestamp(7, transaction.getCompletedAt() != null
+                    ? Timestamp.valueOf(transaction.getCompletedAt()) : null);
+
+            int generatedId = executeInsert(stmt);
+            if (generatedId != -1) {
+                transaction.setTransactionId(generatedId);
+            }
+
+            System.out.println("[System]: Transaction saved.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public static List<Transaction> getAuctionTransactions() {
-        return transactionDatabase;
+        List<Transaction> result = new ArrayList<>();
+        String sql = "SELECT * FROM transactions";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                User buyer = getUserById(rs.getInt("buyer_id"));
+                User seller = getUserById(rs.getInt("seller_id"));
+
+                System.out.println("[Warning]: Auction object not restored from DB yet.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
+
 }

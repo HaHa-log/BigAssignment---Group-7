@@ -39,6 +39,14 @@ public class Transaction {
         System.out.println("[Transaction]: Payment refunded for auction of ID " + auction.getAuctionId());
     }
 
+    public void setTransactionId(int id) {
+        this.transactionId = id;
+    }
+
+    public int getTransactionId() {
+        return transactionId;
+    }
+
     public TransactionStatus getStatus() { return status; }
 
     public double getFinalAmount() { return finalAmount; }
