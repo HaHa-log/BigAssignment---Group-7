@@ -1,56 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
 
+<BorderPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.MainPage.ProfilePageController">
 
+    <top>
+        <HBox alignment="CENTER_RIGHT" spacing="20" style="-fx-padding:10; -fx-background-color:#2c3e50;">
+            <Label style="-fx-text-fill:white; -fx-font-size:18; -fx-font-weight:bold;" text="PROFILE PAGE" />
+            <Button text="Logout" />
+        </HBox>
+    </top>
 
-    <VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.AuctionPage.AuctionDetailController">
-        <children>
-            <HBox spacing="30.0" VBox.vgrow="SOMETIMES">
-                <children>
-                    <StackPane minWidth="200.0" prefWidth="350.0" style="-fx-background-color: #37427c;" HBox.hgrow="ALWAYS">
-                        <children>
-                            <ImageView fitHeight="250.0" fitWidth="350.0" pickOnBounds="true" preserveRatio="true" />
-                        </children>
-                        <padding>
-                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                        </padding>
+    <center>
+        <StackPane>
+
+            <VBox fx:id="profilePane" spacing="25" style="-fx-padding:20;">
+                <HBox alignment="CENTER_LEFT" spacing="30">
+                    <StackPane prefHeight="120" prefWidth="120" style="-fx-background-color: #bdc3c7; -fx-background-radius: 60;">
+                        <ImageView fx:id="avatar" fitHeight="120" fitWidth="120" preserveRatio="true" />
                     </StackPane>
 
-                                <VBox spacing="10.0" HBox.hgrow="ALWAYS">
-                        <children>
-                            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Item Name">
-                                <font>
-                                    <Font name="System Bold" size="36.0" />
-                                </font>
-                            </Text>
-                            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Starting Price: $0.00" />
-                            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Current Price: $0.00" />
+                    <VBox spacing="10">
 
-                                        <StackPane maxWidth="1.7976931348623157E308" minHeight="50.0" style="-fx-border-color: #37427c;" VBox.vgrow="ALWAYS" />
+                        <HBox prefHeight="4.0" prefWidth="286.0" spacing="5">
+                            <Label style="-fx-font-weight: bold; -fx-font-size: 20px;" text="Username:" />
+                            <Label fx:id="nameLabel" text="..." />
+                        </HBox>
 
-                                        <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                <children>
-                                    <Text text="Place your bid:" />
-                                    <TextField fx:id="bidAmountInput" HBox.hgrow="ALWAYS" />
-                                </children>
-                            </HBox>
-                        </children>
+                        <HBox spacing="5">
+                            <Label style="-fx-font-weight:bold;" text="Bio:" />
+                            <Label fx:id="bioLabel" text="..." />
+                        </HBox>
+
+                        <HBox spacing="5">
+                            <Label style="-fx-font-weight:bold;" text="Email:" />
+                            <Label fx:id="emailLabel" text="..." />
+                        </HBox>
+
+                        <HBox spacing="5">
+                            <Label style="-fx-font-weight:bold;" text="Role:" />
+                            <Label fx:id="roleLabel" text="..." />
+                        </HBox>
+
                     </VBox>
-                </children>
-            </HBox>
+                </HBox>
 
-                        <TextArea text="Lorem ipsum..." wrapText="true" VBox.vgrow="ALWAYS" />
-        </children>
-        <padding>
-            <Insets left="20.0" right="20.0" top="20.0" />
-        </padding>
-    </VBox>
+                <VBox spacing="10">
+                    <Button onAction="#handleSetting" text="Setting" />
+                    <Button onAction="#handlePassword" text="Change Password" />
+                    <Button onAction="#handleHistory" text="History" />
+                </VBox>
+
+            </VBox>
+
+            <VBox fx:id="historyPane" alignment="CENTER" spacing="15" visible="false">
+
+                <Label style="-fx-font-size:18; -fx-font-weight:bold;" text="Lịch sử hoạt động" />
+
+                <TableView fx:id="historyTable" prefWidth="400">
+                    <columns>
+                        <TableColumn prefWidth="400" text="History" />
+                    </columns>
+                </TableView>
+
+                <Button onAction="#handleProfile" text="← Go Back" />
+            </VBox>
+
+            <VBox fx:id="passwordPane" alignment="CENTER" spacing="10" visible="false">
+
+                <Label style="-fx-font-size:18; -fx-font-weight:bold;" text="Đổi mật khẩu" />
+
+                <PasswordField fx:id="oldPass" promptText="Mật khẩu cũ" />
+                <PasswordField fx:id="newPass" promptText="Mật khẩu mới" />
+                <PasswordField fx:id="confirmPass" promptText="Xác nhận mật khẩu" />
+
+                <Button text="Lưu" />
+                <Button onAction="#handleProfile" text="← Go Back" />
+            </VBox>
+
+            <VBox fx:id="settingPane" alignment="CENTER" spacing="10" visible="false">
+
+                <Label style="-fx-font-size:18; -fx-font-weight:bold;" text="Chỉnh sửa thông tin" />
+
+                <TextField fx:id="usernameField" promptText="Username" />
+                <TextField fx:id="emailField" promptText="Email" />
+
+                <VBox alignment="CENTER" spacing="10">
+                    <Button onAction="#handleSaveProfile" text="Lưu thay đổi" />
+                    <Button onAction="#handleProfile" text="← Go Back" />
+                </VBox>
+
+            </VBox>
+
+        </StackPane>
+    </center>
+
+</BorderPane>
+
