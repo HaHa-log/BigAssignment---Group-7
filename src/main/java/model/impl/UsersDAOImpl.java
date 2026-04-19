@@ -12,20 +12,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UsersDAOImpl implements UsersDAO {
-    private Connection conn;
 
-    public UsersDAOImpl(Connection conn) {
-        this.conn = conn;
-    }
+    protected UsersDAOImpl() {};
 
     @Override
     public void save(User user) {
-        PreparedStatement st = null;
-        try {
-            st = conn.prepareStatement("INSERT INTO users "
-                            + "(email, phoneNumber, firstName, lastName, password, isAdmin, isBlocked, balance) "
-                            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                            + Statement.RETURN_GENERATED_KEYS);
+        String sql = "INSERT INTO users "
+                + "(email, phoneNumber, firstName, lastName, password, isAdmin, isBlocked, balance) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try(Connection conn = DB.getConnection();
+            PreparedStatement st = conn.prepareStatement(sql + Statement.RETURN_GENERATED_KEYS)) {
 
             st.setString(1, user.getEmail());
             st.setString(2, user.getPhoneNumber());
@@ -51,16 +47,14 @@ public class UsersDAOImpl implements UsersDAO {
             System.out.println("[System]: User " + user.getFirstName() + " saved to database.");
         } catch(SQLException ex){
             throw new DbException(ex.getMessage());
-        } finally{
-            DB.closeStatement(st);
         }
     }
 
     @Override
     public void delete(User user) {
-        PreparedStatement st = null;
-        try{
-            st = conn.prepareStatement("DELETE FROM users WHERE user_id = ?");
+        String sql = "DELETE FROM users WHERE user_id = ?";
+        try(Connection conn = DB.getConnection();
+            PreparedStatement st = conn.prepareStatement(sql)) {
 
             st.setInt(1, user.getId());
             int rows = st.executeUpdate();
@@ -70,17 +64,15 @@ public class UsersDAOImpl implements UsersDAO {
             }
         } catch(SQLException ex){
             throw new DbException(ex.getMessage());
-        } finally{
-            DB.closeStatement(st);
         }
     }
 
     public void update(User user) {
-        PreparedStatement st = null;
-        try{
-            st = conn.prepareStatement("UPDATE users "
-                            +"SET email = ?, phoneNumber = ?, firstName = ?, lastName = ?, password = ?, isAdmin = ?, isBlocked = ?, balance = ? "
-                            + " WHERE users_id = ? ");
+        String sql = "UPDATE users "
+                +"SET email = ?, phoneNumber = ?, firstName = ?, lastName = ?, password = ?, isAdmin = ?, isBlocked = ?, balance = ? "
+                + " WHERE users_id = ? ";
+        try(Connection conn = DB.getConnection();
+            PreparedStatement st = conn.prepareStatement(sql)) {
 
             st.setString(1, user.getEmail());
             st.setString(2, user.getPhoneNumber());
@@ -97,19 +89,16 @@ public class UsersDAOImpl implements UsersDAO {
             System.out.println("[System]: Successful update.");
         } catch(SQLException ex){
             throw new DbException(ex.getMessage());
-        } finally{
-            DB.closeStatement(st);
         }
     }
 
     @Override
     public User getById(int id) {
-        PreparedStatement st = null;
+        String sql = "SELECT * From users WHERE users_id = ?";
         ResultSet rs = null;
 
-        try{
-            st = conn.prepareStatement("SELECT * From users"
-                            + "WHERE users_id = ?");
+        try(Connection conn = DB.getConnection();
+            PreparedStatement st = conn.prepareStatement(sql)) {
 
             st.setInt(1, id);
             rs = st.executeQuery();
@@ -121,19 +110,17 @@ public class UsersDAOImpl implements UsersDAO {
         } catch (SQLException e){
             throw new DbException(e.getMessage());
         } finally{
-            DB.closeStatement(st);
             DB.closeResultSet(rs);
         }
     }
 
     @Override
     public User getByEmail(String email) {
-        PreparedStatement st = null;
+        String sql = "SELECT * From users WHERE email = ?";
         ResultSet rs = null;
 
-        try{
-            st = conn.prepareStatement("SELECT * From users"
-                    + "WHERE email = ?");
+        try(Connection conn = DB.getConnection();
+            PreparedStatement st = conn.prepareStatement(sql)) {
 
             st.setString(1, email);
             rs = st.executeQuery();
@@ -145,19 +132,17 @@ public class UsersDAOImpl implements UsersDAO {
         } catch (SQLException e){
             throw new DbException(e.getMessage());
         } finally{
-            DB.closeStatement(st);
             DB.closeResultSet(rs);
         }
     }
 
     @Override
     public List<User> getAll() {
-        PreparedStatement st = null;
+        String sql = "SELECT * FROM users";
         ResultSet rs = null;
 
-        try {
-            st = conn.prepareStatement(
-                    "SELECT * FROM users");
+        try(Connection conn = DB.getConnection();
+            PreparedStatement st = conn.prepareStatement(sql)) {
 
             rs = st.executeQuery();
             List<User> list = new ArrayList<>();
@@ -173,19 +158,17 @@ public class UsersDAOImpl implements UsersDAO {
         } catch (SQLException e) {
             throw new DbException(e.getMessage());
         } finally {
-            DB.closeStatement(st);
             DB.closeResultSet(rs);
         }
     }
 
     @Override
     public List<Member> getAllMember() {
-        PreparedStatement st = null;
+        String sql = "SELECT * FROM users";
         ResultSet rs = null;
 
-        try {
-            st = conn.prepareStatement(
-                    "SELECT * FROM users");
+        try(Connection conn = DB.getConnection();
+            PreparedStatement st = conn.prepareStatement(sql)) {
 
             rs = st.executeQuery();
             List<Member> list = new ArrayList<>();
@@ -199,18 +182,16 @@ public class UsersDAOImpl implements UsersDAO {
         } catch (SQLException e) {
             throw new DbException(e.getMessage());
         } finally {
-            DB.closeStatement(st);
             DB.closeResultSet(rs);
         }
     }
 
     public List<Admin> getAllAdmin() {
-        PreparedStatement st = null;
+        String sql = "SELECT * FROM users";
         ResultSet rs = null;
 
-        try {
-            st = conn.prepareStatement(
-                    "SELECT * FROM users");
+        try(Connection conn = DB.getConnection();
+            PreparedStatement st = conn.prepareStatement(sql)) {
 
             rs = st.executeQuery();
             List<Admin> list = new ArrayList<>();
@@ -224,7 +205,6 @@ public class UsersDAOImpl implements UsersDAO {
         } catch (SQLException e) {
             throw new DbException(e.getMessage());
         } finally {
-            DB.closeStatement(st);
             DB.closeResultSet(rs);
         }
     }

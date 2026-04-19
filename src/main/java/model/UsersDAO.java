@@ -4,7 +4,6 @@ import Branch.Admin;
 import Branch.Member;
 import Branch.User;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public interface UsersDAO extends DAO<User> {
