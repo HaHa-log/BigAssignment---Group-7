@@ -1,7 +1,8 @@
 package Client.Controllers.MainPage;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import Branch.SessionManager;
+import Client.Controllers.LoginPage.DemoPageController;
+import Client.Controllers.SceneManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -42,6 +43,11 @@ public class ProfilePageController {
         settingPane.setVisible(false);
     }
 
+    @FXML
+    private void logout() {
+        SessionManager.logoutCurrentUser();
+        SceneManager.switchScene("/LoginFXML/DemoPage.fxml");
+    }
     @FXML
     public void handleProfile() {
         hideAll();

@@ -6,13 +6,14 @@
 
 <VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.MainPage.HomePageController">
     <children>
-        <StackPane maxHeight="300.0" maxWidth="1.7976931348623157E308" onMouseClicked="#toProfilePage" style="-fx-cursor: hand; -fx-border-color: #37427c;">
+        <StackPane fx:id="profileContainer" maxHeight="300.0" maxWidth="1.7976931348623157E308" style="-fx-cursor: hand; -fx-border-color: #37427c;">
             <children>
                 <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent; -fx-background: transparent;" vbarPolicy="ALWAYS">
                     <content>
                         <fx:include source="../MainFXML/ProfilePage.fxml" />
                     </content>
                </ScrollPane>
+                <Region onMouseClicked="#toProfilePage" style="-fx-cursor: hand;" />
             </children>
         </StackPane>
         <StackPane fx:id="auctionContainer" VBox.vgrow="ALWAYS" maxHeight="500.0" maxWidth="1.7976931348623157E308" style="-fx-border-color: #37427c;">
