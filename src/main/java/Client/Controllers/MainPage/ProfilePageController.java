@@ -1,6 +1,7 @@
 package Client.Controllers.MainPage;
 
 import Branch.SessionManager;
+import Branch.User;
 import Client.Controllers.LoginPage.DemoPageController;
 import Client.Controllers.SceneManager;
 import javafx.fxml.FXML;
@@ -27,7 +28,6 @@ public class ProfilePageController {
     @FXML private TableView<String> historyTable;
 
     // SETTING
-    @FXML private TextField usernameField;
     @FXML private TextField emailField;
 
     // PASSWORD
@@ -43,11 +43,13 @@ public class ProfilePageController {
         settingPane.setVisible(false);
     }
 
+    //Added by BHL
     @FXML
     private void logout() {
         SessionManager.logoutCurrentUser();
         SceneManager.switchScene("/LoginFXML/DemoPage.fxml");
     }
+
     @FXML
     public void handleProfile() {
         hideAll();
@@ -71,7 +73,6 @@ public class ProfilePageController {
         hideAll();
         settingPane.setVisible(true);
 
-        usernameField.setText(nameLabel.getText());
         emailField.setText(emailLabel.getText());
     }
 
@@ -84,6 +85,17 @@ public class ProfilePageController {
 
     //  LOAD USER
     private void loadUserData() {
+        User user = SessionManager.getCurrentUser();
+
+        nameLabel.setText(user.getFirstName() + " " + user.getLastName());
+        emailLabel.setText(user.getEmail());
+        bioLabel.setText("Not yet set");
+        if (user.isAdmin()) {
+            roleLabel.setText("Admin");
+        }
+        else {
+            roleLabel.setText("Member");
+        }
     }
 
     // LOAD HISTORY
@@ -92,7 +104,9 @@ public class ProfilePageController {
 
     @FXML
     private void handleSaveProfile() {
-        nameLabel.setText(usernameField.getText());
+        String newEmail = emailField.getText();
+
+        SessionManager.getCurrentUser().setEmail(newEmail);
         emailLabel.setText(emailField.getText());
 
         handleProfile();

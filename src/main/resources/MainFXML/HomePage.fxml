@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.MainPage.HomePageController">
+<VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.MainPage.HomePageController">
     <children>
-        <StackPane fx:id="profileContainer" maxHeight="300.0" maxWidth="1.7976931348623157E308" style="-fx-cursor: hand; -fx-border-color: #37427c;">
+      <HBox>
+         <children>
+            <Label fx:id="welcomeLabel" text="WELCOME, ">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
+        <StackPane fx:id="auctionContainer" maxHeight="500.0" maxWidth="1.7976931348623157E308" onMouseClicked="#toAuctionList" style="-fx-border-color: #37427c;-fx-cursor: hand;" VBox.vgrow="ALWAYS">
             <children>
-                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent; -fx-background: transparent;" vbarPolicy="ALWAYS">
-                    <content>
-                        <fx:include source="../MainFXML/ProfilePage.fxml" />
-                    </content>
-               </ScrollPane>
-                <Region onMouseClicked="#toProfilePage" style="-fx-cursor: hand;" />
-            </children>
-        </StackPane>
-        <StackPane fx:id="auctionContainer" VBox.vgrow="ALWAYS" maxHeight="500.0" maxWidth="1.7976931348623157E308" style="-fx-border-color: #37427c;">
-            <children>
-                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" minHeight="300.0" style="-fx-background-color: white;">
+                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" minHeight="300.0" onMouseClicked="#toAuctionList" style="-fx-background-color: white;-fx-cursor: hand;" vbarPolicy="AS_NEEDED">
                     <content>
                         <fx:include fx:id="auctionList" source="../AuctionPageFXML/AuctionList.fxml" />
                     </content>
                 </ScrollPane>
-                <Region onMouseClicked="#toAuctionList" style="-fx-cursor: hand;" />
             </children>
         </StackPane>
     </children>

@@ -1,28 +1,23 @@
 package Client.Controllers.MainPage;
 
+import Branch.SessionManager;
 import Client.Controllers.AuctionPage.AuctionListController;
 import Client.Controllers.SceneManager;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 
 
 public class HomePageController{
     @FXML
     private AuctionListController auctionListController;
+    @FXML
+    private Label welcomeLabel;
 
     @FXML
-    public void initialize() {
-        if (auctionListController != null) {
-            System.out.println("HomePage: Refreshing mini auction view...");
-            auctionListController.populateList();
-        } else {
-            System.err.println("HomePage: auctionListController injection failed!");
-        }
+    private void initialize() {
+        String userName =SessionManager.getCurrentUser().getName();
+        welcomeLabel.setText("Welcome, " + userName);
     }
-    @FXML
-    private void toProfilePage() {
-        SceneManager.switchContent("/MainFXML/ProfilePage.fxml");
-    }
-
     @FXML
     private void toAuctionList() {
         SceneManager.switchContent("/AuctionPageFXML/AuctionList.fxml");

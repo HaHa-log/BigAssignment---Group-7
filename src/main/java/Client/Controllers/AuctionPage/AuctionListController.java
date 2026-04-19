@@ -20,7 +20,6 @@ public class AuctionListController {
     @FXML
     private void initialize() {
         this.populateList();
-        System.out.println("DEBUG: Manager Instance ID: " + System.identityHashCode(AuctionManager.getInstance()));
     }
 
     public void populateList() {
