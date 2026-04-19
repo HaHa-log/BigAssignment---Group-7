@@ -95,56 +95,52 @@ public class UsersDAOImpl implements UsersDAO {
     @Override
     public User getById(int id) {
         String sql = "SELECT * From users WHERE users_id = ?";
-        ResultSet rs = null;
 
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
 
             st.setInt(1, id);
-            rs = st.executeQuery();
+            ResultSet rs = st.executeQuery();
             if (rs.next()){
                 Member member = instantiateMember(rs);
                 return member;
             }
+            DB.closeResultSet(rs);
             return null;
         } catch (SQLException e){
             throw new DbException(e.getMessage());
-        } finally{
-            DB.closeResultSet(rs);
         }
     }
 
     @Override
     public User getByEmail(String email) {
         String sql = "SELECT * From users WHERE email = ?";
-        ResultSet rs = null;
 
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
 
             st.setString(1, email);
-            rs = st.executeQuery();
+            ResultSet rs = st.executeQuery();
             if (rs.next()){
                 Member member = instantiateMember(rs);
                 return member;
             }
+
+            DB.closeResultSet(rs);
             return null;
         } catch (SQLException e){
             throw new DbException(e.getMessage());
-        } finally{
-            DB.closeResultSet(rs);
         }
     }
 
     @Override
     public List<User> getAll() {
         String sql = "SELECT * FROM users";
-        ResultSet rs = null;
 
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
 
-            rs = st.executeQuery();
+            ResultSet rs = st.executeQuery();
             List<User> list = new ArrayList<>();
 
             while (rs.next()) {
@@ -154,23 +150,22 @@ public class UsersDAOImpl implements UsersDAO {
                     list.add(instantiateAdmin(rs));
                 }
             }
+
+            DB.closeResultSet(rs);
             return list;
         } catch (SQLException e) {
             throw new DbException(e.getMessage());
-        } finally {
-            DB.closeResultSet(rs);
         }
     }
 
     @Override
     public List<Member> getAllMember() {
         String sql = "SELECT * FROM users";
-        ResultSet rs = null;
 
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
 
-            rs = st.executeQuery();
+            ResultSet rs = st.executeQuery();
             List<Member> list = new ArrayList<>();
 
             while (rs.next()) {
@@ -178,22 +173,21 @@ public class UsersDAOImpl implements UsersDAO {
                     list.add(instantiateMember(rs));
                 }
             }
+
+            DB.closeResultSet(rs);
             return list;
         } catch (SQLException e) {
             throw new DbException(e.getMessage());
-        } finally {
-            DB.closeResultSet(rs);
         }
     }
 
     public List<Admin> getAllAdmin() {
         String sql = "SELECT * FROM users";
-        ResultSet rs = null;
 
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
 
-            rs = st.executeQuery();
+            ResultSet rs = st.executeQuery();
             List<Admin> list = new ArrayList<>();
 
             while (rs.next()) {
@@ -201,11 +195,11 @@ public class UsersDAOImpl implements UsersDAO {
                     list.add(instantiateAdmin(rs));
                 }
             }
+
+            DB.closeResultSet(rs);
             return list;
         } catch (SQLException e) {
             throw new DbException(e.getMessage());
-        } finally {
-            DB.closeResultSet(rs);
         }
     }
 
