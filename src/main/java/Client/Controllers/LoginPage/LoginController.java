@@ -1,12 +1,16 @@
 package Client.Controllers.LoginPage;
 
 import static Branch.AuthService.*;
+import static javafx.scene.paint.Color.RED;
+
 import Branch.User;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
+import java.awt.*;
 import java.io.IOException;
 
 public class LoginController {
@@ -14,6 +18,8 @@ public class LoginController {
     private TextField emailField;
     @FXML
     private PasswordField passwordField;
+    @FXML
+    private Label messageLabel;
     private DemoPageController mainController;
 
     public void setMainController(DemoPageController mainController) {
@@ -30,12 +36,19 @@ public class LoginController {
         String emailInput = emailField.getText();
         String passwordInput = passwordField.getText();
 
-        User loginResult = login(emailInput, passwordInput);
-        if (loginResult != null) {
-            mainController.onSuccessfulLogin();
+        if (passwordInput.isEmpty() || emailInput.isEmpty()) {
+            messageLabel.setTextFill(RED);
+            messageLabel.setText("PLease enter your passwword and email!");
         }
         else {
-            System.out.println("Login failed!");
+            User loginResult = login(emailInput, passwordInput);
+            if (loginResult != null) {
+                mainController.onSuccessfulLogin();
+            }
+            else {
+                messageLabel.setTextFill(RED);
+                messageLabel.setText("Incorrect password/email!");
+            }
         }
     }
 }

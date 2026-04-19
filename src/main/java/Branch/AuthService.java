@@ -54,7 +54,7 @@ public class AuthService {
         if (user.getPassword().equals(password)) {
             SessionManager.loginCurrentUser(user);
             return user;
-                //return "[System]: Login successful. Welcome back, " + user.getFirstName();
+            //return "[System]: Login successful. Welcome back, " + user.getFirstName();
         }
 
 

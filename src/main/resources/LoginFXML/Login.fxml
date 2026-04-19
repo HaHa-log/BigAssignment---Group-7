@@ -17,7 +17,8 @@
     <TextField fx:id="emailField" promptText="Email" />
     <PasswordField fx:id="passwordField" promptText="Password" />
 
-    <Button onAction="#handleLogin" text="Login" /> <Label fx:id="messageLabel" textFill="red" />
+    <Button onAction="#handleLogin" text="Login" />
+    <Label fx:id="messageLabel"/>
    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Do not have an account?" />
    <Text accessibleRole="BUTTON" fill="#26306e" onMouseClicked="#goToRegister" strokeType="OUTSIDE" strokeWidth="0.0" text="Click to register" />
 </VBox>

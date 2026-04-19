@@ -93,7 +93,13 @@ public class Auction implements Serializable {
                 return false;
             }
 
-            if (bidder.equals(owner)) {
+            // If ID is an int
+            if (((User)bidder).getId() == owner.getId()) {
+                System.out.println("Auction owner cannot place bid");
+                return false;
+            }
+
+            if (((User)bidder).getId()==(owner.getId())) {
                 System.out.println("Auction owner cannot place bid");
                 return false;
             }
