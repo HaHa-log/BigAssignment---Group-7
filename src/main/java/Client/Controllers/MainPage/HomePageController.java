@@ -20,7 +20,7 @@ public class HomePageController{
     }
     @FXML
     private void toProfilePage() {
-        SceneManager.switchContent("/MainPageFXML/HomePage.fxml");
+        SceneManager.switchContent("/MainFXML/ProfilePage.fxml");
     }
 
     @FXML

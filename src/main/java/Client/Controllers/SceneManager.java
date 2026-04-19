@@ -59,6 +59,13 @@ public class SceneManager {
         try {
             Parent root = FXMLLoader.load(SceneManager.class.getResource(fxmlPath));
             stage.setScene(new Scene(root));
+            if (fxmlPath.contains("DemoPage")) {
+                stage.setFullScreen(false);
+                stage.setWidth(600);
+                stage.setHeight(400);
+            } else {
+                stage.setMaximized(true);
+            }
             stage.show();
         } catch (IOException e) {
             System.err.println("Failed to load Scene: " + fxmlPath);
