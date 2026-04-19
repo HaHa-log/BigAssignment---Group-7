@@ -7,10 +7,8 @@ import java.util.Properties;
 
 public class DB {
 
-    private static Connection conn = null;
-
     public static Connection getConnection() {
-        if (conn == null) {
+        Connection conn = null;
             try {
                 Properties props = loadProperties();
                 String url = props.getProperty("dburl");
@@ -18,18 +16,7 @@ public class DB {
             } catch (SQLException e) {
                 throw new DbException(e.getMessage());
             }
-        }
         return conn;
-    }
-
-    public static void closeConnection() {
-        if (conn != null) {
-            try {
-                conn.close();
-            } catch (SQLException e) {
-                throw new DbException(e.getMessage());
-            }
-        }
     }
 
     private static Properties loadProperties() {

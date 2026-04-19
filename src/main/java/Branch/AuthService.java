@@ -1,5 +1,8 @@
 package Branch;
 
+import model.impl.DaoFactory;
+import model.impl.UsersDAOImpl;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +10,7 @@ public class AuthService {
     public static Member registerNewUser(String firstName, String lastName, String email, String phoneNumber, String password) {
         List<String> errors = new ArrayList<>();
 
+        UsersDAOImpl userdb = DaoFactory.createUsersDAO();
         //Testing: Ban đầu chỉ in lỗi tuần tự chứ không in ra hết lỗi -> đã sửa bên dưới
 
         if (firstName.isEmpty() || lastName.isEmpty()) {
@@ -16,7 +20,7 @@ public class AuthService {
             errors.add("[Error]: Email is required");
         } else if (!User.isValidEmail(email)) {
             errors.add("[Error]: Invalid email format");
-        } else if (TempDatabase.getUserByEmail(email) != null) {
+        } else if (userdb.getByEmail(email) != null) {
             errors.add("[Error]: An account with this email already exists");
         }
         if (!User.isValidPhoneNumber(phoneNumber)) {
@@ -34,7 +38,7 @@ public class AuthService {
         try {
             double balance = 0.0;
             Member member = new Member(firstName, lastName, email, phoneNumber, password, balance);
-            TempDatabase.saveUser(member);
+            userdb.save(member);
             //return "[System]: You've created a new account!";
             return member;
         } catch (IllegalArgumentException e) {
@@ -44,7 +48,8 @@ public class AuthService {
     }
 
     public static User login(String email, String password) {
-        User user = TempDatabase.getUserByEmail(email);
+        UsersDAOImpl userdb = DaoFactory.createUsersDAO();
+        User user = userdb.getByEmail(email);
 
         if (user == null) {
             System.out.println("[Failure]: No account found with this email.");
