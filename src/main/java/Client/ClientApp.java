@@ -15,7 +15,7 @@ public class ClientApp extends Application {
         //run the 1st line or register any user with the email "admin@gmail.com" if there is no admin@gmail.com on ur device
         //Member ownerTest = AuthService.registerNewUser("admin", "123", "admin@gmail.com", "0988172919", "000000");
         //run the 2nd line if there is already admin@gmail.com on ur device
-        Member ownerTest = (Member) TempDatabase.getUserByEmail("mA@gmail.com");
+        Member ownerTest = (Member) TempDatabase.getUserByEmail("admin@gmail.com");
         AuctionManager.getInstance().createAuction(ownerTest, testItem, ownerTest.getId(), 30.0, LocalDateTime.now(), null);
         SceneManager.setStage(stage);
         SceneManager.switchScene("/LoginFXML/DemoPage.fxml");
