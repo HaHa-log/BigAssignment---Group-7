@@ -15,6 +15,7 @@ public class Auction implements Serializable {
     public enum AuctionStatus {
         OPEN, RUNNING, FINISHED, PAID, CANCELED
     }
+    private double startingPrice;
     private double currentPrice;
     private Bidder winner;
     private final transient ReentrantLock lock = new ReentrantLock(); //Để xử lý concurrency
@@ -27,6 +28,8 @@ public class Auction implements Serializable {
         this.owner = owner;
         this.item = item;
         this.winner = null;
+        this.startingPrice = item.getStartingPrice();
+        this.currentPrice = startingPrice;
     }
 
     public String start() {
@@ -128,6 +131,7 @@ public class Auction implements Serializable {
         lock.lock();
         try {
             if (status == AuctionStatus.OPEN) {
+                this.startingPrice = startingPrice;
                 this.currentPrice = startingPrice;
             } else {
                 System.out.println("[System]: Cannot change startingPrice when the auction is already started");
@@ -172,7 +176,7 @@ public class Auction implements Serializable {
     }
 
     public double getStartingPrice() {
-        return currentPrice;
+        return startingPrice;
     }
 
     public Member getOwner() {

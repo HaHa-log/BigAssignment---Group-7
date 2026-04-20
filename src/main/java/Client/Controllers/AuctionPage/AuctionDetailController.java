@@ -7,6 +7,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
+import static javafx.scene.paint.Color.*;
+
 public class AuctionDetailController {
     @FXML
     private Label statusLabel;
@@ -33,8 +35,10 @@ public class AuctionDetailController {
         try {
             double bidAmount = Double.parseDouble(bidAmountString);
             boolean isValid = auction.placeBid(currentUser, bidAmount);
+            statusLabel.setTextFill(RED);
 
             if (isValid) {
+                statusLabel.setTextFill(BLUE);
                 statusLabel.setText("Bid placed successfully!");
                 bidAmountInput.clear();
             } else {
