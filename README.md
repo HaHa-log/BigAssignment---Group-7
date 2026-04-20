@@ -5,10 +5,10 @@
 - **Môn học:** Lập trình nâng cao 
 - **Mô tả ngắn:** Một ứng dụng Client-Server cho phép người dùng đăng ký vai trò Bidder, Seller hoặc Admin để thực hiện các phiên đấu giá thời gian thực.
 - **Thành viên nhóm (Team Members):**
-  - Vương Thúy Hằng (25020144)
-  - Bùi Hà Linh (25020233)
-  - Hoàng Ánh Ngọc (25020294)
-  - Trần Thị Mai Uyên (25020424)
+  - Vương Thúy Hằng (25020144) - Backend
+  - Bùi Hà Linh (25020233) - Frontend
+  - Hoàng Ánh Ngọc (25020294) - Backend
+  - Trần Thị Mai Uyên (25020424) - Frontend
 - **Phân công nhiệm vụ cụ thể:** 
 
 ### 2. Cấu trúc thư mục (Project Structure)
