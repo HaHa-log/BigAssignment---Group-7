@@ -21,7 +21,7 @@ public class UsersDAOImpl implements UsersDAO {
                 + "(email, phoneNumber, firstName, lastName, password, isAdmin, isBlocked, balance) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try(Connection conn = DB.getConnection();
-            PreparedStatement st = conn.prepareStatement(sql + Statement.RETURN_GENERATED_KEYS)) {
+            PreparedStatement st = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             st.setString(1, user.getEmail());
             st.setString(2, user.getPhoneNumber());
