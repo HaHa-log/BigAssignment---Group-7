@@ -45,3 +45,4 @@
 
 
 ### 6. Minh chứng tiến độ
+<img width="3619" height="1910" alt="Diagram_src_BTL_Gr7" src="https://github.com/user-attachments/assets/8ec92873-69a9-48c3-a3bc-3f9fed16cbfc" />
