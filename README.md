@@ -11,10 +11,8 @@
   - Trần Thị Mai Uyên (25020424)
 - **Phân công nhiệm vụ cụ thể:** 
 
----
-
 ### 2. Cấu trúc thư mục (Project Structure)
-**
+<img width="932" height="702" alt="Demo_cau_truc_thu_muc_BG_gr7" src="https://github.com/user-attachments/assets/54de963d-9d5a-4690-ad67-cf00d3868af9" />
 
 ---
 
