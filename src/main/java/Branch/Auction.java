@@ -16,7 +16,7 @@ public class Auction implements Serializable {
         OPEN, RUNNING, FINISHED, PAID, CANCELED
     }
     private double startingPrice;
-    private double currentPrice;
+    private volatile double currentPrice;
     private Bidder winner;
     private final transient ReentrantLock lock = new ReentrantLock(); //Để xử lý concurrency
     //Thêm transient vì ReentrantLock không thể serialize trực tiếp
@@ -88,7 +88,7 @@ public class Auction implements Serializable {
         System.out.println("[Announcement]: " + name + " has the highest bid of " + bidderAmount);
     }
 
-    public boolean placeBid(Bidder bidder, double bidAmount) {
+    public synchronized boolean placeBid(Bidder bidder, double bidAmount) {
         lock.lock();
         try {
             if (status != AuctionStatus.RUNNING) {
@@ -96,8 +96,7 @@ public class Auction implements Serializable {
                 return false;
             }
 
-            // If ID is an int
-            if (((User)bidder).getId() == owner.getId()) {
+            if (owner.isEqual((User) bidder)) {
                 System.out.println("Auction owner cannot place bid");
                 return false;
             }

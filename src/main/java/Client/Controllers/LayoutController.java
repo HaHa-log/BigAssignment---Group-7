@@ -22,4 +22,13 @@ public class LayoutController {
     public void redirectToHomePage() {
         SceneManager.switchContent("/MainFXML/HomePage.fxml");
     }
+
+    @FXML
+    public void refreshPage() {
+        String currentPath = SceneManager.getCurrentContent();
+
+        if (currentPath != null) {
+            SceneManager.switchContent(currentPath);
+        }
+    }
 }

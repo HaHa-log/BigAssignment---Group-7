@@ -115,4 +115,12 @@ public abstract class User extends Entity {
         this.isBlocked = false;
         this.blockedUntil = null;
     }
+
+    public boolean isEqual(User this, User other) {
+        boolean result = false;
+        if (this.getId() == other.getId()) {
+            result = true;
+        }
+        return result;
+    }
 }

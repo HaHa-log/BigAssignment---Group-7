@@ -22,6 +22,7 @@ public class AuctionCardController {
     @FXML
     private void toAuctionDetail() {
         try {
+            String fxmlPath = "/AuctionPageFXML/AuctionDetail.fxml";
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/AuctionPageFXML/AuctionDetail.fxml"));
             Parent detailRoot = loader.load();
 

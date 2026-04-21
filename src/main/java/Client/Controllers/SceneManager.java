@@ -12,6 +12,8 @@ public class SceneManager {
     private static Stage stage;
     private static StackPane contentArea;
 
+    private static String currentContentPath;
+
     public static void setStage(Stage stage) {
         SceneManager.stage = stage;
     }
@@ -37,6 +39,7 @@ public class SceneManager {
     public static void switchContent(String fxmlPath) {
         try {
             Parent node = FXMLLoader.load(SceneManager.class.getResource(fxmlPath));
+            currentContentPath = fxmlPath;
             try {
                 contentArea.getChildren().setAll(node);
             } catch (NullPointerException e) {
@@ -63,14 +66,19 @@ public class SceneManager {
                 stage.setFullScreen(false);
                 stage.setHeight(600);
                 stage.setWidth(800);
-                stage.setResizable(false);
+                stage.setResizable(true);
             } else {
                 stage.setMaximized(true);
+                stage.setResizable(true);
             }
             stage.show();
         } catch (IOException e) {
             System.err.println("Failed to load Scene: " + fxmlPath);
             e.printStackTrace();
         }
+    }
+
+    public static String getCurrentContent() {
+        return currentContentPath;
     }
 }
