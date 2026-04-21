@@ -24,6 +24,11 @@ public class LayoutController {
     }
 
     @FXML
+    public void toAuctionCreate() {
+        SceneManager.switchContent("/AuctionPageFXML/AuctionCreate.fxml");
+    }
+
+    @FXML
     public void refreshPage() {
         String currentPath = SceneManager.getCurrentContent();
 

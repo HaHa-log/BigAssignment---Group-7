@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Rectangle?>
 
-<BorderPane style="-fx-background-color: #37427c;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.LayoutController">
+<BorderPane style="-fx-background-color: #37427c;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.LayoutController">
     <top>
-        <HBox alignment="CENTER_RIGHT" prefHeight="60.0" style="-fx-background-color: #37427c;" BorderPane.alignment="CENTER">
+        <HBox alignment="CENTER_RIGHT" prefHeight="60.0" spacing="20" style="-fx-background-color: #37427c;" BorderPane.alignment="CENTER">
             <children>
                 <Rectangle fx:id="homePageShortcut" accessibleRole="BUTTON" arcHeight="5.0" arcWidth="5.0" fill="#eaf9ff" height="40.0" onMouseClicked="#redirectToHomePage" stroke="BLACK" strokeType="INSIDE" width="40.0" />
                 <Region HBox.hgrow="ALWAYS" />
@@ -29,4 +34,7 @@
     </center>
     <left><Region prefWidth="30.0" BorderPane.alignment="CENTER" /></left>
     <right><Region prefWidth="30.0" BorderPane.alignment="CENTER" /></right>
+   <bottom>
+      <Label accessibleRole="BUTTON" onMouseClicked="#toAuctionCreate" text="Want to create your own Auction? Click here!" textAlignment="RIGHT" textFill="WHITE" BorderPane.alignment="CENTER" />
+   </bottom>
 </BorderPane>
