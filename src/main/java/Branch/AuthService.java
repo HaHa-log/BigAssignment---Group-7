@@ -1,5 +1,6 @@
 package Branch;
 
+import model.UsersDAO;
 import model.impl.DaoFactory;
 import model.impl.UsersDAOImpl;
 
@@ -10,7 +11,7 @@ public class AuthService {
     public static Member registerNewUser(String firstName, String lastName, String email, String phoneNumber, String password) {
         List<String> errors = new ArrayList<>();
 
-        UsersDAOImpl userdb = DaoFactory.createUsersDAO();
+        UsersDAO userdb = DaoFactory.createUsersDAO();
         //Testing: Ban đầu chỉ in lỗi tuần tự chứ không in ra hết lỗi -> đã sửa bên dưới
 
         if (firstName.isEmpty() || lastName.isEmpty()) {
@@ -48,7 +49,7 @@ public class AuthService {
     }
 
     public static User login(String email, String password) {
-        UsersDAOImpl userdb = DaoFactory.createUsersDAO();
+        UsersDAO userdb = DaoFactory.createUsersDAO();
         User user = userdb.getByEmail(email);
 
         if (user == null) {
