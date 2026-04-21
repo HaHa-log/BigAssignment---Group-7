@@ -3,7 +3,7 @@ package model.impl;
 import model.UsersDAO;
 
 public class DaoFactory {
-    public static UsersDAOImpl createUsersDAO(){
+    public static UsersDAO createUsersDAO(){
         return new UsersDAOImpl();
     }
 }
