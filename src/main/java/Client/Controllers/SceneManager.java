@@ -1,5 +1,11 @@
 package Client.Controllers;
 
+//preferences API
+import java.util.prefs.Preferences;
+
+import Branch.SessionManager;
+import Branch.TempDatabase;
+import Branch.User;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,6 +19,9 @@ public class SceneManager {
     private static StackPane contentArea;
 
     private static String currentContentPath;
+
+    private static Preferences prefs = Preferences.userNodeForPackage(SceneManager.class);
+    private static final String REMEMBER_KEY = "rememberUser";
 
     public static void setStage(Stage stage) {
         SceneManager.stage = stage;
@@ -75,6 +84,29 @@ public class SceneManager {
         } catch (IOException e) {
             System.err.println("Failed to load Scene: " + fxmlPath);
             e.printStackTrace();
+        }
+    }
+
+    public static void setRememberUser(boolean value) {
+        prefs.putBoolean(REMEMBER_KEY, value);
+    }
+
+    public static boolean userIsRemembered() {
+        return prefs.getBoolean(REMEMBER_KEY, false);
+    }
+
+    public static void startApp() {
+        if (SceneManager.userIsRemembered()) {
+            String savedEmail = SessionManager.getSavedEmail();
+
+            if (savedEmail != null) {
+                User user = TempDatabase.getUserByEmail(savedEmail);
+                SessionManager.loginCurrentUser(user);
+                SceneManager.loadLayout();
+                SceneManager.switchContent("/MainFXML/HomePage.fxml");
+            }
+        } else {
+            SceneManager.switchScene("/LoginFXML/Login.fxml");
         }
     }
 

@@ -18,6 +18,6 @@ public class ClientApp extends Application {
         Member ownerTest = (Member) TempDatabase.getUserByEmail("admin@gmail.com");
         AuctionManager.getInstance().createAuction(ownerTest, testItem, ownerTest.getId(), 30.0, LocalDateTime.now(), null);
         SceneManager.setStage(stage);
-        SceneManager.switchScene("/LoginFXML/DemoPage.fxml");
+        SceneManager.startApp();
     }
 }

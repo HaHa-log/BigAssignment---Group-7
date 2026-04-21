@@ -3,6 +3,7 @@ module BigAssignment.Group7 {
     requires javafx.fxml;
     requires java.sql;
     requires java.desktop;
+    requires java.prefs;
 
     // Permissions for the main application entry point
     opens Client to javafx.graphics, javafx.fxml;

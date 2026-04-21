@@ -3,14 +3,16 @@ package Client.Controllers.LoginPage;
 import static Branch.AuthService.*;
 import static javafx.scene.paint.Color.RED;
 
+import Branch.SessionManager;
 import Branch.User;
 
+import Client.Controllers.SceneManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.CheckBox;
 
-import java.awt.*;
 import java.io.IOException;
 
 public class LoginController {
@@ -20,6 +22,9 @@ public class LoginController {
     private PasswordField passwordField;
     @FXML
     private Label messageLabel;
+    @FXML
+    private CheckBox rememberMeCheckbox;
+
     private DemoPageController mainController;
 
     public void setMainController(DemoPageController mainController) {
@@ -50,5 +55,11 @@ public class LoginController {
                 messageLabel.setText("Incorrect password/email!");
             }
         }
+    }
+
+    @FXML
+    private void rememberUser() {
+        SceneManager.setRememberUser(rememberMeCheckbox.isSelected());
+        System.out.println("Checkbox ticked");
     }
 }
