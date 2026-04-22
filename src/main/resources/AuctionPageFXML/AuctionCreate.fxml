@@ -10,6 +10,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
+<?import javafx.scene.image.ImageView?>
 <VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.AuctionPage.AuctionCreateController">
     <children>
         <HBox spacing="30.0" VBox.vgrow="SOMETIMES">
@@ -47,12 +48,16 @@
                               <TextField fx:id="descriptionInput" maxWidth="1.7976931348623157E308" prefHeight="200.0" />
                            </children>
                         </VBox>
-                        <VBox>
-                           <children>
-                              <Text text="Add media:" />
-                              <TextField fx:id="mediaInput" maxWidth="1.7976931348623157E308" prefHeight="200.0" />
-                           </children>
-                        </VBox>
+                         <VBox>
+                             <children>
+                                 <Text text="Item Image:" />
+                                 <HBox spacing="10.0" alignment="CENTER_LEFT">
+                                     <Button text="Choose Image" onAction="#handleChooseImage" />
+                                     <Label fx:id="fileNameLabel" text="No file selected" textFill="GRAY" />
+                                 </HBox>
+                                 <ImageView fx:id="imagePreview" fitHeight="150.0" fitWidth="200.0" preserveRatio="true" />
+                             </children>
+                         </VBox>
                      </children>
                   </VBox>
                   <VBox layoutX="21.0" layoutY="85.0" spacing="10.0">
