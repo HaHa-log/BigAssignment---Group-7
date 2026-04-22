@@ -13,6 +13,11 @@ public class SessionManager {
     }
 
     public static void loginCurrentUser(User user) {
+        if (user == null) {
+            System.err.println("Login failed: User object is null.");
+            return;
+        }
+
         currentUser = user;
         prefs.put(USER_EMAIL_KEY, user.getEmail());
     }
