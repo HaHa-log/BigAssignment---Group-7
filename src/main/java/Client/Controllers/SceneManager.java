@@ -105,8 +105,11 @@ public class SceneManager {
                 SceneManager.loadLayout();
                 SceneManager.switchContent("/MainFXML/HomePage.fxml");
             }
+            else {
+                SceneManager.switchScene("/LoginFXML/DemoPage.fxml");
+            }
         } else {
-            SceneManager.switchScene("/LoginFXML/Login.fxml");
+            SceneManager.switchScene("/LoginFXML/DemoPage.fxml");
         }
     }
 

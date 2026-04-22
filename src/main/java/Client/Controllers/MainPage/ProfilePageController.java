@@ -48,6 +48,7 @@ public class ProfilePageController {
     private void logout() {
         SessionManager.logoutCurrentUser();
         SceneManager.switchScene("/LoginFXML/DemoPage.fxml");
+        SceneManager.setRememberUser(false);
     }
 
     @FXML
