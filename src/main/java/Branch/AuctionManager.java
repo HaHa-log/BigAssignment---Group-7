@@ -21,16 +21,18 @@ public class AuctionManager {
         return instance;
     }
 
-    public void createAuction(Member owner, Item item, int ownerId, double startingPrice, LocalDateTime createdAt, LocalDateTime terminatedAt) {
+    public void createAuction(Member owner, Item item, LocalDateTime createdAt, LocalDateTime terminatedAt) {
+        /*
         if (!item.isAvailable()) {
             System.out.println("[Error]: Item '" + item.getName() + "' is not available!");
-            return;
+            return false;
         }
+         */
 
         item.setStatus(Item.Status.IN_AUCTION);
 
         Auction session = new Auction(owner, item);
-        session.setStartingPrice(startingPrice);
+        session.setStartingPrice(item.getStartingPrice());
         activeSessions.add(session);
 
         TempDatabase.saveAuction(session);

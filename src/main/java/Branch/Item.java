@@ -12,13 +12,13 @@ public class Item extends Entity {
     }
     private Status status = Status.AVAILABLE;
 
-    public Item(String name, float startingPrice, String description) {
+    public Item(String name, double startingPrice, String description) {
         super(name);
         this.startingPrice = startingPrice;
         this.description = description;
     }
 
-    public void setStartingPrice(float startPrice) {
+    public void setStartingPrice(double startPrice) {
         this.startingPrice = startPrice;
     }
 

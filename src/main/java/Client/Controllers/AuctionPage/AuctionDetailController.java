@@ -37,6 +37,9 @@ public class AuctionDetailController {
             boolean isValid = auction.placeBid(currentUser, bidAmount);
             statusLabel.setTextFill(RED);
 
+            if (auction.getOwner().equals(currentUser)) {
+                statusLabel.setText("Auction owner cannot place bid.");
+            }
             if (isValid) {
                 statusLabel.setTextFill(BLUE);
                 statusLabel.setText("Bid placed successfully!");
