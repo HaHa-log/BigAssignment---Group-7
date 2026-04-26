@@ -4,112 +4,67 @@ import Branch.SessionManager;
 import Branch.User;
 import Client.Controllers.LoginPage.DemoPageController;
 import Client.Controllers.SceneManager;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 
 public class ProfilePageController {
 
-    // PANES
-    @FXML private VBox profilePane;
-    @FXML private VBox historyPane;
-    @FXML private VBox passwordPane;
-    @FXML private VBox settingPane;
+    @FXML private VBox profilePane, editPane, passwordPane, notificationPane, historyPane;
 
-    // PROFILE INFO
-    @FXML private Label nameLabel;
-    @FXML private Label emailLabel;
-    @FXML private Label roleLabel;
-    @FXML private Label bioLabel;
-    @FXML private ImageView avatar;
-
-    // HISTORY
-    @FXML private TableView<String> historyTable;
-
-    // SETTING
-    @FXML private TextField emailField;
-
-    // PASSWORD
-    @FXML private PasswordField oldPass;
-    @FXML private PasswordField newPass;
-    @FXML private PasswordField confirmPass;
-
-    //  SWITCH PANE
     private void hideAll() {
         profilePane.setVisible(false);
-        historyPane.setVisible(false);
+        editPane.setVisible(false);
         passwordPane.setVisible(false);
-        settingPane.setVisible(false);
-    }
-
-    //Added by BHL
-    @FXML
-    private void logout() {
-        SessionManager.logoutCurrentUser();
-        SceneManager.switchScene("/LoginFXML/DemoPage.fxml");
-        SceneManager.setRememberUser(false);
+        notificationPane.setVisible(false);
+        historyPane.setVisible(false);
     }
 
     @FXML
-    public void handleProfile() {
+    private void showProfile() {
         hideAll();
         profilePane.setVisible(true);
     }
 
     @FXML
-    public void handleHistory() {
+    private void showEditProfile() {
         hideAll();
-        historyPane.setVisible(true);
+        editPane.setVisible(true);
     }
 
     @FXML
-    public void handlePassword() {
+    private void cancelEdit() {
+        showProfile();
+    }
+
+    @FXML
+    private void showChangePassword() {
         hideAll();
         passwordPane.setVisible(true);
     }
 
     @FXML
-    public void handleSetting() {
+    private void showNotification() {
         hideAll();
-        settingPane.setVisible(true);
-
-        emailField.setText(emailLabel.getText());
-    }
-
-    //INIT
-    @FXML
-    public void initialize() {
-        loadUserData();
-        loadHistoryData();
-    }
-
-    //  LOAD USER
-    private void loadUserData() {
-        User user = SessionManager.getCurrentUser();
-
-        nameLabel.setText(user.getFirstName() + " " + user.getLastName());
-        emailLabel.setText(user.getEmail());
-        bioLabel.setText("Not yet set");
-        if (user.isAdmin()) {
-            roleLabel.setText("Admin");
-        }
-        else {
-            roleLabel.setText("Member");
-        }
-    }
-
-    // LOAD HISTORY
-    private void loadHistoryData() {
+        notificationPane.setVisible(true);
     }
 
     @FXML
-    private void handleSaveProfile() {
-        String newEmail = emailField.getText();
+    private void showHistory() {
+        hideAll();
+        historyPane.setVisible(true);
+    }
 
-        SessionManager.getCurrentUser().setEmail(newEmail);
-        emailLabel.setText(emailField.getText());
+    @FXML
+    private void handleLogout() {
+        SessionManager.logoutCurrentUser();
+        SceneManager.switchScene("/LoginFXML/DemoPage.fxml");
+        SceneManager.setRememberUser(false);
+    }
 
-        handleProfile();
+    public void handleSave(ActionEvent actionEvent) {
     }
 }
