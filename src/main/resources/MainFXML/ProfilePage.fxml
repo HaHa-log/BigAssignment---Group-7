@@ -2,9 +2,9 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
@@ -12,97 +12,105 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.MainPage.ProfilePageController">
+<BorderPane style="-fx-background-color: #0f172a;" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.MainPage.ProfilePageController">
 
+    
     <top>
-        <HBox alignment="CENTER_RIGHT" spacing="20" style="-fx-padding:10; -fx-background-color:#2c3e50;">
-            <Label style="-fx-text-fill:white; -fx-font-size:18; -fx-font-weight:bold;" text="PROFILE PAGE" />
-            <Button fx:id="logoutButton" onAction="#logout" text="Logout" />
+        <HBox alignment="CENTER_RIGHT" style="-fx-padding: 10; -fx-background-color: #111827;">
+            <Button onAction="#handleLogout" style="-fx-background-color: #ef4444; -fx-text-fill: white;" text="Logout" />
         </HBox>
     </top>
 
+    
+    <left>
+        <VBox alignment="TOP_CENTER" prefWidth="250" spacing="20" style="-fx-background-color: #1f2937; -fx-padding: 30;">
+         <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+
+            <Label fx:id="usernameLabel" style="-fx-text-fill: white; -fx-font-size: 18; -fx-font-weight: bold;" text="Username" />
+
+            <Label style="-fx-text-fill: #9ca3af;" text="User role" />
+
+            <Button onAction="#showEditProfile" style="-fx-background-color: #6366f1; -fx-text-fill: white;" text="Edit Profile" />
+        </VBox>
+    </left>
+
+    <!-- CENTER -->
     <center>
-        <StackPane>
+        <VBox spacing="20" style="-fx-padding: 20;">
 
-            <VBox fx:id="profilePane" spacing="25" style="-fx-padding:20;">
-                <HBox alignment="CENTER_LEFT" spacing="30">
-                    <StackPane prefHeight="120" prefWidth="120" style="-fx-background-color: #bdc3c7; -fx-background-radius: 60;">
-                        <ImageView fx:id="avatar" fitHeight="120" fitWidth="120" preserveRatio="true" />
-                    </StackPane>
+            <!-- TAB -->
+            <HBox spacing="30">
+                <Label onMouseClicked="#showProfile" style="-fx-text-fill: #38bdf8; -fx-cursor: hand;" text="My Profile" />
 
-                    <VBox spacing="10">
+                <Label onMouseClicked="#showChangePassword" style="-fx-text-fill: white; -fx-cursor: hand;" text="Change Password" />
 
-                        <HBox prefHeight="4.0" prefWidth="286.0" spacing="5">
-                            <Label style="-fx-font-weight: bold; -fx-font-size: 20px;" text="Username:" />
-                            <Label fx:id="nameLabel" text="" />
-                        </HBox>
+                <Label onMouseClicked="#showNotification" style="-fx-text-fill: white; -fx-cursor: hand;" text="Notification" />
 
-                        <HBox spacing="5">
-                            <Label style="-fx-font-weight:bold;" text="Bio:" />
-                            <Label fx:id="bioLabel" text="..." />
-                        </HBox>
+                <Label onMouseClicked="#showHistory" style="-fx-text-fill: white; -fx-cursor: hand;" text="History" />
+            </HBox>
 
-                        <HBox spacing="5">
-                            <Label style="-fx-font-weight:bold;" text="Email:" />
-                            <Label fx:id="emailLabel" text="" />
-                        </HBox>
+            <!-- CONTENT -->
+            <StackPane fx:id="contentPane">
 
-                        <HBox spacing="5">
-                            <Label style="-fx-font-weight:bold;" text="Role:" />
-                            <Label fx:id="roleLabel" text="" />
-                        </HBox>
+                <!-- PROFILE VIEW -->
+                <VBox fx:id="profilePane" spacing="15" style="-fx-background-color: #111827; -fx-padding: 20;">
 
+                    <Label style="-fx-text-fill: #facc15; -fx-font-size: 18;" text="About Me" />
+
+                    <Label fx:id="aboutLabel" style="-fx-text-fill: white;" text="User info..." wrapText="true" />
+
+                    <Label style="-fx-text-fill: #facc15; -fx-text-size: 25;" text="Contact" />
+
+                    <VBox spacing="5">
+                        <Label fx:id="phoneLabel" style="-fx-text-fill: #60a5fa;" text="Phone: ..." />
+
+                        <Label fx:id="emailLabel" style="-fx-text-fill: #60a5fa;" text="Email: ..." />
                     </VBox>
-                </HBox>
-
-                <HBox alignment="CENTER" spacing="15">
-                    <Button onAction="#handleSetting" prefWidth="130" prefHeight="40" text="Settings" />
-                    <Button onAction="#handlePassword" prefWidth="130" prefHeight="40" text="Password" />
-                    <Button onAction="#handleHistory" prefWidth="130" prefHeight="40" text="History" />
-                </HBox>
-
-            </VBox>
-
-            <VBox fx:id="historyPane" alignment="CENTER" spacing="15" visible="false">
-
-                <Label style="-fx-font-size:18; -fx-font-weight:bold;" text="Lịch sử hoạt động" />
-
-                <TableView fx:id="historyTable" prefWidth="400">
-                    <columns>
-                        <TableColumn prefWidth="400" text="History" />
-                    </columns>
-                </TableView>
-
-                <Button onAction="#handleProfile" text="← Go Back" />
-            </VBox>
-
-            <VBox fx:id="passwordPane" alignment="CENTER" spacing="10" visible="false">
-
-                <Label style="-fx-font-size:18; -fx-font-weight:bold;" text="Đổi mật khẩu" />
-
-                <PasswordField fx:id="oldPass" promptText="Mật khẩu cũ" />
-                <PasswordField fx:id="newPass" promptText="Mật khẩu mới" />
-                <PasswordField fx:id="confirmPass" promptText="Xác nhận mật khẩu" />
-
-                <Button text="Lưu" />
-                <Button onAction="#handleProfile" text="← Go Back" />
-            </VBox>
-
-            <VBox fx:id="settingPane" alignment="CENTER" spacing="10" visible="false">
-
-                <Label style="-fx-font-size:18; -fx-font-weight:bold;" text="Chỉnh sửa thông tin" />
-
-                <TextField fx:id="emailField" promptText="Email" />
-
-                <VBox alignment="CENTER" spacing="10">
-                    <Button onAction="#handleSaveProfile" text="Lưu thay đổi" />
-                    <Button onAction="#handleProfile" text="← Go Back" />
                 </VBox>
 
-            </VBox>
+                <!-- EDIT PROFILE -->
+                <VBox fx:id="editPane" spacing="15" style="-fx-background-color: #111827; -fx-padding: 20;" visible="false">
 
-        </StackPane>
+                    <Label style="-fx-text-fill: #facc15; -fx-font-size: 18;" text="Edit Profile" />
+
+                    <Label style="-fx-text-fill: white;" text="About Me" />
+                    <TextArea fx:id="aboutField" prefHeight="100" />
+
+                    <Label style="-fx-text-fill: white;" text="Phone Number" />
+                    <TextField fx:id="phoneField" />
+
+                    <Label style="-fx-text-fill: white;" text="Email" />
+                    <TextField fx:id="emailField" />
+
+                    <HBox spacing="10">
+                        <Button onAction="#handleSave" style="-fx-background-color: #22c55e; -fx-text-fill: white;" text="Save" />
+                        <Button onAction="#cancelEdit" style="-fx-background-color: #ef4444; -fx-text-fill: white;" text="Cancel" />
+                    </HBox>
+                </VBox>
+
+                <!-- PASSWORD -->
+                <VBox fx:id="passwordPane" spacing="10" style="-fx-background-color: #111827; -fx-padding: 20;" visible="false">
+                    <Label style="-fx-text-fill: #facc15;" text="Change Password" />
+                    <PasswordField promptText="Current Password" />
+                    <PasswordField promptText="New Password" />
+                    <PasswordField promptText="Confirm Password" />
+                </VBox>
+
+                <!-- NOTIFICATION -->
+                <VBox fx:id="notificationPane" style="-fx-background-color: #111827; -fx-padding: 20;" visible="false">
+                    <Label style="-fx-text-fill: #facc15;" text="Notifications" />
+                </VBox>
+
+                <!-- HISTORY -->
+                <VBox fx:id="historyPane" style="-fx-background-color: #111827; -fx-padding: 20;" visible="false">
+                    <Label style="-fx-text-fill: #facc15;" text="History" />
+                    <ListView fx:id="historyList" />
+                </VBox>
+
+            </StackPane>
+        </VBox>
     </center>
 
 </BorderPane>
+
 
