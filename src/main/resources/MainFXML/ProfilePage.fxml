@@ -12,99 +12,104 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane style="-fx-background-color: #0f172a;" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.MainPage.ProfilePageController">
+<BorderPane style="-fx-background-color: #0f172a; -fx-font-family: 'Segoe UI';" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.MainPage.ProfilePageController">
 
-    
+    <!-- TOP -->
     <top>
-        <HBox alignment="CENTER_RIGHT" style="-fx-padding: 10; -fx-background-color: #111827;">
-            <Button onAction="#handleLogout" style="-fx-background-color: #ef4444; -fx-text-fill: white;" text="Logout" />
+        <HBox alignment="CENTER_RIGHT" style="-fx-padding: 12 20; -fx-background-color: #0F172A;">
+            <Button onAction="#handleLogout" style="-fx-background-color: #ef4444; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 6 14;" text="Logout" />
         </HBox>
     </top>
 
-    
+    <!-- LEFT -->
     <left>
-        <VBox alignment="TOP_CENTER" prefWidth="250" spacing="20" style="-fx-background-color: #1f2937; -fx-padding: 30;">
-         <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+        <VBox alignment="TOP_CENTER" prefWidth="260" spacing="18" style="-fx-background-color: #1E293B; -fx-padding: 25; -fx-background-radius: 15;">
 
-            <Label fx:id="usernameLabel" style="-fx-text-fill: white; -fx-font-size: 18; -fx-font-weight: bold;" text="Username" />
+            <ImageView fitHeight="155.0" fitWidth="142.0" preserveRatio="true" style="-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 10,0,0,4); -fx-background-radius: 100;">
+            <image>
 
-            <Label style="-fx-text-fill: #9ca3af;" text="User role" />
+            </image></ImageView>
+            <Label fx:id="usernameLabel" style="-fx-text-fill: #FFFFFF; -fx-font-size: 24; -fx-font-weight: bold;" text="Username" />
 
-            <Button onAction="#showEditProfile" style="-fx-background-color: #6366f1; -fx-text-fill: white;" text="Edit Profile" />
+            <Label style="-fx-text-fill: #94a3b8; -fx-font-size: 13;" text="User role" />
+
+            <Button onAction="#showEditProfile" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 20; -fx-padding: 8 18;" text="Edit Profile" />
         </VBox>
     </left>
 
     <!-- CENTER -->
     <center>
-        <VBox spacing="20" style="-fx-padding: 20;">
+        <VBox spacing="25" style="-fx-padding: 25;">
 
-            <!-- TAB -->
-            <HBox spacing="30">
-                <Label onMouseClicked="#showProfile" style="-fx-text-fill: #38bdf8; -fx-cursor: hand;" text="My Profile" />
+            <!-- TAB BAR -->
+            <HBox alignment="CENTER_LEFT" spacing="35">
 
-                <Label onMouseClicked="#showChangePassword" style="-fx-text-fill: white; -fx-cursor: hand;" text="Change Password" />
+                <Label fx:id="tabProfile" onMouseClicked="#showProfile" style="-fx-text-fill: #3b82f6; -fx-font-weight: bold; -fx-font-size: 14; -fx-border-color: #3b82f6; -fx-border-width: 0 0 2 0; -fx-padding: 0 0 5 0; -fx-cursor: hand;" text="My Profile" />
 
-                <Label onMouseClicked="#showNotification" style="-fx-text-fill: white; -fx-cursor: hand;" text="Notification" />
+                <Label fx:id="tabPassword" onMouseClicked="#showChangePassword" style="-fx-text-fill: #94a3b8; -fx-font-size: 14; -fx-cursor: hand;" text="Change Password" />
 
-                <Label onMouseClicked="#showHistory" style="-fx-text-fill: white; -fx-cursor: hand;" text="History" />
+                <Label fx:id="tabNotification" onMouseClicked="#showNotification" style="-fx-text-fill: #94a3b8; -fx-font-size: 14; -fx-cursor: hand;" text="Notification" />
+
+                <Label fx:id="tabHistory" onMouseClicked="#showHistory" style="-fx-text-fill: #94a3b8; -fx-font-size: 14; -fx-cursor: hand;" text="History" />
             </HBox>
 
             <!-- CONTENT -->
             <StackPane fx:id="contentPane">
+                <!-- PROFILE -->
+                <VBox fx:id="profilePane" spacing="18" style="-fx-background-color: #020617; -fx-padding: 25; -fx-background-radius: 12;">
 
-                <!-- PROFILE VIEW -->
-                <VBox fx:id="profilePane" spacing="15" style="-fx-background-color: #111827; -fx-padding: 20;">
+                    <Label style="-fx-text-fill: #e2e8f0; -fx-font-size: 18; -fx-font-weight: bold; -fx-background-radius: 20; -fx-border-radius: 20;" text="About Me" />
 
-                    <Label style="-fx-text-fill: #facc15; -fx-font-size: 18;" text="About Me" />
+                    <Label fx:id="aboutLabel" style="-fx-text-fill: #cbd5f5; -fx-font-size: 14;" text="User info..." wrapText="true" />
 
-                    <Label fx:id="aboutLabel" style="-fx-text-fill: white;" text="User info..." wrapText="true" />
+                    <Label style="-fx-text-fill: #e2e8f0; -fx-font-size: 16; -fx-font-weight: bold;" text="Contact" />
 
-                    <Label style="-fx-text-fill: #facc15; -fx-text-size: 25;" text="Contact" />
-
-                    <VBox spacing="5">
-                        <Label fx:id="phoneLabel" style="-fx-text-fill: #60a5fa;" text="Phone: ..." />
-
-                        <Label fx:id="emailLabel" style="-fx-text-fill: #60a5fa;" text="Email: ..." />
+                    <VBox spacing="6">
+                        <Label fx:id="phoneLabel" style="-fx-text-fill: #60a5fa; -fx-font-size: 14;" text="Phone: ..." />
+                        <Label fx:id="emailLabel" style="-fx-text-fill: #60a5fa; -fx-font-size: 14;" text="Email: ..." />
                     </VBox>
                 </VBox>
 
-                <!-- EDIT PROFILE -->
-                <VBox fx:id="editPane" spacing="15" style="-fx-background-color: #111827; -fx-padding: 20;" visible="false">
+                <!-- EDIT -->
+                <VBox fx:id="editPane" spacing="18" style="-fx-background-color: #020617; -fx-padding: 25; -fx-background-radius: 12;" visible="false">
 
-                    <Label style="-fx-text-fill: #facc15; -fx-font-size: 18;" text="Edit Profile" />
+                    <Label style="-fx-text-fill: #e2e8f0; -fx-font-size: 18; -fx-font-weight: bold;" text="Edit Profile" />
 
-                    <Label style="-fx-text-fill: white;" text="About Me" />
-                    <TextArea fx:id="aboutField" prefHeight="100" />
+                    <Label style="-fx-text-fill: #cbd5f5;" text="About Me" />
+                    <TextArea fx:id="aboutField" prefHeight="100" style="-fx-background-color: #0f172a; -fx-text-fill: black; -fx-background-radius: 8;" />
 
-                    <Label style="-fx-text-fill: white;" text="Phone Number" />
-                    <TextField fx:id="phoneField" />
+                    <Label style="-fx-text-fill: #cbd5f5;" text="Phone Number" />
+                    <TextField fx:id="phoneField" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-background-radius: 8;" />
 
-                    <Label style="-fx-text-fill: white;" text="Email" />
-                    <TextField fx:id="emailField" />
+                    <Label style="-fx-text-fill: #cbd5f5;" text="Email" />
+                    <TextField fx:id="emailField" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-background-radius: 8;" />
 
                     <HBox spacing="10">
-                        <Button onAction="#handleSave" style="-fx-background-color: #22c55e; -fx-text-fill: white;" text="Save" />
-                        <Button onAction="#cancelEdit" style="-fx-background-color: #ef4444; -fx-text-fill: white;" text="Cancel" />
+                        <Button onAction="#handleSave" style="-fx-background-color: #22c55e; -fx-text-fill: white; -fx-background-radius: 8;" text="Save" />
+                        <Button onAction="#cancelEdit" style="-fx-background-color: #ef4444; -fx-text-fill: white; -fx-background-radius: 8;" text="Cancel" />
                     </HBox>
                 </VBox>
 
                 <!-- PASSWORD -->
-                <VBox fx:id="passwordPane" spacing="10" style="-fx-background-color: #111827; -fx-padding: 20;" visible="false">
-                    <Label style="-fx-text-fill: #facc15;" text="Change Password" />
-                    <PasswordField promptText="Current Password" />
-                    <PasswordField promptText="New Password" />
-                    <PasswordField promptText="Confirm Password" />
+                <VBox fx:id="passwordPane" spacing="12" style="-fx-background-color: #020617; -fx-padding: 25; -fx-background-radius: 12;" visible="false">
+
+                    <Label style="-fx-text-fill: #e2e8f0; -fx-font-size: 16; -fx-font-weight: bold;" text="Change Password" />
+
+                    <PasswordField promptText="Current Password" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-background-radius: 8;" />
+                    <PasswordField promptText="New Password" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-background-radius: 8;" />
+                    <PasswordField promptText="Confirm Password" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-background-radius: 8;" />
+               <Button mnemonicParsing="false" text="Save" />
                 </VBox>
 
                 <!-- NOTIFICATION -->
-                <VBox fx:id="notificationPane" style="-fx-background-color: #111827; -fx-padding: 20;" visible="false">
-                    <Label style="-fx-text-fill: #facc15;" text="Notifications" />
+                <VBox fx:id="notificationPane" style="-fx-background-color: #020617; -fx-padding: 25; -fx-background-radius: 12;" visible="false">
+                    <Label style="-fx-text-fill: #e2e8f0; -fx-font-size: 16; -fx-font-weight: bold;" text="Notifications" />
                 </VBox>
 
                 <!-- HISTORY -->
-                <VBox fx:id="historyPane" style="-fx-background-color: #111827; -fx-padding: 20;" visible="false">
-                    <Label style="-fx-text-fill: #facc15;" text="History" />
-                    <ListView fx:id="historyList" />
+                <VBox fx:id="historyPane" style="-fx-background-color: #020617; -fx-padding: 25; -fx-background-radius: 12;" visible="false">
+                    <Label style="-fx-text-fill: #e2e8f0; -fx-font-size: 16; -fx-font-weight: bold;" text="History" />
+                    <ListView fx:id="historyList" style="-fx-background-color: #0f172a; -fx-control-inner-background: #0f172a; -fx-text-fill: white;" />
                 </VBox>
 
             </StackPane>
@@ -112,5 +117,3 @@
     </center>
 
 </BorderPane>
-
-
