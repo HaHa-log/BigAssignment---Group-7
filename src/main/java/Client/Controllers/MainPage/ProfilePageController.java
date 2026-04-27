@@ -87,7 +87,6 @@ public class ProfilePageController {
 
     @FXML
     private void showProfile() {
-        loadUserData();
         hideAll();
         profilePane.setVisible(true);
         setActive(tabProfile);
@@ -99,8 +98,8 @@ public class ProfilePageController {
         editPane.setVisible(true);
 
         aboutField.setText(aboutLabel.getText());
-        phoneField.setText(phoneLabel.getText().replace("Phone: ", ""));
-        emailField.setText(emailLabel.getText().replace("Email: ", ""));
+        phoneField.setText(phoneLabel.getText());
+        emailField.setText(emailLabel.getText());
     }
 
     @FXML
