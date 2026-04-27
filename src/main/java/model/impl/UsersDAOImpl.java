@@ -86,7 +86,6 @@ public class UsersDAOImpl implements UsersDAO {
 
             st.executeUpdate();
 
-            System.out.println("[System]: Successful update.");
         } catch(SQLException ex){
             throw new DbException(ex.getMessage());
         }
@@ -213,6 +212,8 @@ public class UsersDAOImpl implements UsersDAO {
                 rs.getString("password"),
                 rs.getDouble("balance")
         );
+
+        obj.setId(rs.getInt("users_id"));
         return obj;
     }
 
@@ -224,6 +225,8 @@ public class UsersDAOImpl implements UsersDAO {
                 rs.getString("phoneNumber"),
                 rs.getString("password")
         );
+
+        obj.setId(rs.getInt("users_id"));
         return obj;
     }
 }

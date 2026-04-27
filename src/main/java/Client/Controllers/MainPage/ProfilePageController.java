@@ -13,19 +13,21 @@ import javafx.scene.layout.VBox;
 
 public class ProfilePageController {
 
+    User user = SessionManager.getCurrentUser();
+
     @FXML
     private VBox profilePane, editPane, passwordPane, notificationPane, historyPane;
-    
+
     @FXML
     private Label tabProfile, tabPassword, tabNotification, tabHistory;
 
     @FXML
-    private Label aboutLabel, phoneLabel, emailLabel;
+    private Label usernameLabel, aboutLabel, phoneLabel, emailLabel, roleLabel;
 
     @FXML
     private TextArea aboutField;
     @FXML
-    private TextField phoneField, emailField;
+    private TextField phoneField, emailField, oldPasswordField, newPasswordField, newPasswordConfirmField;
 
     //  STYLE
     private final String ACTIVE =
@@ -38,8 +40,27 @@ public class ProfilePageController {
     // INIT
     @FXML
     public void initialize() {
+        loadUserData();
         showProfile();
     }
+
+    private void loadUserData() {
+
+        usernameLabel.setText(user.getFirstName() + " " + user.getLastName());
+        phoneLabel.setText(user.getPhoneNumber());
+        emailLabel.setText(user.getEmail());
+        aboutLabel.setText("Not yet set");
+        if (user.isAdmin()) {
+            roleLabel.setText("Admin");
+        }
+        else {
+            roleLabel.setText("Member");
+        }
+    }
+
+    private void loadHistoryData() {
+    }
+
 
     //  TAB COLOR
     private void setActive(Label tab) {
@@ -61,6 +82,7 @@ public class ProfilePageController {
 
     @FXML
     private void showProfile() {
+        loadUserData();
         hideAll();
         profilePane.setVisible(true);
         setActive(tabProfile);
@@ -97,6 +119,7 @@ public class ProfilePageController {
 
     @FXML
     private void showHistory() {
+        loadHistoryData();
         hideAll();
         historyPane.setVisible(true);
         setActive(tabHistory);
@@ -110,12 +133,29 @@ public class ProfilePageController {
         String phone = phoneField.getText();
         String email = emailField.getText();
 
-        aboutLabel.setText(about);
-        phoneLabel.setText("Phone: " + phone);
-        emailLabel.setText("Email: " + email);
-
+        user.setEmail(email);
+        user.setPhoneNumber(phone);
 
         showProfile();
+    }
+
+    public void handleChangePassword(ActionEvent event) {
+        System.out.println("Current User ID: " + user.getId()); // Verify ID exists
+        String newPassword = newPasswordField.getText();
+        if (user.getPassword().equals(oldPasswordField.getText())) {
+            if (newPasswordField.getText().equals(newPasswordConfirmField.getText())) {
+                try {
+                    user.setPassword(newPassword);
+                    System.out.println("Object updated. New password is: " + user.getPassword());
+                } catch (Exception e) {
+                    System.out.println("Validation failed: " + e.getMessage());
+                }
+            } else {
+                System.out.println("New passwords do not match.");
+            }
+        } else {
+            System.out.println("Old password check failed.");
+        }
     }
 
     @FXML
@@ -124,4 +164,4 @@ public class ProfilePageController {
         SceneManager.switchScene("/LoginFXML/DemoPage.fxml");
         SceneManager.setRememberUser(false);
     }
-
+}

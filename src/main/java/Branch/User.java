@@ -1,5 +1,9 @@
 package Branch;
 
+import model.UsersDAO;
+import model.impl.DaoFactory;
+import model.impl.UsersDAOImpl;
+
 import java.util.regex.Pattern;
 import java.time.LocalDateTime;
 
@@ -14,6 +18,8 @@ public abstract class User extends Entity {
     private boolean isBlocked = false;
     private LocalDateTime blockedUntil = null;
 
+    private UsersDAO userDatabase = DaoFactory.createUsersDAO();
+
     public User(String firstName, String lastName, String email, String phoneNumber, String password, double balance) {
         super(firstName + " " + lastName);
         this.firstName = firstName;
@@ -26,10 +32,12 @@ public abstract class User extends Entity {
 
     public void setFirstName(String fstName) {
         this.firstName = fstName;
+        userDatabase.update(this);
     }
 
     public void setLastName(String lstName) {
         this.lastName = lstName;
+        userDatabase.update(this);
     }
 
     public static boolean isValidEmail(String email) {
@@ -40,6 +48,7 @@ public abstract class User extends Entity {
     public void setEmail(String userEmail) {
         if (isValidEmail(userEmail)) {
             this.email = userEmail;
+            userDatabase.update(this);
         } else {
             throw new IllegalArgumentException("[Error]: Invalid email format");
         }
@@ -53,6 +62,7 @@ public abstract class User extends Entity {
     public void setPhoneNumber(String contactNumber) {
         if (isValidPhoneNumber(contactNumber)) {
             this.phoneNumber = contactNumber;
+            userDatabase.update(this);
         } else {
             throw new IllegalArgumentException("[Error]: Invalid phone number format");
         }
@@ -61,6 +71,7 @@ public abstract class User extends Entity {
     public void setPassword(String pass) {
         if (pass.length() >= 6) {
             this.password = pass;
+            userDatabase.update(this);
         } else {
             throw new IllegalArgumentException("[Error]: Password must have more than 6 digits");
         }
@@ -71,12 +82,14 @@ public abstract class User extends Entity {
             System.out.println("[Error]: Amount must NOT be negative");
         } else {
             this.balance += amount;
+            userDatabase.update(this);
         }
     }
 
     public void setBlocked(LocalDateTime until) {
         this.isBlocked = true;
         this.blockedUntil = until;
+        userDatabase.update(this);
     }
 
     public String getFirstName() {

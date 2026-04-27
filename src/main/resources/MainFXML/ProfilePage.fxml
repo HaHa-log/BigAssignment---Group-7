@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane style="-fx-background-color: #0f172a; -fx-font-family: 'Segoe UI';" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.MainPage.ProfilePageController">
+<BorderPane style="-fx-background-color: #0f172a; -fx-font-family: 'Segoe UI';" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.MainPage.ProfilePageController">
 
     <!-- TOP -->
     <top>
@@ -31,7 +31,7 @@
             </image></ImageView>
             <Label fx:id="usernameLabel" style="-fx-text-fill: #FFFFFF; -fx-font-size: 24; -fx-font-weight: bold;" text="Username" />
 
-            <Label style="-fx-text-fill: #94a3b8; -fx-font-size: 13;" text="User role" />
+            <Label fx:id="roleLabel" style="-fx-text-fill: #94a3b8; -fx-font-size: 13;" text="User role" />
 
             <Button onAction="#showEditProfile" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 20; -fx-padding: 8 18;" text="Edit Profile" />
         </VBox>
@@ -95,10 +95,10 @@
 
                     <Label style="-fx-text-fill: #e2e8f0; -fx-font-size: 16; -fx-font-weight: bold;" text="Change Password" />
 
-                    <PasswordField promptText="Current Password" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-background-radius: 8;" />
-                    <PasswordField promptText="New Password" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-background-radius: 8;" />
-                    <PasswordField promptText="Confirm Password" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-background-radius: 8;" />
-               <Button mnemonicParsing="false" text="Save" />
+                    <PasswordField fx:id="oldPasswordField" promptText="Current Password" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-background-radius: 8;" />
+                    <PasswordField fx:id="newPasswordField" promptText="New Password" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-background-radius: 8;" />
+                    <PasswordField fx:id="newPasswordConfirmField" promptText="Confirm Password" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-background-radius: 8;" />
+               <Button onAction="#handleChangePassword" mnemonicParsing="false" text="Save" />
                 </VBox>
 
                 <!-- NOTIFICATION -->
