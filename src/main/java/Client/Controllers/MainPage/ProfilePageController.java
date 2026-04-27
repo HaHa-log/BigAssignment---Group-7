@@ -137,10 +137,9 @@ public class ProfilePageController {
         String phone = phoneField.getText();
         String email = emailField.getText();
 
-        user.setEmail(email);
-        user.setPhoneNumber(phone);
-
-        showProfile();
+        hideAll();
+        profilePane.setVisible(true);
+        setActive(tabProfile);
     }
 
     @FXML
