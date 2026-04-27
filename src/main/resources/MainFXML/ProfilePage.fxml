@@ -98,7 +98,8 @@
                     <PasswordField fx:id="oldPasswordField" promptText="Current Password" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-background-radius: 8;" />
                     <PasswordField fx:id="newPasswordField" promptText="New Password" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-background-radius: 8;" />
                     <PasswordField fx:id="newPasswordConfirmField" promptText="Confirm Password" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-background-radius: 8;" />
-               <Button onAction="#handleChangePassword" mnemonicParsing="false" text="Save" />
+               <Label fx:id="passwordChangeStatus" text="" />
+               <Button mnemonicParsing="false" onAction="#handleChangePassword" text="Save" />
                 </VBox>
 
                 <!-- NOTIFICATION -->

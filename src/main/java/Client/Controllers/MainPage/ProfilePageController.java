@@ -7,9 +7,10 @@ import Client.Controllers.SceneManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+
+import static javafx.scene.paint.Color.GREEN;
+import static javafx.scene.paint.Color.RED;
 
 public class ProfilePageController {
 
@@ -26,6 +27,10 @@ public class ProfilePageController {
 
     @FXML
     private TextArea aboutField;
+
+    @FXML
+    private Label passwordChangeStatus;
+
     @FXML
     private TextField phoneField, emailField, oldPasswordField, newPasswordField, newPasswordConfirmField;
 
@@ -139,29 +144,34 @@ public class ProfilePageController {
         showProfile();
     }
 
-    public void handleChangePassword(ActionEvent event) {
-        System.out.println("Current User ID: " + user.getId()); // Verify ID exists
-        String newPassword = newPasswordField.getText();
-        if (user.getPassword().equals(oldPasswordField.getText())) {
-            if (newPasswordField.getText().equals(newPasswordConfirmField.getText())) {
-                try {
-                    user.setPassword(newPassword);
-                    System.out.println("Object updated. New password is: " + user.getPassword());
-                } catch (Exception e) {
-                    System.out.println("Validation failed: " + e.getMessage());
-                }
-            } else {
-                System.out.println("New passwords do not match.");
-            }
-        } else {
-            System.out.println("Old password check failed.");
-        }
-    }
-
     @FXML
     private void handleLogout() {
         SessionManager.logoutCurrentUser();
         SceneManager.switchScene("/LoginFXML/DemoPage.fxml");
         SceneManager.setRememberUser(false);
     }
+
+    public void handleChangePassword(ActionEvent event) {
+        String oldPassword = oldPasswordField.getText();
+        String newPassword = newPasswordField.getText();
+        String newPasswordConfirm = newPasswordConfirmField.getText();
+
+        passwordChangeStatus.setTextFill(RED);
+        if (user.getPassword().equals(oldPassword)) {
+            if (newPassword.equals(newPasswordConfirm)) {
+                try {
+                    user.setPassword(newPassword);
+                    passwordChangeStatus.setTextFill(GREEN);
+                    passwordChangeStatus.setText("Object updated. New password is: " + user.getPassword());
+                } catch (Exception e) {
+                    passwordChangeStatus.setText("Validation failed: " + e.getMessage());
+                }
+            } else {
+                passwordChangeStatus.setText("New passwords do not match.");
+            }
+        } else {
+            passwordChangeStatus.setText("Old password check failed.");
+        }
+    }
+
 }
