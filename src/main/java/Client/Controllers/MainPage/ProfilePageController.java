@@ -66,7 +66,6 @@ public class ProfilePageController {
     private void loadHistoryData() {
     }
 
-
     //  TAB COLOR
     private void setActive(Label tab) {
         tabProfile.setStyle(NORMAL);
@@ -87,6 +86,7 @@ public class ProfilePageController {
 
     @FXML
     private void showProfile() {
+        loadUserData();
         hideAll();
         profilePane.setVisible(true);
         setActive(tabProfile);
@@ -130,16 +130,18 @@ public class ProfilePageController {
     }
 
     // SAVE PROFILE
+    //FOR THE SECOND TIME I HAVE TO REWRITE THÍS METHOD, PLEASE DON'T MODIFY THIS
+    //HOW WOULD THIS WORK IF YOU DON'T SET THE EMAIL UYEN??
     @FXML
     public void handleSave(ActionEvent event) {
 
         String about = aboutField.getText();
         String phone = phoneField.getText();
         String email = emailField.getText();
+        user.setEmail(email);
+        user.setPhoneNumber(phone);
 
-        hideAll();
-        profilePane.setVisible(true);
-        setActive(tabProfile);
+        showProfile();
     }
 
     @FXML
@@ -157,12 +159,12 @@ public class ProfilePageController {
         passwordChangeStatus.setTextFill(RED);
         if (user.getPassword().equals(oldPassword)) {
             if (newPassword.equals(newPasswordConfirm)) {
-                try {
+                if (newPassword != null) {
                     user.setPassword(newPassword);
                     passwordChangeStatus.setTextFill(GREEN);
                     passwordChangeStatus.setText("Object updated. New password is: " + user.getPassword());
-                } catch (Exception e) {
-                    passwordChangeStatus.setText("Validation failed: " + e.getMessage());
+                } else {
+                    passwordChangeStatus.setText("Please enter your new password");
                 }
             } else {
                 passwordChangeStatus.setText("New passwords do not match.");
