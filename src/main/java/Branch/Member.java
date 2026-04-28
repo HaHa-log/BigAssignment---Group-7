@@ -1,40 +1,13 @@
 package Branch;
 
-import Branch.Common.FullName;
-import Branch.Common.Email;
-import Branch.Common.PhoneNumber;
-import Branch.Common.Balance;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Member extends User implements Bidder, Seller, AuctionObserver {
-    private LocalDateTime blockedUntil = null;
-    private List<Item> inventory = new ArrayList<>();
+    private List<Item> inventory;
 
-    public Member(int id, FullName fullName, Email email, PhoneNumber phoneNumber, String password, Balance balance) {
-        super(id, fullName, email, phoneNumber, password, balance);
-    }
-
-    public Member(FullName fullName, Email email, PhoneNumber phoneNumber, String password, Balance balance) {
-        super(fullName, email, phoneNumber, password, balance);
-    }
-
-    @Override
-    public boolean isAdmin() {
-        return false;
-    }
-
-    void setBlocked(LocalDateTime until) {
-        this.blockedUntil = until;
-    }
-
-    void unblock() {
-        this.blockedUntil = null;
-    }
-
-    public boolean isBlocked() {
-        return blockedUntil != null && LocalDateTime.now().isBefore(blockedUntil);
+    public Member(String firstName, String lastName, String email, String phoneNumber, String password, double balance) {
+        super(firstName, lastName, email, phoneNumber,password, balance);
     }
 
     @Override
