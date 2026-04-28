@@ -114,6 +114,13 @@ public class ProfilePageController {
     }
 
     @FXML
+    private void showFinance() {
+        hideAll();
+        financePane.setVisible(true);
+        setActive(tabFinance);
+    }
+
+    @FXML
     private void showNotification() {
         hideAll();
         notificationPane.setVisible(true);
