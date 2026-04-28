@@ -5,6 +5,11 @@ public abstract class Entity {
     private String name;
 
     public Entity(String name) {
+        this(0, name);
+    }
+
+    public Entity(int id, String name) {
+        this.id = id;
         this.name = name;
     }
 
@@ -15,5 +20,4 @@ public abstract class Entity {
     public String getName() {
         return name;
     }
-    //Thinking of setting conditions for setName()
 }

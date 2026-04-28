@@ -1,5 +1,6 @@
 package model.impl;
 
+import Branch.Common.*;
 import Branch.Admin;
 import Branch.Member;
 import Branch.User;
@@ -204,29 +205,34 @@ public class UsersDAOImpl implements UsersDAO {
 
 
     private Member instantiateMember(ResultSet rs) throws SQLException {
-        Member obj = new Member(
-                rs.getString("firstName"),
-                rs.getString("lastName"),
-                rs.getString("email"),
-                rs.getString("phoneNumber"),
-                rs.getString("password"),
-                rs.getDouble("balance")
-        );
+        FullName name = new FullName(rs.getString("firstName"), rs.getString("lastName"));
+        Email email = new Email(rs.getString("email"));
+        PhoneNumber phone = new PhoneNumber(rs.getString("phoneNumber"));
+        Balance balance = new Balance(rs.getDouble("balance"));
+        int id = rs.getInt("users_id");
 
-        obj.setId(rs.getInt("users_id"));
-        return obj;
+        return new Member(
+                id,
+                name,
+                email,
+                phone,
+                rs.getString("password"),
+                balance
+        );
     }
 
     private Admin instantiateAdmin(ResultSet rs) throws SQLException {
-        Admin obj = new Admin(
-                rs.getString("firstName"),
-                rs.getString("lastName"),
-                rs.getString("email"),
-                rs.getString("phoneNumber"),
+        FullName name = new FullName(rs.getString("firstName"), rs.getString("lastName"));
+        Email email = new Email(rs.getString("email"));
+        PhoneNumber phone = new PhoneNumber(rs.getString("phoneNumber"));
+        int id = rs.getInt("users_id");
+
+        return new Admin(
+                id,
+                name,
+                email,
+                phone,
                 rs.getString("password")
         );
-
-        obj.setId(rs.getInt("users_id"));
-        return obj;
     }
 }

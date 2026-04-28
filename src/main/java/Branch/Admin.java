@@ -1,37 +1,48 @@
 package Branch;
 
-import Branch.User;
+import Branch.Common.FullName;
+import Branch.Common.Email;
+import Branch.Common.PhoneNumber;
+import Branch.Common.Balance;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Admin extends User {
-    public Admin(String firstName, String lastName, String email, String phoneNumber, String password) {
-        super(firstName, lastName, email, phoneNumber,password, 0.0);
+    public Admin(int id, FullName fullName, Email email, PhoneNumber phoneNumber, String password) {
+        super(id, fullName, email, phoneNumber, password, new Balance(0.0));
+    }
+
+    public Admin(FullName fullName, Email email, PhoneNumber phoneNumber, String password) {
+        super(fullName, email, phoneNumber, password, new Balance(0.0));
+    }
+
+    @Override
+    public boolean isAdmin() {
+        return true;
     }
 
     public void blockUser(int userId, LocalDateTime until) {
         User user = TempDatabase.getUserById(userId);
 
-        if (user == null) {
+        if (user instanceof Member member) {
+            member.setBlocked(until);
+            System.out.println("[Admin]: User ID " + user.getId() + " blocked until " + until);
+        } else if (user instanceof Admin) {
+            System.out.println("[Error]: Cannot block another Admin!");
+        } else {
             System.out.println("[Error]: User not found");
-            return;
         }
-
-        user.setBlocked(until);
-        System.out.println("[Admin]: User with ID " + user.getId() + " blocked until " + until);
     }
 
     public void unblockUser(int userId) {
         User user = TempDatabase.getUserById(userId);
 
-        if (user == null) {
-            System.out.println("[Error]: User not found");
-            return;
+        if (user instanceof Member member) {
+            member.unblock();
+            System.out.println("[Admin]: User ID " + user.getId() + " unblocked.");
+        } else {
+            System.out.println("[Error]: User not found or not a Member");
         }
-
-        user.isUnblocked();
-        System.out.println("[Admin]: User with ID " + user.getId() + " unblocked.");
     }
 
     public void cancelAuction(int auctionId) {
@@ -49,22 +60,18 @@ public class Admin extends User {
     }
 
     public void printTransactionsByMember(int memberId) {
-        List<Transaction> all = TempDatabase.getAuctionTransactions();
-        List<Transaction> result = new ArrayList<>();
-
-        for (Transaction transaction : all) {
-            if (transaction.getBuyer().getId() == memberId || transaction.getSeller().getId() == memberId) {
-                result.add(transaction);
-            }
-        }
-
-        if (result.isEmpty()) {
-            System.out.println("[System]: No transactions found for member ID: " + memberId);
+        User user = TempDatabase.getUserById(memberId);
+        if (!(user instanceof Member member)) {
+            System.out.println("[Error]: Member not found.");
             return;
         }
 
-        for (Transaction transaction : result) {
-            System.out.println(transaction.toString());
+        List<Transaction> list = member.getMyTransactions();
+
+        if (list.isEmpty()) {
+            System.out.println("[System]: No transactions found.");
+        } else {
+            list.forEach(transaction -> System.out.println(transaction.toString()));
         }
     }
 }
