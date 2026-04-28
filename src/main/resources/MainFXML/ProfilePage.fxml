@@ -111,6 +111,21 @@
                <Button mnemonicParsing="false" onAction="#handleChangePassword" style="-fx-background-color: green; -fx-text-fill: white;" text="Save" />
                 </VBox>
 
+                <!-- FINANCE -->
+                <VBox fx:id="financePane" style="-fx-background-color: #475569; -fx-padding: 25; -fx-background-radius: 12;" visible="false">
+                    <Label prefHeight="19.0" prefWidth="153.0" style="-fx-text-fill: white; -fx-font-size: 16; -fx-font-weight: bold;" text="-Available Balance :" />
+               <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+                  <children>
+                     <Label alignment="TOP_LEFT" style="-fx-background-color: white; -fx-label-padding: 10 10 10 10;" text="[+ Deposit ]" />
+                     <Region prefHeight="200.0" prefWidth="200.0" />
+                     <Label alignment="CENTER_RIGHT" style="-fx-background-color: white; -fx-label-padding: 10 10 10 10;" text="[- Withdraw ]" />
+                  </children>
+                  <opaqueInsets>
+                     <Insets top="10.0" />
+                  </opaqueInsets>
+               </HBox>
+                </VBox>
+
                 <!-- NOTIFICATION -->
                 <VBox fx:id="notificationPane" style="-fx-background-color: #475569; -fx-padding: 25; -fx-background-radius: 12;" visible="false">
                     <Label style="-fx-text-fill: #e2e8f0; -fx-font-size: 16; -fx-font-weight: bold;" text="Notifications" />
