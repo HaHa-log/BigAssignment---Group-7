@@ -53,7 +53,11 @@ public class ProfilePageController {
         usernameLabel.setText(user.getFirstName() + " " + user.getLastName());
         phoneLabel.setText(user.getPhoneNumber());
         emailLabel.setText(user.getEmail());
-        aboutLabel.setText("Not yet set");
+        if (user.getAbout() == null || user.getAbout().isEmpty()) {
+            aboutLabel.setText("Not yet set");
+        } else {
+            aboutLabel.setText(user.getAbout());
+        }
         if (user.isAdmin()) {
             roleLabel.setText("Admin");
         }
@@ -135,8 +139,10 @@ public class ProfilePageController {
         String about = aboutField.getText();
         String phone = phoneField.getText();
         String email = emailField.getText();
+        
         user.setEmail(email);
         user.setPhoneNumber(phone);
+        user.setAbout(about);
 
         showProfile();
     }
