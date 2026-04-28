@@ -16,10 +16,10 @@ public class ProfilePageController {
     User user = SessionManager.getCurrentUser();
 
     @FXML
-    private VBox profilePane, editPane, passwordPane, notificationPane, historyPane;
+    private VBox profilePane, editPane, passwordPane,financePane, notificationPane, historyPane;
 
     @FXML
-    private Label tabProfile, tabPassword, tabNotification, tabHistory;
+    private Label tabProfile, tabPassword,tabFinance, tabNotification, tabHistory;
 
     @FXML
     private Label usernameLabel, aboutLabel, phoneLabel, emailLabel, roleLabel;
