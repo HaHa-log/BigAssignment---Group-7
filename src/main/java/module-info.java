@@ -5,6 +5,7 @@ module BigAssignment.Group7 {
     requires java.desktop;
     requires java.prefs;
     requires com.zaxxer.hikari;
+    requires org.slf4j;
 
     // Permissions for the main application entry point
     opens Client to javafx.graphics, javafx.fxml;

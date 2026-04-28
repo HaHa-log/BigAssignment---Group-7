@@ -9,8 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
-import static javafx.scene.paint.Color.GREEN;
-import static javafx.scene.paint.Color.RED;
+import static javafx.scene.paint.Color.*;
 
 public class ProfilePageController {
 
