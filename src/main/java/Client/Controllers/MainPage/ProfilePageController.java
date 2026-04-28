@@ -39,7 +39,7 @@ public class ProfilePageController {
             "-fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-cursor: hand;";
 
     private final String NORMAL =
-            "-fx-text-fill: white; -fx-cursor: hand;";
+            "-fx-text-fill: #475569; -fx-cursor: hand;";
 
 
     // INIT
@@ -130,8 +130,6 @@ public class ProfilePageController {
     }
 
     // SAVE PROFILE
-    //FOR THE SECOND TIME I HAVE TO REWRITE THÍS METHOD, PLEASE DON'T MODIFY THIS
-    //HOW WOULD THIS WORK IF YOU DON'T SET THE EMAIL UYEN??
     @FXML
     public void handleSave(ActionEvent event) {
 
@@ -161,7 +159,7 @@ public class ProfilePageController {
             if (newPassword.equals(newPasswordConfirm)) {
                 if (newPassword != null) {
                     user.setPassword(newPassword);
-                    passwordChangeStatus.setTextFill(GREEN);
+                    passwordChangeStatus.setTextFill(WHITE);
                     passwordChangeStatus.setText("Object updated. New password is: " + user.getPassword());
                 } else {
                     passwordChangeStatus.setText("Please enter your new password");
