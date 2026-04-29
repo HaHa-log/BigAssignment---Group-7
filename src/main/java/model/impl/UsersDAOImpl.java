@@ -34,12 +34,12 @@ public class UsersDAOImpl implements UsersDAO {
 
             int rowsAffected = st.executeUpdate();
             if (rowsAffected > 0) {
-                ResultSet rs = st.getGeneratedKeys();
-                if (rs.next()) {
-                    int id = rs.getInt(1);
-                    user.setId(id);
+                try (ResultSet rs = st.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        int id = rs.getInt(1);
+                        user.setId(id);
+                    }
                 }
-                DB.closeResultSet(rs);
             } else {
                 throw new DbException("Unexpected Error ! No rows affected !");
             }
@@ -67,6 +67,7 @@ public class UsersDAOImpl implements UsersDAO {
         }
     }
 
+    @Override
     public void update(User user) {
         String sql = "UPDATE users "
                 +"SET email = ?, phoneNumber = ?, firstName = ?, lastName = ?, password = ?, isAdmin = ?, isBlocked = ?, balance = ? "
@@ -99,12 +100,12 @@ public class UsersDAOImpl implements UsersDAO {
             PreparedStatement st = conn.prepareStatement(sql)) {
 
             st.setInt(1, id);
-            ResultSet rs = st.executeQuery();
-            if (rs.next()){
-                Member member = instantiateMember(rs);
-                return member;
+            try (ResultSet rs = st.executeQuery()) {
+                if (rs.next()){
+                    Member member = instantiateMember(rs);
+                    return member;
+                }
             }
-            DB.closeResultSet(rs);
             return null;
         } catch (SQLException e){
             throw new DbException(e.getMessage());
@@ -119,13 +120,12 @@ public class UsersDAOImpl implements UsersDAO {
             PreparedStatement st = conn.prepareStatement(sql)) {
 
             st.setString(1, email);
-            ResultSet rs = st.executeQuery();
-            if (rs.next()){
-                Member member = instantiateMember(rs);
-                return member;
+            try (ResultSet rs = st.executeQuery()) {
+                if (rs.next()) {
+                    Member member = instantiateMember(rs);
+                    return member;
+                }
             }
-
-            DB.closeResultSet(rs);
             return null;
         } catch (SQLException e){
             throw new DbException(e.getMessage());
@@ -139,19 +139,18 @@ public class UsersDAOImpl implements UsersDAO {
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
 
-            ResultSet rs = st.executeQuery();
-            List<User> list = new ArrayList<>();
+            try (ResultSet rs = st.executeQuery()) {
+                List<User> list = new ArrayList<>();
 
-            while (rs.next()) {
-                if (rs.getBoolean("isAdmin") == false) {
-                    list.add(instantiateMember(rs));
-                } else {
-                    list.add(instantiateAdmin(rs));
+                while (rs.next()) {
+                    if (rs.getBoolean("isAdmin") == false) {
+                        list.add(instantiateMember(rs));
+                    } else {
+                        list.add(instantiateAdmin(rs));
+                    }
                 }
+                return list;
             }
-
-            DB.closeResultSet(rs);
-            return list;
         } catch (SQLException e) {
             throw new DbException(e.getMessage());
         }
@@ -164,39 +163,38 @@ public class UsersDAOImpl implements UsersDAO {
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
 
-            ResultSet rs = st.executeQuery();
-            List<Member> list = new ArrayList<>();
+            try (ResultSet rs = st.executeQuery()) {
+                List<Member> list = new ArrayList<>();
 
-            while (rs.next()) {
-                if (rs.getBoolean("isAdmin") == false) {
-                    list.add(instantiateMember(rs));
+                while (rs.next()) {
+                    if (rs.getBoolean("isAdmin") == false) {
+                        list.add(instantiateMember(rs));
+                    }
                 }
+                return list;
             }
-
-            DB.closeResultSet(rs);
-            return list;
         } catch (SQLException e) {
             throw new DbException(e.getMessage());
         }
     }
 
+    @Override
     public List<Admin> getAllAdmin() {
         String sql = "SELECT * FROM users";
 
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
 
-            ResultSet rs = st.executeQuery();
-            List<Admin> list = new ArrayList<>();
+            try (ResultSet rs = st.executeQuery()) {
+                List<Admin> list = new ArrayList<>();
 
-            while (rs.next()) {
-                if (rs.getBoolean("isAdmin") == true) {
-                    list.add(instantiateAdmin(rs));
+                while (rs.next()) {
+                    if (rs.getBoolean("isAdmin") == true) {
+                        list.add(instantiateAdmin(rs));
+                    }
                 }
+                return list;
             }
-
-            DB.closeResultSet(rs);
-            return list;
         } catch (SQLException e) {
             throw new DbException(e.getMessage());
         }
