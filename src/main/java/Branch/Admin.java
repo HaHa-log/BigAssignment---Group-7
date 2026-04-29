@@ -15,6 +15,11 @@ public class Admin extends User {
         super(firstName, lastName, email, phoneNumber,password, 0.0);
     }
 
+    @Override
+    public boolean isBlocked() {
+        return false;
+    }
+
     public void blockUser(int userId, LocalDateTime until) {
         User user = userDb.getById(userId);
 

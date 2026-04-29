@@ -1,107 +1,66 @@
 package Branch;
 
-import Branch.Common.Email;
 import Branch.Common.FullName;
+import Branch.Common.Email;
 import Branch.Common.PhoneNumber;
-import model.UsersDAO;
-import model.impl.DaoFactory;
+import Branch.Common.Balance;
 
-import java.util.regex.Pattern;
 import java.time.LocalDateTime;
 
 public abstract class User extends Entity {
-    private FullName fullname;
+    private FullName fullName;
     private Email email;
     private PhoneNumber phoneNumber;
     private String password;
-    private double balance;
-    private boolean isAdmin = false;
+    private Balance balance;
+    private boolean isAdmin;
     private boolean isBlocked = false;
-    private LocalDateTime blockedUntil = null;
 
-    private UsersDAO userDatabase = DaoFactory.createUsersDAO();
-
-    public User(String firstName, String lastName, String email, String phoneNumber, String password, double balance) {
-        this.fullname = new FullName(firstName, lastName);
-        this.email = new Email(email);
-        this.phoneNumber = new PhoneNumber(phoneNumber);
+    public User(int id, FullName fullName, Email email, PhoneNumber phoneNumber, String password, Balance balance) {
+        super(id, fullName.toString());
+        this.fullName = fullName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
         this.setPassword(password);
-        this.setBalance(balance);
+        this.balance = balance;
     }
 
-    public void setFirstName(String fstName) {
-        this.fullname = new FullName(fstName, fullname.getLastName());
-        userDatabase.update(this);
-    }
-
-    public void setLastName(String lstName) {
-        this.fullname = new FullName(fullname.getFirstName(), lstName);
-        userDatabase.update(this);
-    }
-
-    public static boolean isValidEmail(String email) {
-        String EMAIL_PATTERN = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
-        return Pattern.compile(EMAIL_PATTERN).matcher(email).matches();
-    }
-
-    public void setEmail(String email) {
-        if (isValidEmail(email)) {
-            Email userEmail = new Email(email);
-            this.email = userEmail;
-            userDatabase.update(this);
-        } else {
-            throw new IllegalArgumentException("[Error]: Invalid email format");
-        }
-    }
-
-    public static boolean isValidPhoneNumber(String phone) {
-        String regex = "^0\\d{9}$";
-        return phone != null && phone.matches(regex);
-    }
-
-    public void setPhoneNumber(String number) {
-        if (isValidPhoneNumber(number)) {
-            PhoneNumber contactNumber = new PhoneNumber(number);
-            this.phoneNumber = contactNumber;
-            userDatabase.update(this);
-        } else {
-            throw new IllegalArgumentException("[Error]: Invalid phone number format");
-        }
+    public User(FullName fullName, Email email, PhoneNumber phoneNumber, String password, Balance balance) {
+        super(fullName.toString());
+        this.fullName = fullName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.setPassword(password);
+        this.balance = balance;
     }
 
     public void setPassword(String pass) {
+        //Coder's note: Cân nhắc đủ kí tự đặc biệt
         if (pass.length() >= 6) {
             this.password = pass;
-            userDatabase.update(this);
         } else {
             throw new IllegalArgumentException("[Error]: Password must have more than 6 digits");
         }
     }
 
-    public void setBalance(double amount) {
-        if (amount < 0) {
-            System.out.println("[Error]: Amount must NOT be negative");
-        } else {
-            this.balance += amount;
-            userDatabase.update(this);
-        }
+    public boolean depositMoney(double amount) {
+        return this.balance.deposit(amount);
     }
 
-    public void setBlocked(LocalDateTime until) {
-        this.isBlocked = true;
-        this.blockedUntil = until;
-        userDatabase.update(this);
+    public boolean withdrawMoney(double amount) {
+        return this.balance.withdraw(amount);
     }
 
-    public String getFullName() {
-        return fullname.toString();
+    public double getCurrentBalance() {
+        return this.balance.showBalance();
     }
+
     public String getFirstName() {
-        return fullname.getFirstName();
+        return fullName.getFirstName();
     }
 
     public String getLastName() {
-        return fullname.getLastName();
+        return fullName.getLastName();
     }
 
     public String getEmail() {
@@ -116,28 +75,11 @@ public abstract class User extends Entity {
         return password;
     }
 
-    public double getBalance() { return balance; }
-
-    public boolean isAdmin() { return isAdmin; }
-
-    public boolean isBlocked() {
-        if (isBlocked && blockedUntil != null && LocalDateTime.now().isAfter(blockedUntil)) {
-            isBlocked = false;
-            blockedUntil = null;
-        }
-        return isBlocked;
+    public double getBalance() {
+        return balance.showBalance();
     }
 
-    public void isUnblocked() {
-        this.isBlocked = false;
-        this.blockedUntil = null;
-    }
+    public abstract boolean isAdmin();
 
-    public boolean isEqual(User this, User other) {
-        boolean result = false;
-        if (this.getId() == other.getId()) {
-            result = true;
-        }
-        return result;
-    }
+    public abstract boolean isBlocked();
 }
