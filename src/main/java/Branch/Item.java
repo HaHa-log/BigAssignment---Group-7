@@ -2,6 +2,8 @@ package Branch;
 
 //Tạm thời sửa item từ abstract thành concrete class
 
+import java.time.LocalDateTime;
+
 public class Item extends Entity {
     private double startingPrice;
     private String description;
@@ -11,6 +13,8 @@ public class Item extends Entity {
         SOLD
     }
     private Status status = Status.AVAILABLE;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public Item(String name, double startingPrice, String description) {
         super(name);
@@ -28,6 +32,10 @@ public class Item extends Entity {
 
     public void setStatus(Status status) { this.status = status; }
 
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
     public double getStartingPrice() {
         return startingPrice;
     }
@@ -37,6 +45,10 @@ public class Item extends Entity {
     }
 
     public Status getStatus() { return status; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
 
     public boolean isAvailable() {
         return this.status == Status.AVAILABLE;
