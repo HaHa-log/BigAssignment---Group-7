@@ -114,19 +114,31 @@
                 </VBox>
 
                 <!-- FINANCE -->
-                <VBox fx:id="financePane" style="-fx-background-color: #475569; -fx-padding: 25; -fx-background-radius: 12;" visible="false">
-                    <Label prefHeight="19.0" prefWidth="153.0" style="-fx-text-fill: white; -fx-font-size: 16; -fx-font-weight: bold;" text="-Available Balance :" />
-               <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
-                  <children>
-                     <Label alignment="TOP_LEFT" style="-fx-background-color: white; -fx-label-padding: 10 10 10 10;" text="[+ Deposit ]" />
-                     <Region prefHeight="200.0" prefWidth="200.0" />
-                     <Label alignment="CENTER_RIGHT" style="-fx-background-color: white; -fx-label-padding: 10 10 10 10;" text="[- Withdraw ]" />
-                  </children>
-                  <opaqueInsets>
-                     <Insets top="10.0" />
-                  </opaqueInsets>
-               </HBox>
-                </VBox>
+                <VBox fx:id="financePane" spacing="15" style="-fx-background-color: #475569; -fx-padding: 20; -fx-background-radius: 10;" visible="false">
+
+                    <Label style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;" text="Finance" />
+
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label style="-fx-font-size: 16; -fx-text-fill: #e2e8f0;" text="Available Balance:" />
+
+                        <Label fx:id="balanceLabel" style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #16a34a; -fx-background-color: white;" text="00000" />
+                    </HBox>
+
+                    <HBox spacing="10">
+
+                        <Button onAction="#handleDeposit" style="-fx-background-color: #22c55e; -fx-text-fill: white; -fx-background-radius: 6;" text="Deposit" />
+
+                        <Button onAction="#handleWithdraw" style="-fx-background-color: #ef4444; -fx-text-fill: white; -fx-background-radius: 6;" text="Withdraw" />
+
+                    </HBox>
+
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label style="-fx-text-fill: #e2e8f0; -fx-font-size: 16;" text="Amount:" />
+
+                        <TextField fx:id="amountField" prefWidth="150" promptText="Enter amount" />
+                    </HBox>
+                    
+                    <Label fx:id="financeStatus" style="-fx-text-fill: #475569;" text="" />
 
                 <!-- NOTIFICATION -->
                 <VBox fx:id="notificationPane" style="-fx-background-color: #475569; -fx-padding: 25; -fx-background-radius: 12;" visible="false">
