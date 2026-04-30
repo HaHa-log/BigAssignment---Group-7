@@ -69,6 +69,7 @@ public class ProfilePageController {
     private void setActive(Label tab) {
         tabProfile.setStyle(NORMAL);
         tabPassword.setStyle(NORMAL);
+        tabFinance.setStyle(NORMAL);
         tabNotification.setStyle(NORMAL);
         tabHistory.setStyle(NORMAL);
 
@@ -79,6 +80,7 @@ public class ProfilePageController {
         profilePane.setVisible(false);
         editPane.setVisible(false);
         passwordPane.setVisible(false);
+        financePane.setVisible(false);
         notificationPane.setVisible(false);
         historyPane.setVisible(false);
     }
