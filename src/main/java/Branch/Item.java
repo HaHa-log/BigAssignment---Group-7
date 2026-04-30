@@ -22,6 +22,15 @@ public class Item extends Entity {
         this.description = description;
     }
 
+    public Item(String name, double startingPrice, String description, Status status, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        super(name);
+        this.startingPrice = startingPrice;
+        this.description = description;
+        this.status = status;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
     public void setStartingPrice(double startPrice) {
         this.startingPrice = startPrice;
     }

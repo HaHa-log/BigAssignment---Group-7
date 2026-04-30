@@ -7,6 +7,7 @@ import model.ItemsDAO;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ItemsDAOImpl implements ItemsDAO {
@@ -27,9 +28,9 @@ public class ItemsDAOImpl implements ItemsDAO {
                 try (ResultSet rs = st.getGeneratedKeys()) {
                     if (rs.next()) {
                         int id = rs.getInt(1);
-                        // Cách dùng chuẩn cho JDBC hiện đại
                         LocalDateTime createdAt = rs.getObject("created_at", LocalDateTime.class);
                         item.setId(id);
+                        item.setCreatedAt(createdAt);
                     }
                 }
             } else {
@@ -81,11 +82,55 @@ public class ItemsDAOImpl implements ItemsDAO {
 
     @Override
     public Item getById(int id) {
-        return null;
+        String sql = "SELECT * From users WHERE users_id = ?";
+
+        try(Connection conn = DB.getConnection();
+             PreparedStatement st = conn.prepareStatement(sql)) {
+
+            st.setInt(1, id);
+            try (ResultSet rs = st.executeQuery()) {
+                if (rs.next()) {
+                    Item item = instantiateItem(rs);
+                    return item;
+                }
+            }
+            return null;
+        }catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
     }
 
     @Override
     public List<Item> getAll() {
-        return List.of();
+        String sql = "SELECT * FROM users";
+
+        try(Connection conn = DB.getConnection();
+             PreparedStatement st = conn.prepareStatement(sql)) {
+
+            try (ResultSet rs = st.executeQuery()) {
+                List<Item> list = new ArrayList<>();
+
+                while (rs.next()) {
+                    list.add(instantiateItem(rs));
+                }
+                return list;
+            }
+        }catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+    }
+
+    private Item instantiateItem(ResultSet rs) throws SQLException {
+        Item obj = new Item(
+                rs.getString("name"),
+                rs.getDouble("startingPrice"),
+                rs.getString("description"),
+                Item.Status.valueOf(rs.getString("status")),
+                rs.getObject("created_at", LocalDateTime.class),
+                rs.getObject("updated_at", LocalDateTime.class)
+        );
+
+        obj.setId(rs.getInt("users_id"));
+        return obj;
     }
 }
