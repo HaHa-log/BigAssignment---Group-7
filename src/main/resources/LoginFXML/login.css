@@ -1,0 +1,53 @@
+/* 1. Dynamic Background: Using a gradient to add depth */
+.root-pane {
+    -fx-background-color: linear-gradient(to bottom, #1C5D99, #C2D7FF);
+}
+
+.glass-card {
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+    -fx-background-radius: 20;
+    -fx-border-color: rgba(255, 255, 255, 0.25);
+    -fx-border-radius: 20;
+    -fx-border-width: 1.2;
+
+    -fx-min-width: 320px;
+    -fx-min-height: 480px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 30, 0.1, 0, 10);
+}
+
+.button {
+    -fx-background-color: #5478FF;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+    -fx-padding: 10 20;
+}
+
+.button:hover {
+    -fx-background-color: #728fff;
+}
+
+.text-field, .password-field {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: rgba(255, 255, 255, 0.6);
+    -fx-background-radius: 8;
+    -fx-border-color: rgba(255, 255, 255, 0.15);
+    -fx-border-radius: 8;
+}
+
+.text-field:focused, .password-field:focused {
+    -fx-border-color: #5478FF;
+}
+
+.label {
+    -fx-text-fill: white;
+}
+
+.link-text {
+    -fx-fill: #5478FF;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}

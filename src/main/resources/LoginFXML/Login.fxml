@@ -9,18 +9,18 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<VBox alignment="CENTER" spacing="10" style="-fx-padding: 20 20 20 20;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.LoginPage.LoginController"> <padding>
+<VBox alignment="CENTER" spacing="10" style="-fx-padding: 20 20 20 20;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.LoginPage.LoginController" stylesheets="login.css" styleClass="glass-card"> <padding>
     <Insets bottom="20" left="20" right="20" top="20" />
 </padding>
 
     <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="LOGIN" />
 
-    <TextField fx:id="emailField" promptText="Email" />
-    <PasswordField fx:id="passwordField" promptText="Password" />
+    <TextField fx:id="emailField" promptText="Email" styleClass="text-field"/>
+    <PasswordField fx:id="passwordField" promptText="Password" styleClass="password-field"/>
 
-    <Button onAction="#handleLogin" text="Login" />
+    <Button onAction="#handleLogin" text="Login" styleClass="button"/>
    <CheckBox fx:id="rememberMeCheckbox" mnemonicParsing="false" onAction="#rememberUser" text="Remember User?" textFill="#26306e" />
-    <Label fx:id="messageLabel" />
+    <Label fx:id="loginLabel" />
    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Do not have an account?" />
-   <Text accessibleRole="BUTTON" fill="#26306e" onMouseClicked="#goToRegister" strokeType="OUTSIDE" strokeWidth="0.0" text="Click to register" />
+   <Text accessibleRole="BUTTON" fill="#26306e" onMouseClicked="#goToRegister" strokeType="OUTSIDE" strokeWidth="0.0" text="Click to register" styleClass="link-text"/>
 </VBox>

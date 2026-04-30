@@ -21,7 +21,7 @@ public class LoginController {
     @FXML
     private PasswordField passwordField;
     @FXML
-    private Label messageLabel;
+    private Label loginLabel;
     @FXML
     private CheckBox rememberMeCheckbox;
 
@@ -42,8 +42,8 @@ public class LoginController {
         String passwordInput = passwordField.getText();
 
         if (passwordInput.isEmpty() || emailInput.isEmpty()) {
-            messageLabel.setTextFill(RED);
-            messageLabel.setText("PLease enter your passwword and email!");
+            loginLabel.setTextFill(RED);
+            loginLabel.setText("PLease enter your passwword and email!");
         }
         else {
             User loginResult = login(emailInput, passwordInput);
@@ -51,8 +51,8 @@ public class LoginController {
                 mainController.onSuccessfulLogin();
             }
             else {
-                messageLabel.setTextFill(RED);
-                messageLabel.setText("Incorrect password/email!");
+                loginLabel.setTextFill(RED);
+                loginLabel.setText("Incorrect password/email!");
             }
         }
     }

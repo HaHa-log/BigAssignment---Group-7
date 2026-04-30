@@ -3,9 +3,12 @@ package Client.Controllers.LoginPage;
 import Branch.AuthService;
 import Branch.Member;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import java.io.IOException;
+
+import static javafx.scene.paint.Color.RED;
 
 public class RegisterController {
     @FXML
@@ -19,6 +22,9 @@ public class RegisterController {
     @FXML
     private PasswordField passwordField;
     private DemoPageController mainController;
+
+    @FXML
+    private Label registerLabel;
 
     public void setMainController(DemoPageController mainController) {
         this.mainController = mainController;
@@ -38,12 +44,19 @@ public class RegisterController {
         String password = passwordField.getText();
         Member member = AuthService.registerNewUser(firstName, lastName, email, phoneNumber, password);
 
+        registerLabel.setTextFill(RED);
+
+        if (firstName == null || lastName == null || email == null || phoneNumber == null || password == null) {
+            registerLabel.setText("Please fill in all the fields");
+            return ;
+        }
+
         try {
             if (member != null) {
                 goToLogin();
             }
             else {
-                System.out.println("Registration failed!");
+                registerLabel.setText("Registration failed!");
             }
         } catch (IOException e) {
             e.printStackTrace();
