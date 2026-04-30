@@ -73,7 +73,7 @@ public class SceneManager {
             stage.setScene(new Scene(root));
             if (fxmlPath.contains("DemoPage")) {
                 stage.setFullScreen(false);
-                stage.setHeight(600);
+                stage.setMinHeight(650);
                 stage.setWidth(800);
                 stage.setResizable(true);
             } else {

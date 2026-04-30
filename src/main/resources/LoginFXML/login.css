@@ -1,6 +1,13 @@
-/* 1. Dynamic Background: Using a gradient to add depth */
 .root-pane {
     -fx-background-color: linear-gradient(to bottom, #1C5D99, #C2D7FF);
+    -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+.title {
+    -fx-font-family: "Segoe UI", "Arial", sans-serif !important;
+    -fx-font-size: 28px !important;
+    -fx-font-weight: bold !important;
+    -fx-text-fill: white;
 }
 
 .glass-card {
@@ -11,18 +18,28 @@
     -fx-border-width: 1.2;
 
     -fx-min-width: 320px;
-    -fx-min-height: 480px;
+    -fx-pref-width: 320px;
+    -fx-min-height: 350px;
+    -fx-pref-height: 550px;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 30, 0.1, 0, 10);
+}
+
+.header {
+    -fx-font-family: Segoe UI, Arial, sans-serif;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
 }
 
 .button {
     -fx-background-color: #5478FF;
     -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-font-size: 14px;
+    -fx-font-size: 12px;
     -fx-background-radius: 10;
     -fx-cursor: hand;
     -fx-padding: 10 20;
+    -fx-margin: 10;
 }
 
 .button:hover {
@@ -31,11 +48,14 @@
 
 .text-field, .password-field {
     -fx-background-color: rgba(255, 255, 255, 0.1);
-    -fx-text-fill: white;
     -fx-prompt-text-fill: rgba(255, 255, 255, 0.6);
     -fx-background-radius: 8;
     -fx-border-color: rgba(255, 255, 255, 0.15);
     -fx-border-radius: 8;
+
+    -fx-font-size: 13px;
+    -fx-font-family: "Segoe UI Semilight";
+    -fx-text-fill: white;
 }
 
 .text-field:focused, .password-field:focused {
@@ -46,8 +66,32 @@
     -fx-text-fill: white;
 }
 
+.text {
+    -fx-fill: rgba(255, 255, 255, 0.8);
+    -fx-font-size: 12px;
+}
+
 .link-text {
     -fx-fill: #5478FF;
     -fx-font-weight: bold;
+    -fx-font-size: 12px;
     -fx-cursor: hand;
+}
+
+.link-text:hover {
+    -fx-fill: #FFFFFF;
+}
+
+.check-box {
+    -fx-text-fill: rgba(255, 255, 255, 0.8);
+    -fx-font-size: 12px;
+}
+
+.check-box .box {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-border-color: rgba(255, 255, 255, 0.3);
+}
+
+.check-box:selected .mark {
+    -fx-background-color: #5478FF;
 }

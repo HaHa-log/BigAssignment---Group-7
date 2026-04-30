@@ -9,18 +9,33 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<VBox alignment="CENTER" spacing="10" style="-fx-padding: 20 20 20 20;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.LoginPage.LoginController" stylesheets="login.css" styleClass="glass-card"> <padding>
-    <Insets bottom="20" left="20" right="20" top="20" />
-</padding>
+<VBox alignment="CENTER"
+      spacing="15"
+      styleClass="glass-card"
+      xmlns="http://javafx.com/javafx/25"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Client.Controllers.LoginPage.LoginController"
+      stylesheets="@login.css">
 
-    <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="LOGIN" />
+    <padding>
+        <Insets bottom="40" left="30" right="30" top="40" />
+    </padding>
 
-    <TextField fx:id="emailField" promptText="Email" styleClass="text-field"/>
-    <PasswordField fx:id="passwordField" promptText="Password" styleClass="password-field"/>
+    <Label text="LOGIN" styleClass="header"/>
 
-    <Button onAction="#handleLogin" text="Login" styleClass="button"/>
-   <CheckBox fx:id="rememberMeCheckbox" mnemonicParsing="false" onAction="#rememberUser" text="Remember User?" textFill="#26306e" />
-    <Label fx:id="loginLabel" />
-   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Do not have an account?" />
-   <Text accessibleRole="BUTTON" fill="#26306e" onMouseClicked="#goToRegister" strokeType="OUTSIDE" strokeWidth="0.0" text="Click to register" styleClass="link-text"/>
+    <VBox spacing="20" alignment="CENTER">
+        <TextField fx:id="emailField" promptText="Email" styleClass="text-field"/>
+        <PasswordField fx:id="passwordField" promptText="Password" styleClass="password-field"/>
+    </VBox>
+
+    <Button onAction="#handleLogin" text="LOG IN" styleClass="button" maxWidth="Infinity"/>
+
+    <CheckBox fx:id="rememberMeCheckbox" mnemonicParsing="false" onAction="#rememberUser" text="Remember User?" />
+
+    <Label fx:id="loginLabel" style="-fx-font-size: 11px; -fx-text-fill: #ff6b6b;" />
+
+    <VBox alignment="CENTER" spacing="5">
+        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Do not have an account?" styleClass="text"/>
+        <Text accessibleRole="BUTTON" onMouseClicked="#goToRegister" strokeType="OUTSIDE" strokeWidth="0.0" text="Click to register" styleClass="link-text"/>
+    </VBox>
 </VBox>

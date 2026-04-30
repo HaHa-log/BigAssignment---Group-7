@@ -9,21 +9,24 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<VBox alignment="CENTER" spacing="10" style="-fx-padding: 20 20 20 20;" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.LoginPage.RegisterController" stylesheets="login.css" styleClass="glass-card">
+<VBox alignment="CENTER"
+      spacing="15"
+      styleClass="glass-card"
+      xmlns="http://javafx.com/javafx/25"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Client.Controllers.LoginPage.RegisterController"
+      stylesheets="@login.css">
+
     <padding>
-        <Insets bottom="20" left="20" right="20" top="20" />
+        <Insets bottom="40" left="30" right="30" top="40" />
     </padding>
 
-    <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="CREATE ACCOUNT">
-        <VBox.margin>
-            <Insets bottom="2.0" />
-        </VBox.margin>
-    </Label>
+    <Label text="CREATE ACCOUNT" styleClass="header"/>
 
     <HBox spacing="10">
         <children>
-            <TextField fx:id="firstNameField" prefWidth="100.0" promptText="First name" HBox.hgrow="ALWAYS" styleClass="text-field"/>
-            <TextField fx:id="lastNameField" prefWidth="100.0" promptText="Last name" HBox.hgrow="ALWAYS" styleClass="text-field"/>
+            <TextField fx:id="firstNameField" promptText="First name" HBox.hgrow="ALWAYS" styleClass="text-field"/>
+            <TextField fx:id="lastNameField" promptText="Last name" HBox.hgrow="ALWAYS" styleClass="text-field"/>
         </children>
     </HBox>
 
@@ -31,18 +34,18 @@
     <TextField fx:id="phoneNumberField" promptText="Phone number" styleClass="text-field"/>
     <PasswordField fx:id="passwordField" promptText="Password" styleClass="password-field"/>
 
-    <Button onAction="#handleRegister" text="Register" styleClass="button">
+    <Button onAction="#handleRegister" text="REGISTER" styleClass="button" maxWidth="Infinity">
         <VBox.margin>
-            <Insets top="2.0" />
+            <Insets top="10.0" />
         </VBox.margin>
     </Button>
 
-    <Label fx:id="registerLabel"/>
+    <Label fx:id="registerLabel" style="-fx-font-size: 11px; -fx-text-fill: #ff6b6b;" />
 
-    <VBox alignment="CENTER" spacing="10">
+    <VBox alignment="CENTER" spacing="5">
         <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Already have an account?" />
-            <Text accessibleRole="BUTTON" fill="#26306e" onMouseClicked="#goToLogin" strokeType="OUTSIDE" strokeWidth="0.0" text="Click here to login" styleClass="link-text"/>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Already have an account?" styleClass="text" />
+            <Text accessibleRole="BUTTON" onMouseClicked="#goToLogin" strokeType="OUTSIDE" strokeWidth="0.0" text="Click here to login" styleClass="link-text"/>
         </children>
     </VBox>
 </VBox>
