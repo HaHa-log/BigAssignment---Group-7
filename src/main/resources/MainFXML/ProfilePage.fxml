@@ -14,7 +14,8 @@
 
 <?import javafx.scene.layout.Region?>
 <?import javafx.geometry.Insets?>
-<BorderPane style="-fx-background-color: #0f172a; -fx-font-family: 'Segoe UI';" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.MainPage.ProfilePageController">
+
+<BorderPane style="-fx-background-color: #0f172a; -fx-font-family: 'Segoe UI';" stylesheets="@profile.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.MainPage.ProfilePageController">
 
     <!-- TOP -->
     <top>
@@ -35,7 +36,7 @@
 
             <Label fx:id="roleLabel" style="-fx-text-fill: #A0AEC0; -fx-font-size: 16;" text="User role" />
 
-            <Button onAction="#showEditProfile" style="-fx-background-color: #F2F2F2; -fx-text-fill: black; -fx-background-radius: 20; -fx-padding: 8 18;" text="Edit Profile" />
+            <Button onAction="#showEditProfile" styleClass="edit-btn" text="Edit Profile" />
         </VBox>
     </left>
 
