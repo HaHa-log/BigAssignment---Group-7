@@ -1,6 +1,7 @@
 package model.impl;
 
-import model.AuctionsDAO;
+//Temporarily put AuctionsDAO in comment
+//import model.AuctionsDAO;
 import model.ItemsDAO;
 import model.UsersDAO;
 
@@ -13,7 +14,9 @@ public class DaoFactory {
         return new ItemsDAOImpl();
     }
 
+    /*
     public static AuctionsDAO createAuctionsDAO() {
         return new AuctionsDAOImpl();
     }
+     */
 }

@@ -12,6 +12,8 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.layout.Region?>
+<?import javafx.geometry.Insets?>
 <BorderPane style="-fx-background-color: #0f172a; -fx-font-family: 'Segoe UI';" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.MainPage.ProfilePageController">
 
     <!-- TOP -->
