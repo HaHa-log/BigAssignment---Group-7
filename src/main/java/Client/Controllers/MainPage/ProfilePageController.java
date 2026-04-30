@@ -191,4 +191,14 @@ public class ProfilePageController {
         }
     }
 
+    @FXML
+    private void handleDeposit() {
+    }
+
+    @FXML
+    private void handleWithdraw() {
+
+
+    }
+
 }
