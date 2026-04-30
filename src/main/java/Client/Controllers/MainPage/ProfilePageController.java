@@ -33,6 +33,17 @@ public class ProfilePageController {
     @FXML
     private TextField phoneField, emailField, oldPasswordField, newPasswordField, newPasswordConfirmField;
 
+    @FXML
+    private Label balanceLabel;
+
+    @FXML
+    private TextField amountField;
+
+    @FXML
+    private Label financeStatus;
+
+    private int balance = 0;
+
     //  STYLE
     private final String ACTIVE =
             "-fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-cursor: hand;";
