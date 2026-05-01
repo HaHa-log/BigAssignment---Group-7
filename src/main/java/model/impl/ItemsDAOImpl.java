@@ -28,9 +28,8 @@ public class ItemsDAOImpl implements ItemsDAO {
                 try (ResultSet rs = st.getGeneratedKeys()) {
                     if (rs.next()) {
                         int id = rs.getInt(1);
-                        LocalDateTime createdAt = rs.getObject("created_at", LocalDateTime.class);
                         item.setId(id);
-                        item.setCreatedAt(createdAt);
+                        item.setCreatedAt(LocalDateTime.now());
                     }
                 }
             } else {
@@ -53,7 +52,7 @@ public class ItemsDAOImpl implements ItemsDAO {
             int rows = st.executeUpdate();
 
             if (rows == 0) {
-                throw new DbException("User is invalid!");
+                throw new DbException("Item is invalid!");
             }
         } catch(SQLException ex){
             throw new DbException(ex.getMessage());
@@ -62,7 +61,7 @@ public class ItemsDAOImpl implements ItemsDAO {
 
     @Override
     public void update(Item item) {
-        String sql = "UPDATE users "
+        String sql = "UPDATE items "
                 +"SET name = ?, startingPrice = ?, description = ?, status = ? "
                 + " WHERE items_id = ? ";
         try(Connection conn = DB.getConnection();
@@ -74,6 +73,7 @@ public class ItemsDAOImpl implements ItemsDAO {
             st.setString(4, item.getStatus().name());
             st.setInt(5, item.getId());
             st.executeUpdate();
+            item.setUpdatedAt(LocalDateTime.now());
 
         } catch(SQLException ex){
             throw new DbException(ex.getMessage());
@@ -82,7 +82,7 @@ public class ItemsDAOImpl implements ItemsDAO {
 
     @Override
     public Item getById(int id) {
-        String sql = "SELECT * From users WHERE users_id = ?";
+        String sql = "SELECT * From items WHERE items_id = ?";
 
         try(Connection conn = DB.getConnection();
              PreparedStatement st = conn.prepareStatement(sql)) {
@@ -101,8 +101,28 @@ public class ItemsDAOImpl implements ItemsDAO {
     }
 
     @Override
+    public List<Item> getByName(String name) {
+        String sql = "SELECT * FROM items";
+
+        try(Connection conn = DB.getConnection();
+            PreparedStatement st = conn.prepareStatement(sql)) {
+
+            try (ResultSet rs = st.executeQuery()) {
+                List<Item> list = new ArrayList<>();
+
+                while (rs.next()) {
+                    list.add(instantiateItem(rs));
+                }
+                return list;
+            }
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+    }
+
+    @Override
     public List<Item> getAll() {
-        String sql = "SELECT * FROM users";
+        String sql = "SELECT * FROM items";
 
         try(Connection conn = DB.getConnection();
              PreparedStatement st = conn.prepareStatement(sql)) {
@@ -126,8 +146,8 @@ public class ItemsDAOImpl implements ItemsDAO {
                 rs.getDouble("startingPrice"),
                 rs.getString("description"),
                 Item.Status.valueOf(rs.getString("status")),
-                rs.getObject("created_at", LocalDateTime.class),
-                rs.getObject("updated_at", LocalDateTime.class)
+                rs.getObject("createdAt", LocalDateTime.class),
+                rs.getObject("updatedAt", LocalDateTime.class)
         );
 
         obj.setId(rs.getInt("users_id"));

@@ -1,17 +1,22 @@
 package Branch;
 
 import Branch.User;
+import model.UsersDAO;
+import model.impl.DaoFactory;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Admin extends User {
+    private UsersDAO userDb = DaoFactory.createUsersDAO();
+
     public Admin(String firstName, String lastName, String email, String phoneNumber, String password) {
         super(firstName, lastName, email, phoneNumber,password, 0.0);
     }
 
     public void blockUser(int userId, LocalDateTime until) {
-        User user = TempDatabase.getUserById(userId);
+        User user = userDb.getById(userId);
 
         if (user == null) {
             System.out.println("[Error]: User not found");
@@ -23,7 +28,7 @@ public class Admin extends User {
     }
 
     public void unblockUser(int userId) {
-        User user = TempDatabase.getUserById(userId);
+        User user = userDb.getById(userId);
 
         if (user == null) {
             System.out.println("[Error]: User not found");

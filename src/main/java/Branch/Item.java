@@ -2,6 +2,9 @@ package Branch;
 
 //Tạm thời sửa item từ abstract thành concrete class
 
+import model.ItemsDAO;
+import model.impl.DaoFactory;
+
 import java.time.LocalDateTime;
 
 public class Item extends Entity {
@@ -15,6 +18,8 @@ public class Item extends Entity {
     private Status status = Status.AVAILABLE;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    private ItemsDAO itemsDb = DaoFactory.createItemDAO();
 
     public Item(String name, double startingPrice, String description) {
         super(name);
@@ -33,13 +38,18 @@ public class Item extends Entity {
 
     public void setStartingPrice(double startPrice) {
         this.startingPrice = startPrice;
+        itemsDb.update(this);
     }
 
     public void setDescription(String narrative) {
         this.description = narrative;
+        itemsDb.update(this);
     }
 
-    public void setStatus(Status status) { this.status = status; }
+    public void setStatus(Status status) {
+        this.status = status;
+        itemsDb.update(this);
+    }
 
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 

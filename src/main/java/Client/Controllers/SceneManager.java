@@ -12,6 +12,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import model.UsersDAO;
+import model.impl.DaoFactory;
+
 import java.io.IOException;
 
 public class SceneManager {
@@ -22,6 +25,8 @@ public class SceneManager {
 
     private static Preferences prefs = Preferences.userNodeForPackage(SceneManager.class);
     private static final String REMEMBER_KEY = "rememberUser";
+
+    private static UsersDAO userDb = DaoFactory.createUsersDAO();
 
     public static void setStage(Stage stage) {
         SceneManager.stage = stage;
@@ -100,7 +105,7 @@ public class SceneManager {
             String savedEmail = SessionManager.getSavedEmail();
 
             if (savedEmail != null) {
-                User user = TempDatabase.getUserByEmail(savedEmail);
+                User user = userDb.getByEmail(savedEmail);
                 SessionManager.loginCurrentUser(user);
                 SceneManager.loadLayout();
                 SceneManager.switchContent("/MainFXML/HomePage.fxml");
