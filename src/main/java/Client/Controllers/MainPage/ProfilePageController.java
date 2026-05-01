@@ -15,32 +15,37 @@ public class ProfilePageController {
 
     User user = SessionManager.getCurrentUser();
 
+    // PANES
     @FXML
-    private VBox profilePane, editPane, passwordPane,financePane, notificationPane, historyPane;
+    private VBox profilePane, editPane, passwordPane, financePane, notificationPane, historyPane;
 
+    // TABS
     @FXML
-    private Label tabProfile, tabPassword,tabFinance, tabNotification, tabHistory;
+    private Label tabProfile, tabPassword, tabFinance, tabNotification, tabHistory;
 
+    // PROFILE INFO
     @FXML
     private Label usernameLabel, aboutLabel, phoneLabel, emailLabel, roleLabel;
 
+    // INPUT FIELDS
     @FXML
     private TextArea aboutField;
+    @FXML
+    private TextField phoneField, emailField;
+    @FXML
+    private TextField oldPasswordField, newPasswordField, newPasswordConfirmField;
 
+    // FINANCE
+    @FXML
+    private VBox depositBox, withdrawBox;
+    @FXML
+    private TextField depositField, withdrawField, amountField;
+    @FXML
+    private Label balanceLabel, financeStatus;
+
+    // STATUS
     @FXML
     private Label passwordChangeStatus;
-
-    @FXML
-    private TextField phoneField, emailField, oldPasswordField, newPasswordField, newPasswordConfirmField;
-
-    @FXML
-    private Label balanceLabel;
-
-    @FXML
-    private TextField amountField;
-
-    @FXML
-    private Label financeStatus;
 
     //  STYLE
     private final String ACTIVE =
