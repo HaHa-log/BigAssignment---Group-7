@@ -101,21 +101,21 @@ public class ItemsDAOImpl implements ItemsDAO {
     }
 
     @Override
-    public List<Item> getByName(String name) {
-        String sql = "SELECT * FROM items";
+    public Item getByName(String name) {
+        String sql = "SELECT * FROM items WHERE name = ?";
 
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
 
+            st.setString(1, name);
             try (ResultSet rs = st.executeQuery()) {
-                List<Item> list = new ArrayList<>();
-
-                while (rs.next()) {
-                    list.add(instantiateItem(rs));
+                if (rs.next()) {
+                    Item item = instantiateItem(rs);
+                    return item;
                 }
-                return list;
             }
-        } catch (SQLException e) {
+            return null;
+        } catch (SQLException e){
             throw new DbException(e.getMessage());
         }
     }
@@ -150,7 +150,7 @@ public class ItemsDAOImpl implements ItemsDAO {
                 rs.getObject("updatedAt", LocalDateTime.class)
         );
 
-        obj.setId(rs.getInt("users_id"));
+        obj.setId(rs.getInt("items_id"));
         return obj;
     }
 }
