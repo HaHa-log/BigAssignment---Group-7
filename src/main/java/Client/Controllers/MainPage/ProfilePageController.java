@@ -213,4 +213,42 @@ public class ProfilePageController {
         depositBox.setManaged(false);
     }
 
+        @FXML
+    private void handleSaveDeposit() {
+        try {
+            double amount = Double.parseDouble(depositField.getText());
+
+            if (amount <= 0) return;
+
+            balance += amount;
+            balanceLabel.setText(String.valueOf(balance));
+
+            depositField.clear();
+            depositBox.setVisible(false);
+            depositBox.setManaged(false);
+
+        } catch (Exception e) {
+            System.out.println("Invalid input");
+        }
+    }
+
+    @FXML
+    private void handleSaveWithdraw() {
+        try {
+            double amount = Double.parseDouble(withdrawField.getText());
+
+            if (amount <= 0 || amount > balance) return;
+
+            balance -= amount;
+            balanceLabel.setText(String.valueOf(balance));
+
+            withdrawField.clear();
+            withdrawBox.setVisible(false);
+            withdrawBox.setManaged(false);
+
+        } catch (Exception e) {
+            System.out.println("Invalid input");
+        }
+    }
+
 }
