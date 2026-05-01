@@ -26,7 +26,7 @@
 ---
 
 ### 4. Công nghệ sử dụng (Tech Stack)
-- **Ngôn ngữ:** Java
+- **Ngôn ngữ:** Java ,CSS
 - **Giao diện:** JavaFX 
 - **Build tool:** Maven 
 - **Kiểm thử:** JUnit (cho các logic quan trọng như xử lý đấu giá đồng thời)
