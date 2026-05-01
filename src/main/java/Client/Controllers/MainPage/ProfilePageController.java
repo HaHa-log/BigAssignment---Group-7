@@ -197,12 +197,20 @@ public class ProfilePageController {
 
     @FXML
     private void handleDeposit() {
+        depositBox.setVisible(true);
+        depositBox.setManaged(true);
+
+        withdrawBox.setVisible(false);
+        withdrawBox.setManaged(false);
     }
 
     @FXML
     private void handleWithdraw() {
+        withdrawBox.setVisible(true);
+        withdrawBox.setManaged(true);
 
-
+        depositBox.setVisible(false);
+        depositBox.setManaged(false);
     }
 
 }
