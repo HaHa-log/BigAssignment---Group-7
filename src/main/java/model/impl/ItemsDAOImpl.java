@@ -83,7 +83,6 @@ public class ItemsDAOImpl implements ItemsDAO {
     @Override
     public Item getById(int id) {
         String sql = "SELECT * From items WHERE items_id = ?";
-
         try(Connection conn = DB.getConnection();
              PreparedStatement st = conn.prepareStatement(sql)) {
 
@@ -103,7 +102,6 @@ public class ItemsDAOImpl implements ItemsDAO {
     @Override
     public Item getByName(String name) {
         String sql = "SELECT * FROM items WHERE name = ?";
-
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
 
@@ -123,18 +121,16 @@ public class ItemsDAOImpl implements ItemsDAO {
     @Override
     public List<Item> getAll() {
         String sql = "SELECT * FROM items";
-
+        List<Item> list = new ArrayList<>();
         try(Connection conn = DB.getConnection();
-             PreparedStatement st = conn.prepareStatement(sql)) {
+             PreparedStatement st = conn.prepareStatement(sql);
+            ResultSet rs = st.executeQuery()) {
 
-            try (ResultSet rs = st.executeQuery()) {
-                List<Item> list = new ArrayList<>();
-
-                while (rs.next()) {
-                    list.add(instantiateItem(rs));
-                }
-                return list;
+            while (rs.next()) {
+                list.add(instantiateItem(rs));
             }
+            return list;
+
         }catch (SQLException e) {
             throw new DbException(e.getMessage());
         }

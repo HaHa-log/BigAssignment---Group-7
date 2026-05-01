@@ -7,9 +7,8 @@ import java.io.Serializable;
 public class Auction implements Serializable {
     private int auctionId;
     private Member owner;
-    private final LocalDateTime createdAt;
+    private LocalDateTime createdAt;
     private LocalDateTime terminatedAt;
-    private boolean isInCountDown;
     private Item item;
     private AuctionStatus status;
     public enum AuctionStatus {
@@ -22,14 +21,23 @@ public class Auction implements Serializable {
     //Thêm transient vì ReentrantLock không thể serialize trực tiếp
 
     public Auction(Member owner, Item item) {
-        this.status = AuctionStatus.OPEN;
-        this.createdAt = LocalDateTime.now();
-        isInCountDown = false;
         this.owner = owner;
         this.item = item;
         this.winner = null;
         this.startingPrice = item.getStartingPrice();
         this.currentPrice = startingPrice;
+    }
+
+    public Auction(Member owner, Item item, LocalDateTime createdAt, LocalDateTime terminatedAt,
+                   AuctionStatus status, double startingPrice, double currentPrice, Bidder winner) {
+        this.owner = owner;
+        this.item = item;
+        this.createdAt = createdAt;
+        this.terminatedAt = terminatedAt;
+        this.status = status;
+        this.startingPrice = startingPrice;
+        this.currentPrice = currentPrice;
+        this.winner = winner;
     }
 
     public String start() {
@@ -78,10 +86,6 @@ public class Auction implements Serializable {
         }
     }
 
-    public AuctionStatus getStatus() {
-        return status;
-    }
-
     public void notifyAllBidders(Bidder bidder, double bidderAmount) {
         String name = "Unknown Bidder";
         name = ((User) bidder).getName();
@@ -121,6 +125,10 @@ public class Auction implements Serializable {
         }
     }
 
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public void setAuctionId(int idOfAuction) {
         lock.lock();
         try { this.auctionId = idOfAuction; } finally { lock.unlock(); }
@@ -139,6 +147,15 @@ public class Auction implements Serializable {
         finally {
             lock.unlock();
         }
+    }
+
+    public void setCurrentPrice(Double currentPrice) {
+        lock.lock();
+        try {
+            this.currentPrice = currentPrice;
+        }
+        finally {
+            lock.unlock(); }
     }
 
     public void setOwner(Member clientOwner) {
@@ -180,6 +197,10 @@ public class Auction implements Serializable {
 
     public Member getOwner() {
         return owner;
+    }
+
+    public AuctionStatus getStatus() {
+        return status;
     }
 
     public LocalDateTime getTerminatedAt() {

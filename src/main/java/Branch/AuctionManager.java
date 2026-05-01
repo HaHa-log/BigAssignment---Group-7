@@ -1,5 +1,8 @@
 package Branch;
 
+import model.AuctionsDAO;
+import model.impl.DaoFactory;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +35,6 @@ public class AuctionManager {
         item.setStatus(Item.Status.IN_AUCTION);
 
         Auction session = new Auction(owner, item);
-        session.setStartingPrice(item.getStartingPrice());
         activeSessions.add(session);
 
         TempDatabase.saveAuction(session);

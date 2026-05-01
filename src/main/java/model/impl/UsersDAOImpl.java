@@ -95,7 +95,6 @@ public class UsersDAOImpl implements UsersDAO {
     @Override
     public User getById(int id) {
         String sql = "SELECT * From users WHERE users_id = ?";
-
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
 
@@ -115,7 +114,6 @@ public class UsersDAOImpl implements UsersDAO {
     @Override
     public User getByEmail(String email) {
         String sql = "SELECT * From users WHERE email = ?";
-
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
 
@@ -135,22 +133,20 @@ public class UsersDAOImpl implements UsersDAO {
     @Override
     public List<User> getAll() {
         String sql = "SELECT * FROM users";
-
+        List<User> list = new ArrayList<>();
         try(Connection conn = DB.getConnection();
-            PreparedStatement st = conn.prepareStatement(sql)) {
+            PreparedStatement st = conn.prepareStatement(sql);
+            ResultSet rs = st.executeQuery()) {
 
-            try (ResultSet rs = st.executeQuery()) {
-                List<User> list = new ArrayList<>();
-
-                while (rs.next()) {
-                    if (rs.getBoolean("isAdmin") == false) {
-                        list.add(instantiateMember(rs));
-                    } else {
-                        list.add(instantiateAdmin(rs));
-                    }
+            while (rs.next()) {
+                if (rs.getBoolean("isAdmin") == false) {
+                    list.add(instantiateMember(rs));
+                } else {
+                    list.add(instantiateAdmin(rs));
                 }
-                return list;
             }
+            return list;
+
         } catch (SQLException e) {
             throw new DbException(e.getMessage());
         }
@@ -158,18 +154,16 @@ public class UsersDAOImpl implements UsersDAO {
 
     @Override
     public List<Member> getAllMember() {
-        String sql = "SELECT * FROM users";
-
+        String sql = "SELECT * FROM users WHERE isAdmin = ?";
+        List<Member> list = new ArrayList<>();
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
 
-            try (ResultSet rs = st.executeQuery()) {
-                List<Member> list = new ArrayList<>();
+            st.setBoolean(1, false);
 
+            try (ResultSet rs = st.executeQuery()) {
                 while (rs.next()) {
-                    if (rs.getBoolean("isAdmin") == false) {
-                        list.add(instantiateMember(rs));
-                    }
+                    list.add(instantiateMember(rs));
                 }
                 return list;
             }
@@ -180,18 +174,16 @@ public class UsersDAOImpl implements UsersDAO {
 
     @Override
     public List<Admin> getAllAdmin() {
-        String sql = "SELECT * FROM users";
-
+        String sql = "SELECT * FROM users WHERE isAdmin = ?";
+        List<Admin> list = new ArrayList<>();
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
 
-            try (ResultSet rs = st.executeQuery()) {
-                List<Admin> list = new ArrayList<>();
+            st.setBoolean(1, true);
 
+            try (ResultSet rs = st.executeQuery()) {
                 while (rs.next()) {
-                    if (rs.getBoolean("isAdmin") == true) {
-                        list.add(instantiateAdmin(rs));
-                    }
+                    list.add(instantiateAdmin(rs));
                 }
                 return list;
             }

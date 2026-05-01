@@ -271,7 +271,7 @@ public class TempDatabase {
 
     //Đối với Auction database
     public static void saveAuction(Auction auction) {
-        String sql = "INSERT INTO auctions (owner_id, products_id, startingPrice, currentPrice, status, createdAt, terminatedAt, winner_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO auctions (owner_id, products_id, startingPrice, currentPrice, status, createdAt) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -281,8 +281,6 @@ public class TempDatabase {
             stmt.setDouble(4, auction.getCurrentPrice());
             stmt.setString(5, auction.getStatus().name());
             stmt.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
-            stmt.setNull(7, Types.TIMESTAMP);
-            stmt.setNull(8, Types.INTEGER);
 
             int generatedId = executeInsert(stmt);
             if (generatedId != -1) {
