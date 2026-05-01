@@ -3,11 +3,10 @@
     -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 }
 
-.title {
-    -fx-font-family: "Segoe UI", "Arial", sans-serif !important;
+.label.title {
     -fx-font-size: 28px !important;
     -fx-font-weight: bold !important;
-    -fx-text-fill: white;
+    -fx-text-fill: red;
 }
 
 .glass-card {
@@ -24,7 +23,7 @@
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 30, 0.1, 0, 10);
 }
 
-.header {
+.label.header {
     -fx-font-family: Segoe UI, Arial, sans-serif;
     -fx-font-size: 24px;
     -fx-font-weight: bold;

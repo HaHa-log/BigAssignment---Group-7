@@ -42,8 +42,6 @@ public class ProfilePageController {
     @FXML
     private Label financeStatus;
 
-    private int balance = 0;
-
     //  STYLE
     private final String ACTIVE =
             "-fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-cursor: hand;";
@@ -56,6 +54,7 @@ public class ProfilePageController {
     @FXML
     public void initialize() {
         loadUserData();
+        hideAll();
         showProfile();
     }
 

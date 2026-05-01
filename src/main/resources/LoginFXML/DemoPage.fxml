@@ -4,20 +4,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane
-        prefHeight="400.0"
-        prefWidth="600.0"
-        styleClass="root-pane"
-        stylesheets="@login.css"
-        xmlns="http://javafx.com/javafx/17.0.12"
-        xmlns:fx="http://javafx.com/fxml/1"
-        fx:controller="Client.Controllers.LoginPage.DemoPageController">
-      <VBox
-              alignment="TOP_CENTER"
-              prefWidth="300.0"
-              AnchorPane.bottomAnchor="0.0"
-              AnchorPane.rightAnchor="0.0"
-              AnchorPane.topAnchor="0.0">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" styleClass="root-pane" stylesheets="@login.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.LoginPage.DemoPageController">
+      <VBox alignment="TOP_CENTER" prefWidth="300.0" style="-fx-background-color: #003999;" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="title" text="WELCOME" textAlignment="CENTER">
                <VBox.margin>
                   <Insets bottom="20.0" top="40.0" />
