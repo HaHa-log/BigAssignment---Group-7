@@ -134,6 +134,7 @@ public class ProfilePageController {
     private void showFinance() {
         hideAll();
         financePane.setVisible(true);
+        financePane.setManaged(true);
         setActive(tabFinance);
     }
 
@@ -195,7 +196,7 @@ public class ProfilePageController {
         }
     }
 
-    @FXML
+@FXML
     private void handleDeposit() {
         depositBox.setVisible(true);
         depositBox.setManaged(true);
@@ -213,42 +214,20 @@ public class ProfilePageController {
         depositBox.setManaged(false);
     }
 
-        @FXML
+    @FXML
     private void handleSaveDeposit() {
-        try {
-            double amount = Double.parseDouble(depositField.getText());
+        depositField.clear();
 
-            if (amount <= 0) return;
-
-            balance += amount;
-            balanceLabel.setText(String.valueOf(balance));
-
-            depositField.clear();
-            depositBox.setVisible(false);
-            depositBox.setManaged(false);
-
-        } catch (Exception e) {
-            System.out.println("Invalid input");
-        }
+        depositBox.setVisible(false);
+        depositBox.setManaged(false);
     }
 
     @FXML
     private void handleSaveWithdraw() {
-        try {
-            double amount = Double.parseDouble(withdrawField.getText());
+        withdrawField.clear();
 
-            if (amount <= 0 || amount > balance) return;
-
-            balance -= amount;
-            balanceLabel.setText(String.valueOf(balance));
-
-            withdrawField.clear();
-            withdrawBox.setVisible(false);
-            withdrawBox.setManaged(false);
-
-        } catch (Exception e) {
-            System.out.println("Invalid input");
-        }
+        withdrawBox.setVisible(false);
+        withdrawBox.setManaged(false);
     }
 
 }
