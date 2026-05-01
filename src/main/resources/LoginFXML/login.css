@@ -1,11 +1,12 @@
 .root-pane {
-    -fx-background-color: linear-gradient(to bottom, #1C5D99, #C2D7FF);
+    /*-fx-background-color: linear-gradient(to bottom, #1C5D99, #C2D7FF);*/
+    -fx-background-color: linear-gradient(to bottom, #37427c, #C2D7FF);
     -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 }
 
 .label.title {
-    -fx-font-size: 28px !important;
-    -fx-font-weight: bold !important;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
     -fx-text-fill: red;
 }
 
@@ -31,7 +32,7 @@
 }
 
 .button {
-    -fx-background-color: #5478FF;
+    -fx-background-color: #006eff;
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-font-size: 12px;
@@ -42,14 +43,14 @@
 }
 
 .button:hover {
-    -fx-background-color: #728fff;
+    -fx-background-color: #4092ff;
 }
 
 .text-field, .password-field {
-    -fx-background-color: rgba(255, 255, 255, 0.1);
-    -fx-prompt-text-fill: rgba(255, 255, 255, 0.6);
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-prompt-text-fill: white;
     -fx-background-radius: 8;
-    -fx-border-color: rgba(255, 255, 255, 0.15);
+    -fx-border-color: rgba(255, 255, 255, 0.3);
     -fx-border-radius: 8;
 
     -fx-font-size: 13px;
@@ -58,7 +59,7 @@
 }
 
 .text-field:focused, .password-field:focused {
-    -fx-border-color: #5478FF;
+    -fx-border-color: #006eff;
 }
 
 .label {
@@ -92,5 +93,5 @@
 }
 
 .check-box:selected .mark {
-    -fx-background-color: #5478FF;
+    -fx-background-color: #006eff;
 }

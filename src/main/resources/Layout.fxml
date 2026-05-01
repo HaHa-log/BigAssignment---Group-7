@@ -10,7 +10,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Rectangle?>
 
-<BorderPane style="-fx-background-color: #37427c;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.LayoutController">
+<BorderPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.LayoutController" stylesheets="style.css" styleClass="root-pane">
     <top>
         <HBox alignment="CENTER_RIGHT" prefHeight="60.0" spacing="20" style="-fx-background-color: #37427c;" BorderPane.alignment="CENTER">
             <children>

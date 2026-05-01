@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import model.UsersDAO;
@@ -30,6 +31,7 @@ public class SceneManager {
 
     public static void setStage(Stage stage) {
         SceneManager.stage = stage;
+        setupStage();
     }
 
     // New setter so the Controller can provide the Pane
@@ -37,6 +39,27 @@ public class SceneManager {
         SceneManager.contentArea = area;
     }
 
+    //setup Icons and Exit
+    private static void setupStage() {
+        try {
+            var iconStream = SceneManager.class.getResourceAsStream("/logo.png");
+            if (iconStream != null) {
+                stage.getIcons().add(new Image(iconStream));
+            } else {
+                System.err.println("Warning: logo.png not found in resources!");
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to load app icon.");
+        }
+
+        stage.setTitle("Hệ thống Đấu giá");
+
+        stage.setOnCloseRequest(event -> {
+            System.exit(0);
+        });
+    }
+
+    //Load general layout
     public static void loadLayout() {
         try {
             Parent shell = FXMLLoader.load(SceneManager.class.getResource("/Layout.fxml"));
@@ -92,6 +115,7 @@ public class SceneManager {
         }
     }
 
+    //RememberMe
     public static void setRememberUser(boolean value) {
         prefs.putBoolean(REMEMBER_KEY, value);
     }
@@ -100,6 +124,7 @@ public class SceneManager {
         return prefs.getBoolean(REMEMBER_KEY, false);
     }
 
+    //Handle cases when rememberMe is ticked
     public static void startApp() {
         if (SceneManager.userIsRemembered()) {
             String savedEmail = SessionManager.getSavedEmail();
