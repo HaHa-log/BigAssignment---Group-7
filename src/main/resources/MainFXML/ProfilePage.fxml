@@ -115,14 +115,18 @@
                 </VBox>
 
                 <!-- FINANCE -->
-                <VBox fx:id="financePane" spacing="15" style="-fx-background-color: #475569; -fx-padding: 20; -fx-background-radius: 10;" visible="false"></VBox>
+                <VBox fx:id="financePane" spacing="15"
+                      style="-fx-background-color: #475569; -fx-padding: 20; -fx-background-radius: 10;"
+                      visible="false" managed="false">
 
                     <Label style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;" text="Finance" />
 
                     <HBox alignment="CENTER_LEFT" spacing="10">
                         <Label style="-fx-font-size: 16; -fx-text-fill: #e2e8f0;" text="Available Balance:" />
 
-                        <Label fx:id="balanceLabel" style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #16a34a; -fx-background-color: white;" text="00000" />
+                        <Label fx:id="balanceLabel"
+                               style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #16a34a; -fx-background-color: white;"
+                               text="00000" />
                     </HBox>
 
                     <HBox spacing="20">
@@ -150,8 +154,10 @@
                                         style="-fx-background-color: #dc2626; -fx-text-fill: white;" />
                             </VBox>
                         </VBox>
+
                     </HBox>
-                    
+
+                </VBox>
                     <Label fx:id="financeStatus" style="-fx-text-fill: #475569;" text="" />
 
                 <!-- NOTIFICATION -->
