@@ -1,14 +1,15 @@
 package Branch;
 
+import Branch.Exceptions.*;
 import java.time.LocalDateTime;
 
 public class Transaction {
     private int transactionId;
-    private Auction auction;
-    private Member buyer;
-    private Member seller;
-    private double finalAmount;
-    private LocalDateTime paidAt;
+    private final Auction auction;
+    private final Member buyer;
+    private final Member seller;
+    private final double finalAmount;
+    private final LocalDateTime paidAt;
     private LocalDateTime completedAt;
     private TransactionStatus status;
 
@@ -19,6 +20,7 @@ public class Transaction {
     }
 
     public Transaction(Auction auction, Member buyer, Member seller, double finalAmount) {
+        this.transactionId = 0;
         this.auction = auction;
         this.buyer = buyer;
         this.seller = seller;
@@ -28,15 +30,47 @@ public class Transaction {
         this.status = TransactionStatus.PENDING;
     }
 
-    public void markCompleted() {
-        this.status = TransactionStatus.COMPLETED;
-        this.completedAt = LocalDateTime.now();
-        System.out.println("[Transaction]: Payment completed. " + buyer.getFullName() + " paid " + finalAmount);
+    public void markCompleted() throws IllegalTransactionException {
+        if (this.status != TransactionStatus.PENDING) {
+            throw new IllegalTransactionException("[Error]: The transaction isn't pending");
+        }
+
+        if (buyer.withdrawMoney(finalAmount)) {
+            try {
+                seller.depositMoney(finalAmount);
+                auction.transitionTo(Auction.AuctionStatus.PAID);
+
+                this.status = TransactionStatus.COMPLETED;
+                this.completedAt = LocalDateTime.now();
+                System.out.println("[System]: Transaction completed! " + buyer.getName() + " has made a payment of " + finalAmount);
+            } catch (Exception e) {
+                buyer.depositMoney(finalAmount);
+                throw new IllegalTransactionException("[Error]: Failure to transfer payment to seller. Refund issued to buyer");
+            }
+
+        } else {
+            throw new IllegalTransactionException("[System]: Buyer does not have enough balance to complete the payment");
+        }
     }
 
-    public void markRefunded() {
-        this.status = TransactionStatus.REFUNDED;
-        System.out.println("[Transaction]: Payment refunded for auction of ID " + auction.getId());
+    public void markRefunded() throws IllegalTransactionException {
+        if (this.status != TransactionStatus.COMPLETED) {
+            throw new IllegalTransactionException("[Error]: Cannot make a refund for incomplete transactions");
+        }
+
+        if (seller.withdrawMoney(finalAmount)) {
+            try {
+                buyer.depositMoney(finalAmount);
+                this.status = TransactionStatus.REFUNDED;
+                System.out.println("[Transaction]: Refund successful for Auction ID " + auction.getAuctionId());
+            } catch (Exception e) {
+                seller.depositMoney(finalAmount);
+                throw new IllegalTransactionException("[Error]: Failure to refund during transfer. Seller has been reimbursed.");
+            }
+
+        } else {
+            throw new IllegalTransactionException("[Error]: Seller does not have enough balance to issue a refund");
+        }
     }
 
     public void setTransactionId(int id) {
