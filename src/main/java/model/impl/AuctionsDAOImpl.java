@@ -23,11 +23,11 @@ public class AuctionsDAOImpl implements AuctionsDAO {
     public void save(Auction auction) {
         String sql = "INSERT INTO auctions "
                 + "(owner_id, item_id, startingPrice, currentPrice) "
-                + "VALUES (?, ?, ?, ?, ?)";
+                + "VALUES (?, ?, ?, ?)";
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            st.setInt(1, auction.getOwner().getId());
+            st.setInt(1, auction.getSeller().getId());
             st.setInt(2, auction.getItem().getId());
             st.setDouble(3, auction.getStartingPrice());
             st.setDouble(4, auction.getCurrentPrice());
@@ -56,7 +56,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
 
-            st.setInt(1, auction.getAuctionId());
+            st.setInt(1, auction.getId());
             int rows = st.executeUpdate();
 
             if (rows == 0) {
@@ -75,7 +75,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
 
-            st.setInt(1, auction.getOwner().getId());
+            st.setInt(1, auction.getSeller().getId());
             st.setInt(2, auction.getItem().getId());
             st.setString(3, auction.getStatus().name());
             st.setDouble(4, auction.getStartingPrice());
@@ -83,8 +83,8 @@ public class AuctionsDAOImpl implements AuctionsDAO {
             st.setTimestamp(6, auction.getTerminatedAt() != null
                     ? Timestamp.valueOf(auction.getTerminatedAt()) : null);
             st.setObject(7, auction.getWinner() != null
-                    ? ((User) auction.getWinner()).getId() : null);
-            st.setInt(8, auction.getAuctionId());
+                    ? (auction.getWinner()).getId() : null);
+            st.setInt(8, auction.getId());
 
             st.executeUpdate();
 

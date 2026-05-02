@@ -12,6 +12,8 @@ public class AuctionManager {
     private List<Auction> activeSessions;
     private List<Auction> completedSessions;
 
+    private  AuctionsDAO auctionDb = DaoFactory.createAuctionsDAO();
+
     private AuctionManager() {
         activeSessions = new ArrayList<>();
         completedSessions = new ArrayList<>();
@@ -37,7 +39,7 @@ public class AuctionManager {
         Auction session = new Auction(owner, item);
         activeSessions.add(session);
 
-        TempDatabase.saveAuction(session);
+        auctionDb.save(session);
 
         System.out.println("New auction session for " + item.getName());
         session.start();
@@ -48,7 +50,7 @@ public class AuctionManager {
         activeSessions.remove(session);
         completedSessions.add(session);
 
-        TempDatabase.updateAuction(session);
+        auctionDb.update(session);
 
         if (session.getWinner() != null) {
             Item soldItem = session.getItem();
@@ -87,7 +89,7 @@ public class AuctionManager {
             activeSessions.remove(canceledAuction);
             completedSessions.add(canceledAuction);
 
-            TempDatabase.updateAuction(canceledAuction);
+            auctionDb.update(canceledAuction);
 
             System.out.println("Auction canceled!");
             return true;

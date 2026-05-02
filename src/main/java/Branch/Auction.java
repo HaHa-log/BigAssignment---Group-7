@@ -1,5 +1,8 @@
 package Branch;
 
+import model.AuctionsDAO;
+import model.impl.DaoFactory;
+
 import java.time.LocalDateTime;
 import java.util.concurrent.locks.ReentrantLock;
 import java.io.Serializable;
@@ -23,6 +26,7 @@ public class Auction extends Entity implements Serializable {
     public Auction(Member owner, Item item) {
         this.owner = owner;
         this.item = item;
+        this.status = AuctionStatus.OPEN;
         this.winner = null;
         this.startingPrice = item.getStartingPrice();
         this.currentPrice = startingPrice;
@@ -203,10 +207,6 @@ public class Auction extends Entity implements Serializable {
         return owner;
     }
 
-    public AuctionStatus getStatus() {
-        return status;
-    }
-
     public LocalDateTime getTerminatedAt() {
         return terminatedAt;
     }
@@ -219,7 +219,11 @@ public class Auction extends Entity implements Serializable {
         return item;
     }
 
-    public double getCurrentPrice() { return currentPrice; }
+    public double getCurrentPrice() {
+        return currentPrice;
+    }
 
-    public User getWinner() { return (User) winner; }
+    public User getWinner() {
+        return (User) winner;
+    }
 }

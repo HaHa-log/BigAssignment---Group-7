@@ -22,7 +22,7 @@ public class ClientApp extends Application {
         //run the 1st line or register any user with the email "admin@gmail.com" if there is no admin@gmail.com on ur device
         //Member ownerTest = AuthService.registerNewUser("admin", "123", "admin@gmail.com", "0988172919", "000000");
         //run the 2nd line if there is already admin@gmail.com on ur device
-        Member ownerTest = (Member) TempDatabase.getUserByEmail("admin@gmail.com");
+        Member ownerTest = (Member) userDb.getByEmail("vuongthuyhang1102@gmail.com");
 
         for (Item item : items) {
             AuctionManager.getInstance().createAuction(ownerTest, item, LocalDateTime.now(), null);

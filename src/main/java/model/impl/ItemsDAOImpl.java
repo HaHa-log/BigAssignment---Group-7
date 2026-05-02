@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ItemsDAOImpl implements ItemsDAO {
+
+    protected ItemsDAOImpl() {}
+
     @Override
     public void save(Item item) {
         String sql = "INSERT INTO items "
