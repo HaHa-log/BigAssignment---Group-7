@@ -2,12 +2,16 @@ package Client.Controllers.MainPage;
 
 import Branch.SessionManager;
 import Branch.User;
-import Client.Controllers.LoginPage.DemoPageController;
 import Client.Controllers.SceneManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+
+import java.io.IOException;
 
 import static javafx.scene.paint.Color.*;
 
@@ -15,8 +19,10 @@ public class ProfilePageController {
 
     User user = SessionManager.getCurrentUser();
 
-    // PANES
     @FXML
+    private StackPane contentPane;
+
+    // PANES
     private VBox profilePane, editPane, passwordPane, financePane, notificationPane, historyPane;
 
     // TABS
@@ -33,34 +39,48 @@ public class ProfilePageController {
     @FXML
     private TextField phoneField, emailField;
     @FXML
-    private TextField oldPasswordField, newPasswordField, newPasswordConfirmField;
+    private PasswordField oldPasswordField, newPasswordField, newPasswordConfirmField;
 
     // FINANCE
     @FXML
     private VBox depositBox, withdrawBox;
     @FXML
-    private TextField depositField, withdrawField, amountField;
+    private TextField depositField, withdrawField;
     @FXML
-    private Label balanceLabel, financeStatus;
+    private Label balanceLabel, financeStatus, depositStatus, withdrawStatus;
 
     // STATUS
     @FXML
     private Label passwordChangeStatus;
 
-    //  STYLE
-    private final String ACTIVE =
-            "-fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-cursor: hand;";
+    // STYLE
+    private final String ACTIVE = "-fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-cursor: hand;";
+    private final String NORMAL = "-fx-text-fill: #475569; -fx-cursor: hand;";
 
-    private final String NORMAL =
-            "-fx-text-fill: #475569; -fx-cursor: hand;";
-
-
-    // INIT
     @FXML
     public void initialize() {
-        loadUserData();
-        hideAll();
-        showProfile();
+        if (user != null) {
+            loadUserData();
+            showProfile();
+        }
+    }
+
+    private VBox loadSubPane(String fxmlPath) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            loader.setController(this);
+            return loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private void switchView(String fxmlPath) {
+        VBox pane = loadSubPane(fxmlPath);
+        if (pane != null) {
+            contentPane.getChildren().setAll(pane);
+        }
     }
 
     private void loadUserData() {
@@ -71,48 +91,30 @@ public class ProfilePageController {
         aboutLabel.setText("Not yet set");
         if (user.isAdmin()) {
             roleLabel.setText("Admin");
-        }
-        else {
+        } else {
             roleLabel.setText("Member");
         }
     }
 
-    private void loadHistoryData() {
-    }
-
-    //  TAB COLOR
     private void setActive(Label tab) {
         tabProfile.setStyle(NORMAL);
         tabPassword.setStyle(NORMAL);
         tabFinance.setStyle(NORMAL);
         tabNotification.setStyle(NORMAL);
         tabHistory.setStyle(NORMAL);
-
-        tab.setStyle(ACTIVE);
-    }
-
-    private void hideAll() {
-        profilePane.setVisible(false);
-        editPane.setVisible(false);
-        passwordPane.setVisible(false);
-        financePane.setVisible(false);
-        notificationPane.setVisible(false);
-        historyPane.setVisible(false);
+        if (tab != null) tab.setStyle(ACTIVE);
     }
 
     @FXML
     private void showProfile() {
+        switchView("/MainFXML/Profile/ProfilePane.fxml");
         loadUserData();
-        hideAll();
-        profilePane.setVisible(true);
         setActive(tabProfile);
     }
 
     @FXML
     private void showEditProfile() {
-        hideAll();
-        editPane.setVisible(true);
-
+        switchView("/MainFXML/Profile/EditPane.fxml");
         aboutField.setText(aboutLabel.getText());
         phoneField.setText(phoneLabel.getText());
         emailField.setText(emailLabel.getText());
@@ -125,44 +127,35 @@ public class ProfilePageController {
 
     @FXML
     private void showChangePassword() {
-        hideAll();
-        passwordPane.setVisible(true);
+        switchView("/MainFXML/Profile/PasswordPane.fxml");
         setActive(tabPassword);
     }
 
     @FXML
     private void showFinance() {
-        hideAll();
-        financePane.setVisible(true);
-        financePane.setManaged(true);
+        switchView("/MainFXML/Profile/FinancePane.fxml");
+        if (balanceLabel != null) {
+            balanceLabel.setText("" + user.getBalance());
+        }
         setActive(tabFinance);
     }
 
     @FXML
     private void showNotification() {
-        hideAll();
-        notificationPane.setVisible(true);
+        switchView("/MainFXML/Profile/NotificationPane.fxml");
         setActive(tabNotification);
     }
 
     @FXML
     private void showHistory() {
-        loadHistoryData();
-        hideAll();
-        historyPane.setVisible(true);
+        switchView("/MainFXML/Profile/HistoryPane.fxml");
         setActive(tabHistory);
     }
 
-    // SAVE PROFILE
     @FXML
     public void handleSave(ActionEvent event) {
-
-        String about = aboutField.getText();
-        String phone = phoneField.getText();
-        String email = emailField.getText();
-        user.setEmail(email);
-        user.setPhoneNumber(phone);
-
+        user.setEmail(emailField.getText());
+        user.setPhoneNumber(phoneField.getText());
         showProfile();
     }
 
@@ -173,6 +166,7 @@ public class ProfilePageController {
         SceneManager.setRememberUser(false);
     }
 
+    @FXML
     public void handleChangePassword(ActionEvent event) {
         String oldPassword = oldPasswordField.getText();
         String newPassword = newPasswordField.getText();
@@ -180,27 +174,22 @@ public class ProfilePageController {
 
         passwordChangeStatus.setTextFill(RED);
         if (user.getPassword().equals(oldPassword)) {
-            if (newPassword.equals(newPasswordConfirm)) {
-                if (newPassword != null) {
-                    user.setPassword(newPassword);
-                    passwordChangeStatus.setTextFill(WHITE);
-                    passwordChangeStatus.setText("Object updated. New password is: " + user.getPassword());
-                } else {
-                    passwordChangeStatus.setText("Please enter your new password");
-                }
+            if (newPassword.equals(newPasswordConfirm) && !newPassword.isEmpty()) {
+                user.setPassword(newPassword);
+                passwordChangeStatus.setTextFill(GREEN);
+                passwordChangeStatus.setText("Password updated!");
             } else {
-                passwordChangeStatus.setText("New passwords do not match.");
+                passwordChangeStatus.setText("Check match or empty fields.");
             }
         } else {
-            passwordChangeStatus.setText("Old password check failed.");
+            passwordChangeStatus.setText("Old password failed.");
         }
     }
 
-@FXML
+    @FXML
     private void handleDeposit() {
         depositBox.setVisible(true);
         depositBox.setManaged(true);
-
         withdrawBox.setVisible(false);
         withdrawBox.setManaged(false);
     }
@@ -209,25 +198,37 @@ public class ProfilePageController {
     private void handleWithdraw() {
         withdrawBox.setVisible(true);
         withdrawBox.setManaged(true);
-
         depositBox.setVisible(false);
         depositBox.setManaged(false);
     }
 
     @FXML
     private void handleSaveDeposit() {
+        try {
+            Double amount = Double.parseDouble(depositField.getText());
+            user.depositMoney(amount);
+            depositStatus.setTextFill(GREEN);
+            depositStatus.setText("Deposited " + amount + " successfully!");
+            balanceLabel.setText("" + user.getBalance());
+        } catch (Exception e) {
+            depositStatus.setTextFill(RED);
+            depositStatus.setText("Invalid amount");
+        }
         depositField.clear();
-
-        depositBox.setVisible(false);
-        depositBox.setManaged(false);
     }
 
     @FXML
     private void handleSaveWithdraw() {
+        try {
+            Double amount = Double.parseDouble(withdrawField.getText());
+            user.withdrawMoney(amount);
+            withdrawStatus.setTextFill(GREEN);
+            withdrawStatus.setText("Withdrawn " + amount + " successfully!");
+            balanceLabel.setText("" + user.getBalance());
+        } catch (Exception e) {
+            withdrawStatus.setTextFill(RED);
+            withdrawStatus.setText("Invalid amount or insufficient funds");
+        }
         withdrawField.clear();
-
-        withdrawBox.setVisible(false);
-        withdrawBox.setManaged(false);
     }
-
 }

@@ -27,8 +27,7 @@ public class Balance {
             throw new IllegalArgumentException("[Error]: Withdrawn amount must be greater than 0");
         }
         if (amount > balance) {
-            System.out.println("[Error]: Account does not have enough money");
-            return false;
+            throw new IllegalArgumentException("[Error]: Account does not have enough money");
         }
         this.balance -= amount;
         return true;
