@@ -221,7 +221,8 @@ public class UsersDAOImpl implements UsersDAO {
                 rs.getString("lastName"),
                 rs.getString("email"),
                 rs.getString("phoneNumber"),
-                rs.getString("password")
+                rs.getString("password"),
+                rs.getDouble("balance")
         );
 
         obj.setId(rs.getInt("users_id"));

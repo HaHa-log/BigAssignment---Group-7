@@ -1,5 +1,6 @@
 package Branch;
 
+import Branch.Common.Balance;
 import Branch.Common.Email;
 import Branch.Common.FullName;
 import Branch.Common.PhoneNumber;
@@ -14,7 +15,7 @@ public abstract class User extends Entity {
     private Email email;
     private PhoneNumber phoneNumber;
     private String password;
-    private double balance;
+    private Balance balance;
     private boolean isAdmin = false;
     private boolean isBlocked = false;
     private LocalDateTime blockedUntil = null;
@@ -25,8 +26,10 @@ public abstract class User extends Entity {
         this.fullname = new FullName(firstName, lastName);
         this.email = new Email(email);
         this.phoneNumber = new PhoneNumber(phoneNumber);
+        this.balance = new Balance(balance); //logic: initial balance is always 0
+
+        //put setPassword at last because this checks on values
         this.setPassword(password);
-        this.setBalance(balance);
     }
 
     public void setFirstName(String fstName) {
@@ -39,33 +42,24 @@ public abstract class User extends Entity {
         userDatabase.update(this);
     }
 
-    public static boolean isValidEmail(String email) {
-        String EMAIL_PATTERN = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
-        return Pattern.compile(EMAIL_PATTERN).matcher(email).matches();
-    }
-
     public void setEmail(String email) {
-        if (isValidEmail(email)) {
+        try {
             Email userEmail = new Email(email);
             this.email = userEmail;
             userDatabase.update(this);
-        } else {
-            throw new IllegalArgumentException("[Error]: Invalid email format");
+        } catch (IllegalArgumentException e) {
+            e.getMessage();
         }
     }
 
-    public static boolean isValidPhoneNumber(String phone) {
-        String regex = "^0\\d{9}$";
-        return phone != null && phone.matches(regex);
-    }
 
     public void setPhoneNumber(String number) {
-        if (isValidPhoneNumber(number)) {
-            PhoneNumber contactNumber = new PhoneNumber(number);
-            this.phoneNumber = contactNumber;
+        try {
+            PhoneNumber phoneNumber = new PhoneNumber(number);
+            this.phoneNumber = phoneNumber;
             userDatabase.update(this);
-        } else {
-            throw new IllegalArgumentException("[Error]: Invalid phone number format");
+        } catch (IllegalArgumentException e) {
+            e.getMessage();
         }
     }
 
@@ -78,13 +72,16 @@ public abstract class User extends Entity {
         }
     }
 
-    public void setBalance(double amount) {
-        if (amount < 0) {
-            System.out.println("[Error]: Amount must NOT be negative");
-        } else {
-            this.balance += amount;
-            userDatabase.update(this);
-        }
+    public boolean depositMoney(double amount) {
+        return this.balance.deposit(amount);
+    }
+
+    public boolean withdrawMoney(double amount) {
+        return this.balance.withdraw(amount);
+    }
+
+    public double getCurrentBalance() {
+        return this.balance.showBalance();
     }
 
     public void setBlocked(LocalDateTime until) {
@@ -116,7 +113,7 @@ public abstract class User extends Entity {
         return password;
     }
 
-    public double getBalance() { return balance; }
+    public double getBalance() { return balance.showBalance(); }
 
     public boolean isAdmin() { return isAdmin; }
 

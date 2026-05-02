@@ -14,12 +14,17 @@ public class AuthService {
         UsersDAO userdb = DaoFactory.createUsersDAO();
         //Testing: Ban đầu chỉ in lỗi tuần tự chứ không in ra hết lỗi -> đã sửa bên dưới
 
-        if (firstName.isEmpty() || lastName.isEmpty()) {
+        /*if (firstName.isEmpty() || lastName.isEmpty()) {
             errors.add("[Error: Full Name is required");
         }
+        Solved in UI
         if (email.isEmpty()) {
             errors.add("[Error]: Email is required");
-        } else if (!User.isValidEmail(email)) {
+
+         */
+
+        /*
+        if (!User.isValidEmail(email)) {
             errors.add("[Error]: Invalid email format");
         } else if (userdb.getByEmail(email) != null) {
             errors.add("[Error]: An account with this email already exists");
@@ -30,11 +35,8 @@ public class AuthService {
         if (password.length() < 6) {
             errors.add("[Error]: Password must have at least 6 characters");
         }
-
-        if (!errors.isEmpty()) {
-            errors.forEach(System.out::println);
-            return null;
-        }
+        Handled by exceptions
+         */
 
         try {
             double balance = 0.0;
@@ -43,7 +45,7 @@ public class AuthService {
             //return "[System]: You've created a new account!";
             return member;
         } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
+            e.getMessage();
             return null;
         }
     }
