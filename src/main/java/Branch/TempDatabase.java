@@ -230,7 +230,7 @@ public class TempDatabase {
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            stmt.setInt(1, transaction.getAuction().getAuctionId());
+            stmt.setInt(1, transaction.getAuction().getId());
             stmt.setInt(2, transaction.getBuyer().getId());
             stmt.setInt(3, transaction.getSeller().getId());
             stmt.setDouble(4, transaction.getFinalAmount());
@@ -275,7 +275,7 @@ public class TempDatabase {
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            stmt.setInt(1, auction.getOwner().getId());
+            stmt.setInt(1, auction.getSeller().getId());
             stmt.setInt(2, auction.getItem().getId());
             stmt.setDouble(3, auction.getStartingPrice());
             stmt.setDouble(4, auction.getCurrentPrice());
@@ -304,7 +304,7 @@ public class TempDatabase {
                     ? Timestamp.valueOf(auction.getTerminatedAt()) : null);
             stmt.setObject(4, auction.getWinner() != null
                     ? ((User) auction.getWinner()).getId() : null);
-            stmt.setInt(5, auction.getAuctionId());
+            stmt.setInt(5, auction.getId());
 
             stmt.executeUpdate();
             System.out.println("[System]: Auction updated.");

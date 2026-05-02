@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.concurrent.locks.ReentrantLock;
 import java.io.Serializable;
 
-public class Auction implements Serializable {
+public class Auction extends Entity implements Serializable {
     private int auctionId;
     private Member owner;
     private LocalDateTime createdAt;
@@ -88,7 +88,7 @@ public class Auction implements Serializable {
 
     public void notifyAllBidders(Bidder bidder, double bidderAmount) {
         String name = "Unknown Bidder";
-        name = ((User) bidder).getName();
+        name = ((User) bidder).getFullName();
         System.out.println("[Announcement]: " + name + " has the highest bid of " + bidderAmount);
     }
 
@@ -187,15 +187,19 @@ public class Auction implements Serializable {
         }
     }
 
-    public int getAuctionId() {
+    public int getId() {
         return auctionId;
+    }
+
+    public AuctionStatus getStatus() {
+        return status;
     }
 
     public double getStartingPrice() {
         return startingPrice;
     }
 
-    public Member getOwner() {
+    public Member getSeller() {
         return owner;
     }
 
@@ -207,11 +211,15 @@ public class Auction implements Serializable {
         return terminatedAt;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
     public Item getItem() {
         return item;
     }
 
     public double getCurrentPrice() { return currentPrice; }
 
-    public Bidder getWinner() { return winner; }
+    public User getWinner() { return (User) winner; }
 }

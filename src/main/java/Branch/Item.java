@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 public class Item extends Entity {
     private double startingPrice;
     private String description;
+    private String name;
     public enum Status {
         AVAILABLE,
         IN_AUCTION,
@@ -22,13 +23,13 @@ public class Item extends Entity {
     private ItemsDAO itemsDb = DaoFactory.createItemDAO();
 
     public Item(String name, double startingPrice, String description) {
-        super(name);
+        this.name = name;
         this.startingPrice = startingPrice;
         this.description = description;
     }
 
     public Item(String name, double startingPrice, String description, Status status, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        super(name);
+        this.name = name;
         this.startingPrice = startingPrice;
         this.description = description;
         this.status = status;
@@ -59,6 +60,9 @@ public class Item extends Entity {
         return startingPrice;
     }
 
+    public String getName() {
+        return name;
+    }
     public String getDescription() {
         return description;
     }

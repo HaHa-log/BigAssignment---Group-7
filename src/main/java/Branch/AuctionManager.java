@@ -54,12 +54,12 @@ public class AuctionManager {
             Item soldItem = session.getItem();
             soldItem.setStatus(Item.Status.SOLD);
 
-            session.getOwner().getInventory().remove(soldItem);
+            session.getSeller().getInventory().remove(soldItem);
 
             Transaction transaction = new Transaction(
                     session,
                     (Member) session.getWinner(),
-                    session.getOwner(),
+                    session.getSeller(),
                     session.getCurrentPrice()
             );
             TempDatabase.saveTransaction(transaction);
@@ -74,7 +74,7 @@ public class AuctionManager {
     public boolean cancelAuction(int auctionId) {
         Auction canceledAuction = null;
         for (Auction auction : activeSessions) {
-            if (auction.getAuctionId() == auctionId) {
+            if (auction.getId() == auctionId) {
                 canceledAuction = auction;
                 break;
             }

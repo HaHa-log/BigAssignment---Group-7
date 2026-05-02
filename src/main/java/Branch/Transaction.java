@@ -31,12 +31,12 @@ public class Transaction {
     public void markCompleted() {
         this.status = TransactionStatus.COMPLETED;
         this.completedAt = LocalDateTime.now();
-        System.out.println("[Transaction]: Payment completed. " + buyer.getName() + " paid " + finalAmount);
+        System.out.println("[Transaction]: Payment completed. " + buyer.getFullName() + " paid " + finalAmount);
     }
 
     public void markRefunded() {
         this.status = TransactionStatus.REFUNDED;
-        System.out.println("[Transaction]: Payment refunded for auction of ID " + auction.getAuctionId());
+        System.out.println("[Transaction]: Payment refunded for auction of ID " + auction.getId());
     }
 
     public void setTransactionId(int id) {
@@ -64,8 +64,8 @@ public class Transaction {
     @Override
     public String toString() {
         return "Transaction{" +
-                "auctionId=" + auction.getAuctionId() +
-                ", seller=" + seller.getName() +
+                "auctionId=" + auction.getId() +
+                ", seller=" + seller.getFullName() +
                 ", item=" + auction.getItem().getName() +
                 ", amount=" + finalAmount +
                 ", status=" + status +

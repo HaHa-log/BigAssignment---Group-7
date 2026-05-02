@@ -1,17 +1,18 @@
 package Branch;
 
+import Branch.Common.Email;
+import Branch.Common.FullName;
+import Branch.Common.PhoneNumber;
 import model.UsersDAO;
 import model.impl.DaoFactory;
-import model.impl.UsersDAOImpl;
 
 import java.util.regex.Pattern;
 import java.time.LocalDateTime;
 
 public abstract class User extends Entity {
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String phoneNumber;
+    private FullName fullname;
+    private Email email;
+    private PhoneNumber phoneNumber;
     private String password;
     private double balance;
     private boolean isAdmin = false;
@@ -21,22 +22,20 @@ public abstract class User extends Entity {
     private UsersDAO userDatabase = DaoFactory.createUsersDAO();
 
     public User(String firstName, String lastName, String email, String phoneNumber, String password, double balance) {
-        super(firstName + " " + lastName);
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.setEmail(email);
-        this.setPhoneNumber(phoneNumber);
+        this.fullname = new FullName(firstName, lastName);
+        this.email = new Email(email);
+        this.phoneNumber = new PhoneNumber(phoneNumber);
         this.setPassword(password);
         this.setBalance(balance);
     }
 
     public void setFirstName(String fstName) {
-        this.firstName = fstName;
+        this.fullname = new FullName(fstName, fullname.getLastName());
         userDatabase.update(this);
     }
 
     public void setLastName(String lstName) {
-        this.lastName = lstName;
+        this.fullname = new FullName(fullname.getFirstName(), lstName);
         userDatabase.update(this);
     }
 
@@ -45,8 +44,9 @@ public abstract class User extends Entity {
         return Pattern.compile(EMAIL_PATTERN).matcher(email).matches();
     }
 
-    public void setEmail(String userEmail) {
-        if (isValidEmail(userEmail)) {
+    public void setEmail(String email) {
+        if (isValidEmail(email)) {
+            Email userEmail = new Email(email);
             this.email = userEmail;
             userDatabase.update(this);
         } else {
@@ -59,8 +59,9 @@ public abstract class User extends Entity {
         return phone != null && phone.matches(regex);
     }
 
-    public void setPhoneNumber(String contactNumber) {
-        if (isValidPhoneNumber(contactNumber)) {
+    public void setPhoneNumber(String number) {
+        if (isValidPhoneNumber(number)) {
+            PhoneNumber contactNumber = new PhoneNumber(number);
             this.phoneNumber = contactNumber;
             userDatabase.update(this);
         } else {
@@ -92,20 +93,23 @@ public abstract class User extends Entity {
         userDatabase.update(this);
     }
 
+    public String getFullName() {
+        return fullname.toString();
+    }
     public String getFirstName() {
-        return firstName;
+        return fullname.getFirstName();
     }
 
     public String getLastName() {
-        return lastName;
+        return fullname.getLastName();
     }
 
     public String getEmail() {
-        return email;
+        return email.toString();
     }
 
     public String getPhoneNumber() {
-        return phoneNumber;
+        return phoneNumber.toString();
     }
 
     public String getPassword() {

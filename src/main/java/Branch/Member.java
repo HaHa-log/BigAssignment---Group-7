@@ -16,10 +16,10 @@ public class Member extends User implements Bidder, Seller, AuctionObserver {
             return;
         }
 
-        String bidderName = ((User) bidder).getName();
+        String bidderName = ((User) bidder).getFullName();
         System.out.println("[Notification]: "
                 + bidderName + " has bidded " + amount
-                + " in auction of ID " + auction.getAuctionId()
+                + " in auction of ID " + auction.getId()
                 + " for " + auction.getItem().getName());
     }
 
