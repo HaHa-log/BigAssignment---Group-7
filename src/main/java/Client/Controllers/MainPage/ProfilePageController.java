@@ -206,11 +206,11 @@ public class ProfilePageController {
         try {
             double amount = Double.parseDouble(depositField.getText());
             user.depositMoney(amount);
-            depositStatus.setTextFill(GREEN);
+            depositStatus.setStyle("-fx-text-fill: green; -fx-background-color: white; -fx-border-color: green; -fx-border-width: 1px; -fx-border-radius: 5px; -fx-padding: 5px; -fx-font-weight: bold;");
             depositStatus.setText("Deposited " + amount + " successfully!");
             balanceLabel.setText("" + user.getBalance());
         } catch (Exception e) {
-            depositStatus.setTextFill(RED);
+            depositStatus.setStyle("-fx-text-fill:white;-fx-background-color: red; -fx-padding: 5px;");
             depositStatus.setText("Invalid amount");
         }
         depositField.clear();
@@ -221,11 +221,11 @@ public class ProfilePageController {
         try {
             double amount = Double.parseDouble(withdrawField.getText());
             user.withdrawMoney(amount);
-            withdrawStatus.setTextFill(GREEN);
+            withdrawStatus.setStyle("-fx-text-fill: red; -fx-background-color: white; -fx-border-color: red; -fx-border-width: 1px; -fx-border-radius: 5px; -fx-padding: 5px; -fx-font-weight: bold;");
             withdrawStatus.setText("Withdrawn " + amount + " successfully!");
             balanceLabel.setText("" + user.getBalance());
         } catch (Exception e) {
-            withdrawStatus.setTextFill(RED);
+            withdrawStatus.setStyle("-fx-text-fill: white;-fx-background-color: red; -fx-padding: 5px;");
             withdrawStatus.setText("Invalid amount or insufficient funds");
         }
         withdrawField.clear();
