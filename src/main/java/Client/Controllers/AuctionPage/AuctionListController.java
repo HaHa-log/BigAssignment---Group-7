@@ -17,6 +17,8 @@ public class AuctionListController {
     @FXML
     private Label shortcutToAuctionList;
 
+    AuctionManager auctionManager = AuctionManager.getInstance();
+
     @FXML
     private void initialize() {
         this.populateList();
@@ -24,8 +26,7 @@ public class AuctionListController {
 
     public void populateList() {
         auctionTilePane.getChildren().clear();
-        AuctionManager manager = AuctionManager.getInstance();
-        List<Auction> auctions = manager.getActiveSessions();
+        List<Auction> auctions = auctionManager.getActiveSessions();
 
         if (auctions.isEmpty()) {
             System.err.println("DEBUG: No active auctions found in AuctionManager.");

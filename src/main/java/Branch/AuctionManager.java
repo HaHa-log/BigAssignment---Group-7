@@ -99,6 +99,6 @@ public class AuctionManager {
     }
 
     public List<Auction> getActiveSessions () {
-        return this.activeSessions;
+        return auctionDb.getActiveAuctions();
     }
 }
