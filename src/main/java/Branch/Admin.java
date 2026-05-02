@@ -11,8 +11,8 @@ import java.util.List;
 public class Admin extends User {
     private UsersDAO userDb = DaoFactory.createUsersDAO();
 
-    public Admin(String firstName, String lastName, String email, String phoneNumber, String password) {
-        super(firstName, lastName, email, phoneNumber,password, 0.0);
+    public Admin(String firstName, String lastName, String email, String phoneNumber, String password, double balance) {
+        super(firstName, lastName, email, phoneNumber,password, balance);
     }
 
     public void blockUser(int userId, LocalDateTime until) {

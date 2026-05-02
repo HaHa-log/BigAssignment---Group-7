@@ -7,7 +7,7 @@ public class Member extends User implements Bidder, Seller, AuctionObserver {
     private List<Item> inventory;
 
     public Member(String firstName, String lastName, String email, String phoneNumber, String password, double balance) {
-        super(firstName, lastName, email, phoneNumber,password, balance);
+        super(firstName, lastName, email, phoneNumber, password, balance);
     }
 
     @Override
