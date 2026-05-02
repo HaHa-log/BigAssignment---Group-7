@@ -14,6 +14,7 @@ module BigAssignment.Group7 {
     opens Client.Controllers.LoginPage to javafx.fxml;
     opens Client.Controllers.AuctionPage to javafx.fxml;
     opens Client.Controllers.MainPage to javafx.fxml;
+    opens Client.Controllers.MainPage.ProfilePage to javafx.fxml;
 
     exports Client;
 }
