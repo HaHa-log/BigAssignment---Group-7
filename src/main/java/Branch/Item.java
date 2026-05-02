@@ -26,7 +26,6 @@ public class Item extends Entity {
         this.name = name;
         this.startingPrice = startingPrice;
         this.description = description;
-        itemsDb.save(this);
     }
 
     public Item(String name, double startingPrice, String description, Status status, LocalDateTime createdAt, LocalDateTime updatedAt) {
@@ -36,7 +35,6 @@ public class Item extends Entity {
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        itemsDb.save(this);
     }
 
     public void setStartingPrice(double startPrice) {
@@ -87,5 +85,9 @@ public class Item extends Entity {
                 ", description='" + description + '\'' +
                 ", status=" + status +
                 '}';
+    }
+
+    public void saveItem() {
+        itemsDb.save(this);
     }
 }

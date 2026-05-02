@@ -47,6 +47,7 @@ public class AuctionCreateController {
         } else {
             try {
                 Item item = new Item(itemName, startingPrice, description);
+                item.saveItem();
                 auction.createAuction(seller, item, LocalDateTime.now(), null);
                 auctionCreateResult.setTextFill(GREEN);
                 auctionCreateResult.setText("Auction created.");

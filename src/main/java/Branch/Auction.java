@@ -100,18 +100,15 @@ public class Auction extends Entity implements Serializable {
         lock.lock();
         try {
             if (status != AuctionStatus.RUNNING) {
-                System.out.println("The auction hasn't started or has already ended");
-                return false;
+                throw new IllegalArgumentException("The auction hasn't started or has already ended");
             }
 
             if (owner.isEqual((User) bidder)) {
-                System.out.println("Auction owner cannot place bid");
-                return false;
+                throw new IllegalArgumentException("Auction owner cannot place bid");
             }
 
             if (((User)bidder).getId()==(owner.getId())) {
-                System.out.println("Auction owner cannot place bid");
-                return false;
+                throw new IllegalArgumentException("Auction owner cannot place bid");
             }
 
             if (bidAmount > currentPrice) {
@@ -121,8 +118,7 @@ public class Auction extends Entity implements Serializable {
                 notifyAllBidders(bidder, bidAmount);
                 return true;
             } else {
-                System.out.println("Bid price has to be greater than the current price");
-                return false;
+                throw new IllegalArgumentException("Bid price has to be greater than the current price");
             }
         } finally {
             lock.unlock();
