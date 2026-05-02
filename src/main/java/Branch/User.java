@@ -1,8 +1,9 @@
 package Branch;
 
+import Branch.Common.Email;
+import Branch.Common.PhoneNumber;
 import model.UsersDAO;
 import model.impl.DaoFactory;
-import model.impl.UsersDAOImpl;
 
 import java.util.regex.Pattern;
 import java.time.LocalDateTime;
@@ -10,8 +11,8 @@ import java.time.LocalDateTime;
 public abstract class User extends Entity {
     private String firstName;
     private String lastName;
-    private String email;
-    private String phoneNumber;
+    private Email email;
+    private PhoneNumber phoneNumber;
     private String password;
     private double balance;
     private boolean isAdmin = false;
@@ -24,8 +25,8 @@ public abstract class User extends Entity {
         super(firstName + " " + lastName);
         this.firstName = firstName;
         this.lastName = lastName;
-        this.setEmail(email);
-        this.setPhoneNumber(phoneNumber);
+        this.email = new Email(email);
+        this.phoneNumber = new PhoneNumber(phoneNumber);
         this.setPassword(password);
         this.setBalance(balance);
     }
@@ -45,8 +46,9 @@ public abstract class User extends Entity {
         return Pattern.compile(EMAIL_PATTERN).matcher(email).matches();
     }
 
-    public void setEmail(String userEmail) {
-        if (isValidEmail(userEmail)) {
+    public void setEmail(String email) {
+        if (isValidEmail(email)) {
+            Email userEmail = new Email(email);
             this.email = userEmail;
             userDatabase.update(this);
         } else {
@@ -59,8 +61,9 @@ public abstract class User extends Entity {
         return phone != null && phone.matches(regex);
     }
 
-    public void setPhoneNumber(String contactNumber) {
-        if (isValidPhoneNumber(contactNumber)) {
+    public void setPhoneNumber(String number) {
+        if (isValidPhoneNumber(number)) {
+            PhoneNumber contactNumber = new PhoneNumber(number);
             this.phoneNumber = contactNumber;
             userDatabase.update(this);
         } else {
@@ -101,11 +104,11 @@ public abstract class User extends Entity {
     }
 
     public String getEmail() {
-        return email;
+        return email.toString();
     }
 
     public String getPhoneNumber() {
-        return phoneNumber;
+        return phoneNumber.toString();
     }
 
     public String getPassword() {

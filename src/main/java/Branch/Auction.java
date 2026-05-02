@@ -78,10 +78,6 @@ public class Auction implements Serializable {
         }
     }
 
-    public AuctionStatus getStatus() {
-        return status;
-    }
-
     public void notifyAllBidders(Bidder bidder, double bidderAmount) {
         String name = "Unknown Bidder";
         name = ((User) bidder).getName();
@@ -170,6 +166,10 @@ public class Auction implements Serializable {
         }
     }
 
+    public AuctionStatus getStatus() {
+        return status;
+    }
+
     public int getAuctionId() {
         return auctionId;
     }
@@ -178,12 +178,16 @@ public class Auction implements Serializable {
         return startingPrice;
     }
 
-    public Member getOwner() {
+    public Member getSeller() {
         return owner;
     }
 
     public LocalDateTime getTerminatedAt() {
         return terminatedAt;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
     public Item getItem() {
@@ -192,5 +196,5 @@ public class Auction implements Serializable {
 
     public double getCurrentPrice() { return currentPrice; }
 
-    public Bidder getWinner() { return winner; }
+    public User getWinner() { return (User) winner; }
 }
