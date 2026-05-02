@@ -41,15 +41,20 @@ public class AuctionCreateController {
         String description = descriptionInput.getText();
         Double startingPrice = Double.parseDouble(startingPriceInput.getText());
 
-        Item item = new Item(itemName, startingPrice, description);
-        auction.createAuction(seller, item, LocalDateTime.now(), null);
-
         if (itemName == null || startingPrice == null) {
             auctionCreateResult.setTextFill(RED);
             auctionCreateResult.setText("Please fill all the fields.");
         } else {
-            auctionCreateResult.setTextFill(GREEN);
-            auctionCreateResult.setText("Auction created.");
+            try {
+                Item item = new Item(itemName, startingPrice, description);
+                auction.createAuction(seller, item, LocalDateTime.now(), null);
+                auctionCreateResult.setTextFill(GREEN);
+                auctionCreateResult.setText("Auction created.");
+            } catch (IllegalArgumentException e) {
+                String message = e.getMessage();
+                auctionCreateResult.setTextFill(GREEN);
+                auctionCreateResult.setText(message);
+            }
         }
     }
 
