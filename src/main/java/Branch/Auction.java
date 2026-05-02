@@ -1,57 +1,35 @@
 package Branch;
 
-import Branch.Common.Price;
 import java.time.LocalDateTime;
 import java.util.concurrent.locks.ReentrantLock;
 import java.io.Serializable;
 
-public class Auction implements Serializable {
+public class Auction extends Entity implements Serializable {
     private int auctionId;
-    private final Member owner;
+    private Member owner;
     private final LocalDateTime createdAt;
     private LocalDateTime terminatedAt;
-    private final Item item;
+    private boolean isInCountDown;
+    private Item item;
     private AuctionStatus status;
     public enum AuctionStatus {
         OPEN, RUNNING, FINISHED, PAID, CANCELED
     }
-    //Coder's note:
-    //currentPrice sẽ là giá của Item được đấu giá
-    //Khi khởi tạo Item, startingPrice của item có thể tùy ý chỉnh sửa
-    //Trong Auction, sau khi giao bán Item, mặt khác...
-    //...Sẽ không thể sửa được giá ban đầu của Item trong sàn đầu nữa
-    //Khi ấy, currentPrice sẽ được cập nhận dựa trên số bid được đặt
+    private double startingPrice;
     private volatile double currentPrice;
-    private boolean isInCountDown;
     private Bidder winner;
-    private static final int EXTENSION_THRESHOLD_MINUTES = 5;
-    private static final int EXTENSION_MINUTES = 5;
+    private final transient ReentrantLock lock = new ReentrantLock(); //Để xử lý concurrency
+    //Thêm transient vì ReentrantLock không thể serialize trực tiếp
 
-    private final transient ReentrantLock lock = new ReentrantLock();
-
-    public Auction(Member owner, Item item, LocalDateTime terminatedAt) {
-        this.auctionId = 0;
-        this.owner = owner;
-        this.item = item;
-        this.currentPrice = item.getStartingPrice();
+    public Auction(Member owner, Item item) {
         this.status = AuctionStatus.OPEN;
         this.createdAt = LocalDateTime.now();
-        this.terminatedAt = terminatedAt;
-        this.isInCountDown = false;
-    }
-
-    //Coder's note as to not to go insane:
-    //giá được cập nhận là double vì khi ấy nó đã tự truyền bid vào
-    //mà bid đã được lọc trước qua Price => không cần set condition cho currentPrice
-    public Auction(int auctionId, Member owner, Item item, double currentPrice,
-                   AuctionStatus status, LocalDateTime createdAt, LocalDateTime terminatedAt) {
-        this.auctionId = auctionId;
+        isInCountDown = false;
         this.owner = owner;
         this.item = item;
-        this.currentPrice = currentPrice;
-        this.status = status;
-        this.createdAt = createdAt;
-        this.terminatedAt = terminatedAt;
+        this.winner = null;
+        this.startingPrice = item.getStartingPrice();
+        this.currentPrice = startingPrice;
     }
 
     public String start() {
@@ -78,6 +56,7 @@ public class Auction implements Serializable {
         };
     }
 
+
     public boolean transitionTo(AuctionStatus nextStatus) {
         lock.lock();
         try {
@@ -99,22 +78,13 @@ public class Auction implements Serializable {
         }
     }
 
-    public AuctionStatus getStatus() {
-        return status;
-    }
-
     public void notifyAllBidders(Bidder bidder, double bidderAmount) {
-        String name = "Unknown";
-        if (bidder instanceof User) {
-            name = ((User) bidder).getName();
-        }
+        String name = "Unknown Bidder";
+        name = ((User) bidder).getFullName();
         System.out.println("[Announcement]: " + name + " has the highest bid of " + bidderAmount);
     }
 
-    //Coder's note for future ref:
-    //Bidder.placeBid để kiểm tra cá nhân
-    //Auction.placeBid để kiểm tra bid toàn buổi đấu giá
-    public boolean placeBid(Bidder bidder, Price bidAmount) {
+    public synchronized boolean placeBid(Bidder bidder, double bidAmount) {
         lock.lock();
         try {
             if (status != AuctionStatus.RUNNING) {
@@ -122,18 +92,21 @@ public class Auction implements Serializable {
                 return false;
             }
 
-            if (bidder instanceof User && ((User) bidder).getId() == owner.getId()) {
+            if (owner.isEqual((User) bidder)) {
                 System.out.println("Auction owner cannot place bid");
                 return false;
             }
 
-            if (bidAmount.getPrice() > currentPrice) {
-                currentPrice = bidAmount.getPrice();
+            if (((User)bidder).getId()==(owner.getId())) {
+                System.out.println("Auction owner cannot place bid");
+                return false;
+            }
+
+            if (bidAmount > currentPrice) {
+                currentPrice = bidAmount;
                 winner = bidder;
 
-                handleSniping();
-
-                notifyAllBidders(bidder, bidAmount.getPrice());
+                notifyAllBidders(bidder, bidAmount);
                 return true;
             } else {
                 System.out.println("Bid price has to be greater than the current price");
@@ -144,25 +117,43 @@ public class Auction implements Serializable {
         }
     }
 
-    private void handleSniping() {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime fiveMinutesBeforeEnd = terminatedAt.minusMinutes(5);
+    public void setAuctionId(int idOfAuction) {
+        lock.lock();
+        try { this.auctionId = idOfAuction; } finally { lock.unlock(); }
+    }
 
-        if (now.isAfter(fiveMinutesBeforeEnd) && now.isBefore(terminatedAt)) {
-            this.terminatedAt = terminatedAt.plusMinutes(5);
-            this.isInCountDown = true;
-
-            System.out.println("[System]: Auction extended to: " + terminatedAt);
+    public void setStartingPrice(double startingPrice) {
+        lock.lock();
+        try {
+            if (status == AuctionStatus.OPEN) {
+                this.startingPrice = startingPrice;
+                this.currentPrice = startingPrice;
+            } else {
+                System.out.println("[System]: Cannot change startingPrice when the auction is already started");
+            }
+        }
+        finally {
+            lock.unlock();
         }
     }
 
-    public void setAuctionId(int idOfAuction) {
+    public void setOwner(Member clientOwner) {
         lock.lock();
         try {
-            if (this.auctionId == 0) {
-                this.auctionId = idOfAuction;
-            }
-        } finally { lock.unlock(); }
+            this.owner = clientOwner;
+        }
+        finally {
+            lock.unlock(); }
+    }
+
+    public void setItem(Item newItem) {
+        lock.lock();
+        try {
+            this.item = newItem;
+        }
+        finally {
+            lock.unlock();
+        }
     }
 
     public void setStatus(AuctionStatus status) {
@@ -175,16 +166,28 @@ public class Auction implements Serializable {
         }
     }
 
-    public int getAuctionId() {
+    public int getId() {
         return auctionId;
     }
 
-    public Member getOwner() {
+    public AuctionStatus getStatus() {
+        return status;
+    }
+
+    public double getStartingPrice() {
+        return startingPrice;
+    }
+
+    public Member getSeller() {
         return owner;
     }
 
     public LocalDateTime getTerminatedAt() {
         return terminatedAt;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
     public Item getItem() {
@@ -193,5 +196,5 @@ public class Auction implements Serializable {
 
     public double getCurrentPrice() { return currentPrice; }
 
-    public Bidder getWinner() { return winner; }
+    public User getWinner() { return (User) winner; }
 }
