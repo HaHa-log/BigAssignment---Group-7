@@ -15,7 +15,7 @@ public class HomePageController{
 
     @FXML
     private void initialize() {
-        String userName =SessionManager.getCurrentUser().getName();
+        String userName =SessionManager.getCurrentUser().getFullName();
         welcomeLabel.setText("Welcome, " + userName);
     }
     @FXML

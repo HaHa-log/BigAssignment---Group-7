@@ -1,6 +1,7 @@
 package Branch;
 
 import Branch.Common.Email;
+import Branch.Common.FullName;
 import Branch.Common.PhoneNumber;
 import model.UsersDAO;
 import model.impl.DaoFactory;
@@ -9,8 +10,7 @@ import java.util.regex.Pattern;
 import java.time.LocalDateTime;
 
 public abstract class User extends Entity {
-    private String firstName;
-    private String lastName;
+    private FullName fullname;
     private Email email;
     private PhoneNumber phoneNumber;
     private String password;
@@ -22,9 +22,7 @@ public abstract class User extends Entity {
     private UsersDAO userDatabase = DaoFactory.createUsersDAO();
 
     public User(String firstName, String lastName, String email, String phoneNumber, String password, double balance) {
-        super(firstName + " " + lastName);
-        this.firstName = firstName;
-        this.lastName = lastName;
+        this.fullname = new FullName(firstName, lastName);
         this.email = new Email(email);
         this.phoneNumber = new PhoneNumber(phoneNumber);
         this.setPassword(password);
@@ -32,12 +30,12 @@ public abstract class User extends Entity {
     }
 
     public void setFirstName(String fstName) {
-        this.firstName = fstName;
+        this.fullname = new FullName(fstName, fullname.getLastName());
         userDatabase.update(this);
     }
 
     public void setLastName(String lstName) {
-        this.lastName = lstName;
+        this.fullname = new FullName(fullname.getFirstName(), lstName);
         userDatabase.update(this);
     }
 
@@ -95,12 +93,15 @@ public abstract class User extends Entity {
         userDatabase.update(this);
     }
 
+    public String getFullName() {
+        return fullname.toString();
+    }
     public String getFirstName() {
-        return firstName;
+        return fullname.getFirstName();
     }
 
     public String getLastName() {
-        return lastName;
+        return fullname.getLastName();
     }
 
     public String getEmail() {

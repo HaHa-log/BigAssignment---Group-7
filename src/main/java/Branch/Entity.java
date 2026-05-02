@@ -2,18 +2,10 @@ package Branch;
 
 public abstract class Entity {
     private int id;
-    private String name;
-
-    public Entity(String name) {
-        this.name = name;
-    }
+    //Things like Auction and Transaction will not have a name
 
     public void setId(int id) { this.id = id; }
 
     public int getId() { return id; }
-
-    public String getName() {
-        return name;
-    }
     //Thinking of setting conditions for setName()
 }

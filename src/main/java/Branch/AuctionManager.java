@@ -72,7 +72,7 @@ public class AuctionManager {
     public boolean cancelAuction(int auctionId) {
         Auction canceledAuction = null;
         for (Auction auction : activeSessions) {
-            if (auction.getAuctionId() == auctionId) {
+            if (auction.getId() == auctionId) {
                 canceledAuction = auction;
                 break;
             }
