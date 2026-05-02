@@ -1,0 +1,26 @@
+.edit-btn {
+    -fx-background-color: #F2F2F2;
+    -fx-text-fill: #1e293b;
+    -fx-background-radius: 20;
+    -fx-padding: 8 18;
+
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 5,0,0,2);
+    -fx-cursor: hand;
+}
+
+.edit-btn:hover {
+    -fx-background-color: #e2e8f0;
+
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 10,0,0,3);
+}
+
+.edit-btn:pressed {
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
