@@ -38,16 +38,11 @@ public class AuthService {
         Handled by exceptions
          */
 
-        try {
-            double balance = 0.0;
-            Member member = new Member(firstName, lastName, email, phoneNumber, password, balance);
-            userdb.save(member);
-            //return "[System]: You've created a new account!";
-            return member;
-        } catch (IllegalArgumentException e) {
-            e.getMessage();
-            return null;
-        }
+        double balance = 0.0;
+        Member member = new Member(firstName, lastName, email, phoneNumber, password, balance);
+        userdb.save(member);
+        //return "[System]: You've created a new account!";
+        return member;
     }
 
     public static User login(String email, String password) {
@@ -55,18 +50,15 @@ public class AuthService {
         User user = userdb.getByEmail(email);
 
         if (user == null) {
-            System.out.println("[Failure]: No account found with this email.");
-            return null;
+            throw new IllegalArgumentException("[Failure]: No account found with this email.");
         }
 
         if (user.getPassword().equals(password)) {
             SessionManager.loginCurrentUser(user);
             return user;
             //return "[System]: Login successful. Welcome back, " + user.getFirstName();
+        } else {
+            throw new IllegalArgumentException("[Failure]: Incorrect password.");
         }
-
-
-        return null;
-        //return "[Failure]: Invalid email/username or password.";
     }
 }

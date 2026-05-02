@@ -46,13 +46,13 @@ public class LoginController {
             loginLabel.setText("PLease enter your passwword and email!");
         }
         else {
-            User loginResult = login(emailInput, passwordInput);
-            if (loginResult != null) {
+            try {
+                User loginResult = login(emailInput, passwordInput);
                 mainController.onSuccessfulLogin();
-            }
-            else {
+            } catch (IllegalArgumentException e) {
+                String message =  e.getMessage();
                 loginLabel.setTextFill(RED);
-                loginLabel.setText("Incorrect password/email!");
+                loginLabel.setText(message);
             }
         }
     }

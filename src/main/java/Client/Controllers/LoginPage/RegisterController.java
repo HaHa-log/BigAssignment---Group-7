@@ -8,6 +8,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import java.io.IOException;
 
+import static javafx.scene.paint.Color.GREEN;
 import static javafx.scene.paint.Color.RED;
 
 public class RegisterController {
@@ -42,7 +43,6 @@ public class RegisterController {
         String email = emailField.getText();
         String phoneNumber = phoneNumberField.getText();
         String password = passwordField.getText();
-        Member member = AuthService.registerNewUser(firstName, lastName, email, phoneNumber, password);
 
         registerLabel.setTextFill(RED);
 
@@ -52,14 +52,12 @@ public class RegisterController {
         }
 
         try {
-            if (member != null) {
-                goToLogin();
-            }
-            else {
-                registerLabel.setText("Registration failed!");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+            Member member = AuthService.registerNewUser(firstName, lastName, email, phoneNumber, password);
+            registerLabel.setTextFill(GREEN);
+            registerLabel.setText("User registered successfully!");
+        } catch (IllegalArgumentException e) {
+            String message =  e.getMessage();
+            registerLabel.setText(message);
         }
     }
 }

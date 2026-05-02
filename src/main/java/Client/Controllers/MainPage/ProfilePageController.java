@@ -6,7 +6,6 @@ import Client.Controllers.SceneManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -205,7 +204,7 @@ public class ProfilePageController {
     @FXML
     private void handleSaveDeposit() {
         try {
-            Double amount = Double.parseDouble(depositField.getText());
+            double amount = Double.parseDouble(depositField.getText());
             user.depositMoney(amount);
             depositStatus.setTextFill(GREEN);
             depositStatus.setText("Deposited " + amount + " successfully!");
@@ -220,7 +219,7 @@ public class ProfilePageController {
     @FXML
     private void handleSaveWithdraw() {
         try {
-            Double amount = Double.parseDouble(withdrawField.getText());
+            double amount = Double.parseDouble(withdrawField.getText());
             user.withdrawMoney(amount);
             withdrawStatus.setTextFill(GREEN);
             withdrawStatus.setText("Withdrawn " + amount + " successfully!");
