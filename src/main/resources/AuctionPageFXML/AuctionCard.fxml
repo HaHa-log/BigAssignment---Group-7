@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox accessibleRole="BUTTON" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#toAuctionDetail" prefWidth="250.0" spacing="10.0" style="-fx-border-color: black; -fx-border-width: 2; -fx-background-color: white;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.AuctionPage.AuctionCardController">
+   <children>
+      <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-border-color: #cccccc;">
+         <children>
+            <ImageView fx:id="itemImage" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+         </children>
+      </StackPane>
+
+      <VBox spacing="5.0">
+         <children>
+            <Label fx:id="itemNameLabel" text="Item Name">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Label fx:id="startingPriceLabel" text="Starting price: $0.00" />
+            <Label fx:id="currentPriceLabel" text="Current price: $0.00" />
+         </children>
+         <VBox.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" />
+         </VBox.margin>
+      </VBox>
+   </children>
+   <padding>
+      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+   </padding>
+</VBox>
