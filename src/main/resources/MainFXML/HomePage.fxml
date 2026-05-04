@@ -18,7 +18,6 @@
                   <Font name="System Bold" size="18.0" />
                </font>
             </Label>
-            <Button fx:id="managementNavigation" visible="false" managed="false" mnemonicParsing="false" text="Management Dashboard" textAlignment="CENTER" AnchorPane.rightAnchor="0.0" />
          </children>
       </AnchorPane>
         <StackPane fx:id="auctionContainer" maxHeight="500.0" maxWidth="1.7976931348623157E308" onMouseClicked="#toAuctionList" style="-fx-border-color: #37427c;-fx-cursor: hand;" VBox.vgrow="ALWAYS">
