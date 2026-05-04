@@ -37,9 +37,11 @@ public class FinanceController extends BaseController {
         try {
             double amount = Double.parseDouble(depositField.getText());
             user.depositMoney(amount);
-            depositStatus.setText("Deposited " + amount);
+            depositStatus.setStyle("-fx-text-fill: green; " + "-fx-background-color: white; " +"-fx-font-weight: bold;"+ "-fx-border-color: green; " + "-fx-border-radius: 5; " + "-fx-background-radius: 5; " + "-fx-padding: 5;");
+            depositStatus.setText("Deposited " + amount+" successfully!");
             balanceLabel.setText(String.valueOf(user.getBalance()));
         } catch (Exception e) {
+            depositStatus.setStyle("-fx-text-fill: white; " + "-fx-background-color: #ef4444; "+"-fx-font-weight: bold;" + "-fx-background-radius: 5; " + "-fx-padding: 5;");
             depositStatus.setText("Invalid amount");
         }
         depositField.clear();
@@ -50,10 +52,12 @@ public class FinanceController extends BaseController {
         try {
             double amount = Double.parseDouble(withdrawField.getText());
             user.withdrawMoney(amount);
+            withdrawStatus.setStyle("-fx-text-fill: red; " + "-fx-background-color: white; "+"-fx-font-weight: bold;" + "-fx-border-color: red; " + "-fx-border-radius: 5; " + "-fx-background-radius: 5; " + "-fx-padding: 5;");
             withdrawStatus.setText("Withdrawn " + amount);
             balanceLabel.setText(String.valueOf(user.getBalance()));
         } catch (Exception e) {
-            withdrawStatus.setText("Invalid or insufficient");
+            withdrawStatus.setStyle("-fx-text-fill: white; "+"-fx-font-weight: bold;" + "-fx-background-color: #ef4444; " + "-fx-background-radius: 5; " + "-fx-padding: 5;");
+            withdrawStatus.setText("Invalid or exceeds balance");
         }
         withdrawField.clear();
     }
