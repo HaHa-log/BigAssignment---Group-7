@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.geometry.Insets?>
 
-<BorderPane style="-fx-background-color: #0f172a; -fx-font-family: 'Segoe UI';" stylesheets="@profile.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.MainPage.ProfilePage.ProfilePageController">
+<BorderPane style="-fx-background-color: #0f172a; -fx-font-family: 'Segoe UI';" stylesheets="@/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.MainPage.ProfilePage.ProfilePageController">
 
     <!-- TOP -->
     <top>

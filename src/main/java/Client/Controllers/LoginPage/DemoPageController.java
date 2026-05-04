@@ -13,8 +13,6 @@ public class DemoPageController{
     @FXML
     private StackPane ContentPane;
 
-    public User user = SessionManager.getCurrentUser();
-
     public void initialize() {
         try {
             showLogin();
@@ -45,13 +43,8 @@ public class DemoPageController{
     }
 
     public void onSuccessfulLogin() {
+        User user = SessionManager.getCurrentUser();
         SceneManager.loadLayout();
-
-        if (user.isAdmin()) {
-            SceneManager.switchContent("/ManagementFXML/ManagementDashboard.fxml");
-        }
-        else {
-            SceneManager.switchContent("/MainFXML/HomePage.fxml");
+        SceneManager.switchContent("/MainFXML/HomePage.fxml");
         }
     }
-}

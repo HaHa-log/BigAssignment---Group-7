@@ -10,6 +10,7 @@ module BigAssignment.Group7 {
     // Permissions for the main application entry point
     opens Client to javafx.graphics, javafx.fxml;
 
+    opens Client.Controllers.Management to javafx.fxml;
     opens Client.Controllers to javafx.fxml;
     opens Client.Controllers.LoginPage to javafx.fxml;
     opens Client.Controllers.AuctionPage to javafx.fxml;

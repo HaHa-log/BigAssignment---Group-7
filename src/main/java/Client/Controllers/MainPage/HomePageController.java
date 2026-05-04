@@ -22,9 +22,19 @@ public class HomePageController{
     private void initialize() {
         String userName = user.getFullName();
         welcomeLabel.setText("Welcome, " + userName);
+
+        if (user.isAdmin()) {
+            managementNavigation.setVisible(true);
+            managementNavigation.setManaged(true);
+        }
     }
     @FXML
     private void toAuctionList() {
         SceneManager.switchContent("/AuctionPageFXML/AuctionList.fxml");
+    }
+
+    @FXML
+    private void toManagementDashboard() {
+        SceneManager.switchContent("/ManagementFXML/ManagementDashboard.fxml");
     }
 }

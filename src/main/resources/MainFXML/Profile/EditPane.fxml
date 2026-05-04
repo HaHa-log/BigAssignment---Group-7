@@ -15,17 +15,17 @@
         <Label style="-fx-text-fill: #e2e8f0; -fx-font-size: 18; -fx-font-weight: bold;" text="Edit Profile" />
 
         <Label style="-fx-text-fill: #cbd5f5;" text="About Me" />
-        <TextArea fx:id="aboutField" prefHeight="100" style="-fx-background-color: #0f172a; -fx-text-fill: black; -fx-background-radius: 8;" />
+        <TextArea fx:id="aboutField" prefHeight="100" />
 
         <Label style="-fx-text-fill: #cbd5f5;" text="Phone Number" />
-        <TextField fx:id="phoneField" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-background-radius: 8;" />
+        <TextField fx:id="phoneField" />
 
         <Label style="-fx-text-fill: #cbd5f5;" text="Email" />
-        <TextField fx:id="emailField" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-background-radius: 8;" />
+        <TextField fx:id="emailField"  />
 
         <HBox spacing="10">
-            <Button onAction="#handleSave" style="-fx-background-color: #22c55e; -fx-text-fill: white; -fx-background-radius: 8;" text="Save" />
-            <Button onAction="#cancelEdit" style="-fx-background-color: #ef4444; -fx-text-fill: white; -fx-background-radius: 8;" text="Cancel" />
+            <Button onAction="#handleSave" style="-fx-background-color: green;" text="Save" />
+            <Button onAction="#cancelEdit" style="-fx-background-color: red;" text="Cancel" />
         </HBox>
     </VBox>
 

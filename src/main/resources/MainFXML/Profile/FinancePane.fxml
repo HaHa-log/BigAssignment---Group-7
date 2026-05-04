@@ -29,12 +29,12 @@
             <!-- deposit -->
             <VBox spacing="10" HBox.hgrow="ALWAYS" maxWidth="Infinity">
                 <Button text="Deposit" onAction="#handleDeposit"
-                        style="-fx-background-color: #22c55e; -fx-text-fill: white;" />
+                        style="-fx-background-color: green;" />
 
                 <VBox fx:id="depositBox" spacing="8" visible="false" managed="false">
                     <TextField fx:id="depositField" promptText="Enter deposit" />
                     <Button text="Save" onAction="#handleSaveDeposit"
-                            style="-fx-background-color: #16a34a; -fx-text-fill: white;" />
+                            style="-fx-background-color: green;"/>
                     <Label fx:id="depositStatus"></Label>
                 </VBox>
             </VBox>
@@ -42,12 +42,12 @@
             <!-- withdraw -->
             <VBox spacing="10" HBox.hgrow="ALWAYS" maxWidth="Infinity">
                 <Button text="Withdraw" onAction="#handleWithdraw"
-                        style="-fx-background-color: #ef4444; -fx-text-fill: white;" />
+                        style="-fx-background-color: red;" />
 
                 <VBox fx:id="withdrawBox" spacing="8" visible="false" managed="false">
                     <TextField fx:id="withdrawField" promptText="Enter withdraw" />
                     <Button text="Save" onAction="#handleSaveWithdraw"
-                            style="-fx-background-color: #dc2626; -fx-text-fill: white;" />
+                            style="-fx-background-color: red;" />
                     <Label fx:id="withdrawStatus"></Label>
                 </VBox>
             </VBox>
