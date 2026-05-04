@@ -22,12 +22,6 @@ public class HomePageController{
     private void initialize() {
         String userName = user.getFullName();
         welcomeLabel.setText("Welcome, " + userName);
-        System.out.println(user.isAdmin());
-
-        if (user.isAdmin()) {
-            managementNavigation.setVisible(true);
-            managementNavigation.setManaged(true);
-        }
     }
     @FXML
     private void toAuctionList() {

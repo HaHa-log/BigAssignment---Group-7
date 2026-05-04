@@ -1,5 +1,7 @@
 package Client.Controllers.LoginPage;
 
+import Branch.SessionManager;
+import Branch.User;
 import Client.Controllers.SceneManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,6 +12,8 @@ import java.io.IOException;
 public class DemoPageController{
     @FXML
     private StackPane ContentPane;
+
+    public User user = SessionManager.getCurrentUser();
 
     public void initialize() {
         try {
@@ -42,6 +46,12 @@ public class DemoPageController{
 
     public void onSuccessfulLogin() {
         SceneManager.loadLayout();
-        SceneManager.switchContent("/MainFXML/HomePage.fxml");
+
+        if (user.isAdmin()) {
+            SceneManager.switchContent("/ManagementFXML/ManagementDashboard.fxml");
+        }
+        else {
+            SceneManager.switchContent("/MainFXML/HomePage.fxml");
+        }
     }
 }
