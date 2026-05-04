@@ -117,6 +117,13 @@ public abstract class User extends Entity {
 
     public abstract boolean isAdmin();
 
+    public String getRole() {
+        if (isAdmin()) {
+            return "Admin";
+        }
+        return "Member";
+    }
+
     public Admin setAdmin() {
         return (Admin) this;
     }
