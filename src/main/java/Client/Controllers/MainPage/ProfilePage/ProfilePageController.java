@@ -16,6 +16,12 @@ public class ProfilePageController {
     User user = SessionManager.getCurrentUser();
 
     @FXML
+    private Label usernameLabel;
+
+    @FXML
+    private Label roleLabel;
+
+    @FXML
     private StackPane contentPane;
 
     @FXML
