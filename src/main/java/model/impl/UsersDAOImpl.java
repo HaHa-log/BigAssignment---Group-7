@@ -120,8 +120,13 @@ public class UsersDAOImpl implements UsersDAO {
             st.setString(1, email);
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()) {
-                    Member member = instantiateMember(rs);
-                    return member;
+                    if (rs.getBoolean("isAdmin") == false) {
+                        Member member = instantiateMember(rs);
+                        return member;
+                    } else if (rs.getBoolean("isAdmin") == true) {
+                        Admin admin = instantiateAdmin(rs);
+                        return admin;
+                    }
                 }
             }
             return null;
@@ -141,7 +146,7 @@ public class UsersDAOImpl implements UsersDAO {
             while (rs.next()) {
                 if (rs.getBoolean("isAdmin") == false) {
                     list.add(instantiateMember(rs));
-                } else {
+                } else if (rs.getBoolean("isAdmin") == true) {
                     list.add(instantiateAdmin(rs));
                 }
             }
