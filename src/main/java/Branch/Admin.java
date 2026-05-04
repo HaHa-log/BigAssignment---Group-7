@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Admin extends User {
-    //Admin cannot participate in bidding or selling
     private UsersDAO userDb = DaoFactory.createUsersDAO();
 
     public Admin(String firstName, String lastName, String email, String phoneNumber, String password, double balance) {
