@@ -16,7 +16,7 @@ public abstract class User extends Entity {
     private PhoneNumber phoneNumber;
     private String password;
     private Balance balance;
-    private boolean isAdmin = false;
+    private boolean isAdmin;
     private boolean isBlocked = false;
     private LocalDateTime blockedUntil = null;
 
@@ -115,7 +115,11 @@ public abstract class User extends Entity {
 
     public double getBalance() { return balance.showBalance(); }
 
-    public boolean isAdmin() { return isAdmin; }
+    public abstract boolean isAdmin();
+
+    public Admin setAdmin() {
+        return (Admin) this;
+    }
 
     public boolean isBlocked() {
         if (isBlocked && blockedUntil != null && LocalDateTime.now().isAfter(blockedUntil)) {
