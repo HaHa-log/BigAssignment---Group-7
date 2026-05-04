@@ -101,8 +101,8 @@ public class UsersDAOImpl implements UsersDAO {
             st.setInt(1, id);
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()){
-                    Member member = instantiateMember(rs);
-                    return member;
+                    User user = instantiateMember(rs);
+                    return user;
                 }
             }
             return null;
@@ -120,8 +120,8 @@ public class UsersDAOImpl implements UsersDAO {
             st.setString(1, email);
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()) {
-                    Member member = instantiateMember(rs);
-                    return member;
+                    User user = instantiateMember(rs);
+                    return user;
                 }
             }
             return null;

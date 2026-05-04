@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import model.ItemsDAO;
 import model.UsersDAO;
 import model.impl.DaoFactory;
+import model.impl.UsersDAOImpl;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,10 +17,6 @@ import java.util.List;
 public class ClientApp extends Application {
     @Override
     public void start(Stage stage) throws Exception {
-        UsersDAO userDb = DaoFactory.createUsersDAO();
-        ItemsDAO itemDb = DaoFactory.createItemDAO();
-        List<Item> items = itemDb.getAll();
-
         SceneManager.setStage(stage);
         SceneManager.startApp();
     }
