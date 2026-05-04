@@ -27,6 +27,9 @@ public class ProfilePageController {
     @FXML
     public void initialize() {
         if (user != null) {
+            usernameLabel.setText(user.getFullName());
+            roleLabel.setText(user.getRole());
+            
             showProfile();
             BaseController.setNavigation(this);
         }
