@@ -12,6 +12,7 @@
       fx:controller="Client.Controllers.MainPage.ProfilePage.FinanceController"
       fx:id="financePane"
       spacing="15"
+      stylesheets="@profile.css"
       style="-fx-background-color: #475569; -fx-padding: 20; -fx-background-radius: 10;">
 
         <Label style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;" text="Finance" />
