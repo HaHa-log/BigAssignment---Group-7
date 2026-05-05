@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Admin extends User {
+public class Admin extends Member {
     private UsersDAO userDb = DaoFactory.createUsersDAO();
 
     public Admin(String firstName, String lastName, String email, String phoneNumber, String password, double balance) {

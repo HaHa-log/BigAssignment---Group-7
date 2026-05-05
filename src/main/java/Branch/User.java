@@ -117,10 +117,6 @@ public abstract class User extends Entity {
 
     public abstract boolean isAdmin();
 
-    public Admin setAdmin() {
-        return (Admin) this;
-    }
-
     public boolean isBlocked() {
         if (isBlocked && blockedUntil != null && LocalDateTime.now().isAfter(blockedUntil)) {
             isBlocked = false;

@@ -26,6 +26,8 @@ public class AuctionCreateController {
     @FXML
     private TextField startingPriceInput;
     @FXML
+    private TextField startingTimeInput, endingTimeInput;
+    @FXML
     private Label fileNameLabel;
     @FXML
     private Label auctionCreateResult;

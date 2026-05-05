@@ -34,8 +34,12 @@ public class ProfilePageController {
     public void initialize() {
         if (user != null) {
             usernameLabel.setText(user.getFullName());
-            roleLabel.setText(user.getRole());
-            
+            if (user.isAdmin()) {
+              roleLabel.setText("Admin");
+            } else {
+              roleLabel.setText("User");
+            }
+
             showProfile();
             BaseController.setNavigation(this);
         }

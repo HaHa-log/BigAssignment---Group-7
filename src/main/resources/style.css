@@ -22,14 +22,12 @@
 
 .text-field, .password-field {
     -fx-background-color: rgba(255, 255, 255, 0.2);
-    -fx-prompt-text-fill: white;
     -fx-background-radius: 8;
-    -fx-border-color: rgba(255, 255, 255, 0.3);
+    -fx-border-color: #37427c;
     -fx-border-radius: 8;
 
     -fx-font-size: 13px;
     -fx-font-family: "Segoe UI Semilight";
-    -fx-text-fill: white;
 }
 
 .text-field:focused, .password-field:focused {
