@@ -17,22 +17,19 @@ public class PasswordController extends BaseController {
         String newPassword = newPasswordField.getText();
         String confirm = newPasswordConfirmField.getText();
 
-        String successStyle = "-fx-background-color: white; " + "-fx-text-fill: green; " + "-fx-font-weight: bold; " + "-fx-border-color: green; " + "-fx-border-radius: 5; " + "-fx-background-radius: 5; " + "-fx-padding: 5;";
-        String errorStyle = "-fx-background-color: white; " + "-fx-text-fill: red; " + "-fx-font-weight: bold; " + "-fx-border-color: red; " + "-fx-border-radius: 5; " +"-fx-background-radius: 5; " + "-fx-padding: 5;";
-
         passwordChangeStatus.setTextFill(RED);
 
         if (user.getPassword().equals(oldPassword)) {
             if (newPassword.equals(confirm) && !newPassword.isEmpty()) {
                 user.setPassword(newPassword);
-                passwordChangeStatus.setStyle(successStyle);
+                passwordChangeStatus.getStyleClass().setAll("success");
                 passwordChangeStatus.setText("Password updated!");
             } else {
-                passwordChangeStatus.setStyle(errorStyle);
+                passwordChangeStatus.getStyleClass().setAll("error");
                 passwordChangeStatus.setText("Check match or empty fields.");
             }
         } else {
-            passwordChangeStatus.setStyle(errorStyle);
+            passwordChangeStatus.getStyleClass().setAll("error");
             passwordChangeStatus.setText("Old password failed.");
         }
     }
