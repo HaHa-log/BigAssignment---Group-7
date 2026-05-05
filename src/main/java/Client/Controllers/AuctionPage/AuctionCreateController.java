@@ -5,6 +5,7 @@ import Branch.Item;
 import Branch.Member;
 import Branch.SessionManager;
 import javafx.fxml.FXML;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -13,7 +14,9 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import static javafx.scene.paint.Color.GREEN;
 import static javafx.scene.paint.Color.RED;
@@ -25,6 +28,8 @@ public class AuctionCreateController {
     private TextField descriptionInput;
     @FXML
     private TextField startingPriceInput;
+    @FXML
+    private DatePicker startingDateInput, endingDateInput;
     @FXML
     private TextField startingTimeInput, endingTimeInput;
     @FXML
@@ -43,14 +48,30 @@ public class AuctionCreateController {
         String description = descriptionInput.getText();
         Double startingPrice = Double.parseDouble(startingPriceInput.getText());
 
+        LocalDate startDate = startingDateInput.getValue();
+        LocalDate endDate = endingDateInput.getValue();
+
+        String startingTime = startingTimeInput.getText();
+        String endingTime = endingTimeInput.getText();
+
         if (itemName == null || startingPrice == null) {
             auctionCreateResult.setTextFill(RED);
             auctionCreateResult.setText("Please fill all the fields.");
-        } else {
+        } else if (startDate == null || endDate == null || startingTime == null || endingTime == null) {
+            auctionCreateResult.setTextFill(RED);
+            auctionCreateResult.setText("Please choose starting and ending time.");
+        }
+        else {
             try {
+                LocalTime startTime = LocalTime.parse(startingTime);
+                LocalTime endTime = LocalTime.parse(endingTime);
+
+                LocalDateTime startFull = startDate.atTime(startTime);
+                LocalDateTime endFull = endDate.atTime(endTime);
+
                 Item item = new Item(itemName, startingPrice, description);
                 item.saveItem();
-                auction.createAuction(seller, item, LocalDateTime.now(), null);
+                auction.createAuction(seller, item, startFull, endFull);
                 auctionCreateResult.setTextFill(GREEN);
                 auctionCreateResult.setText("Auction created.");
             } catch (IllegalArgumentException e) {

@@ -102,15 +102,32 @@
                                  <children>
                                     <VBox>
                                        <children>
-                                          <Text text="Starting time:" />
-                                          <DatePicker maxWidth="1.7976931348623157E308" prefHeight="30.0" prefWidth="200.0" />
+                                          <Text text="Starting Date" />
+                                          <DatePicker fx:id="startingDateInput" maxWidth="1.7976931348623157E308" prefHeight="30.0"  />
                                        </children>
                                     </VBox>
-                                     <Region HBox.hgrow="ALWAYS" />
-                                    <VBox>
+                                    <Region maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="0.0" HBox.hgrow="ALWAYS" />
+                                    <VBox layoutX="10.0" layoutY="10.0">
                                        <children>
-                                          <Text text="Ending time:" />
-                                          <DatePicker maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="30.0" prefWidth="200.0" />
+                                          <Text text="Starting Time" />
+                                          <TextField fx:id="startingTimeInput" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="30.0" promptText="HH:mm"/>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                              <HBox layoutX="10.0" layoutY="28.0">
+                                 <children>
+                                     <VBox>
+                                         <children>
+                                             <Text text="Ending Date" />
+                                             <DatePicker fx:id="endingDateInput" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="30.0" />
+                                         </children>
+                                     </VBox>
+                                    <Region maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="0.0" HBox.hgrow="ALWAYS" />
+                                    <VBox layoutX="10.0" layoutY="10.0">
+                                       <children>
+                                          <Text text="Ending Time" />
+                                          <TextField fx:id="endingTimeInput" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="30.0" promptText="HH:mm"/>
                                        </children>
                                     </VBox>
                                  </children>
