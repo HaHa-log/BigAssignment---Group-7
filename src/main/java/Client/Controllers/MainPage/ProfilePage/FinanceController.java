@@ -37,11 +37,11 @@ public class FinanceController extends BaseController {
         try {
             double amount = Double.parseDouble(depositField.getText());
             user.depositMoney(amount);
-            depositStatus.setStyle("-fx-text-fill: green; " + "-fx-background-color: white; " +"-fx-font-weight: bold;"+ "-fx-border-color: green; " + "-fx-border-radius: 5; " + "-fx-background-radius: 5; " + "-fx-padding: 5;");
+            depositStatus.getStyleClass().setAll("success");
             depositStatus.setText("Deposited " + amount+" successfully!");
             balanceLabel.setText(String.valueOf(user.getBalance()));
         } catch (Exception e) {
-            depositStatus.setStyle("-fx-text-fill: white; " + "-fx-background-color: #ef4444; "+"-fx-font-weight: bold;" + "-fx-background-radius: 5; " + "-fx-padding: 5;");
+            depositStatus.getStyleClass().setAll("error");
             depositStatus.setText("Invalid amount");
         }
         depositField.clear();
@@ -52,11 +52,11 @@ public class FinanceController extends BaseController {
         try {
             double amount = Double.parseDouble(withdrawField.getText());
             user.withdrawMoney(amount);
-            withdrawStatus.setStyle("-fx-text-fill: red; " + "-fx-background-color: white; "+"-fx-font-weight: bold;" + "-fx-border-color: red; " + "-fx-border-radius: 5; " + "-fx-background-radius: 5; " + "-fx-padding: 5;");
-            withdrawStatus.setText("Withdrawn " + amount);
+            withdrawStatus.getStyleClass().setAll("success");
+            withdrawStatus.setText("Withdrawn " + amount+" successfully!");
             balanceLabel.setText(String.valueOf(user.getBalance()));
         } catch (Exception e) {
-            withdrawStatus.setStyle("-fx-text-fill: white; "+"-fx-font-weight: bold;" + "-fx-background-color: #ef4444; " + "-fx-background-radius: 5; " + "-fx-padding: 5;");
+            withdrawStatus.getStyleClass().setAll("error");
             withdrawStatus.setText("Invalid or exceeds balance");
         }
         withdrawField.clear();
