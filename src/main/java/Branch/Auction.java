@@ -24,6 +24,7 @@ public class Auction extends Entity implements Serializable {
     //Thêm transient vì ReentrantLock không thể serialize trực tiếp
 
     public Auction(Member owner, Item item) {
+        auctionId = 0;
         this.owner = owner;
         this.item = item;
         this.status = AuctionStatus.OPEN;

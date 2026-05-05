@@ -42,7 +42,7 @@ public class Transaction {
 
                 this.status = TransactionStatus.COMPLETED;
                 this.completedAt = LocalDateTime.now();
-                System.out.println("[System]: Transaction completed! " + buyer.getName() + " has made a payment of " + finalAmount);
+                System.out.println("[System]: Transaction completed! " + buyer.getFullName() + " has made a payment of " + finalAmount);
             } catch (Exception e) {
                 buyer.depositMoney(finalAmount);
                 throw new IllegalTransactionException("[Error]: Failure to transfer payment to seller. Refund issued to buyer");
@@ -62,7 +62,7 @@ public class Transaction {
             try {
                 buyer.depositMoney(finalAmount);
                 this.status = TransactionStatus.REFUNDED;
-                System.out.println("[Transaction]: Refund successful for Auction ID " + auction.getAuctionId());
+                System.out.println("[Transaction]: Refund successful for Auction ID " + auction.getId());
             } catch (Exception e) {
                 seller.depositMoney(finalAmount);
                 throw new IllegalTransactionException("[Error]: Failure to refund during transfer. Seller has been reimbursed.");
