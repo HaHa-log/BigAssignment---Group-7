@@ -54,6 +54,25 @@ public class Auction extends Entity implements Serializable {
         this.winner = winner;
     }
 
+    public AuctionStatus getStatus() {
+        lock.lock();
+        try {
+            LocalDateTime now = LocalDateTime.now();
+
+            if (this.status == AuctionStatus.OPEN && now.isAfter(createdAt)) {
+                this.start();
+            }
+
+            if (this.status == AuctionStatus.RUNNING && now.isAfter(terminatedAt)) {
+                this.transitionTo(AuctionStatus.FINISHED);
+            }
+
+            return status;
+        } finally {
+            lock.unlock();
+        }
+    }
+    
     public String start() {
         if (transitionTo(AuctionStatus.RUNNING)) {
             return "Starting an auction...";
