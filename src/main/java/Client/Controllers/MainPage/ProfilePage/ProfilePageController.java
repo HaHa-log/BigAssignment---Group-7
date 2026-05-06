@@ -66,7 +66,6 @@ public class ProfilePageController {
         tabProfile.setStyle(NORMAL);
         tabPassword.setStyle(NORMAL);
         tabFinance.setStyle(NORMAL);
-        tabNotification.setStyle(NORMAL);
         tabHistory.setStyle(NORMAL);
         if (tab != null) tab.setStyle(ACTIVE);
     }
