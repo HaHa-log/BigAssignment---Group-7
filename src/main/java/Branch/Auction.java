@@ -59,11 +59,11 @@ public class Auction extends Entity implements Serializable {
         try {
             LocalDateTime now = LocalDateTime.now();
 
-            if (this.status == AuctionStatus.OPEN && now.isAfter(createdAt)) {
+            if (this.status == AuctionStatus.OPEN && now.isAfter(startingTime)) {
                 this.start();
             }
 
-            if (this.status == AuctionStatus.RUNNING && now.isAfter(terminatedAt)) {
+            if (this.status == AuctionStatus.RUNNING && now.isAfter(endingTime)) {
                 this.transitionTo(AuctionStatus.FINISHED);
             }
 
@@ -267,9 +267,6 @@ public class Auction extends Entity implements Serializable {
         return auctionId;
     }
 
-    public AuctionStatus getStatus() {
-        return status;
-    }
 
     public double getStartingPrice() {
         return startingPrice;
@@ -303,7 +300,7 @@ public class Auction extends Entity implements Serializable {
         return currentPrice;
     }
 
-    public User getWinner() {
-        return (User) winner;
+    public Bidder getWinner() {
+        return winner;
     }
 }

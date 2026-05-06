@@ -1,12 +1,11 @@
 package Branch;
 
-import Branch.Common.Balance;
-import Branch.Common.Email;
-import Branch.Common.FullName;
-import Branch.Common.PhoneNumber;
+import Branch.Common.*;
 import model.UsersDAO;
 import model.impl.DaoFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.time.LocalDateTime;
 
