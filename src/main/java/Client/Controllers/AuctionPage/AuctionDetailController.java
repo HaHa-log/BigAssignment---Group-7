@@ -35,7 +35,8 @@ public class AuctionDetailController {
         try {
             double bidAmount = Double.parseDouble(bidAmountString);
             auction.placeBid(currentUser, bidAmount);
-            statusLabel.setTextFill(RED);
+            statusLabel.setTextFill(GREEN);
+            statusLabel.setText("Bid placed successfully.");
 
         } catch (IllegalArgumentException e) {
             String message = e.getMessage();

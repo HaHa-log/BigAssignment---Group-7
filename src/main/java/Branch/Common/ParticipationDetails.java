@@ -14,7 +14,7 @@ public class ParticipationDetails {
     private final Price finalPrice;
     private final LocalDateTime startTime;
     private final LocalDateTime endTime;
-    private final Bidder leadingBidder;
+    private final User leadingBidder;
 
     public ParticipationDetails(Auction auction, User accountUser) {
         this.idForDetails = auction.getAuctionId();
@@ -44,7 +44,7 @@ public class ParticipationDetails {
 
     public LocalDateTime getEndTime() { return endTime; }
 
-    public Bidder getLeadingBidder() { return leadingBidder; }
+    public User getLeadingBidder() { return leadingBidder; }
 
     public Auction.AuctionStatus getOverallStatus() { return overallStatus; }
 }

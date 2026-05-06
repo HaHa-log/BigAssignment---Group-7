@@ -41,24 +41,25 @@ public class Auction extends Entity implements Serializable {
         this.isInCountDown = false;
     }
 
-    public Auction(Member owner, Item item, LocalDateTime startingTime, LocalDateTime endingTime,
-                   AuctionStatus status, double startingPrice, double currentPrice, Bidder winner) {
-        this.owner = owner;
-        this.item = item;
-        this.startingTime = startingTime;
-        this.endingTime = endingTime;
-        this.winner = null;
-    }
-
     public Auction(Member owner, Item item, AuctionStatus status, LocalDateTime startingTime, LocalDateTime endingTime,
+                   double startingPrice, double currentPrice, Bidder winner) {
         this.owner = owner;
         this.item = item;
         this.status = status;
         this.startingTime = startingTime;
         this.endingTime = endingTime;
+        this.status = status;
         this.startingPrice = startingPrice;
         this.currentPrice = currentPrice;
         this.winner = winner;
+    }
+
+    public Auction(Member owner, Item item, AuctionStatus status, LocalDateTime startingTime, LocalDateTime endingTime) {
+        this.owner = owner;
+        this.item = item;
+        this.status = status;
+        this.startingTime = startingTime;
+        this.endingTime = endingTime;
     }
 
     public AuctionStatus getStatus() {
@@ -137,7 +138,7 @@ public class Auction extends Entity implements Serializable {
     public synchronized boolean placeBid(Bidder bidder, double bidAmount) {
         lock.lock();
         try {
-            if (status != AuctionStatus.RUNNING) {
+            if (this.getStatus() != AuctionStatus.RUNNING) {
                 throw new IllegalArgumentException("The auction hasn't started or has already ended");
             }
 
@@ -307,7 +308,7 @@ public class Auction extends Entity implements Serializable {
         return currentPrice;
     }
 
-    public Bidder getWinner() {
-        return winner;
+    public User getWinner() {
+        return (User) winner;
     }
 }
