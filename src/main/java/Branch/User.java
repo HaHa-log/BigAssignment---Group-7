@@ -139,4 +139,19 @@ public abstract class User extends Entity {
         }
         return result;
     }
+
+    public List<ParticipationDetails> getParticipatedAuctions(List<Auction> allSystemAuctions) {
+        List<ParticipationDetails> history = new ArrayList<>();
+
+        for (Auction auction : allSystemAuctions) {
+            boolean isOwner = auction.getOwner().getId() == this.getId();
+            boolean hasBid = auction.getWinner() != null &&
+                    ((User) auction.getWinner()).getId() == this.getId();
+
+            if (isOwner || hasBid) {
+                history.add(new ParticipationDetails(auction, this));
+            }
+        }
+        return history;
+    }
 }
