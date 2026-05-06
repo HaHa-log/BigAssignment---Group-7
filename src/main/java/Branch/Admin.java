@@ -1,6 +1,7 @@
 package Branch;
 
 import Branch.User;
+import model.TransactionDAO;
 import model.UsersDAO;
 import model.impl.DaoFactory;
 
@@ -10,6 +11,7 @@ import java.util.List;
 
 public class Admin extends Member {
     private UsersDAO userDb = DaoFactory.createUsersDAO();
+    private TransactionDAO transactionDb = DaoFactory.createTransactionDAO();
 
     public Admin(String firstName, String lastName, String email, String phoneNumber, String password, double balance) {
         super(firstName, lastName, email, phoneNumber,password, balance);
@@ -60,11 +62,11 @@ public class Admin extends Member {
     }
 
     public List<Transaction> getAllTransactions() {
-        return TempDatabase.getAuctionTransactions();
+        return transactionDb.getAll();
     }
 
     public void printTransactionsByMember(int memberId) {
-        List<Transaction> all = TempDatabase.getAuctionTransactions();
+        List<Transaction> all = transactionDb.getAll();
         List<Transaction> result = new ArrayList<>();
 
         for (Transaction transaction : all) {

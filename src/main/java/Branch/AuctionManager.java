@@ -1,6 +1,7 @@
 package Branch;
 
 import model.AuctionsDAO;
+import model.TransactionDAO;
 import model.impl.DaoFactory;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ public class AuctionManager {
     private List<Auction> completedSessions;
 
     private  AuctionsDAO auctionDb = DaoFactory.createAuctionsDAO();
+    private TransactionDAO transactionDb = DaoFactory.createTransactionDAO();
 
     private AuctionManager() {
         activeSessions = new ArrayList<>();
@@ -64,7 +66,7 @@ public class AuctionManager {
                     session.getOwner(),
                     session.getCurrentPrice()
             );
-            TempDatabase.saveTransaction(transaction);
+            transactionDb.save(transaction);
 
         } else {
             session.getItem().setStatus(Item.Status.AVAILABLE);

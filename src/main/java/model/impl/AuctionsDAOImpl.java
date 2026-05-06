@@ -89,7 +89,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
             st.setTimestamp(7, auction.getEndingTime() != null
                     ? Timestamp.valueOf(auction.getEndingTime()) : null);
             st.setObject(8, auction.getWinner() != null
-                    ? (auction.getWinner()).getId() : null);
+                    ? ((User) auction.getWinner()).getId() : null);
             st.setInt(9, auction.getId());
 
             st.executeUpdate();
