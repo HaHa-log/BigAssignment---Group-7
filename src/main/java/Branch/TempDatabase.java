@@ -300,8 +300,8 @@ public class TempDatabase {
 
             stmt.setDouble(1, auction.getCurrentPrice());
             stmt.setString(2, auction.getStatus().name());
-            stmt.setTimestamp(3, auction.getTerminatedAt() != null
-                    ? Timestamp.valueOf(auction.getTerminatedAt()) : null);
+            stmt.setTimestamp(3, auction.getEndingTime() != null
+                    ? Timestamp.valueOf(auction.getEndingTime()) : null);
             stmt.setObject(4, auction.getWinner() != null
                     ? ((User) auction.getWinner()).getId() : null);
             stmt.setInt(5, auction.getId());

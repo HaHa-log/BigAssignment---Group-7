@@ -1,8 +1,5 @@
 package Branch;
 
-import model.AuctionsDAO;
-import model.impl.DaoFactory;
-
 import java.time.LocalDateTime;
 import java.util.concurrent.locks.ReentrantLock;
 import java.io.Serializable;
@@ -10,8 +7,8 @@ import java.io.Serializable;
 public class Auction extends Entity implements Serializable {
     private int auctionId;
     private Member owner;
-    private LocalDateTime createdAt;
-    private LocalDateTime terminatedAt;
+    private LocalDateTime startingTime;
+    private LocalDateTime endingTime;
     private Item item;
     private AuctionStatus status;
     public enum AuctionStatus {
@@ -33,12 +30,12 @@ public class Auction extends Entity implements Serializable {
         this.currentPrice = startingPrice;
     }
 
-    public Auction(Member owner, Item item, LocalDateTime createdAt, LocalDateTime terminatedAt,
+    public Auction(Member owner, Item item, LocalDateTime startingTime, LocalDateTime endingTime,
                    AuctionStatus status, double startingPrice, double currentPrice, Bidder winner) {
         this.owner = owner;
         this.item = item;
-        this.createdAt = createdAt;
-        this.terminatedAt = terminatedAt;
+        this.startingTime = startingTime;
+        this.endingTime = endingTime;
         this.status = status;
         this.startingPrice = startingPrice;
         this.currentPrice = currentPrice;
@@ -78,7 +75,7 @@ public class Auction extends Entity implements Serializable {
                 this.status = nextStatus;
 
                 if (nextStatus == AuctionStatus.FINISHED) {
-                    this.terminatedAt = LocalDateTime.now();
+                    this.endingTime = LocalDateTime.now();
                 }
                 return true;
 
@@ -126,8 +123,8 @@ public class Auction extends Entity implements Serializable {
         }
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setStartingTime(LocalDateTime startingTime) {
+        this.startingTime = startingTime;
     }
 
     public void setAuctionId(int idOfAuction) {
@@ -188,7 +185,7 @@ public class Auction extends Entity implements Serializable {
         }
     }
 
-    public int getId() {
+    public int getAuctionId() {
         return auctionId;
     }
 
@@ -204,16 +201,24 @@ public class Auction extends Entity implements Serializable {
         return owner;
     }
 
-    public LocalDateTime getTerminatedAt() {
-        return terminatedAt;
+    public int getOwnerId() {
+        return owner.getId();
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public LocalDateTime getEndingTime() {
+        return endingTime;
+    }
+
+    public LocalDateTime getStartingTime() {
+        return startingTime;
     }
 
     public Item getItem() {
         return item;
+    }
+
+    public int getItemId() {
+        return item.getId();
     }
 
     public double getCurrentPrice() {

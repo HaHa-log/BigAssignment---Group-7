@@ -38,7 +38,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                     if (rs.next()) {
                         int id = rs.getInt(1);
                         auction.setAuctionId(id);
-                        auction.setCreatedAt(LocalDateTime.now());
+                        auction.setStartingTime(LocalDateTime.now());
                     }
                 }
             } else {
@@ -80,8 +80,8 @@ public class AuctionsDAOImpl implements AuctionsDAO {
             st.setString(3, auction.getStatus().name());
             st.setDouble(4, auction.getStartingPrice());
             st.setDouble(5, auction.getCurrentPrice());
-            st.setTimestamp(6, auction.getTerminatedAt() != null
-                    ? Timestamp.valueOf(auction.getTerminatedAt()) : null);
+            st.setTimestamp(6, auction.getEndingTime() != null
+                    ? Timestamp.valueOf(auction.getEndingTime()) : null);
             st.setObject(7, auction.getWinner() != null
                     ? (auction.getWinner()).getId() : null);
             st.setInt(8, auction.getId());

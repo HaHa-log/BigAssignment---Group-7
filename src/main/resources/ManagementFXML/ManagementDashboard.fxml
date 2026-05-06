@@ -2,11 +2,10 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
@@ -19,18 +18,30 @@
             <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
               <tabs>
                 <Tab text="User">
-                  <content>
-                        <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
-                           <content>
-                              <ListView prefHeight="200.0" prefWidth="200.0" />
-                           </content>
-                        </ScrollPane>
-                  </content>
+            <content>
+               <TableView prefHeight="200.0" prefWidth="200.0">
+                 <columns>
+                   <TableColumn prefWidth="75.0" text="C1" />
+                   <TableColumn prefWidth="75.0" text="C2" />
+                 </columns>
+               </TableView>
+            </content>
                 </Tab>
                 <Tab text="Auctions">
-                  <content>
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                  </content>
+            <content>
+                <TableView fx:id="auctionTable" prefHeight="400.0" prefWidth="600.0">
+                    <columns>
+                        <TableColumn fx:id="auctionsId" prefWidth="75.0" text="Auction ID" />
+                        <TableColumn fx:id="ownerId" prefWidth="75.0" text="Owner ID" />
+                        <TableColumn fx:id="itemId" prefWidth="75.0" text="Item ID" />
+                        <TableColumn fx:id="status" prefWidth="100.0" text="Status" />
+                        <TableColumn fx:id="startingPrice" prefWidth="100.0" text="Start Price" />
+                        <TableColumn fx:id="currentPrice" prefWidth="100.0" text="Current Price" />
+                        <TableColumn fx:id="startingTime" prefWidth="120.0" text="Start Time" />
+                        <TableColumn fx:id="endingTime" prefWidth="120.0" text="End Time" />
+                    </columns>
+                </TableView>
+            </content>
                 </Tab>
               </tabs>
             </TabPane>
