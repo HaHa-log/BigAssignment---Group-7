@@ -1,6 +1,13 @@
 package Branch;
 
+import Branch.Common.Price;
+import Branch.Exceptions.AuctionClosedException;
+import Branch.Exceptions.AuthenticationException;
+import Branch.Exceptions.InvalidBidException;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 import java.io.Serializable;
 
@@ -16,9 +23,13 @@ public class Auction extends Entity implements Serializable {
     }
     private double startingPrice;
     private volatile double currentPrice;
+    private boolean isInCountDown;
     private Bidder winner;
-    private final transient ReentrantLock lock = new ReentrantLock(); //Để xử lý concurrency
-    //Thêm transient vì ReentrantLock không thể serialize trực tiếp
+    private final transient List<AuctionObserver> observers = new ArrayList<>();
+    private int extendCount = 0;
+    private static final int MAX_EXTENDS = 5;
+
+    private final transient ReentrantLock lock = new ReentrantLock();
 
     public Auction(Member owner, Item item) {
         auctionId = 0;
@@ -28,6 +39,7 @@ public class Auction extends Entity implements Serializable {
         this.winner = null;
         this.startingPrice = item.getStartingPrice();
         this.currentPrice = startingPrice;
+        this.isInCountDown = false;
     }
 
     public Auction(Member owner, Item item, LocalDateTime startingTime, LocalDateTime endingTime,
@@ -89,8 +101,10 @@ public class Auction extends Entity implements Serializable {
     }
 
     public void notifyAllBidders(Bidder bidder, double bidderAmount) {
-        String name = "Unknown Bidder";
-        name = ((User) bidder).getFullName();
+        String name = "Unknown";
+        if (bidder instanceof User) {
+            name = ((User) bidder).getFullName();
+        }
         System.out.println("[Announcement]: " + name + " has the highest bid of " + bidderAmount);
     }
 
@@ -122,6 +136,51 @@ public class Auction extends Entity implements Serializable {
             lock.unlock();
         }
     }
+
+    public boolean placeBid(Bidder bidder, Price bidAmount)
+            throws AuctionClosedException, AuthenticationException, InvalidBidException {
+        lock.lock();
+        try {
+            if (status != AuctionStatus.RUNNING) {
+                throw new AuctionClosedException(status.toString());
+            }
+
+            if (bidder instanceof User && ((User) bidder).getId() == owner.getId()) {
+                throw new AuthenticationException("[Error]: Sellers are prohibited from bidding on their own listings!");
+            }
+
+            if (bidAmount.getPrice() > currentPrice) {
+                currentPrice = bidAmount.getPrice();
+                winner = bidder;
+
+                handleSniping();
+
+                notifyAllBidders(bidder, bidAmount.getPrice());
+                return true;
+            } else {
+                throw new InvalidBidException(currentPrice, bidAmount.getPrice());
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private void handleSniping() {
+        LocalDateTime now = LocalDateTime.now();
+
+        if (now.isBefore(endingTime) && now.isAfter(endingTime.minusMinutes(5))) {
+            if (extendCount < MAX_EXTENDS) {
+                this.endingTime = now.plusMinutes(5);
+                this.extendCount++;
+                this.isInCountDown = false;
+                System.out.println("[System]: Auction extended (" + extendCount + "/" + MAX_EXTENDS + "). New end time: " + endingTime);
+            } else {
+                this.isInCountDown = true;
+                System.out.println("[System]: Max extensions reached! Final countdown active.");
+            }
+        }
+    }
+
 
     public void setStartingTime(LocalDateTime startingTime) {
         this.startingTime = startingTime;

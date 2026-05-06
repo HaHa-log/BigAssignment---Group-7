@@ -76,7 +76,7 @@ public class AuctionCreateController {
                 auctionCreateResult.setText("Auction created.");
             } catch (IllegalArgumentException e) {
                 String message = e.getMessage();
-                auctionCreateResult.setTextFill(GREEN);
+                auctionCreateResult.setTextFill(RED);
                 auctionCreateResult.setText(message);
             }
         }

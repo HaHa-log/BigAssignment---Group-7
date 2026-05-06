@@ -6,7 +6,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<TableView xmlns:fx="http://javafx.com/fxml/1" fx:id="table" fx:controller="Client.Controllers.Management.AuctionManagementController">
+<TableView xmlns:fx="http://javafx.com/fxml/1" fx:id="table" fx:controller="Client.Controllers.Management.AuctionManagementController" styleClass="table">
     <columns>
         <TableColumn fx:id="auctionsId" text="Auction ID" />
         <TableColumn fx:id="ownerId" text="Owner ID" />
@@ -17,4 +17,7 @@
         <TableColumn fx:id="startingTime" text="Start Time" />
         <TableColumn fx:id="endingTime" text="End Time" />
     </columns>
+    <columnResizePolicy>
+        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+    </columnResizePolicy>
 </TableView>

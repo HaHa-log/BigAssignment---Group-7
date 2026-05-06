@@ -34,21 +34,14 @@ public class AuctionDetailController {
 
         try {
             double bidAmount = Double.parseDouble(bidAmountString);
-            boolean isValid = auction.placeBid(currentUser, bidAmount);
+            auction.placeBid(currentUser, bidAmount);
             statusLabel.setTextFill(RED);
 
-            if (auction.getOwner().equals(currentUser)) {
-                statusLabel.setText("Auction owner cannot place bid.");
-            }
-            if (isValid) {
-                statusLabel.setTextFill(BLUE);
-                statusLabel.setText("Bid placed successfully!");
-                bidAmountInput.clear();
-            } else {
-                statusLabel.setText("Bid too low or auction closed.");
-            }
-        } catch (NumberFormatException e) {
-            statusLabel.setText("Invalid number format.");
+        } catch (IllegalArgumentException e) {
+            String message = e.getMessage();
+            statusLabel.setText(message);
+        } finally {
+            bidAmountInput.clear();
         }
     }
 
