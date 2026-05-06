@@ -213,6 +213,10 @@ public class Auction extends Entity implements Serializable {
         this.startingTime = startingTime;
     }
 
+    public void setEndingTime(LocalDateTime endingTime) {
+        this.endingTime = endingTime;
+    }
+
     public void setAuctionId(int idOfAuction) {
         lock.lock();
         try { this.auctionId = idOfAuction; } finally { lock.unlock(); }
@@ -271,10 +275,9 @@ public class Auction extends Entity implements Serializable {
         }
     }
 
-    public int getAuctionId() {
+    public int getId() {
         return auctionId;
     }
-
 
     public double getStartingPrice() {
         return startingPrice;
@@ -282,10 +285,6 @@ public class Auction extends Entity implements Serializable {
 
     public Member getOwner() {
         return owner;
-    }
-
-    public int getOwnerId() {
-        return owner.getId();
     }
 
     public LocalDateTime getEndingTime() {
@@ -298,10 +297,6 @@ public class Auction extends Entity implements Serializable {
 
     public Item getItem() {
         return item;
-    }
-
-    public int getItemId() {
-        return item.getId();
     }
 
     public double getCurrentPrice() {

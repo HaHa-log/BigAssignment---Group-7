@@ -3,41 +3,48 @@ package Branch;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class Bid implements Serializable {
-    private LocalDateTime start;
-    private double bid;
-    private Member member;
+public class Bid extends Entity implements Serializable {
+    private Auction auction;
+    private Member bidder;
+    private double bodPrice;
+    private LocalDateTime bidTime;
 
-    public void setStart(LocalDateTime startTime) {
-        this.start = startTime;
+    public Bid(Auction auction, Member bidder, double bodPrice, LocalDateTime bidTime) {
+        this.auction = auction;
+        this.bidder = bidder;
+        this.bodPrice = bodPrice;
+        this.bidTime = LocalDateTime.now();
     }
 
-    public void setBid(double initialBid) {
-        this.bid = initialBid;
+    public void setAuction(Auction auction) {
+        this.auction = auction;
     }
 
-    public void setMember(Member client) {
-        this.member = client;
+    public void setBidder(Member bidder) {
+        this.bidder = bidder;
     }
 
-    public LocalDateTime getStart() {
-        return start;
+    public void setBodPrice(double bodPrice) {
+        this.bodPrice = bodPrice;
     }
 
-    public double getBid() {
-        return bid;
+    public void setBidTime(LocalDateTime bidTime) {
+        this.bidTime = bidTime;
     }
 
-    public Member getMember() {
-        return member;
+    public Auction getAuction() {
+        return auction;
     }
 
-    @Override
-    public String toString() {
-        return "Bid{" +
-                "createdAt=" + start +
-                ", bid=" + bid +
-                ", bidder='" + member + '\'' +
-                '}';
+    public Member getBidder() {
+        return bidder;
+    }
+
+    public double getBodPrice() {
+        return bodPrice;
+    }
+
+    public LocalDateTime getBidTime() {
+        return bidTime;
     }
 }
