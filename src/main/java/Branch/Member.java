@@ -16,6 +16,11 @@ public class Member extends User implements Bidder, Seller, AuctionObserver {
     }
 
     @Override
+    public String getRole() {
+        return "Member";
+    }
+
+    @Override
     public void onBidPlaced(Auction auction, Bidder bidder, double amount) {
         if (bidder == this) {
             return;

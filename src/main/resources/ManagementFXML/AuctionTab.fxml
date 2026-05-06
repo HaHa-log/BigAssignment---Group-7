@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<TableView xmlns:fx="http://javafx.com/fxml/1" fx:id="table" fx:controller="Client.Controllers.Management.AuctionManagementController">
+    <columns>
+        <TableColumn fx:id="auctionsId" text="Auction ID" />
+        <TableColumn fx:id="ownerId" text="Owner ID" />
+        <TableColumn fx:id="itemId" text="Item ID" />
+        <TableColumn fx:id="status" text="Status" />
+        <TableColumn fx:id="startingPrice" text="Start Price" />
+        <TableColumn fx:id="currentPrice" text="Current Price" />
+        <TableColumn fx:id="startingTime" text="Start Time" />
+        <TableColumn fx:id="endingTime" text="End Time" />
+    </columns>
+</TableView>

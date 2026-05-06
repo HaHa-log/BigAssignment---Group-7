@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+
+<TableView fx:id="table"
+           xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="Client.Controllers.Management.UserManagementController">
+    <columns>
+        <TableColumn fx:id="userId" prefWidth="75.0" text="User ID" />
+        <TableColumn fx:id="username" prefWidth="150.0" text="Username" />
+        <TableColumn fx:id="email" prefWidth="200.0" text="Email" />
+        <TableColumn fx:id="role" prefWidth="100.0" text="Role" />
+    </columns>
+</TableView>

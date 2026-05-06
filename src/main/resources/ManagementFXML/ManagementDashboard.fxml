@@ -9,38 +9,22 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.Management.ManagementController">
+<VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
           <Label text="MANAGEMENT DASHBOARD">
               <font>
                   <Font name="System Bold" size="18.0" />
               </font>
           </Label>
-            <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+            <TabPane tabClosingPolicy="UNAVAILABLE">
               <tabs>
                 <Tab text="User">
             <content>
-               <TableView prefHeight="200.0" prefWidth="200.0">
-                 <columns>
-                   <TableColumn prefWidth="75.0" text="C1" />
-                   <TableColumn prefWidth="75.0" text="C2" />
-                 </columns>
-               </TableView>
+                <fx:include source="UserTab.fxml" />
             </content>
                 </Tab>
                 <Tab text="Auctions">
             <content>
-                <TableView fx:id="auctionTable" prefHeight="400.0" prefWidth="600.0">
-                    <columns>
-                        <TableColumn fx:id="auctionsId" prefWidth="75.0" text="Auction ID" />
-                        <TableColumn fx:id="ownerId" prefWidth="75.0" text="Owner ID" />
-                        <TableColumn fx:id="itemId" prefWidth="75.0" text="Item ID" />
-                        <TableColumn fx:id="status" prefWidth="100.0" text="Status" />
-                        <TableColumn fx:id="startingPrice" prefWidth="100.0" text="Start Price" />
-                        <TableColumn fx:id="currentPrice" prefWidth="100.0" text="Current Price" />
-                        <TableColumn fx:id="startingTime" prefWidth="120.0" text="Start Time" />
-                        <TableColumn fx:id="endingTime" prefWidth="120.0" text="End Time" />
-                    </columns>
-                </TableView>
+                <fx:include source="AuctionTab.fxml" />
             </content>
                 </Tab>
               </tabs>

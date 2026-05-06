@@ -115,6 +115,8 @@ public abstract class User extends Entity {
 
     public double getBalance() { return balance.showBalance(); }
 
+    public abstract String getRole();
+
     public abstract boolean isAdmin();
 
     public boolean isBlocked() {

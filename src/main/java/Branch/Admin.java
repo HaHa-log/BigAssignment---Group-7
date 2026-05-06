@@ -20,6 +20,11 @@ public class Admin extends Member {
         return true;
     }
 
+    @Override
+    public String getRole() {
+        return "Admin";
+    }
+
     public void blockUser(int userId, LocalDateTime until) {
         User user = userDb.getById(userId);
 
