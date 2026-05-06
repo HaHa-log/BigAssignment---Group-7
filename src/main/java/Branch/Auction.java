@@ -26,6 +26,7 @@ public class Auction extends Entity implements Serializable {
     private boolean isInCountDown;
     private Bidder winner;
     private final transient List<AuctionObserver> observers = new ArrayList<>();
+    private final transient List<User> participants = new ArrayList<>();
     private int extendCount = 0;
     private static final int MAX_EXTENDS = 5;
 
@@ -153,6 +154,7 @@ public class Auction extends Entity implements Serializable {
             if (bidAmount > currentPrice) {
                 currentPrice = bidAmount;
                 winner = bidder;
+                participants.add((User) bidder);
 
                 notifyAllBidders(bidder, bidAmount);
                 return true;
@@ -275,6 +277,9 @@ public class Auction extends Entity implements Serializable {
         return auctionId;
     }
 
+    public List<User> getParticipants() {
+        return participants;
+    }
 
     public double getStartingPrice() {
         return startingPrice;

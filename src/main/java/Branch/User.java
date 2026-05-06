@@ -144,10 +144,11 @@ public abstract class User extends Entity {
 
         for (Auction auction : allSystemAuctions) {
             boolean isOwner = auction.getOwner().getId() == this.getId();
-            boolean hasBid = auction.getWinner() != null &&
+            boolean hasWon = auction.getWinner() != null &&
                     ((User) auction.getWinner()).getId() == this.getId();
+            boolean hasBid = auction.getParticipants().contains(this);
 
-            if (isOwner || hasBid) {
+            if (isOwner || hasBid || hasWon) {
                 history.add(new ParticipationDetails(auction, this));
             }
         }
