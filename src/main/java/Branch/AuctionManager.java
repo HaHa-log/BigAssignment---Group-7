@@ -26,7 +26,7 @@ public class AuctionManager {
         return instance;
     }
 
-    public void createAuction(Member owner, Item item, LocalDateTime createdAt, LocalDateTime terminatedAt) {
+    public void createAuction(Member owner, Item item, LocalDateTime startingTime, LocalDateTime endingTime) {
         /*
         if (!item.isAvailable()) {
             System.out.println("[Error]: Item '" + item.getName() + "' is not available!");
@@ -36,7 +36,7 @@ public class AuctionManager {
 
         item.setStatus(Item.Status.IN_AUCTION);
 
-        Auction session = new Auction(owner, item);
+        Auction session = new Auction(owner, item, startingTime, endingTime);
         activeSessions.add(session);
 
         auctionDb.save(session);

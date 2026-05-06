@@ -63,6 +63,7 @@ public class Item extends Entity {
     public String getName() {
         return name;
     }
+
     public String getDescription() {
         return description;
     }

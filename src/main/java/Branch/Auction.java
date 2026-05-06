@@ -31,12 +31,11 @@ public class Auction extends Entity implements Serializable {
 
     private final transient ReentrantLock lock = new ReentrantLock();
 
-    public Auction(Member owner, Item item) {
+    public Auction(Member owner, Item item, LocalDateTime startingTime, LocalDateTime endingTime) {
         auctionId = 0;
         this.owner = owner;
         this.item = item;
         this.status = AuctionStatus.OPEN;
-        this.winner = null;
         this.startingPrice = item.getStartingPrice();
         this.currentPrice = startingPrice;
         this.isInCountDown = false;
@@ -48,7 +47,15 @@ public class Auction extends Entity implements Serializable {
         this.item = item;
         this.startingTime = startingTime;
         this.endingTime = endingTime;
+        this.winner = null;
+    }
+
+    public Auction(Member owner, Item item, AuctionStatus status, LocalDateTime startingTime, LocalDateTime endingTime,
+        this.owner = owner;
+        this.item = item;
         this.status = status;
+        this.startingTime = startingTime;
+        this.endingTime = endingTime;
         this.startingPrice = startingPrice;
         this.currentPrice = currentPrice;
         this.winner = winner;

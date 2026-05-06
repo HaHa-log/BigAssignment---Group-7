@@ -22,8 +22,8 @@ public class AuctionsDAOImpl implements AuctionsDAO {
     @Override
     public void save(Auction auction) {
         String sql = "INSERT INTO auctions "
-                + "(owner_id, item_id, startingPrice, currentPrice) "
-                + "VALUES (?, ?, ?, ?)";
+                + "(owner_id, item_id, startingPrice, currentPrice, startingTime, endingTime) "
+                + "VALUES (?, ?, ?, ?, ?, ?)";
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -31,6 +31,10 @@ public class AuctionsDAOImpl implements AuctionsDAO {
             st.setInt(2, auction.getItem().getId());
             st.setDouble(3, auction.getStartingPrice());
             st.setDouble(4, auction.getCurrentPrice());
+            st.setTimestamp(5, auction.getStartingTime() != null
+                    ? Timestamp.valueOf(auction.getStartingTime()) : null);
+            st.setTimestamp(6, auction.getEndingTime() != null
+                    ? Timestamp.valueOf(auction.getEndingTime()) : null);
 
             int rowsAffected = st.executeUpdate();
             if (rowsAffected > 0) {
@@ -70,7 +74,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
     @Override
     public void update(Auction auction) {
         String sql = "UPDATE auctions "
-                +"SET owner_id = ?, item_id = ?, status = ?, startingPrice = ?, currentPrice = ?, terminatedAt = ?, winner_id = ? "
+                +"SET owner_id = ?, item_id = ?, status = ?, startingPrice = ?, currentPrice = ?, startingTime = ?, endingTime = ?, winner_id = ? "
                 + " WHERE auctions_id = ? ";
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
@@ -80,11 +84,13 @@ public class AuctionsDAOImpl implements AuctionsDAO {
             st.setString(3, auction.getStatus().name());
             st.setDouble(4, auction.getStartingPrice());
             st.setDouble(5, auction.getCurrentPrice());
-            st.setTimestamp(6, auction.getEndingTime() != null
+            st.setTimestamp(6, auction.getStartingTime() != null
+                    ? Timestamp.valueOf(auction.getStartingTime()) : null);
+            st.setTimestamp(7, auction.getEndingTime() != null
                     ? Timestamp.valueOf(auction.getEndingTime()) : null);
-            st.setObject(7, auction.getWinner() != null
+            st.setObject(8, auction.getWinner() != null
                     ? (auction.getWinner()).getId() : null);
-            st.setInt(8, auction.getId());
+            st.setInt(9, auction.getId());
 
             st.executeUpdate();
 
@@ -159,9 +165,9 @@ public class AuctionsDAOImpl implements AuctionsDAO {
         Auction obj = new Auction(
                 (Member) userDb.getById(rs.getInt("owner_id")),
                 itemDb.getById(rs.getInt("item_id")),
-                rs.getObject("createdAt", LocalDateTime.class),
-                rs.getObject("terminatedAt", LocalDateTime.class),
                 Auction.AuctionStatus.valueOf(rs.getString("status")),
+                rs.getObject("startingTime", LocalDateTime.class),
+                rs.getObject("endingTime", LocalDateTime.class),
                 rs.getDouble("startingPrice"),
                 rs.getDouble("currentPrice"),
                 (Bidder) userDb.getById(rs.getInt("winner_id"))

@@ -312,28 +312,4 @@ public class TempDatabase {
             e.printStackTrace();
         }
     }
-
-    public static List<Auction> getActiveAuctions() {
-        List<Auction> result = new ArrayList<>();
-        String sql = "SELECT * FROM auctions WHERE status = 'RUNNING' OR status = 'OPEN'";
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-
-            while (rs.next()) {
-                User owner = getUserById(rs.getInt("owner_id"));
-                Item item = getItemById(rs.getInt("products_id"));
-
-                if (owner instanceof Member && item != null) {
-                    Auction auction = new Auction((Member) owner, item);
-                    auction.setAuctionId(rs.getInt("auction_id"));
-                    auction.setStartingPrice(rs.getDouble("currentPrice"));
-                    result.add(auction);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
 }
