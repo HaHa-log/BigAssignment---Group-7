@@ -2,15 +2,16 @@ package Branch.Common;
 
 import Branch.Auction;
 import Branch.Bidder;
+import Branch.Item;
 import Branch.User;
 import java.time.LocalDateTime;
 
 public class ParticipationDetails {
     private final int idForDetails;
     private final Auction.AuctionStatus overallStatus;
-    private final String itemSold;
-    private final double initialPrice;
-    private final double finalPrice;
+    private final Item itemSold;
+    private final Price initialPrice;
+    private final Price finalPrice;
     private final LocalDateTime startTime;
     private final LocalDateTime endTime;
     private final Bidder leadingBidder;
@@ -18,9 +19,9 @@ public class ParticipationDetails {
     public ParticipationDetails(Auction auction, User accountUser) {
         this.idForDetails = auction.getAuctionId();
         this.overallStatus = auction.getStatus();
-        this.itemSold = auction.getItem().getName();
-        this.initialPrice = auction.getItem().getStartingPrice();
-        this.finalPrice = auction.getCurrentPrice();
+        this.itemSold = auction.getItem();
+        this.initialPrice = new Price(auction.getItem().getStartingPrice());
+        this.finalPrice = new Price(auction.getCurrentPrice());
         this.startTime = auction.getStartingTime();
         this.endTime = auction.getEndingTime();
         this.leadingBidder = auction.getWinner();
@@ -33,11 +34,11 @@ public class ParticipationDetails {
 
     public int getIdForDetails() { return idForDetails; }
 
-    public String getItemSold() { return itemSold; }
+    public String getItemSold() { return itemSold.getName(); }
 
-    public double getInitialPrice() { return initialPrice; }
+    public double getInitialPrice() { return initialPrice.getPrice(); }
 
-    public double getFinalPrice() { return finalPrice; }
+    public double getFinalPrice() { return finalPrice.getPrice(); }
 
     public LocalDateTime getStartTime() { return startTime; }
 
