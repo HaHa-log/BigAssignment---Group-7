@@ -56,12 +56,12 @@ public class AuctionManager {
             Item soldItem = session.getItem();
             soldItem.setStatus(Item.Status.SOLD);
 
-            session.getSeller().getInventory().remove(soldItem);
+            session.getOwner().getInventory().remove(soldItem);
 
             Transaction transaction = new Transaction(
                     session,
                     (Member) session.getWinner(),
-                    session.getSeller(),
+                    session.getOwner(),
                     session.getCurrentPrice()
             );
             TempDatabase.saveTransaction(transaction);

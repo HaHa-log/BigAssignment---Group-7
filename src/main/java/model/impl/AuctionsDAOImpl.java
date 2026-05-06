@@ -27,7 +27,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            st.setInt(1, auction.getSeller().getId());
+            st.setInt(1, auction.getOwner().getId());
             st.setInt(2, auction.getItem().getId());
             st.setDouble(3, auction.getStartingPrice());
             st.setDouble(4, auction.getCurrentPrice());
@@ -75,7 +75,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
 
-            st.setInt(1, auction.getSeller().getId());
+            st.setInt(1, auction.getOwner().getId());
             st.setInt(2, auction.getItem().getId());
             st.setString(3, auction.getStatus().name());
             st.setDouble(4, auction.getStartingPrice());

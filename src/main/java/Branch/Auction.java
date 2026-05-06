@@ -197,7 +197,7 @@ public class Auction extends Entity implements Serializable {
         return startingPrice;
     }
 
-    public Member getSeller() {
+    public Member getOwner() {
         return owner;
     }
 

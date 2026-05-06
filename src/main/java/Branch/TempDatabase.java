@@ -275,7 +275,7 @@ public class TempDatabase {
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            stmt.setInt(1, auction.getSeller().getId());
+            stmt.setInt(1, auction.getOwner().getId());
             stmt.setInt(2, auction.getItem().getId());
             stmt.setDouble(3, auction.getStartingPrice());
             stmt.setDouble(4, auction.getCurrentPrice());
