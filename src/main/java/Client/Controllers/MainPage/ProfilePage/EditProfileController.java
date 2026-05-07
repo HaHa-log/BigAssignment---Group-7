@@ -28,6 +28,7 @@ public class EditProfileController extends BaseController {
         user.setEmail(emailField.getText());
         aboutText = aboutField.getText();
 
+        navigation.showProfile();
     }
 
     @FXML
