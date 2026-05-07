@@ -9,9 +9,15 @@ public class EditProfileController extends BaseController {
     @FXML private TextArea aboutField;
     @FXML private TextField phoneField, emailField;
 
+    private static String aboutText = "Not yet set";
+
+    public static String getAboutText() {
+        return aboutText;
+    }
+
     @Override
     protected void initData() {
-        aboutField.setText("Not yet set");
+        aboutField.setText(aboutText);
         phoneField.setText(user.getPhoneNumber());
         emailField.setText(user.getEmail());
     }
@@ -20,6 +26,8 @@ public class EditProfileController extends BaseController {
     private void handleSave() {
         user.setPhoneNumber(phoneField.getText());
         user.setEmail(emailField.getText());
+        aboutText = aboutField.getText();
+
     }
 
     @FXML
