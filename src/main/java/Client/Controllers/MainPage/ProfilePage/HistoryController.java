@@ -37,6 +37,8 @@ public class HistoryController extends BaseController  {
         );
 
         filterBox.setValue("All");
+
+        filterBox.setOnAction(event -> applyFilter());
     }
     //TEST DATA
     private void loadFakeHistory() {
