@@ -287,6 +287,10 @@ public class Auction extends Entity implements Serializable {
         return owner;
     }
 
+    public int getOwnerId() {
+        return owner.getId();
+    }
+
     public LocalDateTime getEndingTime() {
         return endingTime;
     }
@@ -297,6 +301,10 @@ public class Auction extends Entity implements Serializable {
 
     public Item getItem() {
         return item;
+    }
+
+    public int getItemId() {
+        return item.getId();
     }
 
     public double getCurrentPrice() {

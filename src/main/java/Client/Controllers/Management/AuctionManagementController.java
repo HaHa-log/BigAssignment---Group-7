@@ -25,7 +25,7 @@ public class AuctionManagementController extends ManagementController<Auction> {
 
     @Override
     protected void configureColumns() {
-        auctionsId.setCellValueFactory(new PropertyValueFactory<>("auctionId"));
+        auctionsId.setCellValueFactory(new PropertyValueFactory<>("id"));
         ownerId.setCellValueFactory(new PropertyValueFactory<>("ownerId"));
         itemId.setCellValueFactory(new PropertyValueFactory<>("itemId"));
         status.setCellValueFactory(new PropertyValueFactory<>("status"));
