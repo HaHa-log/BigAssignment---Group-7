@@ -163,7 +163,7 @@ public class Auction extends Entity implements Serializable {
                 handleSniping();
                 auctionsDb.update(this);
 
-                Bid bid = new Bid(this, (Member) bidder, bidAmount, LocalDateTime.now());
+                Bid bid = new Bid(this, (Member) bidder, bidAmount);
                 bids.add(bid);
                 notifyAllBidders(bidder, bidAmount.getPrice());
                 return true;

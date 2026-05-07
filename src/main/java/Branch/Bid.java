@@ -1,17 +1,21 @@
 package Branch;
 
 import Branch.Common.Price;
+import model.BidsDAO;
+import model.impl.DaoFactory;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class Bid extends Entity implements Serializable {
     private final Auction auction;
     private final Member bidder;
     private final Price bidPrice;
     private final LocalDateTime bidTime;
+    private BidsDAO bidDb = DaoFactory.createBidDAO();
 
-    public Bid(Auction auction, Member bidder, Price bidPrice, LocalDateTime bidTime) {
+    public Bid(Auction auction, Member bidder, Price bidPrice) {
         this.auction = auction;
         this.bidder = bidder;
         this.bidPrice = bidPrice;
@@ -22,7 +26,15 @@ public class Bid extends Entity implements Serializable {
         this.auction = auction;
         this.bidder = bidder;
         this.bidPrice = new Price(bidPrice);
-        this.bidTime = LocalDateTime.now();
+        this.bidTime = bidTime;
+    }
+
+    public void saveBid(Bid bid) {
+        bidDb.save(bid);
+    }
+
+    public List<Bid> getBidsByAuctionId(int auctionId) {
+        return bidDb.getByAuctionId(auctionId);
     }
 
     public Auction getAuction() {
