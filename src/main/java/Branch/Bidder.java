@@ -3,10 +3,9 @@ package Branch;
 public interface Bidder {
     double getBalance();
 
-    default boolean placeBid(Auction auction, double amount) {
+    default boolean placeBid(Auction auction, double amount) throws Exception{
         if (this instanceof User && ((User) this).isBlocked()) {
-            System.out.println("[Error]: Your account is blocked");
-            return false;
+            throw new IllegalArgumentException("[Error]: Your account is blocked");
         }
 
         if (amount > getBalance()) {
@@ -14,8 +13,7 @@ public interface Bidder {
             return false;
         }
         if (amount <= 0) {
-            System.out.println("[Error]: Bid must be greater than zero");
-            return false;
+            throw new IllegalArgumentException("[Error]: Bid must be greater than zero");
         }
 
         return auction.placeBid(this, amount);

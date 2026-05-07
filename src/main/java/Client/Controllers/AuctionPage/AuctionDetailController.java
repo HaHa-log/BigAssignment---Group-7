@@ -41,6 +41,9 @@ public class AuctionDetailController {
         } catch (IllegalArgumentException e) {
             String message = e.getMessage();
             statusLabel.setText(message);
+        } catch (Exception e){
+            String message = e.getMessage();
+            statusLabel.setText(message);
         } finally {
             bidAmountInput.clear();
         }

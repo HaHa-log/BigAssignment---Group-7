@@ -1,35 +1,28 @@
 package Branch;
 
+import Branch.Common.Price;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 public class Bid extends Entity implements Serializable {
-    private Auction auction;
-    private Member bidder;
-    private double bodPrice;
-    private LocalDateTime bidTime;
+    private final Auction auction;
+    private final Member bidder;
+    private final Price bidPrice;
+    private final LocalDateTime bidTime;
 
-    public Bid(Auction auction, Member bidder, double bodPrice, LocalDateTime bidTime) {
+    public Bid(Auction auction, Member bidder, Price bidPrice, LocalDateTime bidTime) {
         this.auction = auction;
         this.bidder = bidder;
-        this.bodPrice = bodPrice;
+        this.bidPrice = bidPrice;
         this.bidTime = LocalDateTime.now();
     }
 
-    public void setAuction(Auction auction) {
+    public Bid(Auction auction, Member bidder, double bidPrice, LocalDateTime bidTime) {
         this.auction = auction;
-    }
-
-    public void setBidder(Member bidder) {
         this.bidder = bidder;
-    }
-
-    public void setBodPrice(double bodPrice) {
-        this.bodPrice = bodPrice;
-    }
-
-    public void setBidTime(LocalDateTime bidTime) {
-        this.bidTime = bidTime;
+        this.bidPrice = new Price(bidPrice);
+        this.bidTime = LocalDateTime.now();
     }
 
     public Auction getAuction() {
@@ -40,8 +33,8 @@ public class Bid extends Entity implements Serializable {
         return bidder;
     }
 
-    public double getBodPrice() {
-        return bodPrice;
+    public double getBidPrice() {
+        return bidPrice.getPrice();
     }
 
     public LocalDateTime getBidTime() {

@@ -122,6 +122,8 @@ public abstract class User extends Entity {
         if (isBlocked && blockedUntil != null && LocalDateTime.now().isAfter(blockedUntil)) {
             isBlocked = false;
             blockedUntil = null;
+
+            userDatabase.update(this);
         }
         return isBlocked;
     }
@@ -129,6 +131,8 @@ public abstract class User extends Entity {
     public void isUnblocked() {
         this.isBlocked = false;
         this.blockedUntil = null;
+
+        userDatabase.update(this);
     }
 
     public boolean isEqual(User this, User other) {
