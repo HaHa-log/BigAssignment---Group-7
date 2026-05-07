@@ -12,6 +12,6 @@ public class ProfileController extends BaseController {
     protected void initData() {
         phoneLabel.setText(user.getPhoneNumber());
         emailLabel.setText(user.getEmail());
-        aboutLabel.setText("Not yet set");
+        aboutLabel.setText(EditProfileController.getAboutText());
     }
 }
