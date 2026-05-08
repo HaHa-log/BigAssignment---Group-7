@@ -29,11 +29,10 @@ public class Auction extends Entity implements Serializable {
     private boolean isInCountDown;
     private Bidder winner;
     private final transient List<AuctionObserver> observers = new ArrayList<>();
-    private final transient List<User> participants = new ArrayList<>();
+    private transient List<User> participants = new ArrayList<>();
     private int extendCount = 0;
     private static final int MAX_EXTENDS = 5;
 
-    private List<User> participants;
     private List<Bid> bids;
 
     private final transient ReentrantLock lock = new ReentrantLock();
