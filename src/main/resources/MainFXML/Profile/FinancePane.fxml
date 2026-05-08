@@ -1,60 +1,132 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="Client.Controllers.MainPage.ProfilePage.FinanceController"
       fx:id="financePane"
-      spacing="15"
+      spacing="20"
       stylesheets="@profile.css"
-      style="-fx-background-color: #475569; -fx-padding: 20; -fx-background-radius: 10;">
+      styleClass="background-card">
 
-        <Label style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;" text="Finance" />
+    <Label text="💰 Finance Center"
+           style="-fx-font-size: 24;-fx-font-weight: bold;-fx-text-fill: #1e293b;"/>
 
-        <HBox alignment="CENTER_LEFT" spacing="10">
-            <Label style="-fx-font-size: 16; -fx-text-fill: #e2e8f0;" text="Available Balance:" />
+    <!-- BALANCE -->
+    <VBox spacing="8"
+          style="
+                -fx-background-color: white;
+                -fx-padding: 18;
+                -fx-background-radius: 16;
+                -fx-border-radius: 16;
+                -fx-border-color: #d1d9e6;
+          ">
 
-            <Label fx:id="balanceLabel"
-                   style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #16a34a; -fx-background-color: white;"
-                   text="00000" />
-        </HBox>
+        <Label text="💳 Available Balance"
+               style="
+                    -fx-font-size: 14;
+                    -fx-text-fill: #64748b;
+                    -fx-font-weight: bold;
+               "/>
 
-        <HBox spacing="20">
-
-            <!-- deposit -->
-            <VBox spacing="10" HBox.hgrow="ALWAYS" maxWidth="Infinity">
-                <Button text="Deposit" onAction="#handleDeposit"
-                        style="-fx-background-color: green;" />
-
-                <VBox fx:id="depositBox" spacing="8" visible="false" managed="false">
-                    <TextField fx:id="depositField" promptText="Enter deposit" />
-                    <Button text="Save" onAction="#handleSaveDeposit"
-                            style="-fx-background-color: green;"/>
-                    <Label fx:id="depositStatus"></Label>
-                </VBox>
-            </VBox>
-
-            <!-- withdraw -->
-            <VBox spacing="10" HBox.hgrow="ALWAYS" maxWidth="Infinity">
-                <Button text="Withdraw" onAction="#handleWithdraw"
-                        style="-fx-background-color: red;" />
-
-                <VBox fx:id="withdrawBox" spacing="8" visible="false" managed="false">
-                    <TextField fx:id="withdrawField" promptText="Enter withdraw" />
-                    <Button text="Save" onAction="#handleSaveWithdraw"
-                            style="-fx-background-color: red;" />
-                    <Label fx:id="withdrawStatus"></Label>
-                </VBox>
-            </VBox>
-
-        </HBox>
-    <Label fx:id="financeStatus" style="-fx-text-fill: #475569;" text="" />
+        <Label fx:id="balanceLabel"
+               text="00000"
+               style="-fx-font-size: 30;-fx-font-weight: bold;-fx-text-fill: #16a34a;"/>
     </VBox>
 
+    <HBox spacing="22">
+        <!-- deposit -->
+        <VBox spacing="12"
+              HBox.hgrow="ALWAYS"
+              maxWidth="Infinity"
+              stylesheets="@profile.css"
+              styleClass="section-box" >
+
+            <Button text="⬆ Deposit"
+                    onAction="#handleDeposit"
+                    maxWidth="Infinity"
+                    style="
+                            -fx-background-color: linear-gradient(to right, #22c55e, #16a34a);
+                            -fx-text-fill: white;
+                            -fx-font-size: 14;
+                            -fx-font-weight: bold;
+                            -fx-background-radius: 12;
+                            -fx-padding: 10 18;
+                            -fx-cursor: hand;
+                    "/>
+
+            <VBox fx:id="depositBox"
+                  spacing="10"
+                  visible="false"
+                  managed="false">
+
+                <TextField fx:id="depositField"
+                           promptText="Enter deposit amount"
+                           stylesheets="@profile.css"
+                           styleClass="input-field" />
+
+                <Button text="✔ Save Deposit"
+                        onAction="#handleSaveDeposit"
+                        stylesheets="@profile.css"
+                        styleClass="green-button" />
+
+                <Label fx:id="depositStatus"
+                       style="
+                            -fx-text-fill: #15803d;
+                            -fx-font-size: 12;
+                       "/>
+            </VBox>
+        </VBox>
+
+        <!-- withdraw -->
+        <VBox spacing="12"
+              HBox.hgrow="ALWAYS"
+              maxWidth="Infinity"
+              stylesheets="@profile.css"
+              styleClass="section-box" >
+
+            <Button text="⬇ Withdraw"
+                    onAction="#handleWithdraw"
+                    maxWidth="Infinity"
+                    style="
+                            -fx-background-color: linear-gradient(to right, #ef4444, #dc2626);
+                            -fx-text-fill: white;
+                            -fx-font-size: 14;
+                            -fx-font-weight: bold;
+                            -fx-background-radius: 12;
+                            -fx-padding: 10 18;
+                            -fx-cursor: hand;
+                    "/>
+
+            <VBox fx:id="withdrawBox"
+                  spacing="10"
+                  visible="false"
+                  managed="false">
+
+                <TextField fx:id="withdrawField"
+                           promptText="Enter withdraw amount"
+                           stylesheets="@profile.css"
+                           styleClass="input-field" />
+
+                <Button text="✖ Save Withdraw"
+                        onAction="#handleSaveWithdraw"
+                        stylesheets="@profile.css"
+                        styleClass="red-button" />
+
+                <Label fx:id="withdrawStatus"
+                       style="-fx-text-fill: #b91c1c;-fx-font-size: 12;"/>
+
+            </VBox>
+        </VBox>
+
+    </HBox>
+
+    <!-- STATUS -->
+    <Label fx:id="financeStatus"
+           text=""
+           style="-fx-text-fill: #475569;-fx-font-style: italic;-fx-font-size: 13;"/>
+
+</VBox>
 
