@@ -20,7 +20,6 @@ public class Transaction {
     }
 
     public Transaction(Auction auction, Member buyer, Member seller, double finalAmount) {
-        this.transactionId = 0;
         this.auction = auction;
         this.buyer = buyer;
         this.seller = seller;
@@ -28,6 +27,17 @@ public class Transaction {
         this.paidAt = LocalDateTime.now();
         this.completedAt = null;
         this.status = TransactionStatus.PENDING;
+    }
+
+
+    public Transaction(Auction auction, Member buyer, Member seller, double finalAmount, LocalDateTime paidAt, LocalDateTime completedAt, TransactionStatus status) {
+        this.auction = auction;
+        this.buyer = buyer;
+        this.seller = seller;
+        this.finalAmount = finalAmount;
+        this.paidAt = paidAt;
+        this.completedAt = completedAt;
+        this.status = status;
     }
 
     public void markCompleted() throws IllegalTransactionException {

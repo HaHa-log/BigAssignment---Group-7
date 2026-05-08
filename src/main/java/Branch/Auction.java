@@ -4,6 +4,9 @@ import Branch.Common.Price;
 import Branch.Exceptions.AuctionClosedException;
 import Branch.Exceptions.AuthenticationException;
 import Branch.Exceptions.InvalidBidException;
+import model.AuctionsDAO;
+import model.UsersDAO;
+import model.impl.DaoFactory;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,7 +33,12 @@ public class Auction extends Entity implements Serializable {
     private int extendCount = 0;
     private static final int MAX_EXTENDS = 5;
 
+    private List<User> participants;
+    private List<Bid> bids;
+
     private final transient ReentrantLock lock = new ReentrantLock();
+
+    AuctionsDAO auctionsDb = DaoFactory.createAuctionsDAO();
 
     public Auction(Member owner, Item item, LocalDateTime startingTime, LocalDateTime endingTime) {
         auctionId = 0;
@@ -136,40 +144,11 @@ public class Auction extends Entity implements Serializable {
         System.out.println("[Announcement]: " + name + " has the highest bid of " + bidderAmount);
     }
 
-    public synchronized boolean placeBid(Bidder bidder, double bidAmount) {
-        lock.lock();
-        try {
-            if (this.getStatus() != AuctionStatus.RUNNING) {
-                throw new IllegalArgumentException("The auction hasn't started or has already ended");
-            }
-
-            if (owner.isEqual((User) bidder)) {
-                throw new IllegalArgumentException("Auction owner cannot place bid");
-            }
-
-            if (((User)bidder).getId()==(owner.getId())) {
-                throw new IllegalArgumentException("Auction owner cannot place bid");
-            }
-
-            if (bidAmount > currentPrice) {
-                currentPrice = bidAmount;
-                winner = bidder;
-                participants.add((User) bidder);
-
-                notifyAllBidders(bidder, bidAmount);
-                return true;
-            } else {
-                throw new IllegalArgumentException("Bid price has to be greater than the current price");
-            }
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    public boolean placeBid(Bidder bidder, Price bidAmount)
+    public boolean placeBid(Bidder bidder, double amount)
             throws AuctionClosedException, AuthenticationException, InvalidBidException {
         lock.lock();
         try {
+            Price bidAmount = new Price(amount);
             if (status != AuctionStatus.RUNNING) {
                 throw new AuctionClosedException(status.toString());
             }
@@ -183,7 +162,10 @@ public class Auction extends Entity implements Serializable {
                 winner = bidder;
 
                 handleSniping();
+                auctionsDb.update(this);
 
+                Bid bid = new Bid(this, (Member) bidder, bidAmount, LocalDateTime.now());
+                bids.add(bid);
                 notifyAllBidders(bidder, bidAmount.getPrice());
                 return true;
             } else {
@@ -213,6 +195,10 @@ public class Auction extends Entity implements Serializable {
 
     public void setStartingTime(LocalDateTime startingTime) {
         this.startingTime = startingTime;
+    }
+
+    public void setEndingTime(LocalDateTime endingTime) {
+        this.endingTime = endingTime;
     }
 
     public void setAuctionId(int idOfAuction) {
@@ -273,12 +259,8 @@ public class Auction extends Entity implements Serializable {
         }
     }
 
-    public int getAuctionId() {
+    public int getId() {
         return auctionId;
-    }
-
-    public List<User> getParticipants() {
-        return participants;
     }
 
     public double getStartingPrice() {
@@ -311,6 +293,10 @@ public class Auction extends Entity implements Serializable {
 
     public double getCurrentPrice() {
         return currentPrice;
+    }
+
+    public List<User> getParticipants() {
+        return participants;
     }
 
     public User getWinner() {

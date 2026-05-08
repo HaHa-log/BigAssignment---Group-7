@@ -25,7 +25,7 @@ public class ProfilePageController {
     private StackPane contentPane;
 
     @FXML
-    private Label tabProfile, tabPassword, tabFinance, tabNotification, tabHistory;
+    private Label tabProfile, tabPassword, tabFinance, tabHistory;
 
     private final String ACTIVE = "-fx-text-fill: #38bdf8; -fx-font-weight: bold;";
     private final String NORMAL = "-fx-text-fill: #475569;";
@@ -66,7 +66,6 @@ public class ProfilePageController {
         tabProfile.setStyle(NORMAL);
         tabPassword.setStyle(NORMAL);
         tabFinance.setStyle(NORMAL);
-        tabNotification.setStyle(NORMAL);
         tabHistory.setStyle(NORMAL);
         if (tab != null) tab.setStyle(ACTIVE);
     }
@@ -92,12 +91,6 @@ public class ProfilePageController {
     private void showFinance() {
         switchView("/MainFXML/Profile/FinancePane.fxml");
         setActive(tabFinance);
-    }
-
-    @FXML
-    private void showNotification() {
-        switchView("/MainFXML/Profile/NotificationPane.fxml");
-        setActive(tabNotification);
     }
 
     @FXML

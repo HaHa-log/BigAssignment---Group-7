@@ -17,7 +17,7 @@ public class ParticipationDetails {
     private final User leadingBidder;
 
     public ParticipationDetails(Auction auction, User accountUser) {
-        this.idForDetails = auction.getAuctionId();
+        this.idForDetails = auction.getId();
         this.overallStatus = auction.getStatus();
         this.itemSold = auction.getItem();
         this.initialPrice = new Price(auction.getItem().getStartingPrice());

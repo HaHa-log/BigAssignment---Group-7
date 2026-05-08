@@ -4,7 +4,6 @@ package Client.Controllers;
 import java.util.prefs.Preferences;
 
 import Branch.SessionManager;
-import Branch.TempDatabase;
 import Branch.User;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

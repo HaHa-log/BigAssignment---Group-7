@@ -1,33 +1,147 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
 
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="Client.Controllers.MainPage.ProfilePage.ProfileController"
+      fx:id="profilePane"
+      spacing="22"
+      style="
+            -fx-background-color: #DCE7F5;
+            -fx-background-radius: 22;
+            -fx-border-radius: 22;
+            -fx-border-color: #475569;
+            -fx-border-width: 1;
+            -fx-padding: 30;
+            -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.14), 24,0,0,8);
+      ">
 
-    <VBox xmlns="http://javafx.com/javafx"
-          xmlns:fx="http://javafx.com/fxml"
-          fx:controller="Client.Controllers.MainPage.ProfilePage.ProfileController"
-          fx:id="profilePane" spacing="18" style="-fx-background-color: transparent; -fx-padding: 20 0 0 0 0; -fx-background-radius: 12; -fx-border-color: #2D3763; -fx-border-width: 1 0 0 0;">
+    <!-- HEADER -->
+    <VBox spacing="7">
 
-        <Label style="-fx-text-fill: #37427c; -fx-font-size: 18; -fx-font-weight: bold; -fx-background-radius: 20; -fx-border-radius: 20;" text="About Me" />
-
-        <Label fx:id="aboutLabel" style="-fx-text-fill: #2D3763; -fx-font-size: 14;" text="User info..." wrapText="true" />
-
-        <Label style="-fx-text-fill: #37427c; -fx-font-size: 18; -fx-font-weight: bold;" text="Contact" />
-
-        <VBox spacing="6">
-            <HBox spacing="5">
-                <Label style="-fx-text-fill: #475569; -fx-font-size: 14; -fx-font-weight: bold;" text="Phone:" />
-                <Label fx:id="phoneLabel" style="-fx-text-fill: #2D3763; -fx-font-size: 14;" text="..." />
-            </HBox>
-
-            <HBox spacing="5">
-                <Label style="-fx-text-fill: #475569; -fx-font-size: 14; -fx-font-weight: bold;" text="Email:" />
-                <Label fx:id="emailLabel" style="-fx-text-fill: #2D3763; -fx-font-size: 14;" text="..." />
-            </HBox>
-        </VBox>
+        <Label text="Personal Information"
+               style="
+                    -fx-font-size: 22;
+                    -fx-font-weight: bold;
+                    -fx-text-fill: #1E293B;
+               "/>
+        <Label text="Manage your personal details and contact information."
+               style="
+                    -fx-font-size: 13;
+                    -fx-text-fill: #526277;
+                    -fx-font-weight: 500;
+               "/>
     </VBox>
+
+    <Region prefHeight="1"
+            style="
+                -fx-background-color: #475569;
+            "/>
+
+    <VBox spacing="12">
+
+        <Label text="✦ About Me"
+               style="
+                    -fx-font-size: 18;
+                    -fx-font-weight: bold;
+                    -fx-text-fill: #243B67;
+               "/>
+
+        <Label fx:id="aboutLabel"
+               wrapText="true"
+               text="User info..."
+               style="
+                    -fx-font-size: 14;
+                    -fx-line-spacing: 3;
+                    -fx-text-fill: #334155;
+                    -fx-font-weight: 500;
+                    -fx-background-color: #EDF3FA;
+                    -fx-padding: 16;
+                    -fx-background-radius: 15;
+                    -fx-border-radius: 15;
+                    -fx-border-color: #475569;
+               "/>
+    </VBox>
+
+    <!-- CONTACT  -->
+    <VBox spacing="14">
+
+        <Label text="• Contact Information"
+               style="
+                    -fx-font-size: 18;
+                    -fx-font-weight: bold;
+                    -fx-text-fill: #243B67;
+               "/>
+
+        <!-- PHONE -->
+        <HBox spacing="15"
+              alignment="CENTER_LEFT"
+              style="
+                    -fx-background-color: #EDF3FA;
+                    -fx-padding: 15 18;
+                    -fx-background-radius: 15;
+                    -fx-border-radius: 15;
+                    -fx-border-color: #475569;
+              ">
+
+            <Label text="☎"
+                   style="
+                        -fx-font-size: 18;
+                        -fx-text-fill: #2D3763;
+                   "/>
+
+            <VBox spacing="2">
+                <Label text="Phone"
+                       style="
+                            -fx-font-size: 12;
+                            -fx-font-weight: bold;
+                            -fx-text-fill: #6B7B93;
+                       "/>
+                <Label fx:id="phoneLabel"
+                       text="..."
+                       style="
+                            -fx-font-size: 15;
+                            -fx-font-weight: bold;
+                            -fx-text-fill: #1E293B;
+                       "/>
+            </VBox>
+        </HBox>
+
+        <!-- EMAIL -->
+        <HBox spacing="15"
+              alignment="CENTER_LEFT"
+              style="
+                    -fx-background-color: #EDF3FA;
+                    -fx-padding: 15 18;
+                    -fx-background-radius: 15;
+                    -fx-border-radius: 15;
+                    -fx-border-color: #475569;
+              ">
+            <Label text="✉"
+                   style="
+                        -fx-font-size: 18;
+                        -fx-text-fill: #2D3763;
+                   "/>
+            <VBox spacing="2">
+                <Label text="Email"
+                       style="
+                            -fx-font-size: 12;
+                            -fx-font-weight: bold;
+                            -fx-text-fill: #6B7B93;
+                       "/>
+                <Label fx:id="emailLabel"
+                       text="..."
+                       style="
+                            -fx-font-size: 15;
+                            -fx-font-weight: bold;
+                            -fx-text-fill: #1E293B;
+                       "/>
+            </VBox>
+        </HBox>
+    </VBox>
+</VBox>
 
