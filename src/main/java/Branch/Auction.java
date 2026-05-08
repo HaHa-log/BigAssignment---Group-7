@@ -44,6 +44,8 @@ public class Auction extends Entity implements Serializable {
         this.owner = owner;
         this.item = item;
         this.status = AuctionStatus.OPEN;
+        this.startingTime = startingTime;
+        this.endingTime = endingTime;
         this.startingPrice = item.getStartingPrice();
         this.currentPrice = startingPrice;
         this.isInCountDown = false;
@@ -124,6 +126,9 @@ public class Auction extends Entity implements Serializable {
                 if (nextStatus == AuctionStatus.FINISHED) {
                     this.endingTime = LocalDateTime.now();
                 }
+
+                auctionsDb.update(this);
+
                 return true;
 
             } else {
