@@ -342,13 +342,13 @@ public class Auction extends Entity implements Serializable {
     }
 
     public List<User> getParticipants() {
+        participants.clear();
         bids = bidsDb.getByAuctionId(auctionId);
         for (Bid bid : bids) {
             if (!participants.contains(bid.getBidder())) {
                 participants.add(bid.getBidder());
             }
         }
-
         return participants;
     }
 
