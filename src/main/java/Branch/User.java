@@ -76,11 +76,19 @@ public abstract class User extends Entity {
     }
 
     public boolean depositMoney(double amount) {
-        return this.balance.deposit(amount);
+        boolean success = this.balance.deposit(amount);
+        if (success) {
+            userDatabase.update(this);
+        }
+        return success;
     }
 
     public boolean withdrawMoney(double amount) {
-        return this.balance.withdraw(amount);
+        boolean success = this.balance.withdraw(amount);
+        if (success) {
+            userDatabase.update(this);
+        }
+        return success;
     }
 
     public double getCurrentBalance() {
