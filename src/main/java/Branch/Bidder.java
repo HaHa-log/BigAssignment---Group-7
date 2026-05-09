@@ -8,14 +8,14 @@ public interface Bidder {
             throw new IllegalArgumentException("[Error]: Your account is blocked");
         }
 
-        if (amount > getBalance()) {
-            System.out.println("[Error]: Bid cannot be greater than your balance");
-            return false;
+        if (amount > ((User) this).getBalance()) {
+            throw new IllegalArgumentException("Bid cannot be greater than your balance");
         }
+
         if (amount <= 0) {
             throw new IllegalArgumentException("[Error]: Bid must be greater than zero");
         }
 
-        return auction.placeBid(this, amount);
+        return true;
     }
 }

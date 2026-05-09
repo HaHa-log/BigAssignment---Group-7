@@ -168,6 +168,20 @@ public class Auction extends Entity implements Serializable {
                 throw new AuthenticationException("[Error]: Sellers are prohibited from bidding on their own listings!");
             }
 
+            try {
+                boolean checkBid = bidder.placeBid(this, amount);
+
+                if (!checkBid) {
+                    return false;
+                }
+            } catch (IllegalArgumentException e) {
+                System.out.println("[Error]: Invalid argument - " + e.getMessage());
+                throw e;
+            } catch (Exception e) {
+                System.out.println("[Error]: A general error occurred - " + e.getMessage());
+                throw new RuntimeException(e);
+            }
+
             if (bidAmount.getPrice() > currentPrice) {
                 currentPrice = bidAmount.getPrice();
                 winner = bidder;
@@ -202,7 +216,6 @@ public class Auction extends Entity implements Serializable {
             }
         }
     }
-
 
     public void setStartingTime(LocalDateTime startingTime) {
         this.startingTime = startingTime;

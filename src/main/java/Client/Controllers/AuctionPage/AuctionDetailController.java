@@ -36,9 +36,16 @@ public class AuctionDetailController {
 
         try {
             double bidAmount = Double.parseDouble(bidAmountString);
-            auction.placeBid(currentUser, bidAmount);
-            bidPlacedResultLabel.setTextFill(GREEN);
-            bidPlacedResultLabel.setText("Bid placed successfully.");
+            boolean isSuccess = auction.placeBid(currentUser, bidAmount);
+
+            if (isSuccess) {
+                auction.placeBid(currentUser, bidAmount);
+                bidPlacedResultLabel.setTextFill(GREEN);
+                bidPlacedResultLabel.setText("Bid placed successfully.");
+            } else {
+                bidPlacedResultLabel.setTextFill(RED);
+                bidPlacedResultLabel.setText("Bid failed. Check your balance or bid amount.");
+            }
 
         } catch (IllegalArgumentException e) {
             String message = e.getMessage();

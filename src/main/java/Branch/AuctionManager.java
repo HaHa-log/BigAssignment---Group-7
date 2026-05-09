@@ -45,7 +45,6 @@ public class AuctionManager {
 
         System.out.println("New auction session for " + item.getName());
         session.start();
-        //Ở đây một khi start() thì Auction sẽ được chuyển sang RUNNING ngay.
     }
 
     public void closeAuction(Auction session) {

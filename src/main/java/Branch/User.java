@@ -1,6 +1,10 @@
 package Branch;
 
-import Branch.Common.*;
+import Branch.Common.Balance;
+import Branch.Common.Email;
+import Branch.Common.FullName;
+import Branch.Common.PhoneNumber;
+import Branch.Common.ParticipationDetails;
 import model.UsersDAO;
 import model.impl.DaoFactory;
 
@@ -122,8 +126,6 @@ public abstract class User extends Entity {
         if (isBlocked && blockedUntil != null && LocalDateTime.now().isAfter(blockedUntil)) {
             isBlocked = false;
             blockedUntil = null;
-
-            userDatabase.update(this);
         }
         return isBlocked;
     }
@@ -131,8 +133,6 @@ public abstract class User extends Entity {
     public void isUnblocked() {
         this.isBlocked = false;
         this.blockedUntil = null;
-
-        userDatabase.update(this);
     }
 
     public boolean isEqual(User this, User other) {
@@ -141,21 +141,5 @@ public abstract class User extends Entity {
             result = true;
         }
         return result;
-    }
-
-    public List<ParticipationDetails> getParticipatedAuctions(List<Auction> allSystemAuctions) {
-        List<ParticipationDetails> history = new ArrayList<>();
-
-        for (Auction auction : allSystemAuctions) {
-            boolean isOwner = auction.getOwner().getId() == this.getId();
-            boolean hasWon = auction.getWinner() != null &&
-                    ((User) auction.getWinner()).getId() == this.getId();
-            boolean hasBid = auction.getParticipants().contains(this);
-
-            if (isOwner || hasBid || hasWon) {
-                history.add(new ParticipationDetails(auction, this));
-            }
-        }
-        return history;
     }
 }
