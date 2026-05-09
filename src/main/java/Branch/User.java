@@ -161,4 +161,26 @@ public abstract class User extends Entity {
         }
         return result;
     }
+
+    public List<String> getAuctionHistory(List<Auction> auctions) {
+        List<String> history = new ArrayList<>();
+
+        for (Auction auction : auctions) {
+            boolean isOwner = auction.getOwner().getId() == this.getId();
+
+            if (isOwner) {history.add("MY AUCTION | " + auction.getItem().getName() + " | " + auction.getCurrentPrice());}
+
+            if (auction.getStatus() != Auction.AuctionStatus.FINISHED) {continue;}
+
+            boolean participated = auction.getParticipants().contains(this);
+
+            boolean isWinner = auction.getWinner() != null &&auction.getWinner().getId()== this.getId();
+
+            if (isWinner) {history.add("WON | " + auction.getItem().getName() + " | " + auction.getCurrentPrice());}
+
+            else if (participated) {history.add("LOST | " + auction.getItem().getName() + " | " + auction.getCurrentPrice());}
+
+        }
+        return history;
+    }
 }
