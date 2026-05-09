@@ -41,7 +41,6 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                     if (rs.next()) {
                         int id = rs.getInt(1);
                         auction.setAuctionId(id);
-                        auction.setStartingTime(LocalDateTime.now());
                     }
                 }
             } else {

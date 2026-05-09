@@ -11,7 +11,7 @@ import static javafx.scene.paint.Color.*;
 
 public class AuctionDetailController {
     @FXML
-    private Label statusLabel;
+    private Label bidPlacedResult;
     @FXML
     private TextField bidAmountInput;
     @FXML
@@ -20,6 +20,8 @@ public class AuctionDetailController {
     private Label startingPriceLabel;
     @FXML
     private Label currentPriceLabel;
+    @FXML
+    private Label ownerNameLabel, itemDescriptionLabel, auctionStatusLabel, durationLabel;
 
     private Bidder currentUser = (Bidder) SessionManager.getCurrentUser();
     private Auction auction;
@@ -29,21 +31,21 @@ public class AuctionDetailController {
         String bidAmountString = bidAmountInput.getText();
 
         if (bidAmountString == null || bidAmountString.trim().isEmpty()) {
-            statusLabel.setText("Please enter an amount.");
+            bidPlacedResult.setText("Please enter an amount.");
         }
 
         try {
             double bidAmount = Double.parseDouble(bidAmountString);
             auction.placeBid(currentUser, bidAmount);
-            statusLabel.setTextFill(GREEN);
-            statusLabel.setText("Bid placed successfully.");
+            bidPlacedResult.setTextFill(GREEN);
+            bidPlacedResult.setText("Bid placed successfully.");
 
         } catch (IllegalArgumentException e) {
             String message = e.getMessage();
-            statusLabel.setText(message);
+            bidPlacedResult.setText(message);
         } catch (Exception e){
             String message = e.getMessage();
-            statusLabel.setText(message);
+            bidPlacedResult.setText(message);
         } finally {
             bidAmountInput.clear();
         }
@@ -54,5 +56,20 @@ public class AuctionDetailController {
         this.itemNameLabel.setText(auction.getItem().getName());
         this.startingPriceLabel.setText("Starting price: $" + auction.getStartingPrice());
         this.currentPriceLabel.setText("Current price: $" + auction.getCurrentPrice());
+
+        getTableData(auction);
+    }
+
+    public void getTableData(Auction auction) {
+        ownerNameLabel.setText(auction.getOwner().getFullName());
+        itemDescriptionLabel.setText(auction.getItem().getDescription());
+        auctionStatusLabel.setText(auction.getStatus().toString());
+
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM HH:mm");
+
+        String startStr = auction.getStartingTime().format(formatter);
+        String endStr = auction.getEndingTime().format(formatter);
+
+        durationLabel.setText(startStr + " - " + endStr);
     }
 }

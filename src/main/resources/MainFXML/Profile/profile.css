@@ -43,5 +43,41 @@
     -fx-background-radius: 3;
     -fx-padding: 3;
 }
+.background-card {
+    -fx-background-color: #DCE7F5;
+    -fx-padding: 25;
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-border-color: #b8c7db;
+    -fx-border-width: 1.2;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 10, 0, 0, 3);
+}
+.green-button {
+    -fx-background-color: linear-gradient(to right, #22c55e, #16a34a);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+}
 
+.red-button {
+    -fx-background-color: linear-gradient(to right, #ef4444, #dc2626);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+}
 
+.input-field {
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #b6c6db;
+    -fx-padding: 10;
+    -fx-font-size: 13;
+}
+
+.section-box {
+    -fx-background-color: rgba(255,255,255,0.65);
+    -fx-padding: 16;
+    -fx-background-radius: 16;
+}

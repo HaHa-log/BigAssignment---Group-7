@@ -10,15 +10,34 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Rectangle?>
 
-<BorderPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.LayoutController" stylesheets="style.css" styleClass="root-pane">
+<BorderPane styleClass="root-pane" stylesheets="style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.LayoutController">
     <top>
         <HBox alignment="CENTER_RIGHT" prefHeight="60.0" spacing="20" style="-fx-background-color: #37427c;" BorderPane.alignment="CENTER">
+
             <children>
-                <Rectangle fx:id="homePageShortcut" accessibleRole="BUTTON" arcHeight="5.0" arcWidth="5.0" fill="#eaf9ff" height="40.0" onMouseClicked="#redirectToHomePage" stroke="BLACK" strokeType="INSIDE" width="40.0" />
+
+                <!-- HOME -->
+                <StackPane accessibleRole="BUTTON" onMouseClicked="#redirectToHomePage">
+                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#eaf9ff" height="40.0" stroke="BLACK" strokeType="INSIDE" width="40.0" />
+                    <Label style="-fx-font-size: 18px;" text="🏠" />
+                </StackPane>
+
                 <Region HBox.hgrow="ALWAYS" />
-                <Circle fx:id="profileShortcut" accessibleRole="BUTTON" fill="#eaf9ff" onMouseClicked="#redirectToProfile" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
-                <Rectangle fx:id="refreshButton" accessibleRole="BUTTON" arcHeight="5.0" arcWidth="5.0" fill="#eaf9ff" height="40.0" layoutX="40.0" layoutY="20.0" onMouseClicked="#refreshPage" stroke="BLACK" strokeType="INSIDE" width="40.0" />
+
+                <!-- PROFILE -->
+                <StackPane accessibleRole="BUTTON" onMouseClicked="#redirectToProfile">
+                    <Circle fill="#eaf9ff" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+                    <Label style="-fx-font-size: 18px;" text="👤" />
+                </StackPane>
+
+                <!-- REFRESH -->
+                <StackPane accessibleRole="BUTTON" onMouseClicked="#refreshPage">
+                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#eaf9ff" height="40.0" stroke="BLACK" strokeType="INSIDE" width="40.0" />
+                    <Label style="-fx-font-size: 16px;" text="🔄" />
+                </StackPane>
+
             </children>
+
             <padding>
                 <Insets left="30.0" right="30.0" />
             </padding>
@@ -35,6 +54,10 @@
     <left><Region prefWidth="30.0" BorderPane.alignment="CENTER" /></left>
     <right><Region prefWidth="30.0" BorderPane.alignment="CENTER" /></right>
    <bottom>
-      <Label accessibleRole="BUTTON" onMouseClicked="#toAuctionCreate" text="Want to create your own Auction? Click here!" textAlignment="RIGHT" textFill="WHITE" BorderPane.alignment="CENTER" />
-   </bottom>
+           <HBox alignment="CENTER" style="-fx-background-color: #37427c;" BorderPane.alignment="CENTER">
+
+               <Label accessibleRole="BUTTON" onMouseClicked="#toAuctionCreate" style="-fx-background-color: linear-gradient(to right, #74b9ff, #a29bfe); -fx-background-radius: 25; -fx-padding: 7 7 7 7; -fx-font-size: 10px; -fx-font-weight: bold; -fx-cursor: hand;" text="🔨 Want to create your own Auction? Click here!" textFill="WHITE" />
+
+           </HBox>
+       </bottom>
 </BorderPane>

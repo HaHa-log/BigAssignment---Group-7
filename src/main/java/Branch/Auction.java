@@ -29,11 +29,11 @@ public class Auction extends Entity implements Serializable {
     private boolean isInCountDown;
     private Bidder winner;
     private final transient List<AuctionObserver> observers = new ArrayList<>();
+    private transient List<User> participants = new ArrayList<>();
     private int extendCount = 0;
     private static final int MAX_EXTENDS = 5;
 
-    private List<User> participants;
-    private List<Bid> bids;
+    private List<Bid> bids = new ArrayList<>();
 
     private final transient ReentrantLock lock = new ReentrantLock();
 
@@ -44,6 +44,8 @@ public class Auction extends Entity implements Serializable {
         this.owner = owner;
         this.item = item;
         this.status = AuctionStatus.OPEN;
+        this.startingTime = startingTime;
+        this.endingTime = endingTime;
         this.startingPrice = item.getStartingPrice();
         this.currentPrice = startingPrice;
         this.isInCountDown = false;
@@ -75,12 +77,15 @@ public class Auction extends Entity implements Serializable {
         try {
             LocalDateTime now = LocalDateTime.now();
 
-            if (this.status == AuctionStatus.OPEN && now.isAfter(startingTime)) {
+            if (this.status == AuctionStatus.OPEN && startingTime != null && now.isAfter(startingTime)) {
                 this.start();
             }
 
-            if (this.status == AuctionStatus.RUNNING && now.isAfter(endingTime)) {
+            if (this.status == AuctionStatus.RUNNING && endingTime != null && now.isAfter(endingTime)) {
                 this.transitionTo(AuctionStatus.FINISHED);
+                if (auctionsDb != null) {
+                    auctionsDb.update(this);
+                }
             }
 
             return status;
@@ -118,12 +123,14 @@ public class Auction extends Entity implements Serializable {
         lock.lock();
         try {
             if (isValidTransition(nextStatus)) {
-                System.out.println("[Auction] Status changing from: " + status + " to " + nextStatus);
+                AuctionStatus oldStatus = this.status;
                 this.status = nextStatus;
+                System.out.println("[Auction] Status changing from: " + oldStatus + " to " + nextStatus);
 
-                if (nextStatus == AuctionStatus.FINISHED) {
-                    this.endingTime = LocalDateTime.now();
+                if (auctionsDb != null) {
+                    auctionsDb.update(this);
                 }
+
                 return true;
 
             } else {
