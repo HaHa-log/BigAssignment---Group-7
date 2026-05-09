@@ -41,7 +41,7 @@ public class AuctionDetailController {
             if (isSuccess) {
                 bidPlacedResultLabel.setTextFill(GREEN);
                 bidPlacedResultLabel.setText("Bid placed successfully.");
-                this.currentPriceLabel.setText("Current price: $" + auction.getCurrentPrice());
+                currentPriceLabel.setText("Current price: $" + auction.getCurrentPrice());
 
             } else {
                 bidPlacedResultLabel.setTextFill(RED);
@@ -52,6 +52,7 @@ public class AuctionDetailController {
             String message = e.getMessage();
             bidPlacedResultLabel.setText(message);
         } catch (Exception e){
+            //can be risky
             String message = e.getMessage();
             bidPlacedResultLabel.setText(message);
         } finally {

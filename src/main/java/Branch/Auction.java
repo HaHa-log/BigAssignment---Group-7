@@ -33,6 +33,7 @@ public class Auction extends Entity implements Serializable {
     private transient List<User> participants = new ArrayList<>();
     private int extendCount = 0;
     private static final int MAX_EXTENDS = 5;
+    private List<Bid> bids = new ArrayList<>();
 
     private final transient ReentrantLock lock = new ReentrantLock();
 
@@ -156,7 +157,7 @@ public class Auction extends Entity implements Serializable {
     }
 
     public boolean placeBid(Bidder bidder, double amount)
-            throws AuctionClosedException, AuthenticationException, InvalidBidException {
+            throws AuctionClosedException, AuthenticationException, InvalidBidException, IllegalArgumentException {
         lock.lock();
         try {
             Price bidAmount = new Price(amount);
@@ -175,11 +176,7 @@ public class Auction extends Entity implements Serializable {
                     return false;
                 }
             } catch (IllegalArgumentException e) {
-                System.out.println("[Error]: Invalid argument - " + e.getMessage());
                 throw e;
-            } catch (Exception e) {
-                System.out.println("[Error]: A general error occurred - " + e.getMessage());
-                throw new RuntimeException(e);
             }
 
             if (bidAmount.getPrice() > currentPrice) {
@@ -324,6 +321,13 @@ public class Auction extends Entity implements Serializable {
     }
 
     public List<User> getParticipants() {
+        bids = bidsDb.getByAuctionId(auctionId);
+        for (Bid bid : bids) {
+            if (!participants.contains(bid.getBidder())) {
+                participants.add(bid.getBidder());
+            }
+        }
+
         return participants;
     }
 

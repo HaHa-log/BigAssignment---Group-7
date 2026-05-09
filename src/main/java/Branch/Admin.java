@@ -27,34 +27,6 @@ public class Admin extends Member {
         return "Admin";
     }
 
-    /*
-    Advice: remove this method, as getUserById() returns a new object, not the old one.
-    Practically, it works, but it will no longer be the old object
-    public void blockUser(int userId, LocalDateTime until) {
-        User user = userDb.getById(userId);
-
-        if (user == null) {
-            System.out.println("[Error]: User not found");
-            return;
-        }
-
-        user.setBlocked(until);
-        System.out.println("[Admin]: User with ID " + user.getId() + " blocked until " + until);
-    }
-
-    public void unblockUser(int userId) {
-        User user = userDb.getById(userId);
-
-        if (user == null) {
-            System.out.println("[Error]: User not found");
-            return;
-        }
-
-        user.isUnblocked();
-        System.out.println("[Admin]: User with ID " + user.getId() + " unblocked.");
-    }
-     */
-
     //requires for block/active toggle button
     //the button only changes ìf the value in the actual object changes
     public void blockUser(User user, LocalDateTime until) {
@@ -65,6 +37,7 @@ public class Admin extends Member {
         }
 
         user.setBlocked(until);
+        userDb.update(user);
 
         System.out.println(
                 "[Admin]: User with ID "
@@ -82,6 +55,7 @@ public class Admin extends Member {
         }
 
         user.isUnblocked();
+        userDb.update(user);
 
         System.out.println(
                 "[Admin]: User with ID "

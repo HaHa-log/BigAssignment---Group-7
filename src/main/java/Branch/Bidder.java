@@ -3,7 +3,7 @@ package Branch;
 public interface Bidder {
     double getBalance();
 
-    default boolean placeBid(Auction auction, double amount) throws Exception{
+    default boolean placeBid(Auction auction, double amount){
         if (this instanceof User && ((User) this).isBlocked()) {
             throw new IllegalArgumentException("[Error]: Your account is blocked");
         }
