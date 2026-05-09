@@ -53,6 +53,8 @@
 
                 <Label fx:id="tabFinance" onMouseClicked="#showFinance" style="-fx-text-fill: #475569; -fx-font-size: 14; -fx-cursor: hand;" text="Finance" />
 
+                <Label fx:id="tabNotification" onMouseClicked="#showNotification" style="-fx-text-fill: #475569; -fx-font-size: 14; -fx-cursor: hand;" text="Notification" />
+
                 <Label fx:id="tabHistory" onMouseClicked="#showHistory" style="-fx-text-fill: #475569; -fx-font-size: 14; -fx-cursor: hand;" text="History" />
             </HBox>
 
