@@ -39,9 +39,10 @@ public class AuctionDetailController {
             boolean isSuccess = auction.placeBid(currentUser, bidAmount);
 
             if (isSuccess) {
-                auction.placeBid(currentUser, bidAmount);
                 bidPlacedResultLabel.setTextFill(GREEN);
                 bidPlacedResultLabel.setText("Bid placed successfully.");
+                this.currentPriceLabel.setText("Current price: $" + auction.getCurrentPrice());
+
             } else {
                 bidPlacedResultLabel.setTextFill(RED);
                 bidPlacedResultLabel.setText("Bid failed. Check your balance or bid amount.");
