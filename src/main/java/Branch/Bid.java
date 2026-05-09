@@ -13,7 +13,7 @@ public class Bid extends Entity implements Serializable {
     private final Member bidder;
     private final Price bidPrice;
     private final LocalDateTime bidTime;
-    private BidsDAO bidDb = DaoFactory.createBidDAO();
+    private BidsDAO bidDb = DaoFactory.createBidsDAO();
 
     public Bid(Auction auction, Member bidder, Price bidPrice) {
         this.auction = auction;

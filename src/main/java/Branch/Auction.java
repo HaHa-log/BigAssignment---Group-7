@@ -5,6 +5,7 @@ import Branch.Exceptions.AuctionClosedException;
 import Branch.Exceptions.AuthenticationException;
 import Branch.Exceptions.InvalidBidException;
 import model.AuctionsDAO;
+import model.BidsDAO;
 import model.UsersDAO;
 import model.impl.DaoFactory;
 
@@ -33,11 +34,10 @@ public class Auction extends Entity implements Serializable {
     private int extendCount = 0;
     private static final int MAX_EXTENDS = 5;
 
-    private List<Bid> bids = new ArrayList<>();
-
     private final transient ReentrantLock lock = new ReentrantLock();
 
     AuctionsDAO auctionsDb = DaoFactory.createAuctionsDAO();
+    BidsDAO bidsDb = DaoFactory.createBidsDAO();
 
     public Auction(Member owner, Item item, LocalDateTime startingTime, LocalDateTime endingTime) {
         auctionId = 0;
@@ -171,7 +171,7 @@ public class Auction extends Entity implements Serializable {
                 auctionsDb.update(this);
 
                 Bid bid = new Bid(this, (Member) bidder, bidAmount);
-                bids.add(bid);
+                bidsDb.save(bid);
                 notifyAllBidders(bidder, bidAmount.getPrice());
                 return true;
             } else {
@@ -280,6 +280,10 @@ public class Auction extends Entity implements Serializable {
     public int getOwnerId() {
         return owner.getId();
     }
+
+    public List<Bid> getBids() {
+        return bidsDb.getByAuctionId(getId());
+    };
 
     public LocalDateTime getEndingTime() {
         return endingTime;

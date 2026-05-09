@@ -15,7 +15,7 @@ public class DaoFactory {
         return new AuctionsDAOImpl();
     }
 
-    public static BidsDAO createBidDAO() {
+    public static BidsDAO createBidsDAO() {
         return new BidsDAOImpl();
     }
 

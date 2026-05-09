@@ -37,6 +37,6 @@ public class AuctionManagementController extends ManagementController<Auction> {
 
     @Override
     protected List<Auction> fetchData() {
-        return auctionManager.getActiveSessions();
+        return auctionManager.getAllSessions();
     }
 }
