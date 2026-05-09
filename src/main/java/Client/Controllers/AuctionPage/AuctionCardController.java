@@ -11,6 +11,8 @@ import java.io.IOException;
 
 public class AuctionCardController {
     @FXML
+    private Label statusLabel;
+    @FXML
     private Label itemNameLabel;
     @FXML
     private Label startingPriceLabel;
@@ -38,6 +40,7 @@ public class AuctionCardController {
 
     public void setAuctionData(Auction auction) {
         this.auction = auction;
+        this.statusLabel.setText(auction.getStatus().toString());
         this.itemNameLabel.setText(auction.getItem().getName());
         this.startingPriceLabel.setText("Starting price: $" + auction.getStartingPrice());
         this.currentPriceLabel.setText("Current price: $" + auction.getCurrentPrice());

@@ -1,6 +1,6 @@
 .root-pane {
     -fx-background-color: linear-gradient(to bottom, #37427c, #C2D7FF);
-    -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif;
 }
 .label {
     -fx-text-fill: #37427c;
