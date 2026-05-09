@@ -3,6 +3,7 @@ package Branch;
 import model.TransactionDAO;
 import model.impl.DaoFactory;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +14,10 @@ public class Member extends User implements Bidder, Seller, AuctionObserver {
 
     public Member(String firstName, String lastName, String email, String phoneNumber, String password, double balance) {
         super(firstName, lastName, email, phoneNumber, password, balance);
+    }
+
+    public Member(String firstName, String lastName, String email, String phoneNumber, String password, double balance, boolean isAdmin, boolean isBlocked, LocalDateTime blockedUntil) {
+        super(firstName, lastName, email, phoneNumber, password, balance, isAdmin, isBlocked, blockedUntil);
     }
 
     @Override

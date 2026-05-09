@@ -8,6 +8,7 @@ import DB.DbException;
 import model.UsersDAO;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -205,7 +206,10 @@ public class UsersDAOImpl implements UsersDAO {
                 rs.getString("email"),
                 rs.getString("phoneNumber"),
                 rs.getString("password"),
-                rs.getDouble("balance")
+                rs.getDouble("balance"),
+                rs.getBoolean("isAdmin"),
+                rs.getBoolean("isBlocked"),
+                rs.getObject("blockedUntil", LocalDateTime.class)
         );
 
         obj.setId(rs.getInt("users_id"));
@@ -219,7 +223,10 @@ public class UsersDAOImpl implements UsersDAO {
                 rs.getString("email"),
                 rs.getString("phoneNumber"),
                 rs.getString("password"),
-                rs.getDouble("balance")
+                rs.getDouble("balance"),
+                rs.getBoolean("isAdmin"),
+                rs.getBoolean("isBlocked"),
+                rs.getObject("blockedUntil", LocalDateTime.class)
         );
 
         obj.setId(rs.getInt("users_id"));

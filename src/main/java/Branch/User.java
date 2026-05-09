@@ -35,6 +35,17 @@ public abstract class User extends Entity {
         this.setPassword(password);
     }
 
+    public User(String firstName, String lastName, String email, String phoneNumber, String password, double balance, boolean isAdmin, boolean isBlocked, LocalDateTime blockedUntil) {
+        this.fullname = new FullName(firstName, lastName);
+        this.email = new Email(email);
+        this.phoneNumber = new PhoneNumber(phoneNumber);
+        this.balance = new Balance(balance);
+        this.setPassword(password);
+        this.isAdmin = isAdmin;
+        this.isBlocked = isBlocked;
+        this.blockedUntil = blockedUntil;
+    }
+
     public void setFirstName(String fstName) {
         this.fullname = new FullName(fstName, fullname.getLastName());
         userDatabase.update(this);
