@@ -1,6 +1,7 @@
 package Client.Controllers.AuctionPage;
 
 import Branch.Auction;
+import Branch.Exceptions.CustomisedException;
 import Branch.SessionManager;
 import Branch.*;
 import javafx.fxml.FXML;
@@ -51,8 +52,7 @@ public class AuctionDetailController {
         } catch (IllegalArgumentException e) {
             String message = e.getMessage();
             bidPlacedResultLabel.setText(message);
-        } catch (Exception e){
-            //can be risky
+        } catch (CustomisedException e){
             String message = e.getMessage();
             bidPlacedResultLabel.setText(message);
         } finally {

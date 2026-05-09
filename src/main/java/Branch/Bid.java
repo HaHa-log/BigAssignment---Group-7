@@ -45,8 +45,8 @@ public class Bid extends Entity implements Serializable {
         return bidder;
     }
 
-    public double getBidPrice() {
-        return bidPrice.getPrice();
+    public Price getBidPrice() {
+        return bidPrice;
     }
 
     public LocalDateTime getBidTime() {

@@ -28,7 +28,7 @@ public class BidsDAOImpl implements BidsDAO {
 
             st.setInt(1, bid.getAuction().getId());
             st.setInt(2, bid.getBidder().getId());
-            st.setDouble(3, bid.getBidPrice());
+            st.setDouble(3, bid.getBidPrice().getPrice());
             int rowsAffected = st.executeUpdate();
             if (rowsAffected > 0) {
                 try (ResultSet rs = st.getGeneratedKeys()) {
@@ -73,7 +73,7 @@ public class BidsDAOImpl implements BidsDAO {
 
             st.setInt(1, bid.getAuction().getId());
             st.setInt(2, bid.getBidder().getId());
-            st.setDouble(3, bid.getBidPrice());
+            st.setDouble(3, bid.getBidPrice().getPrice());
             st.setTimestamp(4, bid.getBidTime() != null
                     ? Timestamp.valueOf(bid.getBidTime()) : null);
             st.setDouble(5, bid.getId());
@@ -115,7 +115,8 @@ public class BidsDAOImpl implements BidsDAO {
 
             st.setInt(1, id);
             try (ResultSet rs = st.executeQuery()) {
-                if (rs.next()){
+                //if to while to return all bids
+                while (rs.next()){
                     list.add(instantiateBid(rs));
                 }
             }
@@ -146,9 +147,10 @@ public class BidsDAOImpl implements BidsDAO {
     }
 
     private Bid instantiateBid(ResultSet rs) throws SQLException {
+        // Corrected: Use "bidder_id" to fetch the user
         Bid obj = new Bid(
                 auctionDb.getById(rs.getInt("auction_id")),
-                (Member) bidderDb.getById(rs.getInt("auction_id")),
+                (Member) bidderDb.getById(rs.getInt("bidder_id")),
                 rs.getDouble("bidPrice"),
                 rs.getObject("bidTime", LocalDateTime.class)
         );

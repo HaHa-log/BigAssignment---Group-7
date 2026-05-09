@@ -39,6 +39,7 @@ public class Auction extends Entity implements Serializable {
 
     AuctionsDAO auctionsDb = DaoFactory.createAuctionsDAO();
     BidsDAO bidsDb = DaoFactory.createBidsDAO();
+    UsersDAO usersDb = DaoFactory.createUsersDAO();
 
     public Auction(Member owner, Item item, LocalDateTime startingTime, LocalDateTime endingTime) {
         auctionId = 0;
@@ -160,39 +161,59 @@ public class Auction extends Entity implements Serializable {
             throws AuctionClosedException, AuthenticationException, InvalidBidException, IllegalArgumentException {
         lock.lock();
         try {
+            if (!(bidder instanceof User user)) {
+                throw new AuthenticationException("[Error]: Invalid Bidder type.");
+            }
+
             Price bidAmount = new Price(amount);
-            if (status != AuctionStatus.RUNNING) {
-                throw new AuctionClosedException(status.toString());
+
+            if (getStatus() != AuctionStatus.RUNNING) {
+                throw new AuctionClosedException(this.status.toString());
+            }
+            if (user.isEqual(owner)) {
+                throw new AuthenticationException("[Error]: Sellers cannot bid on their own listings!");
             }
 
-            if (bidder instanceof User && ((User) bidder).getId() == owner.getId()) {
-                throw new AuthenticationException("[Error]: Sellers are prohibited from bidding on their own listings!");
-            }
-
-            try {
-                boolean checkBid = bidder.placeBid(this, amount);
-
-                if (!checkBid) {
-                    return false;
-                }
-            } catch (IllegalArgumentException e) {
-                throw e;
-            }
-
-            if (bidAmount.getPrice() > currentPrice) {
-                currentPrice = bidAmount.getPrice();
-                winner = bidder;
-
-                handleSniping();
-                auctionsDb.update(this);
-
-                Bid bid = new Bid(this, (Member) bidder, bidAmount);
-                bidsDb.save(bid);
-                notifyAllBidders(bidder, bidAmount.getPrice());
-                return true;
-            } else {
+            if (bidAmount.getPrice() <= currentPrice) {
                 throw new InvalidBidException(currentPrice, bidAmount.getPrice());
             }
+
+            double lastTimeBidAmount = 0;
+
+            List<Bid> userBids = bidsDb.getByAuctionId(this.getId());
+            for (Bid existingBid : userBids) {
+                if (existingBid.getBidder() == null) {
+                    continue;
+                }
+                if (existingBid.getBidder().isEqual(user)) {
+                    if (existingBid.getBidPrice().getPrice() > lastTimeBidAmount) {
+                        lastTimeBidAmount = existingBid.getBidPrice().getPrice();
+                    }
+                }
+            }
+
+            double amountToDeduct = bidAmount.getPrice() - lastTimeBidAmount;
+
+            System.out.println("[Debug]: Bid=" + bidAmount.getPrice() + " | Prev=" + lastTimeBidAmount + " | Deduct=" + amountToDeduct + " | Balance=" + user.getBalance());
+
+            if (user.getBalance() < amountToDeduct) {
+                throw new IllegalArgumentException("[Error]: Insufficient balance to cover the bid increase of " + amountToDeduct);
+            }
+
+            user.withdrawMoney(amountToDeduct);
+
+            this.currentPrice = bidAmount.getPrice();
+            this.winner = bidder;
+
+            handleSniping();
+            auctionsDb.update(this);
+
+            Bid bid = new Bid(this, (Member) bidder, bidAmount);
+            bidsDb.save(bid);
+
+            notifyAllBidders(bidder, bidAmount.getPrice());
+            return true;
+
         } finally {
             lock.unlock();
         }
