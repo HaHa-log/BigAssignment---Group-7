@@ -19,6 +19,7 @@ public class Item extends Entity {
     private Status status = Status.AVAILABLE;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String imagePath;
 
     private ItemsDAO itemsDb = DaoFactory.createItemDAO();
 
@@ -26,15 +27,17 @@ public class Item extends Entity {
         this.name = name;
         this.startingPrice = startingPrice;
         this.description = description;
+        this.imagePath = null;
     }
 
-    public Item(String name, double startingPrice, String description, Status status, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Item(String name, double startingPrice, String description, Status status, LocalDateTime createdAt, LocalDateTime updatedAt, String imagePath) {
         this.name = name;
         this.startingPrice = startingPrice;
         this.description = description;
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.imagePath = imagePath;
     }
 
     public void setStartingPrice(double startPrice) {
@@ -52,9 +55,20 @@ public class Item extends Entity {
         itemsDb.update(this);
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+        itemsDb.update(this);
+    }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+        itemsDb.update(this);
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+        itemsDb.update(this);
+    }
 
     public double getStartingPrice() {
         return startingPrice;
@@ -68,14 +82,24 @@ public class Item extends Entity {
         return description;
     }
 
-    public Status getStatus() { return status; }
+    public Status getStatus() {
+        return status;
+    }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
 
     public boolean isAvailable() {
         return this.status == Status.AVAILABLE;
+    }
+
+    public String getImagePath() {
+        return imagePath;
     }
 
     @Override

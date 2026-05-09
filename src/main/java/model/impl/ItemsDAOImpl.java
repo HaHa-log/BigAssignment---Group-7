@@ -17,14 +17,15 @@ public class ItemsDAOImpl implements ItemsDAO {
     @Override
     public void save(Item item) {
         String sql = "INSERT INTO items "
-                + "(name, startingPrice, description)"
-                + "VALUES (?, ?, ?)";
+                + "(name, startingPrice, description, imagePath) "
+                + "VALUES (?, ?, ?, ?)";
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             st.setString(1, item.getName());
             st.setDouble(2, item.getStartingPrice());
             st.setString(3, item.getDescription());
+            st.setString(4, item.getImagePath());
 
             int rowsAffected = st.executeUpdate();
             if (rowsAffected > 0) {
@@ -65,7 +66,7 @@ public class ItemsDAOImpl implements ItemsDAO {
     @Override
     public void update(Item item) {
         String sql = "UPDATE items "
-                +"SET name = ?, startingPrice = ?, description = ?, status = ? "
+                +"SET name = ?, startingPrice = ?, description = ?, status = ?, imagePath = ?"
                 + " WHERE items_id = ? ";
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
@@ -74,9 +75,9 @@ public class ItemsDAOImpl implements ItemsDAO {
             st.setDouble(2, item.getStartingPrice());
             st.setString(3, item.getDescription());
             st.setString(4, item.getStatus().name());
-            st.setInt(5, item.getId());
+            st.setString(5, item.getImagePath());
+            st.setInt(6, item.getId());
             st.executeUpdate();
-            item.setUpdatedAt(LocalDateTime.now());
 
         } catch(SQLException ex){
             throw new DbException(ex.getMessage());
@@ -146,7 +147,8 @@ public class ItemsDAOImpl implements ItemsDAO {
                 rs.getString("description"),
                 Item.Status.valueOf(rs.getString("status")),
                 rs.getObject("createdAt", LocalDateTime.class),
-                rs.getObject("updatedAt", LocalDateTime.class)
+                rs.getObject("updatedAt", LocalDateTime.class),
+                rs.getString("imagePath")
         );
 
         obj.setId(rs.getInt("items_id"));
