@@ -95,11 +95,16 @@ public class Auction extends Entity implements Serializable {
     }
     
     public String start() {
-        if (transitionTo(AuctionStatus.RUNNING)) {
-            return "Starting an auction...";
+        LocalDateTime now = LocalDateTime.now();
+
+        if (startingTime != null && now.isBefore(startingTime)) {
+            this.status = AuctionStatus.OPEN;
+            return "[System]: Auction will be available at " + startingTime + "";
         } else {
-            return "Failed to start auction. Current status: " + status;
+            transitionTo(AuctionStatus.RUNNING);
         }
+
+        return "[System]: An auction has been started!";
     }
 
     private boolean isValidTransition(AuctionStatus next) {
