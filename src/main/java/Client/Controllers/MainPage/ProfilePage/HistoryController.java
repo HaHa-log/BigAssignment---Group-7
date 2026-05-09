@@ -1,5 +1,6 @@
 package Client.Controllers.MainPage.ProfilePage;
 
+import Branch.AuctionManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -22,9 +23,12 @@ public class HistoryController extends BaseController  {
     public void initialize() {
 
         setupFilter();
-        loadFakeHistory();
-
         historyList.setItems(allHistory);
+    }
+
+    @Override
+    protected void initData() {
+        loadHistory();
     }
 
     private void setupFilter() {
@@ -40,15 +44,18 @@ public class HistoryController extends BaseController  {
 
         filterBox.setOnAction(event -> applyFilter());
     }
-    //TEST DATA
-    private void loadFakeHistory() {
+    private void loadHistory() {
+
+        allHistory.clear();
 
         allHistory.addAll(
 
-                "🏆 Won auction: iPhone 17 Pro Max | Final price: $1500",
-                "❌ Lost auction: Gaming Laptop | Final price: $950",
-                "📦 Your auction ended: Nike Air Jordan",
-                "🏆 Won auction: Canon Camera | Final price: $500"
+                user.getAuctionHistory(
+
+                        AuctionManager
+                                .getInstance()
+                                .getAllSessions()
+                )
         );
     }
 
@@ -63,19 +70,19 @@ public class HistoryController extends BaseController  {
             switch (selected) {
 
                 case "Won" -> {
-                    if (item.contains("Won")) {
+                    if (item.contains("WON")) {
                         filtered.add(item);
                     }
                 }
 
                 case "Lost" -> {
-                    if (item.contains("Lost")) {
+                    if (item.contains("LOST")) {
                         filtered.add(item);
                     }
                 }
 
                 case "Owner" -> {
-                    if (item.contains("Your auction")) {
+                    if (item.contains("MY AUCTION")) {
                         filtered.add(item);
                     }
                 }
