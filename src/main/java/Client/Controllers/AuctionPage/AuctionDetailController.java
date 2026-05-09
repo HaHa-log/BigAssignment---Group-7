@@ -1,6 +1,7 @@
 package Client.Controllers.AuctionPage;
 
 import Branch.Auction;
+import Branch.Exceptions.CustomisedException;
 import Branch.SessionManager;
 import Branch.*;
 import javafx.fxml.FXML;
@@ -11,7 +12,7 @@ import static javafx.scene.paint.Color.*;
 
 public class AuctionDetailController {
     @FXML
-    private Label bidPlacedResult;
+    private Label bidPlacedResultLabel;
     @FXML
     private TextField bidAmountInput;
     @FXML
@@ -31,21 +32,29 @@ public class AuctionDetailController {
         String bidAmountString = bidAmountInput.getText();
 
         if (bidAmountString == null || bidAmountString.trim().isEmpty()) {
-            bidPlacedResult.setText("Please enter an amount.");
+            bidPlacedResultLabel.setText("Please enter an amount.");
         }
 
         try {
             double bidAmount = Double.parseDouble(bidAmountString);
-            auction.placeBid(currentUser, bidAmount);
-            bidPlacedResult.setTextFill(GREEN);
-            bidPlacedResult.setText("Bid placed successfully.");
+            boolean isSuccess = auction.placeBid(currentUser, bidAmount);
+
+            if (isSuccess) {
+                bidPlacedResultLabel.setTextFill(GREEN);
+                bidPlacedResultLabel.setText("Bid placed successfully.");
+                currentPriceLabel.setText("Current price: $" + auction.getCurrentPrice());
+
+            } else {
+                bidPlacedResultLabel.setTextFill(RED);
+                bidPlacedResultLabel.setText("Bid failed. Check your balance or bid amount.");
+            }
 
         } catch (IllegalArgumentException e) {
             String message = e.getMessage();
-            bidPlacedResult.setText(message);
-        } catch (Exception e){
+            bidPlacedResultLabel.setText(message);
+        } catch (CustomisedException e){
             String message = e.getMessage();
-            bidPlacedResult.setText(message);
+            bidPlacedResultLabel.setText(message);
         } finally {
             bidAmountInput.clear();
         }

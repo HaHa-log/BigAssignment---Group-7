@@ -1,14 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<VBox accessibleRole="BUTTON" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#toAuctionDetail" prefWidth="250.0" spacing="10.0" style="-fx-border-color: black; -fx-border-width: 2; -fx-background-color: white;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.AuctionPage.AuctionCardController">
+<VBox accessibleRole="BUTTON"
+      alignment="TOP_CENTER"
+      maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+      onMouseClicked="#toAuctionDetail"
+      prefWidth="250.0" spacing="10.0"
+      stylesheets="@auctioncard.css"
+      styleClass="auction-card"
+      xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Client.Controllers.AuctionPage.AuctionCardController">
    <children>
-      <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-border-color: #cccccc;">
+      <StackPane prefHeight="150.0" prefWidth="200.0">
          <children>
             <ImageView fx:id="itemImage" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
          </children>
@@ -21,6 +30,7 @@
                   <Font name="System Bold" size="18.0" />
                </font>
             </Label>
+            <Label fx:id="statusLabel" text="STATUS: " />
             <Label fx:id="startingPriceLabel" text="Starting price: $0.00" />
             <Label fx:id="currentPriceLabel" text="Current price: $0.00" />
          </children>

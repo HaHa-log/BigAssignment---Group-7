@@ -1,6 +1,10 @@
 package Branch;
 
-import Branch.Common.*;
+import Branch.Common.Balance;
+import Branch.Common.Email;
+import Branch.Common.FullName;
+import Branch.Common.PhoneNumber;
+import Branch.Common.ParticipationDetails;
 import model.UsersDAO;
 import model.impl.DaoFactory;
 
@@ -29,6 +33,17 @@ public abstract class User extends Entity {
 
         //put setPassword at last because this checks on values
         this.setPassword(password);
+    }
+
+    public User(String firstName, String lastName, String email, String phoneNumber, String password, double balance, boolean isAdmin, boolean isBlocked, LocalDateTime blockedUntil) {
+        this.fullname = new FullName(firstName, lastName);
+        this.email = new Email(email);
+        this.phoneNumber = new PhoneNumber(phoneNumber);
+        this.balance = new Balance(balance);
+        this.setPassword(password);
+        this.isAdmin = isAdmin;
+        this.isBlocked = isBlocked;
+        this.blockedUntil = blockedUntil;
     }
 
     public void setFirstName(String fstName) {
@@ -72,11 +87,19 @@ public abstract class User extends Entity {
     }
 
     public boolean depositMoney(double amount) {
-        return this.balance.deposit(amount);
+        boolean success = this.balance.deposit(amount);
+        if (success) {
+            userDatabase.update(this);
+        }
+        return success;
     }
 
     public boolean withdrawMoney(double amount) {
-        return this.balance.withdraw(amount);
+        boolean success = this.balance.withdraw(amount);
+        if (success) {
+            userDatabase.update(this);
+        }
+        return success;
     }
 
     public double getCurrentBalance() {
@@ -122,8 +145,6 @@ public abstract class User extends Entity {
         if (isBlocked && blockedUntil != null && LocalDateTime.now().isAfter(blockedUntil)) {
             isBlocked = false;
             blockedUntil = null;
-
-            userDatabase.update(this);
         }
         return isBlocked;
     }
@@ -131,8 +152,6 @@ public abstract class User extends Entity {
     public void isUnblocked() {
         this.isBlocked = false;
         this.blockedUntil = null;
-
-        userDatabase.update(this);
     }
 
     public boolean isEqual(User this, User other) {
@@ -141,21 +160,5 @@ public abstract class User extends Entity {
             result = true;
         }
         return result;
-    }
-
-    public List<ParticipationDetails> getParticipatedAuctions(List<Auction> allSystemAuctions) {
-        List<ParticipationDetails> history = new ArrayList<>();
-
-        for (Auction auction : allSystemAuctions) {
-            boolean isOwner = auction.getOwner().getId() == this.getId();
-            boolean hasWon = auction.getWinner() != null &&
-                    ((User) auction.getWinner()).getId() == this.getId();
-            boolean hasBid = auction.getParticipants().contains(this);
-
-            if (isOwner || hasBid || hasWon) {
-                history.add(new ParticipationDetails(auction, this));
-            }
-        }
-        return history;
     }
 }

@@ -103,4 +103,8 @@ public class AuctionManager {
     public List<Auction> getActiveSessions () {
         return auctionDb.getActiveAuctions();
     }
+
+    public List<Auction> getAllSessions () {
+        return auctionDb.getAll();
+    }
 }

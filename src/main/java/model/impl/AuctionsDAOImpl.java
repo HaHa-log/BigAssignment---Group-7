@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AuctionsDAOImpl implements AuctionsDAO {
-
     private UsersDAO userDb = DaoFactory.createUsersDAO();
     private ItemsDAO itemDb = DaoFactory.createItemDAO();
 

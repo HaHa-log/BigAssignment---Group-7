@@ -14,6 +14,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -41,6 +42,10 @@ public class AuctionCreateController {
 
     public AuctionManager auction = AuctionManager.getInstance();
     private Member seller = (Member) SessionManager.getCurrentUser();
+
+    private File selectedImageFile;
+    private static final long MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+    private static final String IMAGES_DIR = "src/main/resources/ItemImages";
 
     @FXML
     private void createAuction() {
@@ -70,16 +75,46 @@ public class AuctionCreateController {
                 LocalDateTime endFull = endDate.atTime(endTime);
 
                 Item item = new Item(itemName, startingPrice, description);
+                uploadImage(item);
+
                 item.saveItem();
                 auction.createAuction(seller, item, startFull, endFull);
                 auctionCreateResult.setTextFill(GREEN);
                 auctionCreateResult.setText("Auction created.");
-            } catch (IllegalArgumentException e) {
-                String message = e.getMessage();
+            } catch (IllegalArgumentException | IOException e) {
                 auctionCreateResult.setTextFill(RED);
-                auctionCreateResult.setText(message);
+                auctionCreateResult.setText(e.getMessage());
             }
         }
+    }
+
+    private void uploadImage(Item item) throws IllegalArgumentException, IOException {
+        if (selectedImageFile == null) {
+            return;
+        }
+
+        // Check image size
+        if (selectedImageFile.length() > MAX_IMAGE_SIZE) {
+            throw new IllegalArgumentException("Image file is too large (max 5MB).");
+        }
+
+        // Create folder if not exists
+        File imagesDir = new File(IMAGES_DIR);
+        if (!imagesDir.exists()) {
+            imagesDir.mkdirs();
+        }
+
+        // Copy file
+        String fileName = "item_" + System.currentTimeMillis() + "_" + selectedImageFile.getName();
+        File destFile = new File(imagesDir, fileName);
+        java.nio.file.Files.copy(
+                selectedImageFile.toPath(),
+                destFile.toPath(),
+                java.nio.file.StandardCopyOption.REPLACE_EXISTING
+        );
+
+        //Save image path
+        item.setImagePath("images/" + fileName);
     }
 
     //Will display image but only on the owner's device
@@ -90,7 +125,7 @@ public class AuctionCreateController {
         fileChooser.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
         );
-        File selectedImageFile = fileChooser.showOpenDialog(new Stage());
+        selectedImageFile = fileChooser.showOpenDialog(new Stage());
 
         if (selectedImageFile != null) {
             fileNameLabel.setText(selectedImageFile.getName());

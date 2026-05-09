@@ -5,6 +5,7 @@ import Branch.Exceptions.AuctionClosedException;
 import Branch.Exceptions.AuthenticationException;
 import Branch.Exceptions.InvalidBidException;
 import model.AuctionsDAO;
+import model.BidsDAO;
 import model.UsersDAO;
 import model.impl.DaoFactory;
 
@@ -32,12 +33,13 @@ public class Auction extends Entity implements Serializable {
     private transient List<User> participants = new ArrayList<>();
     private int extendCount = 0;
     private static final int MAX_EXTENDS = 5;
-
     private List<Bid> bids = new ArrayList<>();
 
     private final transient ReentrantLock lock = new ReentrantLock();
 
     AuctionsDAO auctionsDb = DaoFactory.createAuctionsDAO();
+    BidsDAO bidsDb = DaoFactory.createBidsDAO();
+    UsersDAO usersDb = DaoFactory.createUsersDAO();
 
     public Auction(Member owner, Item item, LocalDateTime startingTime, LocalDateTime endingTime) {
         auctionId = 0;
@@ -95,11 +97,16 @@ public class Auction extends Entity implements Serializable {
     }
     
     public String start() {
-        if (transitionTo(AuctionStatus.RUNNING)) {
-            return "Starting an auction...";
+        LocalDateTime now = LocalDateTime.now();
+
+        if (startingTime != null && now.isBefore(startingTime)) {
+            this.status = AuctionStatus.OPEN;
+            return "[System]: Auction will be available at " + startingTime + "";
         } else {
-            return "Failed to start auction. Current status: " + status;
+            transitionTo(AuctionStatus.RUNNING);
         }
+
+        return "[System]: An auction has been started!";
     }
 
     private boolean isValidTransition(AuctionStatus next) {
@@ -151,32 +158,62 @@ public class Auction extends Entity implements Serializable {
     }
 
     public boolean placeBid(Bidder bidder, double amount)
-            throws AuctionClosedException, AuthenticationException, InvalidBidException {
+            throws AuctionClosedException, AuthenticationException, InvalidBidException, IllegalArgumentException {
         lock.lock();
         try {
+            if (!(bidder instanceof User user)) {
+                throw new AuthenticationException("[Error]: Invalid Bidder type.");
+            }
+
             Price bidAmount = new Price(amount);
-            if (status != AuctionStatus.RUNNING) {
-                throw new AuctionClosedException(status.toString());
+
+            if (getStatus() != AuctionStatus.RUNNING) {
+                throw new AuctionClosedException(this.status.toString());
+            }
+            if (user.isEqual(owner)) {
+                throw new AuthenticationException("[Error]: Sellers cannot bid on their own listings!");
             }
 
-            if (bidder instanceof User && ((User) bidder).getId() == owner.getId()) {
-                throw new AuthenticationException("[Error]: Sellers are prohibited from bidding on their own listings!");
-            }
-
-            if (bidAmount.getPrice() > currentPrice) {
-                currentPrice = bidAmount.getPrice();
-                winner = bidder;
-
-                handleSniping();
-                auctionsDb.update(this);
-
-                Bid bid = new Bid(this, (Member) bidder, bidAmount, LocalDateTime.now());
-                bids.add(bid);
-                notifyAllBidders(bidder, bidAmount.getPrice());
-                return true;
-            } else {
+            if (bidAmount.getPrice() <= currentPrice) {
                 throw new InvalidBidException(currentPrice, bidAmount.getPrice());
             }
+
+            double lastTimeBidAmount = 0;
+
+            List<Bid> userBids = bidsDb.getByAuctionId(this.getId());
+            for (Bid existingBid : userBids) {
+                if (existingBid.getBidder() == null) {
+                    continue;
+                }
+                if (existingBid.getBidder().isEqual(user)) {
+                    if (existingBid.getBidPrice().getPrice() > lastTimeBidAmount) {
+                        lastTimeBidAmount = existingBid.getBidPrice().getPrice();
+                    }
+                }
+            }
+
+            double amountToDeduct = bidAmount.getPrice() - lastTimeBidAmount;
+
+            System.out.println("[Debug]: Bid=" + bidAmount.getPrice() + " | Prev=" + lastTimeBidAmount + " | Deduct=" + amountToDeduct + " | Balance=" + user.getBalance());
+
+            if (user.getBalance() < amountToDeduct) {
+                throw new IllegalArgumentException("[Error]: Insufficient balance to cover the bid increase of " + amountToDeduct);
+            }
+
+            user.withdrawMoney(amountToDeduct);
+
+            this.currentPrice = bidAmount.getPrice();
+            this.winner = bidder;
+
+            handleSniping();
+            auctionsDb.update(this);
+
+            Bid bid = new Bid(this, (Member) bidder, bidAmount);
+            bidsDb.save(bid);
+
+            notifyAllBidders(bidder, bidAmount.getPrice());
+            return true;
+
         } finally {
             lock.unlock();
         }
@@ -197,7 +234,6 @@ public class Auction extends Entity implements Serializable {
             }
         }
     }
-
 
     public void setStartingTime(LocalDateTime startingTime) {
         this.startingTime = startingTime;
@@ -281,6 +317,10 @@ public class Auction extends Entity implements Serializable {
         return owner.getId();
     }
 
+    public List<Bid> getBids() {
+        return bidsDb.getByAuctionId(getId());
+    };
+
     public LocalDateTime getEndingTime() {
         return endingTime;
     }
@@ -302,6 +342,13 @@ public class Auction extends Entity implements Serializable {
     }
 
     public List<User> getParticipants() {
+        bids = bidsDb.getByAuctionId(auctionId);
+        for (Bid bid : bids) {
+            if (!participants.contains(bid.getBidder())) {
+                participants.add(bid.getBidder());
+            }
+        }
+
         return participants;
     }
 

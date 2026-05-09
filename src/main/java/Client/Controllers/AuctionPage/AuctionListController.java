@@ -30,12 +30,12 @@ public class AuctionListController {
 
         statusFilter.setOnAction(e -> populateList());
 
-        this.populateList();
+        populateList();
     }
 
     public void populateList() {
         auctionTilePane.getChildren().clear();
-        List<Auction> auctions = auctionManager.getActiveSessions();
+        List<Auction> auctions = auctionManager.getAllSessions();
 
         String selectedStatus = statusFilter.getValue();
 
