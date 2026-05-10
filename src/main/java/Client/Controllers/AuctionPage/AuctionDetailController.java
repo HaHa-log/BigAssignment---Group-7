@@ -7,6 +7,10 @@ import Branch.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
+import java.io.File;
 
 import static javafx.scene.paint.Color.*;
 
@@ -23,6 +27,8 @@ public class AuctionDetailController {
     private Label currentPriceLabel;
     @FXML
     private Label ownerNameLabel, itemDescriptionLabel, auctionStatusLabel, durationLabel;
+    @FXML
+    private ImageView imageContainer;
 
     private Bidder currentUser = (Bidder) SessionManager.getCurrentUser();
     private Auction auction;
@@ -66,6 +72,7 @@ public class AuctionDetailController {
         this.startingPriceLabel.setText("Starting price: $" + auction.getStartingPrice());
         this.currentPriceLabel.setText("Current price: $" + auction.getCurrentPrice());
 
+        setItemImage();
         getTableData(auction);
     }
 
@@ -80,5 +87,15 @@ public class AuctionDetailController {
         String endStr = auction.getEndingTime().format(formatter);
 
         durationLabel.setText(startStr + " - " + endStr);
+    }
+
+    private void setItemImage() {
+        Item item = auction.getItem();
+        String filePath = item.getImagePath();
+
+        File file = new File("src/main/resources/ItemImages/" + item.getImagePath());
+        Image image = new Image(file.toURI().toString());
+
+        imageContainer.setImage(image);
     }
 }

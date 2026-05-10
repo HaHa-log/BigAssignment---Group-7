@@ -20,7 +20,7 @@
          <children>
             <StackPane minWidth="200.0" prefWidth="350.0" style="-fx-background-color: #37427c;" HBox.hgrow="ALWAYS">
                <children>
-                  <ImageView fitHeight="250.0" fitWidth="350.0" pickOnBounds="true" preserveRatio="true" />
+                  <ImageView fx:id="imageContainer" fitHeight="250.0" fitWidth="350.0" pickOnBounds="true" preserveRatio="true" />
                </children>
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

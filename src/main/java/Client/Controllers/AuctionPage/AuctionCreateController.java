@@ -1,9 +1,9 @@
 package Client.Controllers.AuctionPage;
 
-import Branch.AuctionManager;
-import Branch.Item;
-import Branch.Member;
-import Branch.SessionManager;
+import Branch.*;
+import Branch.Common.Price;
+import Branch.Exceptions.AuthenticationException;
+import Branch.Exceptions.CustomisedException;
 import javafx.fxml.FXML;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -51,40 +51,57 @@ public class AuctionCreateController {
     private void createAuction() {
         String itemName = itemNameInput.getText();
         String description = descriptionInput.getText();
-        Double startingPrice = Double.parseDouble(startingPriceInput.getText());
-
+        String startingPriceRaw = startingPriceInput.getText();
         LocalDate startDate = startingDateInput.getValue();
         LocalDate endDate = endingDateInput.getValue();
-
         String startingTime = startingTimeInput.getText();
         String endingTime = endingTimeInput.getText();
 
-        if (itemName == null || startingPrice == null) {
+        if (itemName.trim().isEmpty() || startingPriceRaw.trim().isEmpty()) {
             auctionCreateResult.setTextFill(RED);
-            auctionCreateResult.setText("Please fill all the fields.");
-        } else if (startDate == null || endDate == null || startingTime == null || endingTime == null) {
-            auctionCreateResult.setTextFill(RED);
-            auctionCreateResult.setText("Please choose starting and ending time.");
+            auctionCreateResult.setText("[Error]: Please fill all the fields");
+            return;
         }
-        else {
-            try {
-                LocalTime startTime = LocalTime.parse(startingTime);
-                LocalTime endTime = LocalTime.parse(endingTime);
 
-                LocalDateTime startFull = startDate.atTime(startTime);
-                LocalDateTime endFull = endDate.atTime(endTime);
+        if (startDate == null || endDate == null || startingTime.trim().isEmpty() || endingTime.trim().isEmpty()) {
+            auctionCreateResult.setTextFill(RED);
+            auctionCreateResult.setText("[Error]: Please choose starting and ending time");
+            return;
+        }
 
-                Item item = new Item(itemName, startingPrice, description);
-                uploadImage(item);
+        try {
+            Double startingPrice = Double.parseDouble(startingPriceRaw);
+            LocalTime startTime = LocalTime.parse(startingTime);
+            LocalTime endTime = LocalTime.parse(endingTime);
 
-                item.saveItem();
-                auction.createAuction(seller, item, startFull, endFull);
-                auctionCreateResult.setTextFill(GREEN);
-                auctionCreateResult.setText("Auction created.");
-            } catch (IllegalArgumentException | IOException e) {
-                auctionCreateResult.setTextFill(RED);
-                auctionCreateResult.setText(e.getMessage());
-            }
+            LocalDateTime startFull = startDate.atTime(startTime);
+            LocalDateTime endFull = endDate.atTime(endTime);
+
+            Item item = new Item(itemName, startingPrice, description);
+            uploadImage(item);
+
+            item.saveItem();
+
+            seller.createAuction(item, startFull, endFull);
+
+            auctionCreateResult.setTextFill(GREEN);
+            auctionCreateResult.setText("Auction created");
+
+        } catch (NumberFormatException e) {
+            auctionCreateResult.setTextFill(RED);
+            auctionCreateResult.setText("[Error]: Starting price must be a valid number");
+        } catch (java.time.format.DateTimeParseException e) {
+            auctionCreateResult.setTextFill(RED);
+            auctionCreateResult.setText("[Error]: Time format must be HH:mm (e.g. 07:30)");
+        } catch (AuthenticationException e) {
+            auctionCreateResult.setTextFill(RED);
+            auctionCreateResult.setText(e.getMessage());
+        } catch (CustomisedException e) {
+            auctionCreateResult.setTextFill(RED);
+            auctionCreateResult.setText(e.getMessage());
+        } catch (IllegalArgumentException | IOException e) {
+            auctionCreateResult.setTextFill(RED);
+            auctionCreateResult.setText(e.getMessage());
         }
     }
 

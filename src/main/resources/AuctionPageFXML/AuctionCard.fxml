@@ -19,7 +19,7 @@
    <children>
       <StackPane prefHeight="150.0" prefWidth="200.0">
          <children>
-            <ImageView fx:id="itemImage" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="imageContainer" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
          </children>
       </StackPane>
 
