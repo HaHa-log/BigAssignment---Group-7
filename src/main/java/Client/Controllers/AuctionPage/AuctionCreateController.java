@@ -1,6 +1,7 @@
 package Client.Controllers.AuctionPage;
 
 import Branch.AuctionManager;
+import Branch.Common.Price;
 import Branch.Item;
 import Branch.Member;
 import Branch.SessionManager;
@@ -74,7 +75,7 @@ public class AuctionCreateController {
                 LocalDateTime startFull = startDate.atTime(startTime);
                 LocalDateTime endFull = endDate.atTime(endTime);
 
-                Item item = new Item(itemName, startingPrice, description);
+                Item item = new Item(itemName, new Price(startingPrice), description);
                 uploadImage(item);
 
                 item.saveItem();
