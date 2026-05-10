@@ -1,13 +1,14 @@
 package Branch;
 
-import Branch.Common.Price;
+//Tạm thời sửa item từ abstract thành concrete class
+
 import model.ItemsDAO;
 import model.impl.DaoFactory;
 
 import java.time.LocalDateTime;
 
 public class Item extends Entity {
-    private Price startingPrice;
+    private double startingPrice;
     private String description;
     private String name;
     public enum Status {
@@ -22,14 +23,14 @@ public class Item extends Entity {
 
     private ItemsDAO itemsDb = DaoFactory.createItemDAO();
 
-    public Item(String name, Price startingPrice, String description) {
+    public Item(String name, double startingPrice, String description) {
         this.name = name;
         this.startingPrice = startingPrice;
         this.description = description;
         this.imagePath = null;
     }
 
-    public Item(String name, Price startingPrice, String description, Status status, LocalDateTime createdAt, LocalDateTime updatedAt, String imagePath) {
+    public Item(String name, double startingPrice, String description, Status status, LocalDateTime createdAt, LocalDateTime updatedAt, String imagePath) {
         this.name = name;
         this.startingPrice = startingPrice;
         this.description = description;
@@ -40,7 +41,7 @@ public class Item extends Entity {
     }
 
     public void setStartingPrice(double startPrice) {
-        this.startingPrice = new Price(startPrice);
+        this.startingPrice = startPrice;
         itemsDb.update(this);
     }
 
@@ -70,7 +71,7 @@ public class Item extends Entity {
     }
 
     public double getStartingPrice() {
-        return startingPrice.getPrice();
+        return startingPrice;
     }
 
     public String getName() {

@@ -1,6 +1,5 @@
 package model.impl;
 
-import Branch.Common.Price;
 import Branch.Item;
 import DB.DB;
 import DB.DbException;
@@ -144,7 +143,7 @@ public class ItemsDAOImpl implements ItemsDAO {
     private Item instantiateItem(ResultSet rs) throws SQLException {
         Item obj = new Item(
                 rs.getString("name"),
-                new Price(rs.getDouble("startingPrice")),
+                rs.getDouble("startingPrice"),
                 rs.getString("description"),
                 Item.Status.valueOf(rs.getString("status")),
                 rs.getObject("createdAt", LocalDateTime.class),
