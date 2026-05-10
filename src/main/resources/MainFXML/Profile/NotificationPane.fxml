@@ -27,7 +27,8 @@
 
         <Region HBox.hgrow="ALWAYS" />
 
-        <Button text="Clear All"
+        <Button fx:id="clearBtn"
+                text="Clear All"
                 styleClass="edit-btn"
                 stylesheets="@profile.css" />
     </HBox>
