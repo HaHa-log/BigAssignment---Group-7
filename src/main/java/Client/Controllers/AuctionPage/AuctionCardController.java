@@ -1,12 +1,16 @@
 package Client.Controllers.AuctionPage;
 
 import Branch.Auction;
+import Branch.Item;
 import Client.Controllers.SceneManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
+import java.io.File;
 import java.io.IOException;
 
 public class AuctionCardController {
@@ -18,6 +22,8 @@ public class AuctionCardController {
     private Label startingPriceLabel;
     @FXML
     private Label currentPriceLabel;
+    @FXML
+    private ImageView imageContainer;
 
     private Auction auction;
 
@@ -44,5 +50,17 @@ public class AuctionCardController {
         this.itemNameLabel.setText(auction.getItem().getName());
         this.startingPriceLabel.setText("Starting price: $" + auction.getStartingPrice());
         this.currentPriceLabel.setText("Current price: $" + auction.getCurrentPrice());
+
+        setItemImage();
+    }
+
+    private void setItemImage() {
+        Item item = auction.getItem();
+        String filePath = item.getImagePath();
+
+        File file = new File("src/main/resources/ItemImages/" + item.getImagePath());
+        Image image = new Image(file.toURI().toString());
+
+        imageContainer.setImage(image);
     }
 }

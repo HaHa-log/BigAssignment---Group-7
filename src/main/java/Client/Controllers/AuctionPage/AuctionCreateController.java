@@ -114,7 +114,7 @@ public class AuctionCreateController {
         );
 
         //Save image path
-        item.setImagePath("images/" + fileName);
+        item.setImagePath(fileName);
     }
 
     //Will display image but only on the owner's device
