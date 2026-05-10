@@ -16,6 +16,7 @@ public interface Bidder {
             throw new IllegalArgumentException("[Error]: Bid must be greater than zero");
         }
 
+        auction.placeBid(this, amount);
         return true;
     }
 }

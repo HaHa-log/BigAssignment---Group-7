@@ -43,7 +43,7 @@ public class AuctionDetailController {
 
         try {
             double bidAmount = Double.parseDouble(bidAmountString);
-            boolean isSuccess = auction.placeBid(currentUser, bidAmount);
+            boolean isSuccess = currentUser.placeBid(auction, bidAmount);
 
             if (isSuccess) {
                 bidPlacedResultLabel.setTextFill(GREEN);

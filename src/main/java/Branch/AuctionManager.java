@@ -43,7 +43,6 @@ public class AuctionManager {
 
         auctionDb.save(session);
 
-        System.out.println("New auction session for " + item.getName());
         session.start();
     }
 
