@@ -171,8 +171,16 @@ public abstract class User extends Entity {
             if (isOwner) {history.add("MY AUCTION | " + auction.getItem().getName() + " | " + auction.getCurrentPrice());}
 
             if (auction.getStatus() != Auction.AuctionStatus.FINISHED) {continue;}
+            // Prevents incorrect participant detection caused by Java object reference comparisons.
+            boolean participated = false;
 
-            boolean participated = auction.getParticipants().contains(this);
+            for (User participant : auction.getParticipants()) {
+
+                if (participant.getId() == this.getId()) {
+                    participated = true;
+                    break;
+                }
+            }
 
             boolean isWinner = auction.getWinner() != null &&auction.getWinner().getId()== this.getId();
 
@@ -183,4 +191,42 @@ public abstract class User extends Entity {
         }
         return history;
     }
+
+    public List<String> getNotifications(List<Auction> auctions) {
+
+        List<String> notifications = new ArrayList<>();
+
+        for (Auction auction : auctions) {
+
+            boolean participated = false;
+
+            for (User participant : auction.getParticipants()) {
+
+                if (participant.getId() == this.getId()) {
+                    participated = true;
+                    break;
+                }
+            }
+
+            if (!participated) {continue;}
+
+            boolean isWinner = auction.getWinner() != null && auction.getWinner().getId() == this.getId();
+
+            if (auction.getStatus() == Auction.AuctionStatus.RUNNING) {
+
+                if (isWinner) {notifications.add("LEADING | " + auction.getItem().getName() + " | " + auction.getCurrentPrice());
+
+                } else {notifications.add("OUTBID | " + auction.getItem().getName() + " | " + auction.getCurrentPrice());}
+            }
+
+            if (auction.getStatus() == Auction.AuctionStatus.FINISHED) {
+
+                if (isWinner) {notifications.add("WON | " + auction.getItem().getName() + " | " + auction.getCurrentPrice());
+
+                } else {notifications.add("LOST | " + auction.getItem().getName() + " | " + auction.getCurrentPrice());}
+            }
+        }
+        return notifications;
+    }
+
 }
