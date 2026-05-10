@@ -17,10 +17,10 @@ import java.io.Serializable;
 
 public class Auction extends Entity implements Serializable {
     private int auctionId;
-    private Member owner;
+    private final Member owner;
     private LocalDateTime startingTime;
     private LocalDateTime endingTime;
-    private Item item;
+    private final Item item;
     private AuctionStatus status;
     public enum AuctionStatus {
         OPEN, RUNNING, FINISHED, PAID, CANCELED
@@ -270,25 +270,6 @@ public class Auction extends Entity implements Serializable {
         }
         finally {
             lock.unlock(); }
-    }
-
-    public void setOwner(Member clientOwner) {
-        lock.lock();
-        try {
-            this.owner = clientOwner;
-        }
-        finally {
-            lock.unlock(); }
-    }
-
-    public void setItem(Item newItem) {
-        lock.lock();
-        try {
-            this.item = newItem;
-        }
-        finally {
-            lock.unlock();
-        }
     }
 
     public void setStatus(AuctionStatus status) {
