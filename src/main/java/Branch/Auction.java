@@ -85,6 +85,14 @@ public class Auction extends Entity implements Serializable {
 
             if (this.status == AuctionStatus.RUNNING && endingTime != null && now.isAfter(endingTime)) {
                 this.transitionTo(AuctionStatus.FINISHED);
+
+                for (Bidder bidder : participants) {
+                    User user = (User) bidder;
+                    if (!user.isWinner(this)) {
+                        bidder.refund(this);
+                        usersDb.update((User) bidder);
+                    }
+                }
                 if (auctionsDb != null) {
                     auctionsDb.update(this);
                 }
@@ -178,23 +186,9 @@ public class Auction extends Entity implements Serializable {
                 throw new InvalidBidException(currentPrice, bidAmount.getPrice());
             }
 
-            double lastTimeBidAmount = 0;
-
-            List<Bid> userBids = bidsDb.getByAuctionId(this.getId());
-            for (Bid existingBid : userBids) {
-                if (existingBid.getBidder() == null) {
-                    continue;
-                }
-                if (existingBid.getBidder().isEqual(user)) {
-                    if (existingBid.getBidPrice().getPrice() > lastTimeBidAmount) {
-                        lastTimeBidAmount = existingBid.getBidPrice().getPrice();
-                    }
-                }
-            }
+            double lastTimeBidAmount = bidder.getHighestBid(this);
 
             double amountToDeduct = bidAmount.getPrice() - lastTimeBidAmount;
-
-            System.out.println("[Debug]: Bid=" + bidAmount.getPrice() + " | Prev=" + lastTimeBidAmount + " | Deduct=" + amountToDeduct + " | Balance=" + user.getBalance());
 
             if (user.getBalance() < amountToDeduct) {
                 throw new IllegalArgumentException("[Error]: Insufficient balance to cover the bid increase of " + amountToDeduct);

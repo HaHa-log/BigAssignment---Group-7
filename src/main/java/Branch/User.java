@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.time.LocalDateTime;
 
-public abstract class User extends Entity {
+public abstract class User extends Entity implements Bidder, Seller, AuctionObserver{
     private FullName fullname;
     private Email email;
     private PhoneNumber phoneNumber;
@@ -215,35 +215,6 @@ public abstract class User extends Entity {
                         state
                 ));
             }
-        }
-        return history;
-    }
-    public List<String> getAuctionHistory(List<Auction> auctions) {
-        List<String> history = new ArrayList<>();
-
-        for (Auction auction : auctions) {
-            boolean isOwner = auction.getOwner().getId() == this.getId();
-
-            if (isOwner) {history.add("MY AUCTION | " + auction.getItem().getName() + " | " + auction.getCurrentPrice());}
-
-            if (auction.getStatus() != Auction.AuctionStatus.FINISHED) {continue;}
-            // Prevents incorrect participant detection caused by Java object reference comparisons.
-            boolean participated = false;
-
-            for (User participant : auction.getParticipants()) {
-
-                if (participant.getId() == this.getId()) {
-                    participated = true;
-                    break;
-                }
-            }
-
-            boolean isWinner = auction.getWinner() != null &&auction.getWinner().getId()== this.getId();
-
-            if (isWinner) {history.add("WON | " + auction.getItem().getName() + " | " + auction.getCurrentPrice());}
-
-            else if (participated) {history.add("LOST | " + auction.getItem().getName() + " | " + auction.getCurrentPrice());}
-
         }
         return history;
     }
