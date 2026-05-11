@@ -42,6 +42,7 @@ public class AuctionManager {
         activeSessions.add(session);
 
         auctionDb.save(session);
+        activeSessions.add(session);
 
         session.start();
     }
@@ -104,6 +105,11 @@ public class AuctionManager {
     }
 
     public List<Auction> getAllSessions () {
-        return auctionDb.getAll();
+
+        if (activeSessions == null || activeSessions.isEmpty()) {
+            activeSessions = auctionDb.getAll();
+        }
+
+        return activeSessions;
     }
 }

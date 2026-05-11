@@ -189,9 +189,14 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
     }
 
     public boolean hasParticipated(Auction auction) {
-        if (auction.getParticipants().contains(this)) {
-            return true;
+
+        for (Bid bid : auction.getBids()) {
+
+            if (bid.getBidder().equals(this)) {
+                return true;
+            }
         }
+
         return false;
     }
 
@@ -204,8 +209,8 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
             if (isOwner(auction)) {
                 state = "MY AUCTION";
             } else if (hasParticipated(auction)) {
-                if (auction.getStatus() == Auction.AuctionStatus.FINISHED ||
-                        auction.getStatus() == Auction.AuctionStatus.PAID) {
+                if (auction.getRawStatus() == Auction.AuctionStatus.FINISHED ||
+                        auction.getRawStatus() == Auction.AuctionStatus.PAID) {
                     state = isWinner(auction) ? "WON" : "LOST";
                 } else {
                     state = isHighestBidder(auction) ? "LEADING" : "OUTBID";
@@ -216,7 +221,7 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
                 history.add(new AuctionHistoryEntry(
                         auction.getId(),
                         auction.getItem().getName(),
-                        auction.getStatus().toString(),
+                        auction.getRawStatus().toString(),
                         state
                 ));
             }
@@ -244,14 +249,14 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
 
             boolean isWinner = auction.getWinner() != null && auction.getWinner().getId() == this.getId();
 
-            if (auction.getStatus() == Auction.AuctionStatus.RUNNING) {
+            if (auction.getRawStatus() == Auction.AuctionStatus.RUNNING) {
 
                 if (isHighestBidder(auction)) {notifications.add("\uD83D\uDD25 LEADING | " + auction.getItem().getName() + " | " + auction.getCurrentPrice());
 
                 } else {notifications.add("⚠\uFE0F OUTBID | " + auction.getItem().getName() + " | " + auction.getCurrentPrice());}
             }
 
-            if (auction.getStatus() == Auction.AuctionStatus.FINISHED) {
+            if (auction.getRawStatus() == Auction.AuctionStatus.FINISHED) {
 
                 if (isWinner) {notifications.add("\uD83C\uDFC6 WON | " + auction.getItem().getName() + " | " + auction.getCurrentPrice());
 
