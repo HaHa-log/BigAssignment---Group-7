@@ -117,10 +117,6 @@ public class Auction extends Entity implements Serializable {
             lock.unlock();
         }
     }
-
-    public AuctionStatus getRawStatus() {
-        return status;
-    }
     
     public String start() {
         LocalDateTime now = LocalDateTime.now();
@@ -221,14 +217,12 @@ public class Auction extends Entity implements Serializable {
             auctionsDb.update(this);
 
             Bid bid = new Bid(this, (Member) bidder, bidAmount);
-
             bidsDb.save(bid);
 
-            bids.add(bid);
+            for (AuctionObserver observer : getObservers()) {
+                observer.onBidPlaced(this, bidder, amount);
+            }
 
-            participants.clear();
-
-            notifyAllBidders(bidder, bidAmount.getPrice());
             return true;
 
         } finally {
@@ -316,13 +310,8 @@ public class Auction extends Entity implements Serializable {
     }
 
     public List<Bid> getBids() {
-
-        if (bids.isEmpty()) {
-            bids = bidsDb.getByAuctionId(getId());
-        }
-
-        return bids;
-    }
+        return bidsDb.getByAuctionId(getId());
+    };
 
     public LocalDateTime getEndingTime() {
         return endingTime;
@@ -345,23 +334,13 @@ public class Auction extends Entity implements Serializable {
     }
 
     public List<User> getParticipants() {
-
-        if (participants == null) {
-            participants = new ArrayList<>();
-        }
-
-        if (participants.isEmpty()) {
-
-            bids = getBids();
-
-            for (Bid bid : bids) {
-
-                if (!participants.contains(bid.getBidder())) {
-                    participants.add(bid.getBidder());
-                }
+        participants.clear();
+        bids = bidsDb.getByAuctionId(auctionId);
+        for (Bid bid : bids) {
+            if (!participants.contains(bid.getBidder())) {
+                participants.add(bid.getBidder());
             }
         }
-
         return participants;
     }
 
