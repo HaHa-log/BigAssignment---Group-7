@@ -41,6 +41,20 @@ public class Auction extends Entity implements Serializable {
     BidsDAO bidsDb = DaoFactory.createBidsDAO();
     UsersDAO usersDb = DaoFactory.createUsersDAO();
 
+    public List<AuctionObserver> getObservers() {
+        if (observers == null) {
+            observers = new ArrayList<>();
+        }
+        return observers;
+    }
+
+    public void addObserver(AuctionObserver observer) {
+        if (observer != null && !getObservers().contains(observer)) {
+            getObservers().add(observer);
+            System.out.println("[System]: " + ((User) observer).getFullName() + " is now viewing this auction");
+        }
+    }
+
     public Auction(Member owner, Item item, LocalDateTime startingTime, LocalDateTime endingTime) {
         auctionId = 0;
         this.owner = owner;
