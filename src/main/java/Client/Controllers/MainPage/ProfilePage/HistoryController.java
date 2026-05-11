@@ -1,29 +1,34 @@
 package Client.Controllers.MainPage.ProfilePage;
 
 import Branch.AuctionManager;
+import Branch.Common.AuctionHistoryEntry;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 
-public class HistoryController extends BaseController  {
+import java.util.List;
+import java.util.stream.Collectors;
 
-    @FXML
-    private ComboBox<String> filterBox;
+public class HistoryController extends BaseController {
 
-    @FXML
-    private ListView<String> historyList;
+    @FXML private ComboBox<String> filterBox;
 
-    private final ObservableList<String> allHistory =
-            FXCollections.observableArrayList();
+    @FXML private TableView<AuctionHistoryEntry> historyTable;
+
+    // Fixed typo: Integer instead of Interger
+    @FXML private TableColumn<AuctionHistoryEntry, Integer> colAuction;
+    @FXML private TableColumn<AuctionHistoryEntry, String> colItem;
+    @FXML private TableColumn<AuctionHistoryEntry, String> colStatus;
+    @FXML private TableColumn<AuctionHistoryEntry, String> colState;
+
+    private final ObservableList<AuctionHistoryEntry> masterData = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
-
+        setupTableColumns();
         setupFilter();
-        historyList.setItems(allHistory);
     }
 
     @Override
@@ -31,66 +36,71 @@ public class HistoryController extends BaseController  {
         loadHistory();
     }
 
+    private void setupTableColumns() {
+        // Modern way: Directly call the record's methods
+        colAuction.setCellValueFactory(cellData ->
+                new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().auctionId()));
+
+        colItem.setCellValueFactory(cellData ->
+                new javafx.beans.property.SimpleStringProperty(cellData.getValue().itemName()));
+
+        colStatus.setCellValueFactory(cellData ->
+                new javafx.beans.property.SimpleStringProperty(cellData.getValue().auctionStatus()));
+
+        colState.setCellValueFactory(cellData ->
+                new javafx.beans.property.SimpleStringProperty(cellData.getValue().userState()));
+
+        colState.setCellFactory(column -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(item);
+                    switch (item) {
+                        case "WON", "LEADING" -> setStyle("-fx-text-fill: #16a34a; -fx-font-weight: bold;");
+                        case "LOST", "OUTBID" -> setStyle("-fx-text-fill: #dc2626;");
+                        case "MY AUCTION" -> setStyle("-fx-text-fill: #2563eb; -fx-font-weight: bold;");
+                        default -> setStyle("-fx-text-fill: #475569;");
+                    }
+                }
+            }
+        });
+    }
+
     private void setupFilter() {
-
-        filterBox.getItems().addAll(
-                "All",
-                "Won",
-                "Lost",
-                "Owner"
-        );
-
+        filterBox.getItems().addAll("All", "Won", "Lost", "My Auctions");
         filterBox.setValue("All");
-
         filterBox.setOnAction(event -> applyFilter());
     }
+
     private void loadHistory() {
+        if (user == null) return;
 
-        allHistory.clear();
-
-        allHistory.addAll(
-
-                user.getAuctionHistory(
-
-                        AuctionManager
-                                .getInstance()
-                                .getAllSessions()
-                )
-        );
+        masterData.clear();
+        masterData.addAll(user.getTableHistory(AuctionManager.getInstance().getAllSessions()));
+        historyTable.setItems(masterData);
     }
 
     private void applyFilter() {
-
         String selected = filterBox.getValue();
-        ObservableList<String> filtered =
-                FXCollections.observableArrayList();
 
-        for (String item : allHistory) {
-
-            switch (selected) {
-
-                case "Won" -> {
-                    if (item.contains("WON")) {
-                        filtered.add(item);
-                    }
-                }
-
-                case "Lost" -> {
-                    if (item.contains("LOST")) {
-                        filtered.add(item);
-                    }
-                }
-
-                case "Owner" -> {
-                    if (item.contains("MY AUCTION")) {
-                        filtered.add(item);
-                    }
-                }
-
-                default -> filtered.add(item);
-            }
+        if ("All".equals(selected)) {
+            historyTable.setItems(masterData);
+            return;
         }
 
-        historyList.setItems(filtered);
+        ObservableList<AuctionHistoryEntry> filtered = masterData.stream()
+                .filter(entry -> switch (selected) {
+                    case "Won" -> "WON".equals(entry.userState());
+                    case "Lost" -> "LOST".equals(entry.userState());
+                    case "My Auctions" -> "MY AUCTION".equals(entry.userState());
+                    default -> true;
+                })
+                .collect(Collectors.toCollection(FXCollections::observableArrayList));
+
+        historyTable.setItems(filtered);
     }
 }

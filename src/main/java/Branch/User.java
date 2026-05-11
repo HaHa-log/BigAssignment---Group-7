@@ -1,10 +1,6 @@
 package Branch;
 
-import Branch.Common.Balance;
-import Branch.Common.Email;
-import Branch.Common.FullName;
-import Branch.Common.PhoneNumber;
-import Branch.Common.ParticipationDetails;
+import Branch.Common.*;
 import model.UsersDAO;
 import model.impl.DaoFactory;
 
@@ -154,14 +150,74 @@ public abstract class User extends Entity {
         this.blockedUntil = null;
     }
 
-    public boolean isEqual(User this, User other) {
-        boolean result = false;
-        if (this.getId() == other.getId()) {
-            result = true;
-        }
-        return result;
+    public boolean isEqual(User other) {
+        if (other == null) return false;
+        return this.getId() == other.getId();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User user)) return false;
+        return this.getId() == user.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(getId());
+    }
+
+    public boolean isWinner(Auction auction) {
+        if (auction.getStatus() == Auction.AuctionStatus.FINISHED || auction.getStatus() == Auction.AuctionStatus.PAID ) {
+            if (auction.getWinner().equals(this)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isOwner(Auction auction) {
+        if (auction.getOwner().equals(this)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean hasParticipated(Auction auction) {
+        if (auction.getParticipants().contains(this)) {
+            return true;
+        }
+        return false;
+    }
+
+    public List<AuctionHistoryEntry> getTableHistory(List<Auction> auctions) {
+        List<AuctionHistoryEntry> history = new ArrayList<>();
+
+        for (Auction auction : auctions) {
+            String state = null;
+
+            if (isOwner(auction)) {
+                state = "MY AUCTION";
+            } else if (hasParticipated(auction)) {
+                if (auction.getStatus() == Auction.AuctionStatus.FINISHED ||
+                        auction.getStatus() == Auction.AuctionStatus.PAID) {
+                    state = isWinner(auction) ? "WON" : "LOST";
+                } else {
+                    state = isWinner(auction) ? "LEADING" : "OUTBID";
+                }
+            }
+
+            if (state != null) {
+                history.add(new AuctionHistoryEntry(
+                        auction.getId(),
+                        auction.getItem().getName(),
+                        auction.getStatus().toString(),
+                        state
+                ));
+            }
+        }
+        return history;
+    }
     public List<String> getAuctionHistory(List<Auction> auctions) {
         List<String> history = new ArrayList<>();
 
