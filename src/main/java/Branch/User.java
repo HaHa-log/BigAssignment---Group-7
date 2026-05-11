@@ -167,6 +167,11 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
         return java.util.Objects.hash(getId());
     }
 
+    public boolean isHighestBidder(Auction auction) {
+        return auction.getWinner() != null
+                && auction.getWinner().equals(this);
+    }
+
     public boolean isWinner(Auction auction) {
         if (auction.getStatus() == Auction.AuctionStatus.FINISHED || auction.getStatus() == Auction.AuctionStatus.PAID ) {
             if (auction.getWinner().equals(this)) {
@@ -203,7 +208,7 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
                         auction.getStatus() == Auction.AuctionStatus.PAID) {
                     state = isWinner(auction) ? "WON" : "LOST";
                 } else {
-                    state = isWinner(auction) ? "LEADING" : "OUTBID";
+                    state = isHighestBidder(auction) ? "LEADING" : "OUTBID";
                 }
             }
 
@@ -241,16 +246,16 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
 
             if (auction.getStatus() == Auction.AuctionStatus.RUNNING) {
 
-                if (isWinner) {notifications.add("LEADING | " + auction.getItem().getName() + " | " + auction.getCurrentPrice());
+                if (isHighestBidder(auction)) {notifications.add("\uD83D\uDD25 LEADING | " + auction.getItem().getName() + " | " + auction.getCurrentPrice());
 
-                } else {notifications.add("OUTBID | " + auction.getItem().getName() + " | " + auction.getCurrentPrice());}
+                } else {notifications.add("⚠\uFE0F OUTBID | " + auction.getItem().getName() + " | " + auction.getCurrentPrice());}
             }
 
             if (auction.getStatus() == Auction.AuctionStatus.FINISHED) {
 
-                if (isWinner) {notifications.add("WON | " + auction.getItem().getName() + " | " + auction.getCurrentPrice());
+                if (isWinner) {notifications.add("\uD83C\uDFC6 WON | " + auction.getItem().getName() + " | " + auction.getCurrentPrice());
 
-                } else {notifications.add("LOST | " + auction.getItem().getName() + " | " + auction.getCurrentPrice());}
+                } else {notifications.add("❌ LOST | " + auction.getItem().getName() + " | " + auction.getCurrentPrice());}
             }
         }
         return notifications;
