@@ -79,7 +79,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
 
             st.setInt(1, auction.getOwner().getId());
             st.setInt(2, auction.getItem().getId());
-            st.setString(3, auction.getStatus().name());
+            st.setString(3, auction.getRawStatus().name());
             st.setDouble(4, auction.getStartingPrice());
             st.setDouble(5, auction.getCurrentPrice());
             st.setTimestamp(6, auction.getStartingTime() != null
