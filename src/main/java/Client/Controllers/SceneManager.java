@@ -54,7 +54,7 @@ public class SceneManager {
         stage.setTitle("Hệ thống Đấu giá");
 
         stage.setOnCloseRequest(event -> {
-            System.exit(0);
+            javafx.application.Platform.exit();
         });
     }
 
