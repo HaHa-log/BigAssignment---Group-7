@@ -93,7 +93,7 @@ public class AuctionDetailController {
         Item item = auction.getItem();
         String filePath = item.getImagePath();
 
-        File file = new File("src/main/resources/ItemImages/" + item.getImagePath());
+        File file = new File("src/main/resources/ItemImages/" + filePath);
         Image image = new Image(file.toURI().toString());
 
         imageContainer.setImage(image);

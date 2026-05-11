@@ -140,8 +140,7 @@ public class AuctionCreateController {
     private void handleChooseImage() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
-        );
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
         selectedImageFile = fileChooser.showOpenDialog(new Stage());
 
         if (selectedImageFile != null) {
