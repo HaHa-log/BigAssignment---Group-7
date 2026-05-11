@@ -56,9 +56,7 @@ public class NotificationController extends BaseController {
         System.out.println(user);
 
         allNotifications.clear();
-
         allNotifications.addAll(user.getNotifications(AuctionManager.getInstance().getAllSessions()));
-
         notificationList.setItems(allNotifications);
 
     }
