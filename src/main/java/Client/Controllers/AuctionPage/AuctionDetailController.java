@@ -98,4 +98,9 @@ public class AuctionDetailController {
 
         imageContainer.setImage(image);
     }
+
+    public void setupAuction(Auction selectedAuction) {
+        this.auction = selectedAuction;
+        this.auction.addObserver((AuctionObserver) SessionManager.getCurrentUser());
+    }
 }
