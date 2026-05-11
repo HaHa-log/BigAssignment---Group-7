@@ -94,9 +94,10 @@ public class HistoryController extends BaseController {
 
         ObservableList<AuctionHistoryEntry> filtered = masterData.stream()
                 .filter(entry -> switch (selected) {
-                    case "Won" -> "WON".equals(entry.userState());
-                    case "Lost" -> "LOST".equals(entry.userState());
-                    case "My Auctions" -> "MY AUCTION".equals(entry.userState());
+
+                    case "Won" -> entry.userState().contains("WON");
+                    case "Lost" -> entry.userState().contains("LOST");
+                    case "My Auctions" -> entry.userState().contains("MY AUCTION");
                     default -> true;
                 })
                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
