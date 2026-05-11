@@ -1,13 +1,9 @@
 package Client.Controllers.AuctionPage;
 
 import Branch.*;
-import Branch.Common.Price;
-import Branch.Exceptions.AuthenticationException;
-import Branch.Exceptions.CustomisedException;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
@@ -15,6 +11,8 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -23,28 +21,18 @@ import static javafx.scene.paint.Color.GREEN;
 import static javafx.scene.paint.Color.RED;
 
 public class AuctionCreateController {
-    @FXML
-    private TextField itemNameInput;
-    @FXML
-    private TextField descriptionInput;
-    @FXML
-    private TextField startingPriceInput;
-    @FXML
-    private DatePicker startingDateInput, endingDateInput;
-    @FXML
-    private TextField startingTimeInput, endingTimeInput;
-    @FXML
-    private Label fileNameLabel;
-    @FXML
-    private Label auctionCreateResult;
-    @FXML
-    private ImageView imagePreview;
+    @FXML private TextField itemNameInput, descriptionInput, startingPriceInput;
+    @FXML private DatePicker startingDateInput, endingDateInput;
+    @FXML private TextField startingTimeInput, endingTimeInput;
+    @FXML private Label fileNameLabel, auctionCreateResult;
+    @FXML private ImageView imagePreview;
 
-    public AuctionManager auction = AuctionManager.getInstance();
-    private Member seller = (Member) SessionManager.getCurrentUser();
+    // Use the global manager
+    private final AuctionManager auctionManager = AuctionManager.getInstance();
+    private final Member seller = (Member) SessionManager.getCurrentUser();
 
     private File selectedImageFile;
-    private static final long MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+    private static final long MAX_IMAGE_SIZE = 5 * 1024 * 1024;
     private static final String IMAGES_DIR = "src/main/resources/ItemImages";
 
     @FXML
@@ -54,99 +42,98 @@ public class AuctionCreateController {
         String startingPriceRaw = startingPriceInput.getText();
         LocalDate startDate = startingDateInput.getValue();
         LocalDate endDate = endingDateInput.getValue();
-        String startingTime = startingTimeInput.getText();
-        String endingTime = endingTimeInput.getText();
+        String sTimeStr = startingTimeInput.getText();
+        String eTimeStr = endingTimeInput.getText();
 
-        if (itemName.trim().isEmpty() || startingPriceRaw.trim().isEmpty()) {
+        // Basic validation
+        if (itemName.trim().isEmpty() || startingPriceRaw.trim().isEmpty() || startDate == null || endDate == null) {
             auctionCreateResult.setTextFill(RED);
-            auctionCreateResult.setText("[Error]: Please fill all the fields");
+            auctionCreateResult.setText("[Error]: Please fill all required fields");
             return;
         }
 
-        if (startDate == null || endDate == null || startingTime.trim().isEmpty() || endingTime.trim().isEmpty()) {
-            auctionCreateResult.setTextFill(RED);
-            auctionCreateResult.setText("[Error]: Please choose starting and ending time");
-            return;
-        }
+        // Create the Background Task
+        Task<Void> createTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                double startingPrice = Double.parseDouble(startingPriceRaw);
+                LocalTime startTime = LocalTime.parse(sTimeStr);
+                LocalTime endTime = LocalTime.parse(eTimeStr);
+                LocalDateTime startFull = startDate.atTime(startTime);
+                LocalDateTime endFull = endDate.atTime(endTime);
 
-        try {
-            Double startingPrice = Double.parseDouble(startingPriceRaw);
-            LocalTime startTime = LocalTime.parse(startingTime);
-            LocalTime endTime = LocalTime.parse(endingTime);
+                Item item = new Item(itemName, startingPrice, description);
 
-            LocalDateTime startFull = startDate.atTime(startTime);
-            LocalDateTime endFull = endDate.atTime(endTime);
+                if (selectedImageFile != null) {
+                    processImageUpload(item);
+                }
 
-            Item item = new Item(itemName, startingPrice, description);
-            uploadImage(item);
+                item.saveItem();
 
-            item.saveItem();
+                // Use AuctionManager to create the session (already handles DB save internally)
+                auctionManager.createAuction(seller, item, startFull, endFull);
 
-            seller.createAuction(item, startFull, endFull);
+                return null;
+            }
+        };
 
+        createTask.setOnSucceeded(e -> {
             auctionCreateResult.setTextFill(GREEN);
-            auctionCreateResult.setText("Auction created");
+            auctionCreateResult.setText("Auction created successfully!");
+            clearInputs();
+        });
 
-        } catch (NumberFormatException e) {
+        createTask.setOnFailed(e -> {
+            Throwable ex = createTask.getException();
             auctionCreateResult.setTextFill(RED);
-            auctionCreateResult.setText("[Error]: Starting price must be a valid number");
-        } catch (java.time.format.DateTimeParseException e) {
-            auctionCreateResult.setTextFill(RED);
-            auctionCreateResult.setText("[Error]: Time format must be HH:mm (e.g. 07:30)");
-        } catch (AuthenticationException e) {
-            auctionCreateResult.setTextFill(RED);
-            auctionCreateResult.setText(e.getMessage());
-        } catch (CustomisedException e) {
-            auctionCreateResult.setTextFill(RED);
-            auctionCreateResult.setText(e.getMessage());
-        } catch (IllegalArgumentException | IOException e) {
-            auctionCreateResult.setTextFill(RED);
-            auctionCreateResult.setText(e.getMessage());
-        }
+            if (ex instanceof IllegalArgumentException) {
+                auctionCreateResult.setText(ex.getMessage());
+            } else if (ex instanceof IOException) {
+                auctionCreateResult.setText("File Error: Could not save image.");
+            } else if (ex instanceof java.time.format.DateTimeParseException) {
+                auctionCreateResult.setText("Invalid Time Format (Use HH:mm)");
+            } else {
+                auctionCreateResult.setText("Unexpected error: " + ex.getMessage());
+            }
+        });
+
+        new Thread(createTask).start();
     }
 
-    private void uploadImage(Item item) throws IllegalArgumentException, IOException {
-        if (selectedImageFile == null) {
-            return;
-        }
-
-        // Check image size
+    private void processImageUpload(Item item) throws IOException {
         if (selectedImageFile.length() > MAX_IMAGE_SIZE) {
-            throw new IllegalArgumentException("Image file is too large (max 5MB).");
+            throw new IOException("Image too large (Max 5MB)");
         }
 
-        // Create folder if not exists
         File imagesDir = new File(IMAGES_DIR);
-        if (!imagesDir.exists()) {
-            imagesDir.mkdirs();
-        }
+        if (!imagesDir.exists()) imagesDir.mkdirs();
 
-        // Copy file
         String fileName = "item_" + System.currentTimeMillis() + "_" + selectedImageFile.getName();
         File destFile = new File(imagesDir, fileName);
-        java.nio.file.Files.copy(
-                selectedImageFile.toPath(),
-                destFile.toPath(),
-                java.nio.file.StandardCopyOption.REPLACE_EXISTING
-        );
 
-        //Save image path
+        Files.copy(selectedImageFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
         item.setImagePath(fileName);
     }
 
-    //Will display image but only on the owner's device
-    //Have to save the image into database to display for other users
+    private void clearInputs() {
+        itemNameInput.clear();
+        descriptionInput.clear();
+        startingPriceInput.clear();
+        selectedImageFile = null;
+        fileNameLabel.setText("");
+        imagePreview.setImage(null);
+    }
+
     @FXML
     private void handleChooseImage() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg"));
         selectedImageFile = fileChooser.showOpenDialog(new Stage());
 
         if (selectedImageFile != null) {
             fileNameLabel.setText(selectedImageFile.getName());
-            Image image = new Image(selectedImageFile.toURI().toString());
-            imagePreview.setImage(image);
+            imagePreview.setImage(new Image(selectedImageFile.toURI().toString()));
         }
     }
 }
