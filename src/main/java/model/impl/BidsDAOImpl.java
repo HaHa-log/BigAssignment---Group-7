@@ -147,15 +147,19 @@ public class BidsDAOImpl implements BidsDAO {
     }
 
     private Bid instantiateBid(ResultSet rs) throws SQLException {
-        // Corrected: Use "bidder_id" to fetch the user
+
+        Member bidder =
+                (Member) bidderDb.getById(rs.getInt("bidder_id"));
+
         Bid obj = new Bid(
-                auctionDb.getById(rs.getInt("auction_id")),
-                (Member) bidderDb.getById(rs.getInt("bidder_id")),
+                null,
+                bidder,
                 rs.getDouble("bidPrice"),
                 rs.getObject("bidTime", LocalDateTime.class)
         );
 
         obj.setId(rs.getInt("bids_id"));
+
         return obj;
     }
 }
