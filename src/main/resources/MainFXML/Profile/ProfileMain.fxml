@@ -15,6 +15,8 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.geometry.Insets?>
 
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.Tab?>
 <BorderPane style="-fx-background-color: #0f172a; -fx-font-family: 'Segoe UI';" stylesheets="@/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.MainPage.ProfilePage.ProfilePageController">
 
     <!-- TOP -->
@@ -45,21 +47,42 @@
         <VBox spacing="25" style="-fx-padding: 25; -fx-background-color: #F8FAFC;">
 
             <!-- TAB BAR -->
-            <HBox alignment="CENTER_LEFT" spacing="35">
+            <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
 
-                <Label fx:id="tabProfile" onMouseClicked="#showProfile" style="-fx-text-fill: #475569; -fx-font-weight: bold; -fx-font-size: 14; -fx-border-color: #1E3A8A; -fx-border-width: 0 0 2 0; -fx-padding: 0 0 5 0; -fx-cursor: hand;" text="My Profile" />
+                <tabs>
 
-                <Label fx:id="tabPassword" onMouseClicked="#showChangePassword" style="-fx-text-fill: #475569; -fx-font-size: 14; -fx-cursor: hand;" text="Change Password" />
+                    <Tab text="My Profile">
+                        <content>
+                            <StackPane fx:id="profilePane"/>
+                        </content>
+                    </Tab>
 
-                <Label fx:id="tabFinance" onMouseClicked="#showFinance" style="-fx-text-fill: #475569; -fx-font-size: 14; -fx-cursor: hand;" text="Finance" />
+                    <Tab text="Change Password">
+                        <content>
+                            <StackPane fx:id="passwordPane"/>
+                        </content>
+                    </Tab>
 
-                <Label fx:id="tabNotification" onMouseClicked="#showNotification" style="-fx-text-fill: #475569; -fx-font-size: 14; -fx-cursor: hand;" text="Notification" />
+                    <Tab text="Finance">
+                        <content>
+                            <StackPane fx:id="financePane"/>
+                        </content>
+                    </Tab>
 
-                <Label fx:id="tabHistory" onMouseClicked="#showHistory" style="-fx-text-fill: #475569; -fx-font-size: 14; -fx-cursor: hand;" text="History" />
-            </HBox>
+                    <Tab text="Notification">
+                        <content>
+                            <StackPane fx:id="notificationPane"/>
+                        </content>
+                    </Tab>
 
-            <!-- CONTENT -->
-            <StackPane fx:id="contentPane">
+                    <Tab text="History">
+                        <content>
+                            <StackPane fx:id="historyPane"/>
+                        </content>
+                    </Tab>
+
+                </tabs>
+            </TabPane>
                 <!-- EDIT -->
 
                 <!-- PASSWORD -->
@@ -68,7 +91,6 @@
 
                 <!-- HISTORY -->
 
-            </StackPane>
         </VBox>
     </center>
 
