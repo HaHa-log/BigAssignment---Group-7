@@ -118,6 +118,10 @@ public class Auction extends Entity implements Serializable {
             lock.unlock();
         }
     }
+
+    public AuctionStatus getRawStatus() {
+        return status;
+    }
     
     public String start() {
         LocalDateTime now = LocalDateTime.now();

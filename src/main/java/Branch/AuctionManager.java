@@ -101,7 +101,11 @@ public class AuctionManager {
     }
 
     public List<Auction> getActiveSessions () {
-        return auctionDb.getActiveAuctions();
+        if (activeSessions == null || activeSessions.isEmpty()) {
+            activeSessions = auctionDb.getAll();
+        }
+
+        return activeSessions;
     }
 
     public List<Auction> getAllSessions () {
