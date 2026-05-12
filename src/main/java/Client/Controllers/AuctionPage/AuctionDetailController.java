@@ -13,12 +13,9 @@ import javafx.scene.image.ImageView;
 import java.io.File;
 
 //For Price Visualization
-import model.impl.DaoFactory;
-import model.BidsDAO;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
+
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -42,8 +39,7 @@ public class AuctionDetailController {
     @FXML
     private LineChart<String, Number> bidHistoryChart;
 
-    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("dd/MM HH:mm");
-    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM HH:mm");
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM HH:mm");
 
 
     private Bidder currentUser = (Bidder) SessionManager.getCurrentUser();
@@ -98,8 +94,8 @@ public class AuctionDetailController {
         itemDescriptionLabel.setText(auction.getItem().getDescription());
         auctionStatusLabel.setText(auction.getStatus().toString());
 
-        String startStr = auction.getStartingTime().format(dateFormatter);
-        String endStr = auction.getEndingTime().format(dateFormatter);
+        String startStr = auction.getStartingTime().format(dateTimeFormatter);
+        String endStr = auction.getEndingTime().format(dateTimeFormatter);
 
         durationLabel.setText(startStr + " - " + endStr);
     }
@@ -125,7 +121,7 @@ public class AuctionDetailController {
         for (Bid bid : bids) {
             //return time if is not null, N/A if null
             String time = (bid.getBidTime() != null)
-                    ? bid.getBidTime().format(timeFormatter)
+                    ? bid.getBidTime().format(dateTimeFormatter)
                     : "N/A";
             series.getData().add(new XYChart.Data<>(time, bid.getBidPrice().getPrice()));
         }

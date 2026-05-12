@@ -32,7 +32,7 @@ public class Admin extends Member {
     }
 
     //requires for block/active toggle button
-    //the button only changes ìf the value in the actual object changes
+    //the button only changes if the value in the actual object changes
     public void blockUser(User user, LocalDateTime until) {
 
         if (user == null) {
@@ -68,13 +68,15 @@ public class Admin extends Member {
         );
     }
 
-    public void cancelAuction(int auctionId) {
+    public boolean cancelAuction(int auctionId) {
         AuctionManager manager = AuctionManager.getInstance();
         boolean success = manager.cancelAuction(auctionId);
         if (success) {
             System.out.println("[Admin]: Auction " + auctionId + " has been cancelled.");
+            return true;
         } else {
             System.out.println("[Admin]: Could not find auction with ID: " + auctionId);
+            return false;
         }
     }
 

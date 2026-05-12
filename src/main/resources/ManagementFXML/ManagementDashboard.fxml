@@ -4,18 +4,17 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@/style.css">
+<VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: white;" stylesheets="@/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
           <Label text="MANAGEMENT DASHBOARD">
               <font>
                   <Font name="System Bold" size="18.0" />
               </font>
           </Label>
-            <TabPane tabClosingPolicy="UNAVAILABLE" styleClass="tab-pane">
+   <Label fx:id="statusLabel" textAlignment="CENTER" />
+            <TabPane styleClass="tab-pane" tabClosingPolicy="UNAVAILABLE">
               <tabs>
                 <Tab text="User">
             <content>

@@ -16,6 +16,7 @@
         <TableColumn fx:id="currentPrice" text="Current Price" />
         <TableColumn fx:id="startingTime" text="Start Time" />
         <TableColumn fx:id="endingTime" text="End Time" />
+        <TableColumn fx:id="actionColumn" text="Actions" prefWidth="100.0" />
     </columns>
     <columnResizePolicy>
         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
