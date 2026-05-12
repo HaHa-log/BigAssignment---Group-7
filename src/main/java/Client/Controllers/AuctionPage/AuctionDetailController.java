@@ -12,6 +12,16 @@ import javafx.scene.image.ImageView;
 
 import java.io.File;
 
+//For Price Visualization
+import model.impl.DaoFactory;
+import model.BidsDAO;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
 import static javafx.scene.paint.Color.*;
 
 public class AuctionDetailController {
@@ -29,6 +39,12 @@ public class AuctionDetailController {
     private Label ownerNameLabel, itemDescriptionLabel, auctionStatusLabel, durationLabel;
     @FXML
     private ImageView imageContainer;
+    @FXML
+    private LineChart<String, Number> bidHistoryChart;
+
+    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("dd/MM HH:mm");
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM HH:mm");
+
 
     private Bidder currentUser = (Bidder) SessionManager.getCurrentUser();
     private Auction auction;
@@ -58,7 +74,7 @@ public class AuctionDetailController {
         } catch (IllegalArgumentException e) {
             String message = e.getMessage();
             bidPlacedResultLabel.setText(message);
-        } catch (CustomisedException e){
+        } catch (CustomisedException e) {
             String message = e.getMessage();
             bidPlacedResultLabel.setText(message);
         } finally {
@@ -74,6 +90,7 @@ public class AuctionDetailController {
 
         setItemImage();
         getTableData(auction);
+        updateBidChart();
     }
 
     public void getTableData(Auction auction) {
@@ -81,10 +98,8 @@ public class AuctionDetailController {
         itemDescriptionLabel.setText(auction.getItem().getDescription());
         auctionStatusLabel.setText(auction.getStatus().toString());
 
-        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM HH:mm");
-
-        String startStr = auction.getStartingTime().format(formatter);
-        String endStr = auction.getEndingTime().format(formatter);
+        String startStr = auction.getStartingTime().format(dateFormatter);
+        String endStr = auction.getEndingTime().format(dateFormatter);
 
         durationLabel.setText(startStr + " - " + endStr);
     }
@@ -97,6 +112,28 @@ public class AuctionDetailController {
         Image image = new Image(file.toURI().toString());
 
         imageContainer.setImage(image);
+    }
+
+    private void updateBidChart() {
+        if (auction == null) return;
+
+        List<Bid> bids = auction.getBids();
+
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.setName("Price History ($)");
+
+        for (Bid bid : bids) {
+            //return time if is not null, N/A if null
+            String time = (bid.getBidTime() != null)
+                    ? bid.getBidTime().format(timeFormatter)
+                    : "N/A";
+            series.getData().add(new XYChart.Data<>(time, bid.getBidPrice().getPrice()));
+        }
+
+        bidHistoryChart.getData().clear();
+        bidHistoryChart.getData().add(series);
+
+        bidHistoryChart.setAnimated(false);
     }
 
     public void setupAuction(Auction selectedAuction) {
