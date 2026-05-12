@@ -44,4 +44,9 @@
                     -fx-border-width: 1;
               " />
 
+    <ProgressIndicator fx:id="loadingIndicator"
+                       visible="false"
+                       maxWidth="50"
+                       maxHeight="50"/>
+
 </VBox>
