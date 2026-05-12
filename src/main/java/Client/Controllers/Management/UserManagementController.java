@@ -52,52 +52,48 @@ public class UserManagementController extends ManagementController<User> {
 
     private TableCell<User, Boolean> createBlockedToggleCell() {
         return new TableCell<>() {
-
             private final ToggleButton toggle = new ToggleButton();
+
             {
-                toggle.setOnAction(event -> handleToggleAction());
-            }
-            private void handleToggleAction() {
-                //get User
-                User user = getTableView().getItems().get(getIndex());
+                toggle.setOnAction(event -> {
+                    User user = getTableRow().getItem(); // Safer object retrieval
+                    if (user == null) return;
 
-                boolean blocked = toggle.isSelected();
+                    boolean isNowBlocked = toggle.isSelected();
 
-                if (blocked) {
-                    //currently automatically set the block period to 10 days
-                    admin.blockUser(user, LocalDateTime.now().plusDays(100));
-                } else {
-                    admin.unblockUser(user);
-                }
+                    if (isNowBlocked) {
+                        admin.blockUser(user, LocalDateTime.now().plusDays(100));
+                    } else {
+                        admin.unblockUser(user);
+                    }
 
-                updateToggleText(blocked);
-                getTableView().refresh();
+                    updateToggleVisuals(isNowBlocked);
+                    getTableView().refresh();
+                });
             }
 
-            private void updateToggleText(boolean blocked) {
+            private void updateToggleVisuals(boolean blocked) {
                 toggle.setText(blocked ? "BLOCKED" : "ACTIVE");
+                if (blocked) {
+                    toggle.setStyle("-fx-background-color: #ffcdd2; -fx-text-fill: #c62828;");
+                } else {
+                    toggle.setStyle("-fx-background-color: #c8e6c9; -fx-text-fill: #2e7d32;");
+                }
             }
 
-            //update toggle content
             @Override
             protected void updateItem(Boolean item, boolean empty) {
-
                 super.updateItem(item, empty);
-
                 if (empty || item == null) {
                     setGraphic(null);
-                    return;
+                } else {
+                    toggle.setSelected(item);
+                    updateToggleVisuals(item);
+                    setGraphic(toggle);
                 }
-
-                toggle.setSelected(item);
-
-                updateToggleText(item);
-
-                setGraphic(toggle);
             }
         };
     }
-
     @Override
     protected List<User> fetchData() {
         return userDb.getAll();
