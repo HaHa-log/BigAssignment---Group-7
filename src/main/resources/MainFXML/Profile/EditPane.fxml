@@ -10,18 +10,20 @@
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="Client.Controllers.MainPage.ProfilePage.EditProfileController"
-      fx:id="editPane" spacing="18"
-      style="-fx-background-color: #475569; -fx-padding: 25; -fx-background-radius: 12;">
-        <Label style="-fx-text-fill: #e2e8f0; -fx-font-size: 18; -fx-font-weight: bold;" text="Edit Profile" />
+      fx:id="editPane"
+      spacing="20"
+      stylesheets="@profile.css"
+      styleClass="background-card">
+        <Label text="Edit Profile" />
 
-        <Label style="-fx-text-fill: #cbd5f5;" text="About Me" />
-        <TextArea fx:id="aboutField" prefHeight="100" />
+        <Label text="About Me" />
+        <TextArea fx:id="aboutField" prefHeight="100" styleClass="input-field"/>
 
-        <Label style="-fx-text-fill: #cbd5f5;" text="Phone Number" />
-        <TextField fx:id="phoneField" />
+        <Label text="Phone Number" />
+        <TextField fx:id="phoneField" styleClass="input-field"/>
 
-        <Label style="-fx-text-fill: #cbd5f5;" text="Email" />
-        <TextField fx:id="emailField"  />
+        <Label text="Email" />
+        <TextField fx:id="emailField"  styleClass="input-field"/>
 
         <HBox spacing="10">
             <Button onAction="#handleSave" style="-fx-background-color: green;" text="Save" />
