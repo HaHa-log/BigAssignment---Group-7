@@ -53,7 +53,7 @@ public class UsersDAOImpl implements UsersDAO {
 
     @Override
     public void delete(User user) {
-        String sql = "DELETE FROM users WHERE user_id = ?";
+        String sql = "DELETE FROM users WHERE users_id = ?";
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
 

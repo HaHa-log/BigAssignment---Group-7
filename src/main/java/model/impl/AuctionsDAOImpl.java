@@ -13,18 +13,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AuctionsDAOImpl implements AuctionsDAO {
-    private UsersDAO userDb = DaoFactory.createUsersDAO();
-    private ItemsDAO itemDb = DaoFactory.createItemDAO();
-
-    protected AuctionsDAOImpl() {}
+    protected AuctionsDAOImpl() {
+    }
 
     @Override
     public void save(Auction auction) {
         String sql = "INSERT INTO auctions "
                 + "(owner_id, item_id, startingPrice, currentPrice, startingTime, endingTime) "
                 + "VALUES (?, ?, ?, ?, ?, ?)";
-        try(Connection conn = DB.getConnection();
-            PreparedStatement st = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = DB.getConnection();
+             PreparedStatement st = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             st.setInt(1, auction.getOwner().getId());
             st.setInt(2, auction.getItem().getId());
@@ -47,7 +45,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 throw new DbException("Unexpected Error ! No rows affected !");
             }
             System.out.println("[System]: Auction saved to database.");
-        } catch(SQLException ex){
+        } catch (SQLException ex) {
             throw new DbException(ex.getMessage());
         }
     }
@@ -55,8 +53,8 @@ public class AuctionsDAOImpl implements AuctionsDAO {
     @Override
     public void delete(Auction auction) {
         String sql = "DELETE FROM auctions WHERE auctions_id = ?";
-        try(Connection conn = DB.getConnection();
-            PreparedStatement st = conn.prepareStatement(sql)) {
+        try (Connection conn = DB.getConnection();
+             PreparedStatement st = conn.prepareStatement(sql)) {
 
             st.setInt(1, auction.getId());
             int rows = st.executeUpdate();
@@ -64,7 +62,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
             if (rows == 0) {
                 throw new DbException("Auction is invalid!");
             }
-        } catch(SQLException ex){
+        } catch (SQLException ex) {
             throw new DbException(ex.getMessage());
         }
     }
@@ -72,10 +70,10 @@ public class AuctionsDAOImpl implements AuctionsDAO {
     @Override
     public void update(Auction auction) {
         String sql = "UPDATE auctions "
-                +"SET owner_id = ?, item_id = ?, status = ?, startingPrice = ?, currentPrice = ?, startingTime = ?, endingTime = ?, winner_id = ? "
+                + "SET owner_id = ?, item_id = ?, status = ?, startingPrice = ?, currentPrice = ?, startingTime = ?, endingTime = ?, winner_id = ? "
                 + " WHERE auctions_id = ? ";
-        try(Connection conn = DB.getConnection();
-            PreparedStatement st = conn.prepareStatement(sql)) {
+        try (Connection conn = DB.getConnection();
+             PreparedStatement st = conn.prepareStatement(sql)) {
 
             st.setInt(1, auction.getOwner().getId());
             st.setInt(2, auction.getItem().getId());
@@ -92,38 +90,38 @@ public class AuctionsDAOImpl implements AuctionsDAO {
 
             st.executeUpdate();
 
-        } catch(SQLException ex){
+        } catch (SQLException ex) {
             throw new DbException(ex.getMessage());
         }
     }
 
     @Override
     public Auction getById(int id) {
-        String sql = "SELECT * From auctions WHERE auctions_id = ?";
+        String sql = getAuctionBaseSQL() + "WHERE a.auctions_id = ?";
 
-        try(Connection conn = DB.getConnection();
-            PreparedStatement st = conn.prepareStatement(sql)) {
+        try (Connection conn = DB.getConnection();
+             PreparedStatement st = conn.prepareStatement(sql)) {
 
             st.setInt(1, id);
             try (ResultSet rs = st.executeQuery()) {
-                if (rs.next()){
+                if (rs.next()) {
                     Auction auction = instantiateAuction(rs);
                     return auction;
                 }
             }
             return null;
-        } catch (SQLException e){
+        } catch (SQLException e) {
             throw new DbException(e.getMessage());
         }
     }
 
     @Override
     public List<Auction> getAll() {
-        String sql = "SELECT * FROM auctions";
+        String sql = getAuctionBaseSQL();
 
-        try(Connection conn = DB.getConnection();
-            PreparedStatement st = conn.prepareStatement(sql);
-            ResultSet rs = st.executeQuery()) {
+        try (Connection conn = DB.getConnection();
+             PreparedStatement st = conn.prepareStatement(sql);
+             ResultSet rs = st.executeQuery()) {
 
             List<Auction> list = new ArrayList<>();
 
@@ -139,16 +137,15 @@ public class AuctionsDAOImpl implements AuctionsDAO {
 
     @Override
     public List<Auction> getActiveAuctions() {
-        String sql = "SELECT * FROM auctions WHERE status = ? OR status = ?";
-        List<Auction> list = new ArrayList<>();
+        String sql = getAuctionBaseSQL() + "WHERE a.status = ? OR a.status = ?";
 
-        try(Connection conn = DB.getConnection();
-            PreparedStatement st = conn.prepareStatement(sql)) {
-
+        try (Connection conn = DB.getConnection();
+             PreparedStatement st = conn.prepareStatement(sql)) {
             st.setString(1, "RUNNING");
             st.setString(2, "OPEN");
 
             try (ResultSet rs = st.executeQuery()) {
+                List<Auction> list = new ArrayList<>();
                 while (rs.next()) {
                     list.add(instantiateAuction(rs));
                 }
@@ -160,18 +157,93 @@ public class AuctionsDAOImpl implements AuctionsDAO {
     }
 
     private Auction instantiateAuction(ResultSet rs) throws SQLException {
+        Member owner = instantiateMember(rs);
+        Item item = instantiateItem(rs);
+        Bidder winner = instantiateWinner(rs);
         Auction obj = new Auction(
-                (Member) userDb.getById(rs.getInt("owner_id")),
-                itemDb.getById(rs.getInt("item_id")),
+                owner,
+                item,
                 Auction.AuctionStatus.valueOf(rs.getString("status")),
                 rs.getObject("startingTime", LocalDateTime.class),
                 rs.getObject("endingTime", LocalDateTime.class),
                 rs.getDouble("startingPrice"),
                 rs.getDouble("currentPrice"),
-                (Bidder) userDb.getById(rs.getInt("winner_id"))
+                winner
         );
 
         obj.setAuctionId(rs.getInt("auctions_id"));
+        return obj;
+    }
+
+    private String getAuctionBaseSQL() {
+        return "SELECT a.*, "
+                + "u_owner.users_id AS owner_id, "
+                + "u_owner.firstName AS owner_firstName, u_owner.lastName AS owner_lastName, "
+                + "u_owner.email AS owner_email, u_owner.phoneNumber AS owner_phoneNumber, "
+                + "u_owner.password AS owner_password, u_owner.balance AS owner_balance, "
+                + "u_owner.isAdmin AS owner_isAdmin, u_owner.isBlocked AS owner_isBlocked, "
+                + "u_owner.blockedUntil AS owner_blockedUntil, "
+                + "i.items_id AS items_id, "
+                + "i.name AS item_name, i.startingPrice AS item_startingPrice, "
+                + "i.description AS item_description, i.status AS item_status, "
+                + "i.createdAt AS item_createdAt, i.updatedAt AS item_updatedAt, "
+                + "i.imagePath AS item_imagePath, "
+                + "u_winner.users_id AS winner_id, "
+                + "u_winner.firstName AS winner_firstName, u_winner.lastName AS winner_lastName, "
+                + "u_winner.email AS winner_email, u_winner.phoneNumber AS winner_phoneNumber, "
+                + "u_winner.password AS winner_password, u_winner.balance AS winner_balance, "
+                + "u_winner.isAdmin AS winner_isAdmin, u_winner.isBlocked AS winner_isBlocked, "
+                + "u_winner.blockedUntil AS winner_blockedUntil "
+                + "FROM auctions a "
+                + "INNER JOIN users u_owner ON a.owner_id = u_owner.users_id "
+                + "INNER JOIN items i ON a.item_id = i.items_id "
+                + "LEFT JOIN users u_winner ON a.winner_id = u_winner.users_id ";
+    }
+
+    private Member instantiateMember(ResultSet rs) throws SQLException {
+        Member obj = new Member(
+                rs.getString("owner_firstName"),
+                rs.getString("owner_lastName"),
+                rs.getString("owner_email"),
+                rs.getString("owner_phoneNumber"),
+                rs.getString("owner_password"),
+                rs.getDouble("owner_balance"),
+                rs.getBoolean("owner_isAdmin"),
+                rs.getBoolean("owner_isBlocked"),
+                rs.getObject("owner_blockedUntil", LocalDateTime.class)
+        );
+        obj.setId(rs.getInt("owner_id"));
+        return obj;
+    }
+
+    private Item instantiateItem(ResultSet rs) throws SQLException {
+        Item obj = new Item(
+                rs.getString("item_name"),
+                rs.getDouble("item_startingPrice"),
+                rs.getString("item_description"),
+                Item.Status.valueOf(rs.getString("item_status")),
+                rs.getObject("item_createdAt", LocalDateTime.class),
+                rs.getObject("item_updatedAt", LocalDateTime.class),
+                rs.getString("item_imagePath")
+        );
+        obj.setId(rs.getInt("items_id"));
+        return obj;
+    }
+
+    private Bidder instantiateWinner(ResultSet rs) throws SQLException {
+        if (rs.getObject("winner_id") == null) return null;  // Winner có thể null
+        Member obj = new Member(
+                rs.getString("winner_firstName"),
+                rs.getString("winner_lastName"),
+                rs.getString("winner_email"),
+                rs.getString("winner_phoneNumber"),
+                rs.getString("winner_password"),
+                rs.getDouble("winner_balance"),
+                rs.getBoolean("winner_isAdmin"),
+                rs.getBoolean("winner_isBlocked"),
+                rs.getObject("winner_blockedUntil", LocalDateTime.class)
+        );
+        obj.setId(rs.getInt("winner_id"));
         return obj;
     }
 }
