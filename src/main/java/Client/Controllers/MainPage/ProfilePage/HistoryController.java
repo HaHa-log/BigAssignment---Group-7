@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.ProgressIndicator;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,6 +17,9 @@ public class HistoryController extends BaseController {
     @FXML private ComboBox<String> filterBox;
 
     @FXML private TableView<AuctionHistoryEntry> historyTable;
+
+    @FXML
+    private ProgressIndicator loadingIndicator;
 
     // Fixed typo: Integer instead of Interger
     @FXML private TableColumn<AuctionHistoryEntry, Integer> colAuction;
@@ -77,11 +81,29 @@ public class HistoryController extends BaseController {
     }
 
     private void loadHistory() {
+
         if (user == null) return;
 
-        masterData.clear();
-        masterData.addAll(user.getTableHistory(AuctionManager.getInstance().getAllSessions()));
-        historyTable.setItems(masterData);
+        loadingIndicator.setManaged(true);
+        loadingIndicator.setVisible(true);
+
+        new Thread(() -> {
+
+            ObservableList<AuctionHistoryEntry> data =
+                    FXCollections.observableArrayList(
+                            user.getTableHistory(
+                                    AuctionManager.getInstance().getAllSessions()
+                            )
+                    );
+
+            javafx.application.Platform.runLater(() -> {
+
+                masterData.setAll(data);
+                historyTable.setItems(masterData);
+                loadingIndicator.setVisible(false);
+                loadingIndicator.setManaged(false);            });
+
+        }).start();
     }
 
     private void applyFilter() {
