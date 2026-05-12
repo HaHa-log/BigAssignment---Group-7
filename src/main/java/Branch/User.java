@@ -232,11 +232,8 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
     public List<String> getNotifications(List<Auction> auctions) {
 
         List<String> notifications = new ArrayList<>();
-
         for (Auction auction : auctions) {
-
             boolean participated = false;
-
             for (User participant : auction.getParticipants()) {
 
                 if (participant.getId() == this.getId()) {
@@ -245,12 +242,13 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
                 }
             }
 
-            if (!participated) {continue;}
+            if (!participated) {
+                continue;
+            }
 
             boolean isWinner = auction.getWinner() != null && auction.getWinner().getId() == this.getId();
 
             if (auction.getRawStatus() == Auction.AuctionStatus.RUNNING) {
-
                 if (isHighestBidder(auction)) {notifications.add("\uD83D\uDD25 LEADING | " + auction.getItem().getName() + " | " + auction.getCurrentPrice());
 
                 } else {notifications.add("⚠\uFE0F OUTBID | " + auction.getItem().getName() + " | " + auction.getCurrentPrice());}
