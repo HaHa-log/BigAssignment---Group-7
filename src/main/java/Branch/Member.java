@@ -30,19 +30,18 @@ public class Member extends User implements Bidder, Seller, AuctionObserver {
         return "Member";
     }
 
-    //Observers
     @Override
-    public String onBidPlaced(Auction auction, Bid bid) {
-        if (bid.getBidder() == this) {
-            return "";
+    public void onBidPlaced(Auction auction, Bidder bidder, double amount) {
+        if (bidder == this) {
+            System.out.println("[System]: You have successfully placed a bid of " + amount + " in auction of ID " + auction.getId());
+            return;
         }
 
-        String bidderName = ((User) bid.getBidder()).getFullName();
-        String notification = ("[Notification]: "
-                + bidderName + " has bidded " + bid.getBidPrice()
+        String bidderName = ((User) bidder).getFullName();
+        System.out.println("[Notification]: "
+                + bidderName + " has bidded " + amount
                 + " in auction of ID " + auction.getId()
                 + " for " + auction.getItem().getName());
-       return notification;
     }
 
     public void addItem(Item item) {

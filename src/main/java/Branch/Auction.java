@@ -29,11 +29,12 @@ public class Auction extends Entity implements Serializable {
     private volatile double currentPrice;
     private boolean isInCountDown;
     private Bidder winner;
-    private final transient List<AuctionObserver> observers = new ArrayList<>();
+    private transient List<AuctionObserver> observers = new ArrayList<>();
     private transient List<User> participants = new ArrayList<>();
     private int extendCount = 0;
     private static final int MAX_EXTENDS = 5;
     private List<Bid> bids = new ArrayList<>();
+    private final transient model.AutoBidDAO autoBidDb = DaoFactory.createAutoBidDAO();
 
     private final transient ReentrantLock lock = new ReentrantLock();
 
@@ -169,14 +170,6 @@ public class Auction extends Entity implements Serializable {
         } finally {
             lock.unlock();
         }
-    }
-
-    public void notifyAllBidders(Bidder bidder, double bidderAmount) {
-        String name = "Unknown";
-        if (bidder instanceof User) {
-            name = ((User) bidder).getFullName();
-        }
-        System.out.println("[Announcement]: " + name + " has the highest bid of " + bidderAmount);
     }
 
     public boolean placeBid(Bidder bidder, double amount)
