@@ -6,6 +6,7 @@ import Client.Controllers.SceneManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
@@ -22,13 +23,15 @@ public class ProfilePageController {
     private Label roleLabel;
 
     @FXML
-    private StackPane contentPane;
+    private TabPane tabPane;
 
     @FXML
-    private Label tabProfile, tabPassword,tabNotification, tabFinance, tabHistory;
-
-    private final String ACTIVE = "-fx-text-fill: #38bdf8; -fx-font-weight: bold;";
-    private final String NORMAL = "-fx-text-fill: #475569;";
+    private StackPane contentPane;
+    @FXML private StackPane profilePane;
+    @FXML private StackPane passwordPane;
+    @FXML private StackPane financePane;
+    @FXML private StackPane notificationPane;
+    @FXML private StackPane historyPane;
 
     @FXML
     public void initialize() {
@@ -40,70 +43,58 @@ public class ProfilePageController {
               roleLabel.setText("User");
             }
 
-            showProfile();
             BaseController.setNavigation(this);
+
+            loadView(profilePane,
+                    "/MainFXML/Profile/ProfilePane.fxml");
+
+            loadView(passwordPane,
+                    "/MainFXML/Profile/PasswordPane.fxml");
+
+            loadView(financePane,
+                    "/MainFXML/Profile/FinancePane.fxml");
+
+            loadView(notificationPane,
+                    "/MainFXML/Profile/NotificationPane.fxml");
+
+            loadView(historyPane,
+                    "/MainFXML/Profile/HistoryPane.fxml");
         }
     }
 
-    private void switchView(String fxmlPath) {
+    private void loadView(StackPane pane, String fxmlPath) {
+
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            VBox pane = loader.load();
+
+            FXMLLoader loader =
+                    new FXMLLoader(getClass().getResource(fxmlPath));
+
+            VBox view = loader.load();
 
             Object controller = loader.getController();
+
             if (controller instanceof BaseController base) {
                 base.setUser(user);
             }
 
-            contentPane.getChildren().setAll(pane);
+            pane.getChildren().setAll(view);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void setActive(Label tab) {
-        tabProfile.setStyle(NORMAL);
-        tabPassword.setStyle(NORMAL);
-        tabFinance.setStyle(NORMAL);
-        tabNotification.setStyle(NORMAL);
-        tabHistory.setStyle(NORMAL);
-        if (tab != null) tab.setStyle(ACTIVE);
-    }
+    public void showProfile() {
 
-    @FXML
-    void showProfile() {
-        switchView("/MainFXML/Profile/ProfilePane.fxml");
-        setActive(tabProfile);
+        loadView(profilePane,
+                "/MainFXML/Profile/ProfilePane.fxml");
+
+        tabPane.getSelectionModel().select(0);
     }
 
     @FXML
     private void showEditProfile() {
-        switchView("/MainFXML/Profile/EditPane.fxml");
-    }
-
-    @FXML
-    private void showChangePassword() {
-        switchView("/MainFXML/Profile/PasswordPane.fxml");
-        setActive(tabPassword);
-    }
-
-    @FXML
-    private void showFinance() {
-        switchView("/MainFXML/Profile/FinancePane.fxml");
-        setActive(tabFinance);
-    }
-
-    @FXML
-    private void showNotification() {
-        switchView("/MainFXML/Profile/NotificationPane.fxml");
-        setActive(tabNotification);
-    }
-
-    @FXML
-    private void showHistory() {
-        switchView("/MainFXML/Profile/HistoryPane.fxml");
-        setActive(tabHistory);
+        loadView(profilePane,"/MainFXML/Profile/EditPane.fxml");
     }
 
     @FXML
