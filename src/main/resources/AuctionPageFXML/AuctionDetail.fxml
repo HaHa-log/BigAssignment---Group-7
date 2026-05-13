@@ -10,6 +10,7 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
@@ -19,114 +20,130 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: white;" stylesheets="@/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.AuctionPage.AuctionDetailController">
-   <children>
-      <HBox maxHeight="300" spacing="30.0" VBox.vgrow="SOMETIMES">
+<BorderPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.AuctionPage.AuctionDetailController">
+   <center>
+      <VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: white;" stylesheets="@/style.css">
          <children>
-            <StackPane minWidth="200.0" prefWidth="350.0" style="-fx-background-color: #37427c;" HBox.hgrow="ALWAYS">
+            <HBox maxHeight="300" spacing="30.0" VBox.vgrow="SOMETIMES">
                <children>
-                  <ImageView fx:id="imageContainer" fitHeight="250.0" fitWidth="350.0" pickOnBounds="true" preserveRatio="true" />
-               </children>
-               <padding>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </padding>
-            </StackPane>
-
-            <VBox spacing="10.0" HBox.hgrow="ALWAYS">
-               <children>
-                  <Label fx:id="itemNameLabel" text="">
-                     <font>
-                        <Font name="System Bold" size="36.0" />
-                     </font>
-                  </Label>
-                  <Label fx:id="startingPriceLabel" text="" />
-                  <Label fx:id="currentPriceLabel" text="" />
-
-                  <StackPane maxWidth="1.7976931348623157E308" minHeight="50.0" style="-fx-border-color: #37427c;" VBox.vgrow="ALWAYS" />
-
-                  <HBox alignment="CENTER_LEFT" spacing="10.0">
+                  <StackPane minWidth="200.0" prefWidth="350.0" style="-fx-background-color: #37427c;" HBox.hgrow="ALWAYS">
                      <children>
-                        <Text text="Place your bid:" />
-                        <TextField fx:id="bidAmountInput" HBox.hgrow="ALWAYS" />
-                     </children>
-                  </HBox>
-                  <Button fx:id="bidButton" mnemonicParsing="false" onAction="#checkBidValidity" text="Make a bid" />
-                  <Label fx:id="bidPlacedResultLabel" text="" wrapText="true">
-                     <font>
-                        <Font size="13.0" />
-                     </font>
-                  </Label>
-               </children>
-            </VBox>
-         </children>
-      </HBox>
-      <TabPane>
-         <tabs>
-            <Tab text="Auction Details">
-               <content>
-                   <VBox alignment="CENTER" spacing="10.0" style="-fx-border-color: #37427c;">
-                       <children>
-                           <Label style="-fx-font-size: 18; -fx-font-weight: bold;" text="AUCTION DETAILS" />
-                           <HBox alignment="CENTER" VBox.vgrow="ALWAYS">
-                               <children>
-                                   <GridPane hgap="15" vgap="10">
-                                       <columnConstraints>
-                                           <ColumnConstraints halignment="LEFT" minWidth="120" />
-                                           <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" />
-                                       </columnConstraints>
-                                       <rowConstraints>
-                                           <RowConstraints minHeight="10.0" prefHeight="30.0" />
-                                           <RowConstraints minHeight="10.0" prefHeight="30.0" />
-                                           <RowConstraints minHeight="10.0" prefHeight="30.0" />
-                                           <RowConstraints minHeight="10.0" prefHeight="30.0" />
-                                       </rowConstraints>
-                                       <children>
-                                           <Label style="-fx-font-weight: bold;" text="Owner Name:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                                           <Label fx:id="ownerNameLabel" text="Loading..." GridPane.columnIndex="1" GridPane.rowIndex="0" />
-            
-                                           <!-- Removed the # character from here -->
-                                           <Label style="-fx-font-weight: bold;" text="Item Description:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                                           <Label fx:id="itemDescriptionLabel" text="Loading..." GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            
-                                           <Label style="-fx-font-weight: bold;" text="Auction Status:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-                                           <Label fx:id="auctionStatusLabel" text="Loading..." GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            
-                                           <Label style="-fx-font-weight: bold;" text="Duration:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-                                           <Label fx:id="durationLabel" text="Loading..." GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                       </children>
-                                   </GridPane>
-                               </children>
-                           </HBox>
-                       </children>
-                       <padding>
-                           <Insets bottom="30.0" top="10.0" />
-                       </padding>
-                   </VBox>
-               </content>
-            </Tab>
-            <Tab text="Bid History Visualization">
-               <content>
-                  <VBox alignment="CENTER" spacing="10.0" style="-fx-border-color: #37427c;">
-                     <children>
-                        <LineChart fx:id="bidHistoryChart" title="BID HISTORY VISUALIZATION">
-                         <xAxis>
-                             <CategoryAxis label="Time" />
-                         </xAxis>
-                         <yAxis>
-                             <NumberAxis label="Price" />
-                         </yAxis>
-                     </LineChart>
+                        <ImageView fx:id="imageContainer" fitHeight="250.0" fitWidth="350.0" pickOnBounds="true" preserveRatio="true" />
                      </children>
                      <padding>
-                        <Insets bottom="30.0" top="10.0" />
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </padding>
+                  </StackPane>
+      
+                  <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Label fx:id="itemNameLabel" text="">
+                           <font>
+                              <Font name="System Bold" size="36.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="startingPriceLabel" text="" />
+                        <Label fx:id="currentPriceLabel" text="" />
+      
+                        <StackPane maxWidth="1.7976931348623157E308" minHeight="50.0" style="-fx-border-color: #37427c;" VBox.vgrow="ALWAYS" />
+      
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                           <children>
+                              <Text text="Place your bid:" />
+                              <TextField fx:id="bidAmountInput" HBox.hgrow="ALWAYS" />
+                           </children>
+                        </HBox>
+                        <Button fx:id="bidButton" mnemonicParsing="false" onAction="#checkBidValidity" text="Make a bid" />
+                        <Label fx:id="bidPlacedResultLabel" text="" wrapText="true">
+                           <font>
+                              <Font size="13.0" />
+                           </font>
+                        </Label>
+                     </children>
                   </VBox>
-               </content>
-            </Tab>
-         </tabs>
-      </TabPane>
-   </children>
-   <padding>
-      <Insets left="20.0" right="20.0" top="20.0" />
-   </padding>
-</VBox>
+               </children>
+            </HBox>
+            <TabPane>
+               <tabs>
+                  <Tab text="Auction Details">
+                     <content>
+                         <VBox alignment="CENTER" spacing="10.0" style="-fx-border-color: #37427c;">
+                             <children>
+                                 <Label style="-fx-font-size: 18; -fx-font-weight: bold;" text="AUCTION DETAILS" />
+                                 <HBox alignment="CENTER" VBox.vgrow="ALWAYS">
+                                     <children>
+                                         <GridPane hgap="15" vgap="10">
+                                             <columnConstraints>
+                                                 <ColumnConstraints halignment="LEFT" minWidth="120" />
+                                                 <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" />
+                                             </columnConstraints>
+                                             <rowConstraints>
+                                                 <RowConstraints minHeight="10.0" prefHeight="30.0" />
+                                                 <RowConstraints minHeight="10.0" prefHeight="30.0" />
+                                                 <RowConstraints minHeight="10.0" prefHeight="30.0" />
+                                                 <RowConstraints minHeight="10.0" prefHeight="30.0" />
+                                             </rowConstraints>
+                                             <children>
+                                                 <Label style="-fx-font-weight: bold;" text="Owner Name:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                                 <Label fx:id="ownerNameLabel" text="Loading..." GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                  
+                                                 <!-- Removed the # character from here -->
+                                                 <Label style="-fx-font-weight: bold;" text="Item Description:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                                                 <Label fx:id="itemDescriptionLabel" text="Loading..." GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  
+                                                 <Label style="-fx-font-weight: bold;" text="Auction Status:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                                                 <Label fx:id="auctionStatusLabel" text="Loading..." GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  
+                                                 <Label style="-fx-font-weight: bold;" text="Duration:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                                                 <Label fx:id="durationLabel" text="Loading..." GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                             </children>
+                                         </GridPane>
+                                     </children>
+                                 </HBox>
+                             </children>
+                             <padding>
+                                 <Insets bottom="30.0" top="10.0" />
+                             </padding>
+                         </VBox>
+                     </content>
+                  </Tab>
+                  <Tab text="Bid History Visualization">
+                     <content>
+                        <VBox alignment="CENTER" spacing="10.0" style="-fx-border-color: #37427c;">
+                           <children>
+                              <LineChart fx:id="bidHistoryChart" title="BID HISTORY VISUALIZATION">
+                               <xAxis>
+                                   <CategoryAxis label="Time" />
+                               </xAxis>
+                               <yAxis>
+                                   <NumberAxis label="Price" />
+                               </yAxis>
+                           </LineChart>
+                           </children>
+                           <padding>
+                              <Insets bottom="30.0" top="10.0" />
+                           </padding>
+                        </VBox>
+                     </content>
+                  </Tab>
+               </tabs>
+            </TabPane>
+         </children>
+         <padding>
+            <Insets left="20.0" right="20.0" top="20.0" />
+         </padding>
+      </VBox>
+   </center>
+   <top>
+      <VBox fx:id="confirmPane" alignment="CENTER" managed="false" spacing="5.0" visible="false" BorderPane.alignment="CENTER">
+         <children>
+            <Label text="Congratulations! You are the winner of this Auction" />
+            <Label layoutX="204.0" layoutY="10.0" text="Click to confirm if you have received the item" />
+            <Button mnemonicParsing="false" onAction="#confirm" text="CONFIRM" />
+         </children>
+         <BorderPane.margin>
+            <Insets bottom="10.0" top="10.0" />
+         </BorderPane.margin>
+      </VBox>
+   </top>
+</BorderPane>

@@ -15,6 +15,7 @@ import java.io.File;
 //For Price Visualization
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.layout.VBox;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -38,6 +39,8 @@ public class AuctionDetailController {
     private ImageView imageContainer;
     @FXML
     private LineChart<String, Number> bidHistoryChart;
+    @FXML
+    private VBox confirmPane;
 
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM HH:mm");
 
@@ -87,6 +90,9 @@ public class AuctionDetailController {
         setItemImage();
         getTableData(auction);
         updateBidChart();
+        if (((User) currentUser).isWinner(auction)){
+            setupConfirmPane();
+        };
     }
 
     public void getTableData(Auction auction) {
@@ -135,5 +141,14 @@ public class AuctionDetailController {
     public void setupAuction(Auction selectedAuction) {
         this.auction = selectedAuction;
         this.auction.addObserver((AuctionObserver) SessionManager.getCurrentUser());
+    }
+
+    private void setupConfirmPane() {
+        confirmPane.setVisible(true);
+        confirmPane.setManaged(true);
+    }
+
+    @FXML
+    private void confirm() {
     }
 }
