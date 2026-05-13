@@ -45,11 +45,8 @@ public class AuctionManager {
         if (nextPrice <= userConfig.getMaxBid()) {
             System.out.println("[System]: Auto-bidding for " + userConfig.getUser().getFullName());
 
-            try {
-                userConfig.getUser().placeBid(auction, nextPrice);
-            } catch (Exception e) {
-                System.out.println("[System Error]: Auto-bid failed for " + userConfig.getUser().getFullName() + " - " + e.getMessage());
-            }
+            userConfig.getUser().placeBid(auction, nextPrice);
+
         } else {
             System.out.println("[System]: Automatic bidding stopped due to maximum bid limit reached");
         }

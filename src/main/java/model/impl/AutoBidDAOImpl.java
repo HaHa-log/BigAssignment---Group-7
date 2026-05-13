@@ -4,6 +4,7 @@ import Branch.AutoBid;
 import Branch.Member;
 import DB.DB;
 import DB.DbException;
+import model.AuctionsDAO;
 import model.AutoBidDAO;
 import model.UsersDAO;
 
@@ -13,6 +14,7 @@ import java.util.List;
 
 public class AutoBidDAOImpl implements AutoBidDAO {
     private UsersDAO userDb = DaoFactory.createUsersDAO();
+    private AuctionsDAO auctionsDAO = DaoFactory.createAuctionsDAO();
 
     protected AutoBidDAOImpl() {}
 
@@ -25,7 +27,7 @@ public class AutoBidDAOImpl implements AutoBidDAO {
         try (Connection conn = DB.getConnection();
              PreparedStatement st = conn.prepareStatement(sql)) {
 
-            st.setInt(1, obj.getAuctionId());
+            st.setInt(1, obj.getAuction().getId());
             st.setInt(2, obj.getUser().getId());
             st.setDouble(3, obj.getMaxBid());
             st.setDouble(4, obj.getIncrement());
@@ -45,7 +47,7 @@ public class AutoBidDAOImpl implements AutoBidDAO {
         try (Connection conn = DB.getConnection();
              PreparedStatement st = conn.prepareStatement(sql)) {
 
-            st.setInt(1, obj.getAuctionId());
+            st.setInt(1, obj.getAuction().getId());
             st.setInt(2, obj.getUser().getId());
             int rows = st.executeUpdate();
 
@@ -68,7 +70,7 @@ public class AutoBidDAOImpl implements AutoBidDAO {
 
             st.setDouble(1, obj.getMaxBid());
             st.setDouble(2, obj.getIncrement());
-            st.setInt(3, obj.getAuctionId());
+            st.setInt(3, obj.getAuction().getId());
             st.setInt(4, obj.getUser().getId());
 
             st.executeUpdate();
@@ -139,7 +141,7 @@ public class AutoBidDAOImpl implements AutoBidDAO {
     private AutoBid instantiateAutoBid(ResultSet rs) throws SQLException {
         Member user = (Member) userDb.getById(rs.getInt("user_id"));
         return new AutoBid(
-                rs.getInt("auction_id"),
+                auctionsDAO.getById(rs.getInt("auction_id")),
                 user,
                 rs.getDouble("max_bid"),
                 rs.getDouble("increment_amount")

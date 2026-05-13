@@ -52,7 +52,7 @@ public class AuctionDetailController {
 
     private AutoBidDAO autoBidDb = DaoFactory.createAutoBidDAO();
 
-    private Bidder currentUser = (Bidder) SessionManager.getCurrentUser();
+    private User currentUser = SessionManager.getCurrentUser();
     private Auction auction;
 
     @FXML
@@ -145,9 +145,8 @@ public class AuctionDetailController {
         bidHistoryChart.setAnimated(false);
     }
 
-    public void setupAuction(Auction selectedAuction) {
-        this.auction = selectedAuction;
-        this.auction.addObserver((AuctionObserver) SessionManager.getCurrentUser());
+    public void setupAuction() {
+        auction.addObserver((AuctionObserver) SessionManager.getCurrentUser());
     }
 
     private void setupConfirmPane() {
@@ -161,51 +160,29 @@ public class AuctionDetailController {
 
     @FXML
     private void handleEnableAutoBid() {
+        if (txtMaxBid.getText().isEmpty() || txtIncrement.getText().isEmpty()) {
+            bidPlacedResultLabel.setTextFill(RED);
+            bidPlacedResultLabel.setText("Please enter Max Bid and Increment.");
+            return;
+        }
         try {
-            if (txtMaxBid.getText().isEmpty() || txtIncrement.getText().isEmpty()) {
-                bidPlacedResultLabel.setTextFill(RED);
-                bidPlacedResultLabel.setText("Please enter Max Bid and Increment.");
-                return;
-            }
-
             double maxBid = Double.parseDouble(txtMaxBid.getText());
             double increment = Double.parseDouble(txtIncrement.getText());
+            Member currentMember = (Member) currentUser;
 
-            Member currentMember = (Member) SessionManager.getCurrentUser();
-
-            if (maxBid <= auction.getCurrentPrice()) {
-                bidPlacedResultLabel.setTextFill(RED);
-                bidPlacedResultLabel.setText("Max bid must be higher than current price.");
-                return;
-            }
-            if (maxBid > currentMember.getBalance()) {
-                bidPlacedResultLabel.setTextFill(RED);
-                bidPlacedResultLabel.setText("Insufficient balance for this max bid.");
-                return;
-            }
-            if (increment <= 0) {
-                bidPlacedResultLabel.setTextFill(RED);
-                bidPlacedResultLabel.setText("Increment must be greater than 0.");
-                return;
-            }
-
-            AutoBid config = new AutoBid(auction.getId(), currentMember, maxBid, increment);
+            AutoBid config = new AutoBid(auction, currentMember, maxBid, increment);
             autoBidDb.save(config);
 
             AuctionManager.getInstance().processAutoBids(auction, config);
 
             bidPlacedResultLabel.setTextFill(GREEN);
             bidPlacedResultLabel.setText("Auto Bid enabled successfully!");
-
-            currentPriceLabel.setText("Current price: $" + auction.getCurrentPrice());
-            updateBidChart();
-
+        }  catch (CustomisedException e) {
+            bidPlacedResultLabel.setTextFill(RED);
+            bidPlacedResultLabel.setText(e.getMessage());
         } catch (NumberFormatException e) {
             bidPlacedResultLabel.setTextFill(RED);
-            bidPlacedResultLabel.setText("Please enter valid numbers.");
-        } catch (Exception e) {
-            bidPlacedResultLabel.setTextFill(RED);
-            bidPlacedResultLabel.setText("Error: " + e.getMessage());
+            bidPlacedResultLabel.setText("Please enter a valid number.");
         }
     }
 }
