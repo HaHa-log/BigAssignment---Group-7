@@ -205,7 +205,7 @@ public class Auction extends Entity implements Serializable {
                 throw new IllegalArgumentException("[Error]: Insufficient balance to cover the bid increase of " + amountToDeduct);
             }
 
-            user.withdrawMoney(amountToDeduct);
+            
 
             this.currentPrice = bidAmount.getPrice();
             this.winner = bidder;
