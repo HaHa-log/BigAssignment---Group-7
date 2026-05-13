@@ -78,3 +78,45 @@
     -fx-padding: 16;
     -fx-background-radius: 16;
 }
+
+.transaction-deposit {
+    -fx-text-fill: #16a34a;
+    -fx-font-weight: bold;
+    -fx-background-color: #dcfce7;
+    -fx-background-radius: 10;
+    -fx-padding: 8;
+}
+
+.transaction-withdraw {
+    -fx-text-fill: #dc2626;
+    -fx-font-weight: bold;
+    -fx-background-color: #fee2e2;
+    -fx-background-radius: 10;
+    -fx-padding: 8;
+}
+
+.transaction-default {
+    -fx-text-fill: #475569;
+    -fx-background-color: #f8fafc;
+    -fx-background-radius: 10;
+    -fx-padding: 8;
+}
+
+.table-cell.state-win {
+    -fx-text-fill: #16a34a;
+    -fx-font-weight: bold;
+}
+
+.table-cell.state-lose {
+    -fx-text-fill: #dc2626;
+    -fx-font-weight: bold;
+}
+
+.table-cell.state-owner {
+    -fx-text-fill: #2563eb;
+    -fx-font-weight: bold;
+}
+
+.table-cell.state-default {
+    -fx-text-fill: #475569;
+}
