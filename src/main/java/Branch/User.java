@@ -1,6 +1,8 @@
 package Branch;
 
 import Branch.Common.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import model.UsersDAO;
 import model.impl.DaoFactory;
 
@@ -18,7 +20,7 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
     private boolean isAdmin;
     private boolean isBlocked = false;
     private LocalDateTime blockedUntil = null;
-
+    private final ObservableList<String> transactions = FXCollections.observableArrayList();
     private UsersDAO userDatabase = DaoFactory.createUsersDAO();
 
     public User(String firstName, String lastName, String email, String phoneNumber, String password, double balance) {
@@ -85,6 +87,7 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
     public boolean depositMoney(double amount) {
         boolean success = this.balance.deposit(amount);
         if (success) {
+            transactions.add("💰 DEPOSIT | +" + amount + " | Balance: " + getBalance());
             userDatabase.update(this);
         }
         return success;
@@ -93,6 +96,7 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
     public boolean withdrawMoney(double amount) {
         boolean success = this.balance.withdraw(amount);
         if (success) {
+            transactions.add("💸 WITHDRAW | -" + amount + " | Balance: " + getBalance());
             userDatabase.update(this);
         }
         return success;
@@ -262,6 +266,10 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
             }
         }
         return notifications;
+    }
+
+    public ObservableList<String> getTransactions() {
+        return transactions;
     }
 
 }
