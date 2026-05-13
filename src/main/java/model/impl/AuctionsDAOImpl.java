@@ -183,6 +183,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 + "u_owner.password AS owner_password, u_owner.balance AS owner_balance, "
                 + "u_owner.isAdmin AS owner_isAdmin, u_owner.isBlocked AS owner_isBlocked, "
                 + "u_owner.blockedUntil AS owner_blockedUntil, "
+                + "u_owner.avatar_path AS owner_avatar_path, "
                 + "i.items_id AS items_id, "
                 + "i.name AS item_name, i.startingPrice AS item_startingPrice, "
                 + "i.description AS item_description, i.status AS item_status, "
@@ -193,7 +194,8 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 + "u_winner.email AS winner_email, u_winner.phoneNumber AS winner_phoneNumber, "
                 + "u_winner.password AS winner_password, u_winner.balance AS winner_balance, "
                 + "u_winner.isAdmin AS winner_isAdmin, u_winner.isBlocked AS winner_isBlocked, "
-                + "u_winner.blockedUntil AS winner_blockedUntil "
+                + "u_winner.blockedUntil AS winner_blockedUntil, "
+                + "u_winner.avatar_path AS winner_avatar_path "
                 + "FROM auctions a "
                 + "INNER JOIN users u_owner ON a.owner_id = u_owner.users_id "
                 + "INNER JOIN items i ON a.item_id = i.items_id "
@@ -210,8 +212,9 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 rs.getDouble("owner_balance"),
                 rs.getBoolean("owner_isAdmin"),
                 rs.getBoolean("owner_isBlocked"),
-                rs.getObject("owner_blockedUntil", LocalDateTime.class)
-        );
+                rs.getObject("owner_blockedUntil", LocalDateTime.class),
+                rs.getString("owner_avatar_path")
+                );
         obj.setId(rs.getInt("owner_id"));
         return obj;
     }
@@ -241,8 +244,10 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 rs.getDouble("winner_balance"),
                 rs.getBoolean("winner_isAdmin"),
                 rs.getBoolean("winner_isBlocked"),
-                rs.getObject("winner_blockedUntil", LocalDateTime.class)
-        );
+                rs.getObject("winner_blockedUntil", LocalDateTime.class),
+                rs.getString("winner_avatar_path")
+
+                );
         obj.setId(rs.getInt("winner_id"));
         return obj;
     }

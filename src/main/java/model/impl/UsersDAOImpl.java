@@ -19,8 +19,8 @@ public class UsersDAOImpl implements UsersDAO {
     @Override
     public void save(User user) {
         String sql = "INSERT INTO users "
-                + "(email, phoneNumber, firstName, lastName, password, isAdmin, isBlocked, balance) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                + "(email, phoneNumber, firstName, lastName, password, isAdmin, isBlocked, balance,avatar_path) "
+                + "VALUES (?, ?, ?, ?, ?, ? , ?, ?, ?)";
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -32,6 +32,8 @@ public class UsersDAOImpl implements UsersDAO {
             st.setBoolean(6, user.isAdmin());
             st.setBoolean(7, user.isBlocked());
             st.setDouble(8, user.getBalance());
+            st.setString(9, user.getAvatarPath());
+
 
             int rowsAffected = st.executeUpdate();
             if (rowsAffected > 0) {
@@ -71,7 +73,7 @@ public class UsersDAOImpl implements UsersDAO {
     @Override
     public void update(User user) {
         String sql = "UPDATE users "
-                +"SET email = ?, phoneNumber = ?, firstName = ?, lastName = ?, password = ?, isAdmin = ?, isBlocked = ?, balance = ? "
+                +"SET email = ?, phoneNumber = ?, firstName = ?, lastName = ?, password = ?, isAdmin = ?, isBlocked = ?, balance = ? , avatar_path = ?"
                 + " WHERE users_id = ? ";
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
@@ -84,7 +86,9 @@ public class UsersDAOImpl implements UsersDAO {
             st.setBoolean(6, user.isAdmin());
             st.setBoolean(7, user.isBlocked());
             st.setDouble(8, user.getBalance());
-            st.setInt(9, user.getId());
+            st.setString(9, user.getAvatarPath());
+            st.setInt(10, user.getId());
+
 
             st.executeUpdate();
 
@@ -209,8 +213,9 @@ public class UsersDAOImpl implements UsersDAO {
                 rs.getDouble("balance"),
                 rs.getBoolean("isAdmin"),
                 rs.getBoolean("isBlocked"),
-                rs.getObject("blockedUntil", LocalDateTime.class)
-        );
+                rs.getObject("blockedUntil", LocalDateTime.class),
+                rs.getString("avatar_path")
+                );
 
         obj.setId(rs.getInt("users_id"));
         return obj;
@@ -226,9 +231,9 @@ public class UsersDAOImpl implements UsersDAO {
                 rs.getDouble("balance"),
                 rs.getBoolean("isAdmin"),
                 rs.getBoolean("isBlocked"),
-                rs.getObject("blockedUntil", LocalDateTime.class)
+                rs.getObject("blockedUntil", LocalDateTime.class),
+                rs.getString("avatar_path")
         );
-
         obj.setId(rs.getInt("users_id"));
         return obj;
     }
