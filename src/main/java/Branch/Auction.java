@@ -102,19 +102,7 @@ public class Auction extends Entity implements Serializable {
             }
 
             if (this.status == AuctionStatus.RUNNING && endingTime != null && now.isAfter(endingTime)) {
-                this.transitionTo(AuctionStatus.FINISHED);
-
-                for (Bidder bidder : participants) {
-                    User user = (User) bidder;
-                    if (!user.isWinner(this)) {
-                        //bidder.refund(this);
-                        usersDb.update((User) bidder);
-                    }
-                }
-                if (auctionsDb != null) {
-                    auctionsDb.update(this);
-                }
-            }
+                AuctionManager.getInstance().closeAuction(this);            }
 
             return status;
         } finally {
@@ -203,15 +191,11 @@ public class Auction extends Entity implements Serializable {
             }
 
             double lastTimeBidAmount = bidder.getHighestBid(this);
-
             double amountToDeduct = bidAmount.getPrice() - lastTimeBidAmount;
 
             if (user.getBalance() < amountToDeduct) {
                 throw new IllegalArgumentException("[Error]: Insufficient balance to cover the bid increase of " + amountToDeduct);
             }
-
-            //Transaction can handle this when it's COMPLETED
-            user.withdrawMoney(amountToDeduct);
 
             this.currentPrice = bidAmount.getPrice();
             this.winner = bidder;

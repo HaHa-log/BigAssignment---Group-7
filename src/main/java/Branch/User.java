@@ -23,6 +23,7 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
     private String avatarPath;
     private final ObservableList<String> transactions = FXCollections.observableArrayList();
     private UsersDAO userDatabase = DaoFactory.createUsersDAO();
+    private double frozenBalance = 0;
 
     public User(String firstName, String lastName, String email, String phoneNumber, String password, double balance,String avatarPath) {
         this.fullname = new FullName(firstName, lastName);
@@ -291,4 +292,33 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
         return transactions;
     }
 
+    public double getFrozenBalance() {
+        return frozenBalance;
+    }
+
+    public void setFrozenBalance(double frozenBalance) {
+        this.frozenBalance = frozenBalance;
+    }
+
+    public void freezeMoney(double amount) {
+        if (this.balance.showBalance() >= amount) {
+            this.balance.withdraw(amount);
+            this.frozenBalance += amount;
+            userDatabase.update(this);
+            System.out.println("[System]: " + getFullName() + " has " + amount + " frozen.");
+        }
+    }
+
+    public boolean spendFrozenMoney(double amount) {
+        this.frozenBalance -= amount;
+        userDatabase.update(this);
+        System.out.println("[System]: Frozen money spent: " + amount);
+        return true;
+    }
+
+    public void unfreezeMoney(double amount) {
+        this.frozenBalance -= amount;
+        this.balance.deposit(amount);
+        userDatabase.update(this);
+    }
 }

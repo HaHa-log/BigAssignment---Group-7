@@ -75,13 +75,22 @@ public class AuctionManager {
         activeSessions.remove(session);
         completedSessions.add(session);
 
-        auctionDb.update(session);
-
         if (session.getWinner() != null) {
-            Item soldItem = session.getItem();
-            soldItem.setStatus(Item.Status.SOLD);
+//            Item soldItem = session.getItem();
+//            soldItem.setStatus(Item.Status.SOLD);
+//
+//            session.getOwner().getInventory().remove(soldItem);
+            //-> Nên chỉ remove item và để thành sold khi đã markcompleted
 
-            session.getOwner().getInventory().remove(soldItem);
+            User winner = (User) session.getWinner();
+            double finalPrice = session.getCurrentPrice();
+
+            if (winner.getBalance() >= finalPrice) {
+                winner.freezeMoney(finalPrice);
+                System.out.println("[System]: Money frozen, moving onto transaction page...");
+            } else {
+                System.out.println("[Warning]: Winner no longer has enough balance to freeze!");
+            }
 
             Transaction transaction = new Transaction(
                     session,
@@ -90,12 +99,15 @@ public class AuctionManager {
                     session.getCurrentPrice()
             );
             transactionDb.save(transaction);
+            session.getItem().setStatus(Item.Status.SOLD); //only be removed if sold successfully
+            System.out.println("[System]: Transaction created for winner: " + session.getWinner().getFullName());
 
         } else {
             session.getItem().setStatus(Item.Status.AVAILABLE);
         }
 
         System.out.println("Auction closed!");
+        auctionDb.update(session);
     }
 
     public boolean cancelAuction(int auctionId) {

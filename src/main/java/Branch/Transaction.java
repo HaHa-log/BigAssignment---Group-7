@@ -45,7 +45,7 @@ public class Transaction {
             throw new IllegalTransactionException("[Error]: The transaction isn't pending");
         }
 
-        if (buyer.withdrawMoney(finalAmount)) {
+        if (buyer.spendFrozenMoney(finalAmount)) {
             try {
                 seller.depositMoney(finalAmount);
                 auction.transitionTo(Auction.AuctionStatus.PAID);
@@ -54,7 +54,7 @@ public class Transaction {
                 this.completedAt = LocalDateTime.now();
                 System.out.println("[System]: Transaction completed! " + buyer.getFullName() + " has made a payment of " + finalAmount);
             } catch (Exception e) {
-                buyer.depositMoney(finalAmount);
+                buyer.unfreezeMoney(finalAmount);
                 throw new IllegalTransactionException("[Error]: Failure to transfer payment to seller. Refund issued to buyer");
             }
 
