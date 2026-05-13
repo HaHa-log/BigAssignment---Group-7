@@ -39,7 +39,7 @@ public class AuthService {
          */
 
         double balance = 0.0;
-        Member member = new Member(firstName, lastName, email, phoneNumber, password, balance);
+        Member member = new Member(firstName, lastName, email, phoneNumber, password, balance,null);
         userdb.save(member);
         //return "[System]: You've created a new account!";
         return member;
