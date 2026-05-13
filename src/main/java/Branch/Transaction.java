@@ -12,6 +12,7 @@ public class Transaction {
     private final LocalDateTime paidAt;
     private LocalDateTime completedAt;
     private TransactionStatus status;
+    private LocalDateTime expiryTime;
 
     public enum TransactionStatus {
         PENDING,
@@ -27,6 +28,7 @@ public class Transaction {
         this.paidAt = LocalDateTime.now();
         this.completedAt = null;
         this.status = TransactionStatus.PENDING;
+        this.expiryTime = LocalDateTime.now().plusMinutes(30);
     }
 
 
@@ -38,6 +40,7 @@ public class Transaction {
         this.paidAt = paidAt;
         this.completedAt = completedAt;
         this.status = status;
+        this.expiryTime = expiryTime;
     }
 
     public void markCompleted() throws IllegalTransactionException {
@@ -104,6 +107,18 @@ public class Transaction {
     public LocalDateTime getPaidAt() { return paidAt; }
 
     public LocalDateTime getCompletedAt() { return completedAt; }
+
+    public void setExpiryTime(LocalDateTime time) {
+        this.expiryTime = time;
+    }
+
+    public LocalDateTime getExpiryTime() {
+        return expiryTime;
+    }
+
+    public boolean isExpired() {
+        return status == TransactionStatus.PENDING && LocalDateTime.now().isAfter(expiryTime);
+    }
 
     @Override
     public String toString() {

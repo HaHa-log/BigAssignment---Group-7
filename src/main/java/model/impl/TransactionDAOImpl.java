@@ -23,8 +23,8 @@ public class TransactionDAOImpl implements TransactionDAO {
     @Override
     public void save(Transaction transaction) {
         String sql = "INSERT INTO transaction "
-                + "(aucion_id, buyer_id, seller_id, finalAnount, paidAt, completedAt, status) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+                + "(auction_id, buyer_id, seller_id, finalAmount, paidAt, completedAt, status, expiry_time) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -37,6 +37,7 @@ public class TransactionDAOImpl implements TransactionDAO {
             st.setTimestamp(6, transaction.getCompletedAt() != null
                     ? Timestamp.valueOf(transaction.getCompletedAt()) : null);;
             st.setString(7, transaction.getStatus().name());
+            st.setTimestamp(8, transaction.getExpiryTime() != null ? Timestamp.valueOf(transaction.getExpiryTime()) : null);
 
             int rowsAffected = st.executeUpdate();
             if (rowsAffected > 0) {
@@ -75,8 +76,8 @@ public class TransactionDAOImpl implements TransactionDAO {
 
     @Override
     public void update(Transaction transaction) {
-        String sql = "UPDATE users "
-                +"SET auction_id = ?, buyer_id = ?, seller_id = ?, finalAmount = ?, paidAt = ?, completedAt = ?, status =? "
+        String sql = "UPDATE transaction "
+                +"SET auction_id = ?, buyer_id = ?, seller_id = ?, finalAmount = ?, paidAt = ?, completedAt = ?, status = ?, expiry_time = ? "
                 + " WHERE transaction_id = ? ";
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
@@ -90,7 +91,8 @@ public class TransactionDAOImpl implements TransactionDAO {
             st.setTimestamp(6, transaction.getCompletedAt() != null
                     ? Timestamp.valueOf(transaction.getCompletedAt()) : null);;
             st.setString(7, transaction.getStatus().name());
-            st.setInt(8, transaction.getTransactionId());
+            st.setTimestamp(8, transaction.getExpiryTime() != null ? Timestamp.valueOf(transaction.getExpiryTime()) : null);
+            st.setInt(9, transaction.getTransactionId());
 
             st.executeUpdate();
 
@@ -148,6 +150,10 @@ public class TransactionDAOImpl implements TransactionDAO {
                 rs.getObject("completedAt", LocalDateTime.class),
                 Transaction.TransactionStatus.valueOf(rs.getString("status"))
         );
+
+        if (rs.getTimestamp("expiry_time") != null) {
+            obj.setExpiryTime(rs.getTimestamp("expiry_time").toLocalDateTime());
+        }
 
         obj.setTransactionId(rs.getInt("transaction_id"));
         return obj;
