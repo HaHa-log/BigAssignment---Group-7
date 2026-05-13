@@ -1,6 +1,8 @@
 package Branch;
 
+import Branch.Exceptions.CustomisedException;
 import model.AuctionsDAO;
+import model.AutoBidDAO;
 import model.TransactionDAO;
 import model.impl.DaoFactory;
 
@@ -15,6 +17,7 @@ public class AuctionManager {
 
     private  AuctionsDAO auctionDb = DaoFactory.createAuctionsDAO();
     private TransactionDAO transactionDb = DaoFactory.createTransactionDAO();
+    private AutoBidDAO autoBidDb = DaoFactory.createAutoBidDAO();
 
     private AuctionManager() {
         activeSessions = new ArrayList<>();
@@ -26,6 +29,30 @@ public class AuctionManager {
             instance = new AuctionManager();
         }
         return instance;
+    }
+
+    public AutoBid getAutoBidConfig(int auctionId, int userId) {
+        return autoBidDb.getByAuctionAndUser(auctionId, userId);
+    }
+
+    public void processAutoBids(Auction auction, AutoBid userConfig) {
+        if (auction.getWinner() != null && auction.getWinner().isEqual(userConfig.getUser())) {
+            return;
+        }
+
+        double nextPrice = auction.getCurrentPrice() + userConfig.getIncrement();
+
+        if (nextPrice <= userConfig.getMaxBid()) {
+            System.out.println("[System]: Auto-bidding for " + userConfig.getUser().getFullName());
+
+            try {
+                userConfig.getUser().placeBid(auction, nextPrice);
+            } catch (Exception e) {
+                System.out.println("[System Error]: Auto-bid failed for " + userConfig.getUser().getFullName() + " - " + e.getMessage());
+            }
+        } else {
+            System.out.println("[System]: Automatic bidding stopped due to maximum bid limit reached");
+        }
     }
 
     public void createAuction(Member owner, Item item, LocalDateTime startingTime, LocalDateTime endingTime) {
@@ -42,7 +69,6 @@ public class AuctionManager {
         activeSessions.add(session);
 
         auctionDb.save(session);
-        activeSessions.add(session);
 
         session.start();
     }

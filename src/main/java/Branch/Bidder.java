@@ -44,13 +44,4 @@ public interface Bidder {
         }
         return lastTimeBidAmount;
     }
-
-    default void refund(Auction auction) {
-        User thisUser = (User) this;
-        double highestBid =  this.getHighestBid(auction);
-
-        if (!auction.getWinner().equals(thisUser)) {
-            thisUser.depositMoney(highestBid);
-        }
-    }
 }

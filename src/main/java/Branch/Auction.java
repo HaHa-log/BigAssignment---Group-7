@@ -3,8 +3,10 @@ package Branch;
 import Branch.Common.Price;
 import Branch.Exceptions.AuctionClosedException;
 import Branch.Exceptions.AuthenticationException;
+import Branch.Exceptions.CustomisedException;
 import Branch.Exceptions.InvalidBidException;
 import model.AuctionsDAO;
+import model.AutoBidDAO;
 import model.BidsDAO;
 import model.UsersDAO;
 import model.impl.DaoFactory;
@@ -41,6 +43,7 @@ public class Auction extends Entity implements Serializable {
     AuctionsDAO auctionsDb = DaoFactory.createAuctionsDAO();
     BidsDAO bidsDb = DaoFactory.createBidsDAO();
     UsersDAO usersDb = DaoFactory.createUsersDAO();
+    AutoBidDAO autoBidDAO = DaoFactory.createAutoBidDAO();
 
     public List<AuctionObserver> getObservers() {
         if (observers == null) {
@@ -104,7 +107,7 @@ public class Auction extends Entity implements Serializable {
                 for (Bidder bidder : participants) {
                     User user = (User) bidder;
                     if (!user.isWinner(this)) {
-                        bidder.refund(this);
+                        //bidder.refund(this);
                         usersDb.update((User) bidder);
                     }
                 }
@@ -180,6 +183,8 @@ public class Auction extends Entity implements Serializable {
             throws AuctionClosedException, AuthenticationException, InvalidBidException, IllegalArgumentException {
         lock.lock();
         try {
+            Bidder previousWinner = this.winner;
+
             if (!(bidder instanceof User user)) {
                 throw new AuthenticationException("[Error]: Invalid Bidder type.");
             }
@@ -205,7 +210,7 @@ public class Auction extends Entity implements Serializable {
                 throw new IllegalArgumentException("[Error]: Insufficient balance to cover the bid increase of " + amountToDeduct);
             }
 
-            
+            //delete withdraw money (transaction will handle this)
 
             this.currentPrice = bidAmount.getPrice();
             this.winner = bidder;
@@ -218,6 +223,13 @@ public class Auction extends Entity implements Serializable {
 
             for (AuctionObserver observer : getObservers()) {
                 observer.onBidPlaced(this, bidder, amount);
+            }
+
+            if (previousWinner != null && ((User) previousWinner).getId() != ((User) bidder).getId()) {
+                AutoBid config = AuctionManager.getInstance().getAutoBidConfig(this.auctionId, ((Member) previousWinner).getId());
+                if (config != null) {
+                    AuctionManager.getInstance().processAutoBids(this, config);
+                }
             }
 
             return true;
@@ -284,7 +296,7 @@ public class Auction extends Entity implements Serializable {
         boolean check = transitionTo(status);
 
         if (!check) {
-            System.out.println("[System]: Status transition failure from " + this.status + " to " + status);
+            throw new CustomisedException("[System]: Status transition failure from " + this.status + " to " + status);
         } else {
             System.out.println("[System]: The auction is now " + this.status);
         }

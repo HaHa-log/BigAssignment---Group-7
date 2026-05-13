@@ -26,10 +26,13 @@ public class AutoBid implements Serializable {
     }
 
     public void setIncrement(double step) {
-        if (step < ((User) user).getBalance()) {
+        if (step <= 0) {
+            throw new CustomisedException("[Error]: Step must be greater than 0.");
+        }
+        if (step < maxBid) {
             this.increment = step;
         } else {
-            throw new CustomisedException("[Blunder]: Logically, nobody would do that..?");
+            throw new CustomisedException("[Error]: Invalid increment, increment must be lesser than maximum bid");
         }
     }
 

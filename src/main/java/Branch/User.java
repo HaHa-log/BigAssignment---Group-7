@@ -27,7 +27,7 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
         this.fullname = new FullName(firstName, lastName);
         this.email = new Email(email);
         this.phoneNumber = new PhoneNumber(phoneNumber);
-        this.balance = new Balance(balance); //logic: initial balance is always 0
+        this.balance = new Balance(balance);
 
         //put setPassword at last because this checks on values
         this.setPassword(password);
