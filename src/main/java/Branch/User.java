@@ -178,7 +178,10 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
 
     public boolean isWinner(Auction auction) {
         if (auction.getStatus() == Auction.AuctionStatus.FINISHED || auction.getStatus() == Auction.AuctionStatus.PAID ) {
-            if (auction.getWinner().equals(this)) {
+            //There can be cases when the auction finish without anyone bidding
+            //Recommendation: Simplify by merging isHighestBidder and isWinner
+            if (auction.getWinner() != null
+                    && auction.getWinner().equals(this)) {
                 return true;
             }
         }
