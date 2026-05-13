@@ -20,28 +20,33 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
     private boolean isAdmin;
     private boolean isBlocked = false;
     private LocalDateTime blockedUntil = null;
+    private String avatarPath;
     private final ObservableList<String> transactions = FXCollections.observableArrayList();
     private UsersDAO userDatabase = DaoFactory.createUsersDAO();
 
-    public User(String firstName, String lastName, String email, String phoneNumber, String password, double balance) {
+    public User(String firstName, String lastName, String email, String phoneNumber, String password, double balance,String avatarPath) {
         this.fullname = new FullName(firstName, lastName);
         this.email = new Email(email);
         this.phoneNumber = new PhoneNumber(phoneNumber);
         this.balance = new Balance(balance);
+        this.avatarPath = avatarPath;
 
         //put setPassword at last because this checks on values
-        this.setPassword(password);
+        this.password = password;
+
     }
 
-    public User(String firstName, String lastName, String email, String phoneNumber, String password, double balance, boolean isAdmin, boolean isBlocked, LocalDateTime blockedUntil) {
+    public User(String firstName, String lastName, String email, String phoneNumber, String password, double balance, boolean isAdmin, boolean isBlocked, LocalDateTime blockedUntil, String avatarPath) {
         this.fullname = new FullName(firstName, lastName);
         this.email = new Email(email);
         this.phoneNumber = new PhoneNumber(phoneNumber);
-        this.balance = new Balance(balance);
         this.setPassword(password);
+        this.balance = new Balance(balance);
         this.isAdmin = isAdmin;
         this.isBlocked = isBlocked;
         this.blockedUntil = blockedUntil;
+        this.avatarPath = avatarPath;
+
     }
 
     public void setFirstName(String fstName) {
@@ -51,6 +56,18 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
 
     public void setLastName(String lstName) {
         this.fullname = new FullName(fullname.getFirstName(), lstName);
+        userDatabase.update(this);
+    }
+
+    public String getAvatarPath() {
+        return avatarPath;
+    }
+
+    public void setAvatarPath(String avatarPath) {
+        this.avatarPath = avatarPath;
+    }
+
+    public void update() {
         userDatabase.update(this);
     }
 
@@ -78,7 +95,6 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
     public void setPassword(String pass) {
         if (pass.length() >= 6) {
             this.password = pass;
-            userDatabase.update(this);
         } else {
             throw new IllegalArgumentException("[Error]: Password must have more than 6 digits");
         }

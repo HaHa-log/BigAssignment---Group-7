@@ -12,14 +12,14 @@ public class Member extends User implements Bidder, Seller, AuctionObserver {
 
     private TransactionDAO transactionDb = DaoFactory.createTransactionDAO();
 
-    public Member(String firstName, String lastName, String email, String phoneNumber, String password, double balance) {
-        super(firstName, lastName, email, phoneNumber, password, balance);
+    public Member(String firstName, String lastName, String email, String phoneNumber, String password, double balance,String avatarPath) {
+        super(firstName, lastName, email, phoneNumber, password, balance,avatarPath);
     }
 
-    public Member(String firstName, String lastName, String email, String phoneNumber, String password, double balance, boolean isAdmin, boolean isBlocked, LocalDateTime blockedUntil) {
-        super(firstName, lastName, email, phoneNumber, password, balance, isAdmin, isBlocked, blockedUntil);
-    }
+    public Member(String firstName, String lastName, String email, String phoneNumber, String password, double balance, boolean isAdmin, boolean isBlocked, LocalDateTime blockedUntil, String avatarPath) {
 
+        super(firstName, lastName, email, phoneNumber, password, balance, isAdmin, isBlocked, blockedUntil,avatarPath);
+    }
     @Override
     public boolean isAdmin() {
         return false;

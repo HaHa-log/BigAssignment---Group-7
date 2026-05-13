@@ -13,12 +13,12 @@ public class Admin extends Member {
     private UsersDAO userDb = DaoFactory.createUsersDAO();
     private TransactionDAO transactionDb = DaoFactory.createTransactionDAO();
 
-    public Admin(String firstName, String lastName, String email, String phoneNumber, String password, double balance) {
-        super(firstName, lastName, email, phoneNumber,password, balance);
+    public Admin(String firstName, String lastName, String email, String phoneNumber, String password, double balance,String avatarPath) {
+        super(firstName, lastName, email, phoneNumber,password, balance,avatarPath);
     }
 
-    public Admin(String firstName, String lastName, String email, String phoneNumber, String password, double balance, boolean isAdmin, boolean isBlocked, LocalDateTime blockedUntil) {
-        super(firstName, lastName, email, phoneNumber, password, balance, isAdmin, isBlocked, blockedUntil);
+    public Admin(String firstName, String lastName, String email, String phoneNumber, String password, double balance, boolean isAdmin, boolean isBlocked, LocalDateTime blockedUntil,String avatarPath) {
+        super(firstName, lastName, email, phoneNumber, password, balance, isAdmin, isBlocked, blockedUntil,avatarPath);
     }
 
     @Override
