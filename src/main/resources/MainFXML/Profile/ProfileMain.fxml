@@ -2,21 +2,14 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
 
-<?import javafx.scene.layout.Region?>
-<?import javafx.geometry.Insets?>
-
-<?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.Tab?>
 <BorderPane style="-fx-background-color: #0f172a; -fx-font-family: 'Segoe UI';" stylesheets="@/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.MainPage.ProfilePage.ProfilePageController">
 
     <!-- TOP -->
@@ -30,10 +23,17 @@
     <left>
         <VBox alignment="TOP_CENTER" prefWidth="260" spacing="18" style="-fx-background-color: #2D3763; -fx-padding: 25; -fx-background-radius: 15;">
 
-            <ImageView fitHeight="155.0" fitWidth="142.0" preserveRatio="true" style="-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 10,0,0,4); -fx-background-radius: 100;">
-                <image>
+            <StackPane alignment="CENTER" maxHeight="120" maxWidth="120" minHeight="120" minWidth="120">
+                <style>
+                    -fx-background-color: white;
+                    -fx-background-radius: 100;
+                </style>
 
-                </image></ImageView>
+                <Circle fx:id="avatarCircle" fill="LIGHTGRAY" radius="62.0" stroke="TRANSPARENT" />
+            </StackPane>
+
+            <Button onAction="#handleChooseAvatar" prefHeight="35.0" prefWidth="142.0" style="-fx-background-color: transparent; -fx-text-fill: #A0AEC0; -fx-border-color: #A0AEC0; -fx-border-radius: 5; -fx-font-size: 12;" text="Change Photo" />
+
             <Label fx:id="usernameLabel" style="-fx-text-fill: white; -fx-font-size: 24; -fx-font-weight: bold;" text="Username" />
 
             <Label fx:id="roleLabel" style="-fx-text-fill: #A0AEC0; -fx-font-size: 16;" text="User role" />
@@ -53,31 +53,31 @@
 
                     <Tab text="My Profile">
                         <content>
-                            <StackPane fx:id="profilePane"/>
+                            <StackPane fx:id="profilePane" />
                         </content>
                     </Tab>
 
                     <Tab text="Change Password">
                         <content>
-                            <StackPane fx:id="passwordPane"/>
+                            <StackPane fx:id="passwordPane" />
                         </content>
                     </Tab>
 
                     <Tab text="Finance">
                         <content>
-                            <StackPane fx:id="financePane"/>
+                            <StackPane fx:id="financePane" />
                         </content>
                     </Tab>
 
                     <Tab text="Notification">
                         <content>
-                            <StackPane fx:id="notificationPane"/>
+                            <StackPane fx:id="notificationPane" />
                         </content>
                     </Tab>
 
                     <Tab text="History">
                         <content>
-                            <StackPane fx:id="historyPane"/>
+                            <StackPane fx:id="historyPane" />
                         </content>
                     </Tab>
 
