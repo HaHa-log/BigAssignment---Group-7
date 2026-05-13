@@ -48,7 +48,7 @@ public class ItemsDAOImpl implements ItemsDAO {
 
     @Override
     public void delete(Item item) {
-        String sql = "DELETE FROM items WHERE user_id = ?";
+        String sql = "DELETE FROM items WHERE items_id = ?";
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
 
