@@ -1,5 +1,6 @@
 package Branch;
 
+import model.ItemsDAO;
 import model.TransactionDAO;
 import model.impl.DaoFactory;
 
@@ -8,9 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Member extends User implements Bidder, Seller, AuctionObserver {
-    private List<Item> inventory;
-
     private TransactionDAO transactionDb = DaoFactory.createTransactionDAO();
+    private ItemsDAO itemsDb = DaoFactory.createItemDAO();
 
     public Member(String firstName, String lastName, String email, String phoneNumber, String password, double balance,String avatarPath) {
         super(firstName, lastName, email, phoneNumber, password, balance,avatarPath);
@@ -45,23 +45,20 @@ public class Member extends User implements Bidder, Seller, AuctionObserver {
     }
 
     public void addItem(Item item) {
-        this.inventory.add(item);
+        itemsDb.save(item);
     }
 
-    public List<Item> getInventory() {
-        return inventory;
+    public void removeItem(Item item) {
+        itemsDb.delete(item);
     }
+
+//    public List<Item> getInventory() {
+//        might need a column for user_id to initiate a getByUserId(this)
+//    }
+
 
     public List<Transaction> getMyTransactions() {
-        List<Transaction> result = new ArrayList<>();
-
-        for (Transaction transaction : transactionDb.getAll()) {
-            if (transaction.getBuyer().equals(this) || transaction.getSeller().equals(this)) {
-                result.add(transaction);
-            }
-        }
-        return result;
-    }
+        return transactionDb.getByUserId(this.getId());    }
 
     public void printMyTransactions() {
         List<Transaction> list = getMyTransactions();

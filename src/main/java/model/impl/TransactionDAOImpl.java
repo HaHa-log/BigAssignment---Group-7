@@ -121,6 +121,28 @@ public class TransactionDAOImpl implements TransactionDAO {
     }
 
     @Override
+    public List<Transaction> getByUserId(int userId) {
+        String sql = "SELECT * FROM transaction WHERE buyer_id = ? OR seller_id = ?";
+        List<Transaction> list = new ArrayList<>();
+
+        try (Connection conn = DB.getConnection();
+             PreparedStatement st = conn.prepareStatement(sql)) {
+
+            st.setInt(1, userId);
+            st.setInt(2, userId);
+
+            try (ResultSet rs = st.executeQuery()) {
+                while (rs.next()) {
+                    list.add(instantiateTransaction(rs));
+                }
+            }
+            return list;
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+    }
+
+    @Override
     public List<Transaction> getAll() {
         String sql = "SELECT * FROM transaction";
 

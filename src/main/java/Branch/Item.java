@@ -21,7 +21,6 @@ public class Item extends Entity {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String imagePath;
-
     private ItemsDAO itemsDb = DaoFactory.createItemDAO();
 
     public Item(String name, double startingPrice, String description) {

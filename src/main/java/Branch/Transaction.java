@@ -53,6 +53,9 @@ public class Transaction {
                 seller.depositMoney(finalAmount);
                 auction.transitionTo(Auction.AuctionStatus.PAID);
 
+                buyer.addItem(auction.getItem());
+                seller.removeItem(auction.getItem());
+
                 this.status = TransactionStatus.COMPLETED;
                 this.completedAt = LocalDateTime.now();
                 System.out.println("[System]: Transaction completed! " + buyer.getFullName() + " has made a payment of " + finalAmount);
@@ -74,6 +77,10 @@ public class Transaction {
         if (seller.withdrawMoney(finalAmount)) {
             try {
                 buyer.depositMoney(finalAmount);
+
+                buyer.removeItem(auction.getItem());
+                seller.addItem(auction.getItem());
+
                 this.status = TransactionStatus.REFUNDED;
                 System.out.println("[Transaction]: Refund successful for Auction ID " + auction.getId());
             } catch (Exception e) {
