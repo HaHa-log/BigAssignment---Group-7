@@ -2,6 +2,7 @@ package Client.Controllers.MainPage.ProfilePage;
 
 import Branch.AuctionManager;
 import Branch.Common.AuctionHistoryEntry;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -18,6 +19,8 @@ public class HistoryController extends BaseController {
 
     @FXML private TableView<AuctionHistoryEntry> historyTable;
 
+    @FXML private ListView<String> transactionList;
+
     @FXML
     private ProgressIndicator loadingIndicator;
 
@@ -33,6 +36,7 @@ public class HistoryController extends BaseController {
     public void initialize() {
         setupTableColumns();
         setupFilter();
+        setupTransactionList();
     }
 
     @Override
@@ -55,24 +59,66 @@ public class HistoryController extends BaseController {
                 new javafx.beans.property.SimpleStringProperty(cellData.getValue().userState()));
 
         colState.setCellFactory(column -> new TableCell<>() {
+
             @Override
             protected void updateItem(String item, boolean empty) {
+
                 super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setStyle("");
-                } else {
-                    setText(item);
-                    switch (item) {
-                        case "WON", "LEADING" -> setStyle("-fx-text-fill: #16a34a; -fx-font-weight: bold;");
-                        case "LOST", "OUTBID" -> setStyle("-fx-text-fill: #dc2626;");
-                        case "MY AUCTION" -> setStyle("-fx-text-fill: #2563eb; -fx-font-weight: bold;");
-                        default -> setStyle("-fx-text-fill: #475569;");
-                    }
+
+                getStyleClass().removeAll(
+                        "state-win",
+                        "state-lose",
+                        "state-owner",
+                        "state-default"
+                );
+
+                if (empty || item == null) {setText(null);return;}
+
+                setText(item);
+
+                switch (item) {
+                    case "WON", "LEADING" -> getStyleClass().add("state-win");
+
+                    case "LOST", "OUTBID" -> getStyleClass().add("state-lose");
+
+                    case "MY AUCTION" -> getStyleClass().add("state-owner");
+
+                    default -> getStyleClass().add("state-default");
                 }
             }
         });
     }
+
+    private void setupTransactionList() {
+
+        transactionList.setCellFactory(listView -> new ListCell<>() {
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+
+                getStyleClass().removeAll(
+                        "transaction-deposit",
+                        "transaction-withdraw",
+                        "transaction-default"
+                );
+
+                if (empty || item == null) {
+                    setText(null);
+                    return;
+                }
+
+                setText(item);
+
+                if (item.contains("DEPOSIT")) {getStyleClass().add("transaction-deposit");
+
+                } else if (item.contains("WITHDRAW")) {getStyleClass().add("transaction-withdraw");
+
+                } else {getStyleClass().add("transaction-default");}
+            }
+        });
+    }
+
 
     private void setupFilter() {
         filterBox.getItems().addAll("All", "Won", "Lost", "My Auctions");
@@ -96,12 +142,17 @@ public class HistoryController extends BaseController {
                             )
                     );
 
-            javafx.application.Platform.runLater(() -> {
+            transactionList.setItems(user.getTransactions());
+
+            Platform.runLater(() -> {
 
                 masterData.setAll(data);
                 historyTable.setItems(masterData);
+                transactionList.setItems(user.getTransactions());
+
                 loadingIndicator.setVisible(false);
-                loadingIndicator.setManaged(false);            });
+                loadingIndicator.setManaged(false);
+            });
 
         }).start();
     }
