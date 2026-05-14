@@ -24,11 +24,11 @@ public class HistoryController extends BaseController {
     @FXML
     private ProgressIndicator loadingIndicator;
 
-    // Fixed typo: Integer instead of Interger
     @FXML private TableColumn<AuctionHistoryEntry, Integer> colAuction;
     @FXML private TableColumn<AuctionHistoryEntry, String> colItem;
     @FXML private TableColumn<AuctionHistoryEntry, String> colStatus;
     @FXML private TableColumn<AuctionHistoryEntry, String> colState;
+    @FXML private TableColumn<AuctionHistoryEntry, Void> colAction;
 
     private final ObservableList<AuctionHistoryEntry> masterData = FXCollections.observableArrayList();
 
@@ -37,6 +37,8 @@ public class HistoryController extends BaseController {
         setupTableColumns();
         setupFilter();
         setupTransactionList();
+
+        historyTable.setItems(masterData);
     }
 
     @Override
@@ -85,6 +87,54 @@ public class HistoryController extends BaseController {
 
                     default -> getStyleClass().add("state-default");
                 }
+            }
+        });
+        colAction.setCellFactory(column -> new TableCell<>() {
+
+            private final Button confirmButton =
+                    new Button("Confirm");
+
+            {
+                confirmButton.getStyleClass().add("confirm-button");
+                confirmButton.setOnAction(event -> {
+
+                    AuctionHistoryEntry entry =
+                            getTableView().getItems().get(getIndex());
+
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+
+                    alert.setHeaderText(null);
+
+                    alert.setContentText(
+                            "You confirmed receiving: "
+                                    + entry.itemName()
+                    );
+
+                    alert.showAndWait();
+
+                    confirmButton.setDisable(true);
+                    confirmButton.setText("Done");
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+
+                super.updateItem(item, empty);
+
+                if (empty) {
+                    setGraphic(null);
+                    return;
+                }
+
+                AuctionHistoryEntry entry =
+                        getTableView().getItems().get(getIndex());
+
+                if (entry.userState().contains("WON")) {
+
+                    setGraphic(confirmButton);
+
+                } else {setGraphic(null);}
             }
         });
     }
@@ -142,8 +192,6 @@ public class HistoryController extends BaseController {
                             )
                     );
 
-            transactionList.setItems(user.getTransactions());
-
             Platform.runLater(() -> {
 
                 masterData.setAll(data);
@@ -175,6 +223,6 @@ public class HistoryController extends BaseController {
                 })
                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
 
-        historyTable.setItems(filtered);
+        historyTable.setItems(FXCollections.observableArrayList(filtered));
     }
 }
