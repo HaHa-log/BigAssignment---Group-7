@@ -1,0 +1,27 @@
+.notification-button {
+
+    -fx-background-color: white;
+
+    -fx-text-fill: #1e293b;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+
+    -fx-padding: 10 16;
+
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+
+    -fx-border-color: #dbe3ff;
+
+    -fx-cursor: hand;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(0,0,0,0.08),
+            10,
+            0,
+            0,
+            2
+    );
+}
+
