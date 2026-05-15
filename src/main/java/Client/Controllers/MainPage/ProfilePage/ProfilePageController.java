@@ -72,9 +72,6 @@ public class ProfilePageController {
             loadView(financePane,
                     "/MainFXML/Profile/FinancePane.fxml");
 
-            loadView(notificationPane,
-                    "/MainFXML/Profile/NotificationPane.fxml");
-
             loadView(historyPane,
                     "/MainFXML/Profile/HistoryPane.fxml");
         }
