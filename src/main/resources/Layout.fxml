@@ -45,7 +45,7 @@
         </HBox>
     </top>
     <center>
-        <ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background-color: #37427c;">
+        <ScrollPane fitToHeight="false" fitToWidth="true" style="-fx-background-color: #37427c;">
             <content>
                   <StackPane fx:id="contentArea">
                         </StackPane>
