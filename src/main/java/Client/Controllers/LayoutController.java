@@ -20,7 +20,7 @@ public class LayoutController {
 
     @FXML
     public void redirectToHomePage() {
-        SceneManager.switchContent("/MainFXML/HomePage.fxml");
+        SceneManager.switchContent("/MainFXML/HomePage/HomePage.fxml");
     }
 
     @FXML

@@ -45,6 +45,6 @@ public class DemoPageController{
     public void onSuccessfulLogin() {
         User user = SessionManager.getCurrentUser();
         SceneManager.loadLayout();
-        SceneManager.switchContent("/MainFXML/HomePage.fxml");
+        SceneManager.switchContent("/MainFXML/HomePage/HomePage.fxml");
         }
     }

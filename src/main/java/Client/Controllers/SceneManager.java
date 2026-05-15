@@ -5,7 +5,6 @@ import java.util.prefs.Preferences;
 
 import Branch.SessionManager;
 import Branch.User;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -132,7 +131,7 @@ public class SceneManager {
                 User user = userDb.getByEmail(savedEmail);
                 SessionManager.loginCurrentUser(user);
                 SceneManager.loadLayout();
-                SceneManager.switchContent("/MainFXML/HomePage.fxml");
+                SceneManager.switchContent("/MainFXML/HomePage/HomePage.fxml");
             }
             else {
                 SceneManager.switchScene("/LoginFXML/DemoPage.fxml");
