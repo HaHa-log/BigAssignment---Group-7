@@ -1,25 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx/25"
+<VBox alignment="TOP_RIGHT"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="Client.Controllers.MainPage.HomePage.NotificationController"
-      alignment="TOP_RIGHT"
-      spacing="8">
+      xmlns="http://javafx.com/javafx/25"
+      fx:controller="Client.Controllers.MainPage.HomePage.NotificationController">
 
     <Button fx:id="notificationButton"
-            text="🔔 Notifications"
             onAction="#showNotifications"
-
-            stylesheets="@homepage.css"
-            styleClass="notification-button"/>
-
-    <HBox alignment="CENTER_RIGHT"
-          spacing="10">
-
-    </HBox>
-
+            text="🔔 Notifications"
+            style="-fx-cursor: hand;"/>
 </VBox>

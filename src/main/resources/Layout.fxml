@@ -57,7 +57,6 @@
    <bottom>
            <HBox alignment="CENTER" BorderPane.alignment="CENTER">
          <Button mnemonicParsing="false" text="🔨 Want to create your own Auction? Click here!" onMouseClicked="#toAuctionCreate"/>
-               <!--<Label accessibleRole="BUTTON" onMouseClicked="#toAuctionCreate" style="-fx-background-color: linear-gradient(to right, #74b9ff, #a29bfe); -fx-background-radius: 25; -fx-padding: 7 7 7 7; -fx-font-size: 10px; -fx-font-weight: bold; -fx-cursor: hand;" text="🔨 Want to create your own Auction? Click here!" textFill="WHITE" />-->
          <padding>
             <Insets bottom="10.0" top="20.0" />
          </padding>
