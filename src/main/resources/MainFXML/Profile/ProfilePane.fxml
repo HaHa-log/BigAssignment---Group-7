@@ -23,7 +23,7 @@
     <!-- HEADER -->
     <VBox spacing="7">
 
-        <Label text="Personal Information"
+        <Label text=" 👤 Personal Information"
                style="
                     -fx-font-size: 22;
                     -fx-font-weight: bold;

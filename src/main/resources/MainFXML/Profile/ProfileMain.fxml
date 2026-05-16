@@ -69,12 +69,6 @@
                         </content>
                     </Tab>
 
-                    <Tab text="Notification">
-                        <content>
-                            <StackPane fx:id="notificationPane" />
-                        </content>
-                    </Tab>
-
                     <Tab text="History">
                         <content>
                             <StackPane fx:id="historyPane" />
