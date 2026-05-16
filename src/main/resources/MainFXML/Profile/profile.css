@@ -130,3 +130,32 @@
     -fx-text-fill: white;
     -fx-font-weight: bold;
 }
+
+.finance-card {
+    -fx-background-color: white;
+    -fx-padding: 18;
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-border-color: #d1d9e6;
+    -fx-spacing: 8;
+}
+
+.deposit-button {
+    -fx-background-color: linear-gradient(to right, #22c55e, #16a34a);
+    -fx-text-fill: white;
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+    -fx-background-radius: 12;
+    -fx-padding: 10 18;
+    -fx-cursor: hand;
+}
+
+.withdraw-button {
+    -fx-background-color: linear-gradient(to right, #ef4444, #dc2626);
+    -fx-text-fill: white;
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+    -fx-background-radius: 12;
+    -fx-padding: 10 18;
+    -fx-cursor: hand;
+}

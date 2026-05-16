@@ -14,27 +14,84 @@
     <Label text="💰 Finance Center"
            style="-fx-font-size: 24;-fx-font-weight: bold;-fx-text-fill: #1e293b;"/>
 
-    <!-- BALANCE -->
-    <VBox spacing="8"
-          style="
-                -fx-background-color: white;
-                -fx-padding: 18;
-                -fx-background-radius: 16;
-                -fx-border-radius: 16;
-                -fx-border-color: #d1d9e6;
-          ">
+    <HBox spacing="18">
 
-        <Label text="💳 Available Balance"
-               style="
+        <!-- AVAILABLE BALANCE -->
+        <VBox spacing="8"
+              HBox.hgrow="ALWAYS"
+              maxWidth="Infinity"
+              styleClass="finance-card">
+
+            <Label text="💳 Available Balance"
+                   style="
                     -fx-font-size: 14;
                     -fx-text-fill: #64748b;
                     -fx-font-weight: bold;
                "/>
 
-        <Label fx:id="balanceLabel"
-               text="00000"
-               style="-fx-font-size: 30;-fx-font-weight: bold;-fx-text-fill: #16a34a;"/>
-    </VBox>
+            <Label fx:id="balanceLabel"
+                   text="0000"
+                   style="
+                    -fx-font-size: 20;
+                    -fx-font-weight: bold;
+                    -fx-text-fill: #16a34a;
+               "/>
+
+            <Label text="Ready to use"
+                   style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
+        </VBox>
+
+        <!-- FROZEN -->
+        <VBox spacing="8"
+              HBox.hgrow="ALWAYS"
+              maxWidth="Infinity"
+              styleClass="finance-card">
+
+            <Label text="🔒 Frozen Balance"
+                   style="
+                    -fx-font-size: 14;
+                    -fx-text-fill: #64748b;
+                    -fx-font-weight: bold;
+               "/>
+
+            <Label fx:id="frozenBalanceLabel"
+                   text="0000"
+                   style="
+                    -fx-font-size: 20;
+                    -fx-font-weight: bold;
+                    -fx-text-fill: #2563eb;
+               "/>
+
+            <Label text="Reserved for auctions"
+                   style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
+        </VBox>
+
+        <!-- TOTAL -->
+        <VBox spacing="8"
+              HBox.hgrow="ALWAYS"
+              maxWidth="Infinity"
+              styleClass="finance-card">
+
+            <Label text="📊 Total Assets"
+                   style="
+                    -fx-font-size: 14;
+                    -fx-text-fill: #64748b;
+                    -fx-font-weight: bold;
+               "/>
+
+            <Label fx:id="totalBalanceLabel"
+                   text="0000"
+                   style="
+                    -fx-font-size: 20;
+                    -fx-font-weight: bold;
+                    -fx-text-fill: #f59e0b;
+               "/>
+
+            <Label text="Available + Frozen"
+                   style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
+        </VBox>
+
+    </HBox>
 
     <HBox spacing="22">
         <!-- deposit -->
@@ -47,15 +104,7 @@
             <Button text="⬆ Deposit"
                     onAction="#handleDeposit"
                     maxWidth="Infinity"
-                    style="
-                            -fx-background-color: linear-gradient(to right, #22c55e, #16a34a);
-                            -fx-text-fill: white;
-                            -fx-font-size: 14;
-                            -fx-font-weight: bold;
-                            -fx-background-radius: 12;
-                            -fx-padding: 10 18;
-                            -fx-cursor: hand;
-                    "/>
+                    styleClass="deposit-button"/>
 
             <VBox fx:id="depositBox"
                   spacing="10"
@@ -90,15 +139,7 @@
             <Button text="⬇ Withdraw"
                     onAction="#handleWithdraw"
                     maxWidth="Infinity"
-                    style="
-                            -fx-background-color: linear-gradient(to right, #ef4444, #dc2626);
-                            -fx-text-fill: white;
-                            -fx-font-size: 14;
-                            -fx-font-weight: bold;
-                            -fx-background-radius: 12;
-                            -fx-padding: 10 18;
-                            -fx-cursor: hand;
-                    "/>
+                    styleClass="withdraw-button"/>
 
             <VBox fx:id="withdrawBox"
                   spacing="10"
