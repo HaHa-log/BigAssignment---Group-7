@@ -9,11 +9,11 @@ public class FinanceController extends BaseController {
 
     @FXML private VBox depositBox, withdrawBox;
     @FXML private TextField depositField, withdrawField;
-    @FXML private Label balanceLabel, depositStatus, withdrawStatus;
+    @FXML private Label balanceLabel, frozenBalanceLabel, totalBalanceLabel, depositStatus, withdrawStatus;
 
     @Override
     protected void initData() {
-        balanceLabel.setText(String.valueOf(user.getBalance()));
+        refreshFinance();
     }
 
     @FXML
@@ -39,7 +39,7 @@ public class FinanceController extends BaseController {
             user.depositMoney(amount);
             depositStatus.getStyleClass().setAll("success");
             depositStatus.setText("Deposited " + amount+" successfully!");
-            balanceLabel.setText(String.valueOf(user.getBalance()));
+            refreshFinance();
         } catch (Exception e) {
             depositStatus.getStyleClass().setAll("error");
             depositStatus.setText("Invalid amount");
@@ -54,11 +54,20 @@ public class FinanceController extends BaseController {
             user.withdrawMoney(amount);
             withdrawStatus.getStyleClass().setAll("success");
             withdrawStatus.setText("Withdrawn " + amount+" successfully!");
-            balanceLabel.setText(String.valueOf(user.getBalance()));
+            refreshFinance();
         } catch (Exception e) {
             withdrawStatus.getStyleClass().setAll("error");
             withdrawStatus.setText("Invalid or exceeds balance");
         }
         withdrawField.clear();
+    }
+
+    private void refreshFinance() {
+
+        balanceLabel.setText(String.format("%.2f", user.getBalance()));
+
+        frozenBalanceLabel.setText(String.format("%.2f", user.getFrozenBalance()));
+
+        totalBalanceLabel.setText(String.format("%.2f", user.getBalance() + user.getFrozenBalance()));
     }
 }
