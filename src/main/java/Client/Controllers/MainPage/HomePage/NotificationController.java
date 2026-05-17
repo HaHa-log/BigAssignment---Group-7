@@ -19,22 +19,39 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Popup;
 import java.net.URL;
 import java.util.List;
+import javafx.scene.control.ProgressIndicator;
 
 public class NotificationController extends BaseController {
-
     private final User user = SessionManager.getCurrentUser();
-    private final ObservableList<String> allNotifications = FXCollections.observableArrayList();
+    private static final ObservableList<String> cachedNotifications = FXCollections.observableArrayList();
     private final Popup popup = new Popup();
+    private static boolean loaded = false;
 
     @FXML
     private Button notificationButton;
 
     @FXML
-    public void initialize() {
-        popup.setAutoHide(true);
-        loadNotifications();
+    private ProgressIndicator loadingIndicator;
+
+    private void setLoading(boolean loading) {
+        if (loadingIndicator != null) {
+            loadingIndicator.setVisible(loading);
+            loadingIndicator.setManaged(loading);
+        }
+
+        notificationButton.setDisable(loading);
     }
 
+    @FXML
+    public void initialize() {
+        popup.setAutoHide(true);
+
+        updateNotificationCount();
+
+        if (!loaded) {
+            loadNotifications();
+        }
+    }
     @FXML
     private void showNotifications() {
         if (popup.isShowing()) {
@@ -54,14 +71,14 @@ public class NotificationController extends BaseController {
         headerRow.getStyleClass().add("notification-header-row");
 
         ListView<String> popupList = new ListView<>();
-        popupList.setItems(allNotifications);
+        popupList.setItems(cachedNotifications);
         popupList.getStyleClass().add("notification-list-view");
 
         Button clearButton = new Button("Clear All");
         clearButton.getStyleClass().add("button");
         clearButton.setMaxWidth(Double.MAX_VALUE);
         clearButton.setOnAction(event -> {
-            allNotifications.clear();
+            cachedNotifications.clear();
             updateNotificationCount();
             popup.hide();
         });
@@ -98,7 +115,9 @@ public class NotificationController extends BaseController {
     }
 
     private void loadNotifications() {
-        if (user == null) return;
+        if (user == null || loaded) return;
+
+        setLoading(true);
 
         Task<ObservableList<String>> task = new Task<>() {
             @Override
@@ -124,8 +143,11 @@ public class NotificationController extends BaseController {
         };
 
         task.setOnSucceeded(event -> {
-            allNotifications.setAll(task.getValue());
+            cachedNotifications.setAll(task.getValue());
+            loaded = true;
             updateNotificationCount();
+
+            setLoading(false);
         });
 
         Thread thread = new Thread(task);
@@ -134,6 +156,6 @@ public class NotificationController extends BaseController {
     }
 
     private void updateNotificationCount() {
-        notificationButton.setText("🔔 Notifications (" + allNotifications.size() + ")");
+        notificationButton.setText("🔔 Notifications (" + cachedNotifications.size() + ")");
     }
 }
