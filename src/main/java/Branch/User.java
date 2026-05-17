@@ -96,26 +96,41 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
         return success;
     }
 
-    public void freezeMoney(double amount) {
-        if (this.balance.showBalance() >= amount) {
-            this.balance.withdraw(amount);
-            this.frozenBalance += amount;
-            update();
-            System.out.println("[System]: " + getFullName() + " has " + amount + " frozen.");
-        }
-    }
+    public boolean freezeMoney(double amount) {
+        if (amount <= 0) {return false;}
+        if (this.balance.showBalance() < amount) {return false;}
 
-    public boolean spendFrozenMoney(double amount) {
-        this.frozenBalance -= amount;
+        boolean success = this.balance.withdraw(amount);
+        if (!success) {return false;}
+
+        this.frozenBalance += amount;
+        transactions.add("🔒 FREEZE | -" + amount + " | Frozen: " + frozenBalance);
+
         update();
-        System.out.println("[System]: Frozen money spent: " + amount);
         return true;
     }
 
-    public void unfreezeMoney(double amount) {
-        this.frozenBalance -= amount;
-        this.balance.deposit(amount);
+    public boolean spendFrozenMoney(double amount) {
+        if (amount <= 0) {return false;}
+        if (frozenBalance < amount) {return false;}
+
+        frozenBalance -= amount;
+        transactions.add("🛒 PAYMENT | -" + amount + " | Frozen Used");
+
         update();
+        return true;
+    }
+
+    public boolean unfreezeMoney(double amount) {
+        if (amount <= 0) {return false;}
+        if (frozenBalance < amount) {return false;}
+
+        frozenBalance -= amount;
+        balance.deposit(amount);
+        transactions.add("🔓 UNFREEZE | +" + amount + " | Balance: " + getBalance());
+
+        update();
+        return true;
     }
 
     public double getCurrentBalance() { return this.balance.showBalance(); }
