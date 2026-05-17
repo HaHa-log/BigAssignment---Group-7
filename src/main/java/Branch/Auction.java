@@ -191,11 +191,12 @@ public class Auction extends Entity implements Serializable {
             }
 
             double lastTimeBidAmount = bidder.getHighestBid(this);
-            double amountToDeduct = bidAmount.getPrice() - lastTimeBidAmount;
+            double amountToFreeze = bidAmount.getPrice() - lastTimeBidAmount;
 
-            if (user.getBalance() < amountToDeduct) {
-                throw new IllegalArgumentException("[Error]: Insufficient balance to cover the bid increase of " + amountToDeduct);
-            }
+            if (amountToFreeze <= 0) {throw new InvalidBidException(currentPrice, bidAmount.getPrice());}
+            boolean freezeSuccess = user.freezeMoney(amountToFreeze);
+
+            if (!freezeSuccess) {throw new IllegalArgumentException("[Error]: Insufficient balance for bidding.");}
 
             this.currentPrice = bidAmount.getPrice();
             this.winner = bidder;
