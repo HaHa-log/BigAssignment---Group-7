@@ -88,8 +88,8 @@ public class UsersDAOImpl implements UsersDAO {
             st.setBoolean(7, user.isBlocked());
             st.setDouble(8, user.getBalance());
             st.setString(9, user.getAvatarPath());
-            st.setInt(10, user.getId());
-            st.setDouble(11, user.getFrozenBalance());
+            st.setDouble(10, user.getFrozenBalance());
+            st.setInt(11, user.getId());
 
 
             st.executeUpdate();
