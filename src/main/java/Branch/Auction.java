@@ -197,7 +197,7 @@ public class Auction extends Entity implements Serializable {
                 System.out.println("[System]: Unfrozen old self-bid of " + lastTimeBidAmount + " for " + user.getFullName());
             }
 
-            double amountToFreeze = bidAmount.getPrice() - lastTimeBidAmount;
+            double amountToFreeze = bidAmount.getPrice();
 
             if (amountToFreeze < 0) {
                 throw new InvalidBidException(currentPrice, bidAmount.getPrice());
@@ -212,11 +212,14 @@ public class Auction extends Entity implements Serializable {
             }
 
             if (previousWinner instanceof User oldWinnerUser && oldWinnerUser.getId() != user.getId()) {
-                double oldBidAmount = oldWinnerUser.getHighestBid(this);
-                oldWinnerUser.unfreezeMoney(oldBidAmount);
+                double oldBidAmount = this.currentPrice;
+                User freshOldWinner = usersDb.getById(oldWinnerUser.getId());
 
-                usersDb.update(oldWinnerUser);
-                System.out.println("[System]: Unfrozen " + oldBidAmount + " for previous winner: " + oldWinnerUser.getFullName());
+                if (freshOldWinner != null) {
+                    freshOldWinner.unfreezeMoney(oldBidAmount);
+                    usersDb.update(freshOldWinner);
+                    System.out.println("[System]: Unfrozen " + oldBidAmount + " for previous winner: " + freshOldWinner.getFullName());
+                }
             }
             usersDb.update(user);
 
