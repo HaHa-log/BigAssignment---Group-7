@@ -58,7 +58,6 @@ public class Transaction {
                 auction.transitionTo(Auction.AuctionStatus.PAID);
 
                 buyer.addItem(auction.getItem());
-                seller.removeItem(auction.getItem());
 
                 this.status = TransactionStatus.COMPLETED;
                 this.completedAt = LocalDateTime.now();
@@ -82,7 +81,6 @@ public class Transaction {
             try {
                 buyer.depositMoney(finalAmount);
 
-                buyer.removeItem(auction.getItem());
                 seller.addItem(auction.getItem());
 
                 this.status = TransactionStatus.REFUNDED;

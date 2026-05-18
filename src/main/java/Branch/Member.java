@@ -45,8 +45,11 @@ public class Member extends User implements Bidder, Seller, AuctionObserver {
     }
 
     public void addItem(Item item) {
-        item.setOwnerId(this.getId());
-        itemsDb.update(item);
+        if (item != null) {
+            item.setOwnerId(this.getId());
+            itemsDb.update(item);
+            System.out.println("[System]: Item " + item.getName() + " is now owned by " + this.getFullName());
+        }
     }
 
     public void removeItem(Item item) {
