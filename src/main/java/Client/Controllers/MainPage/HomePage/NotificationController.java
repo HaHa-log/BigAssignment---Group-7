@@ -22,10 +22,10 @@ import java.util.List;
 import javafx.scene.control.ProgressIndicator;
 
 public class NotificationController extends BaseController {
-    private final User user = SessionManager.getCurrentUser();
-    private static final ObservableList<String> cachedNotifications = FXCollections.observableArrayList();
+    private User getCurrentUser() {return SessionManager.getCurrentUser();}
+    private final ObservableList<String> cachedNotifications = FXCollections.observableArrayList();
     private final Popup popup = new Popup();
-    private static boolean loaded = false;
+    private boolean loaded = false;
 
     @FXML
     private Button notificationButton;
@@ -115,6 +115,7 @@ public class NotificationController extends BaseController {
     }
 
     private void loadNotifications() {
+        User user = getCurrentUser();
         if (user == null || loaded) return;
 
         setLoading(true);
