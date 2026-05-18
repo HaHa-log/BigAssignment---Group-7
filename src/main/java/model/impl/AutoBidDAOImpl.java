@@ -1,6 +1,7 @@
 package model.impl;
 
 import Branch.AutoBid;
+import Branch.BidStepConfiguration;
 import Branch.Member;
 import DB.DB;
 import DB.DbException;
@@ -20,6 +21,12 @@ public class AutoBidDAOImpl implements AutoBidDAO {
 
     @Override
     public void save(AutoBid obj) {
+        double currentPrice = obj.getAuction().getCurrentPrice();
+        if (!BidStepConfiguration.isValidStep(currentPrice, obj.getIncrement())) {
+            throw new DbException("[Error]: Cannot save AutoBid configuration. Increment amount "
+                    + obj.getIncrement() + " violates system pricing tier rules!");
+        }
+
         String sql = "INSERT INTO auto_bids (auction_id, user_id, max_bid, increment_amount) "
                 + "VALUES (?, ?, ?, ?) "
                 + "ON DUPLICATE KEY UPDATE max_bid = ?, increment_amount = ?";

@@ -32,6 +32,13 @@ public class AutoBid implements Serializable {
         if (step <= 0) {
             throw new CustomisedException("[Error]: Step must be greater than 0.");
         }
+
+        double currentPriceOfAuction = this.auction.getCurrentPrice();
+        if (!BidStepConfiguration.isValidStep(currentPriceOfAuction, step)) {
+            throw new CustomisedException("[Error]: Step " + step + " is invalid for the current auction price! "
+                    + "Allowed steps for this range are: " + BidStepConfiguration.getAllowedSteps(currentPriceOfAuction));
+        }
+
         if (step < maxBid.getPrice()) {
             this.increment = step;
         } else {

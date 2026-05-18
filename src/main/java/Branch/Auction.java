@@ -211,21 +211,16 @@ public class Auction extends Entity implements Serializable {
                 throw new IllegalArgumentException("[Error]: Insufficient balance for bidding.");
             }
 
-            if (previousWinner instanceof User oldWinnerUser && oldWinnerUser.getId() != user.getId()) {
-                double oldBidAmount = this.currentPrice;
-                User freshOldWinner = usersDb.getById(oldWinnerUser.getId());
-
-                if (freshOldWinner != null) {
-                    freshOldWinner.unfreezeMoney(oldBidAmount);
-                    usersDb.update(freshOldWinner);
-                    System.out.println("[System]: Unfrozen " + oldBidAmount + " for previous winner: " + freshOldWinner.getFullName());
+            if (previousWinner instanceof User) {
+                User oldUser = (User) previousWinner;
+                if (oldUser.getId() != user.getId()) {
+                    double oldBidAmount = oldUser.getHighestBid(this);
+                    oldUser.unfreezeMoney(oldBidAmount);
+                    usersDb.update(oldUser);
+                    System.out.println("[System]: Unfrozen " + oldBidAmount + " for previous winner: " + oldUser.getFullName());
                 }
             }
             usersDb.update(user);
-
-            //Create transac for each bid - transac deduct the money
-            //Delete after the winner is determined
-            //step is modified by auction system and bidder bids accordingly
 
             this.currentPrice = bidAmount.getPrice();
             this.winner = bidder;
@@ -242,10 +237,22 @@ public class Auction extends Entity implements Serializable {
                 observer.onBidPlaced(this, bidder, amount);
             }
 
-            if (previousWinner != null && ((User) previousWinner).getId() != ((User) bidder).getId()) {
-                AutoBid config = AuctionManager.getInstance().getAutoBidConfig(this.auctionId, ((Member) previousWinner).getId());
-                if (config != null) {
-                    AuctionManager.getInstance().processAutoBids(this, config);
+            if (previousWinner instanceof User && bidder instanceof User) {
+                User oldUser = (User) previousWinner;
+                User newUser = (User) bidder;
+
+                if (oldUser.getId() != newUser.getId()) {
+                    AutoBid config = AuctionManager.getInstance().getAutoBidConfig(this.auctionId, oldUser.getId());
+                    if (config != null) {
+                        if (!BidStepConfiguration.isValidStep(this.currentPrice, config.getIncrement())) {
+                            double minimumAllowedStep = BidStepConfiguration.getAllowedSteps(this.currentPrice).get(0);
+                            config.setIncrement(minimumAllowedStep);
+                            autoBidDb.update(config);
+                            System.out.println("[System]: AutoBid increment adjusted to " + minimumAllowedStep);
+                        }
+
+                        AuctionManager.getInstance().processAutoBids(this, config);
+                    }
                 }
             }
 
