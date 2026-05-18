@@ -191,12 +191,38 @@ public class Auction extends Entity implements Serializable {
             }
 
             double lastTimeBidAmount = bidder.getHighestBid(this);
+
+            if (lastTimeBidAmount > 0) {
+                user.unfreezeMoney(lastTimeBidAmount);
+                System.out.println("[System]: Unfrozen old self-bid of " + lastTimeBidAmount + " for " + user.getFullName());
+            }
+
             double amountToFreeze = bidAmount.getPrice() - lastTimeBidAmount;
 
-            if (amountToFreeze <= 0) {throw new InvalidBidException(currentPrice, bidAmount.getPrice());}
-            boolean freezeSuccess = user.freezeMoney(amountToFreeze);
+            if (amountToFreeze < 0) {
+                throw new InvalidBidException(currentPrice, bidAmount.getPrice());
+            }
 
-            if (!freezeSuccess) {throw new IllegalArgumentException("[Error]: Insufficient balance for bidding.");}
+            boolean freezeSuccess = user.freezeMoney(amountToFreeze);
+            if (!freezeSuccess) {
+                if (lastTimeBidAmount > 0) {
+                    user.freezeMoney(lastTimeBidAmount);
+                }
+                throw new IllegalArgumentException("[Error]: Insufficient balance for bidding.");
+            }
+
+            if (previousWinner instanceof User oldWinnerUser && oldWinnerUser.getId() != user.getId()) {
+                double oldBidAmount = oldWinnerUser.getHighestBid(this);
+                oldWinnerUser.unfreezeMoney(oldBidAmount);
+
+                usersDb.update(oldWinnerUser);
+                System.out.println("[System]: Unfrozen " + oldBidAmount + " for previous winner: " + oldWinnerUser.getFullName());
+            }
+            usersDb.update(user);
+
+            //Create transac for each bid - transac deduct the money
+            //Delete after the winner is determined
+            //step is modified by auction system and bidder bids accordingly
 
             this.currentPrice = bidAmount.getPrice();
             this.winner = bidder;
@@ -204,8 +230,10 @@ public class Auction extends Entity implements Serializable {
             handleSniping();
             auctionsDb.update(this);
 
-            Bid bid = new Bid(this, (Member) bidder, bidAmount);
-            bidsDb.save(bid);
+            if (bidder instanceof Member member) {
+                Bid bid = new Bid(this, member, bidAmount);
+                bidsDb.save(bid);
+            }
 
             for (AuctionObserver observer : getObservers()) {
                 observer.onBidPlaced(this, bidder, amount);
