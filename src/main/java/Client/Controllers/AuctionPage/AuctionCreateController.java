@@ -70,13 +70,16 @@ public class AuctionCreateController {
 
                 Item item = new Item(itemName, startingPrice, description);
 
+                if (seller != null) {
+                    item.setOwnerId(seller.getId());
+                } else {
+                    throw new IllegalArgumentException("[Error]: Session expired! Please log in again.");
+                }
+
                 if (selectedImageFile != null) {
                     processImageUpload(item);
                 }
 
-                item.saveItem();
-
-                // Use AuctionManager to create the session (already handles DB save internally)
                 auctionManager.createAuction(seller, item, startFull, endFull);
 
                 return null;

@@ -13,11 +13,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AuctionsDAOImpl implements AuctionsDAO {
+    private final ItemsDAO itemsDAO = DaoFactory.createItemDAO();
     protected AuctionsDAOImpl() {
     }
 
     @Override
     public void save(Auction auction) {
+        Item item = auction.getItem();
+        if (item != null) {
+            if (item.getOwnerId() == 0) {
+                item.setOwnerId(auction.getOwner().getId());
+            }
+            itemsDAO.save(item);
+        } else {
+            throw new DbException("[Error]: Cannot create an auction without an item!");
+        }
+
         String sql = "INSERT INTO auctions "
                 + "(owner_id, item_id, startingPrice, currentPrice, startingTime, endingTime) "
                 + "VALUES (?, ?, ?, ?, ?, ?)";
@@ -188,7 +199,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 + "i.name AS item_name, i.startingPrice AS item_startingPrice, "
                 + "i.description AS item_description, i.status AS item_status, "
                 + "i.createdAt AS item_createdAt, i.updatedAt AS item_updatedAt, "
-                + "i.imagePath AS item_imagePath, "
+                + "i.imagePath AS item_imagePath, i.owner_id AS item_owner_id, "
                 + "u_winner.users_id AS winner_id, "
                 + "u_winner.firstName AS winner_firstName, u_winner.lastName AS winner_lastName, "
                 + "u_winner.email AS winner_email, u_winner.phoneNumber AS winner_phoneNumber, "
@@ -230,6 +241,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 rs.getString("item_imagePath")
         );
         obj.setId(rs.getInt("items_id"));
+        obj.setOwnerId(rs.getInt("item_owner_id"));
         return obj;
     }
 
