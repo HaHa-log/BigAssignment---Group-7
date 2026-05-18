@@ -190,25 +190,23 @@ public class Auction extends Entity implements Serializable {
                 throw new InvalidBidException(currentPrice, bidAmount.getPrice());
             }
 
-            double lastTimeBidAmount = bidder.getHighestBid(this);
-
-            if (lastTimeBidAmount > 0) {
-                user.unfreezeMoney(lastTimeBidAmount);
-                System.out.println("[System]: Unfrozen old self-bid of " + lastTimeBidAmount + " for " + user.getFullName());
+            double lastTimeBidAmount = 0;
+            if (winner instanceof User winnerUser
+                    && winnerUser.getId() == user.getId()) {
+                lastTimeBidAmount = currentPrice;
             }
 
-            double amountToFreeze = bidAmount.getPrice();
+            double amountToFreeze = bidAmount.getPrice() - lastTimeBidAmount;
 
-            if (amountToFreeze < 0) {
+            if (amountToFreeze <= 0) {
                 throw new InvalidBidException(currentPrice, bidAmount.getPrice());
             }
 
             boolean freezeSuccess = user.freezeMoney(amountToFreeze);
             if (!freezeSuccess) {
-                if (lastTimeBidAmount > 0) {
-                    user.freezeMoney(lastTimeBidAmount);
-                }
-                throw new IllegalArgumentException("[Error]: Insufficient balance for bidding.");
+                throw new IllegalArgumentException(
+                        "[Error]: Insufficient balance for bidding."
+                );
             }
 
             if (previousWinner instanceof User oldWinnerUser && oldWinnerUser.getId() != user.getId()) {
