@@ -22,6 +22,7 @@ public class Item extends Entity {
     private LocalDateTime updatedAt;
     private String imagePath;
     private ItemsDAO itemsDb = DaoFactory.createItemDAO();
+    private int ownerId;
 
     public Item(String name, double startingPrice, String description) {
         this.name = name;
@@ -65,6 +66,10 @@ public class Item extends Entity {
         itemsDb.update(this);
     }
 
+    public void setOwnerId(int ownerId) {
+        this.ownerId = ownerId;
+    }
+
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
         itemsDb.update(this);
@@ -96,6 +101,10 @@ public class Item extends Entity {
 
     public boolean isAvailable() {
         return this.status == Status.AVAILABLE;
+    }
+
+    public int getOwnerId() {
+        return ownerId;
     }
 
     public String getImagePath() {
