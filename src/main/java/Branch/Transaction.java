@@ -44,6 +44,10 @@ public class Transaction {
     }
 
     public void markCompleted() throws IllegalTransactionException {
+        if (this.isExpired()) {
+            throw new IllegalTransactionException("[Error]: This transaction has expired (30 mins limit reached)!");
+        }
+
         if (this.status != TransactionStatus.PENDING) {
             throw new IllegalTransactionException("[Error]: The transaction isn't pending");
         }

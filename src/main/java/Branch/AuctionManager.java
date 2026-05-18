@@ -4,6 +4,7 @@ import Branch.Exceptions.CustomisedException;
 import model.AuctionsDAO;
 import model.AutoBidDAO;
 import model.TransactionDAO;
+import model.UsersDAO;
 import model.impl.DaoFactory;
 
 import java.time.LocalDateTime;
@@ -133,6 +134,25 @@ public class AuctionManager {
         }
         System.out.println("Unable to find auction id " + auctionId);
         return false;
+    }
+
+    public void checkAndCancelExpiredTransactions() {
+        List<Transaction> pendingTransactions = transactionDb.getAll().stream()
+                .filter(t -> t.getStatus() == Transaction.TransactionStatus.PENDING)
+                .toList();
+        UsersDAO usersDb = DaoFactory.createUsersDAO();
+
+        for (Transaction t : pendingTransactions) {
+            if (t.isExpired()) {
+                t.getAuction().transitionTo(Auction.AuctionStatus.CANCELED);
+
+                Member buyer = t.getBuyer();
+                buyer.unfreezeMoney(t.getFinalAmount());
+                usersDb.update(buyer);
+
+                System.out.println("[System]: Transaction " + t.getTransactionId() + " has expired. Money refunded to buyer.");
+            }
+        }
     }
 
     public List<Auction> getActiveSessions () {
