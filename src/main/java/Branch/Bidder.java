@@ -31,7 +31,7 @@ public interface Bidder {
 
         User thisUser = (User) this;
 
-        List<Bid> userBids = bidsDb.getByAuctionId(thisUser.getId());
+        List<Bid> userBids = bidsDb.getByAuctionId(auction.getId());
         for (Bid existingBid : userBids) {
             if (existingBid.getBidder() == null) {
                 continue;

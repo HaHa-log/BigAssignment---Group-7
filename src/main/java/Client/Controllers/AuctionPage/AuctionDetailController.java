@@ -97,7 +97,8 @@ public class AuctionDetailController {
         setItemImage();
         getTableData(auction);
         updateBidChart();
-        if (((User) currentUser).isWinner(auction)){
+        if (((User) currentUser).isWinner(auction)
+                && auction.getRawStatus() == Auction.AuctionStatus.FINISHED){
             setupConfirmPane();
         };
     }
@@ -156,6 +157,19 @@ public class AuctionDetailController {
 
     @FXML
     private void confirm() {
+        try {
+            Transaction transaction = AuctionManager.getInstance().confirmReceipt(auction, (Member) currentUser);
+            auction = transaction.getAuction();
+            auctionStatusLabel.setText(auction.getRawStatus().toString());
+            confirmPane.setVisible(false);
+            confirmPane.setManaged(false);
+
+            bidPlacedResultLabel.setTextFill(GREEN);
+            bidPlacedResultLabel.setText("Receipt confirmed. Transaction completed.");
+        } catch (IllegalArgumentException | CustomisedException e) {
+            bidPlacedResultLabel.setTextFill(RED);
+            bidPlacedResultLabel.setText(e.getMessage());
+        }
     }
 
     @FXML

@@ -143,6 +143,29 @@ public class TransactionDAOImpl implements TransactionDAO {
     }
 
     @Override
+    public Transaction getPendingByAuctionAndBuyer(int auctionId, int buyerId) {
+        String sql = "SELECT * FROM transaction "
+                + "WHERE auction_id = ? AND buyer_id = ? AND status = ?";
+
+        try (Connection conn = DB.getConnection();
+             PreparedStatement st = conn.prepareStatement(sql)) {
+
+            st.setInt(1, auctionId);
+            st.setInt(2, buyerId);
+            st.setString(3, Transaction.TransactionStatus.PENDING.name());
+
+            try (ResultSet rs = st.executeQuery()) {
+                if (rs.next()) {
+                    return instantiateTransaction(rs);
+                }
+            }
+            return null;
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+    }
+
+    @Override
     public List<Transaction> getAll() {
         String sql = "SELECT * FROM transaction";
 

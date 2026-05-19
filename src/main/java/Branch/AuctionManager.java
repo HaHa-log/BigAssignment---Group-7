@@ -1,6 +1,5 @@
 package Branch;
 
-import Branch.Exceptions.CustomisedException;
 import model.AuctionsDAO;
 import model.AutoBidDAO;
 import model.TransactionDAO;
@@ -13,14 +12,17 @@ import java.util.List;
 
 public class AuctionManager {
     private static AuctionManager instance;
+
+    private final AuctionsDAO auctionDb;
+    private final TransactionDAO transactionDb;
+    private final AutoBidDAO autoBidDb;
     private List<Auction> activeSessions;
     private List<Auction> completedSessions;
 
-    private  AuctionsDAO auctionDb = DaoFactory.createAuctionsDAO();
-    private TransactionDAO transactionDb = DaoFactory.createTransactionDAO();
-    private AutoBidDAO autoBidDb = DaoFactory.createAutoBidDAO();
-
     private AuctionManager() {
+        auctionDb = DaoFactory.createAuctionsDAO();
+        transactionDb = DaoFactory.createTransactionDAO();
+        autoBidDb = DaoFactory.createAutoBidDAO();
         activeSessions = new ArrayList<>();
         completedSessions = new ArrayList<>();
     }
@@ -38,120 +40,119 @@ public class AuctionManager {
 
     public void duplicateAutoBidConfig(int fromAuctionId, int toAuctionId, int userId) {
         AutoBid sample = autoBidDb.getByAuctionAndUser(fromAuctionId, userId);
-
-        if (sample != null) {
-            AutoBid newConfig = sample.clone();
-
-            if (newConfig != null) {
-                Auction newAuction = auctionDb.getById(toAuctionId);
-                newConfig.setAuction(newAuction);
-                autoBidDb.save(newConfig);
-                System.out.println("[System]: AutoBid config duplicated successfully!");
-            }
-
-        } else {
+        if (sample == null) {
             System.out.println("[System]: No prototype configuration found in auction of ID " + fromAuctionId);
+            return;
         }
+
+        AutoBid newConfig = sample.clone();
+        if (newConfig == null) {
+            return;
+        }
+
+        Auction newAuction = auctionDb.getById(toAuctionId);
+        newConfig.setAuction(newAuction);
+        autoBidDb.save(newConfig);
+        System.out.println("[System]: AutoBid config duplicated successfully!");
     }
 
     public void processAutoBids(Auction auction, AutoBid userConfig) {
+        if (auction == null || userConfig == null) {
+            return;
+        }
+
         if (auction.getWinner() != null && auction.getWinner().isEqual(userConfig.getUser())) {
             return;
         }
 
         double nextPrice = auction.getCurrentPrice() + userConfig.getIncrement();
-
-        if (nextPrice <= userConfig.getMaxBid()) {
-            System.out.println("[System]: Auto-bidding for " + userConfig.getUser().getFullName());
-
-            userConfig.getUser().placeBid(auction, nextPrice);
-
-        } else {
+        if (nextPrice > userConfig.getMaxBid()) {
             System.out.println("[System]: Automatic bidding stopped due to maximum bid limit reached");
+            return;
         }
+
+        System.out.println("[System]: Auto-bidding for " + userConfig.getUser().getFullName());
+        userConfig.getUser().placeBid(auction, nextPrice);
     }
 
     public void createAuction(Member owner, Item item, LocalDateTime startingTime, LocalDateTime endingTime) {
-        /*
-        if (!item.isAvailable()) {
-            System.out.println("[Error]: Item '" + item.getName() + "' is not available!");
-            return false;
-        }
-         */
-
         item.setStatus(Item.Status.IN_AUCTION);
 
         Auction session = new Auction(owner, item, startingTime, endingTime);
-        activeSessions.add(session);
-
         auctionDb.save(session);
-
+        activeSessions.add(session);
         session.start();
     }
 
     public void closeAuction(Auction session) {
-        session.transitionTo(Auction.AuctionStatus.FINISHED);
-        activeSessions.remove(session);
-        completedSessions.add(session);
-
-        if (session.getWinner() != null) {
-//            Item soldItem = session.getItem();
-//            soldItem.setStatus(Item.Status.SOLD);
-//
-//            session.getOwner().getInventory().remove(soldItem);
-            //-> Nên chỉ remove item và để thành sold khi đã markcompleted
-
-            User winner = (User) session.getWinner();
-            double finalPrice = session.getCurrentPrice();
-
-            if (winner.getBalance() >= finalPrice) {
-                winner.freezeMoney(finalPrice);
-                System.out.println("[System]: Money frozen, moving onto transaction page...");
-            } else {
-                System.out.println("[Warning]: Winner no longer has enough balance to freeze!");
-            }
-
-            Transaction transaction = new Transaction(
-                    session,
-                    (Member) session.getWinner(),
-                    session.getOwner(),
-                    session.getCurrentPrice()
-            );
-            transactionDb.save(transaction);
-            session.getItem().setStatus(Item.Status.SOLD); //only be removed if sold successfully
-            System.out.println("[System]: Transaction created for winner: " + session.getWinner().getFullName());
-
-        } else {
-            session.getItem().setStatus(Item.Status.AVAILABLE);
+        if (session == null || session.getRawStatus() == Auction.AuctionStatus.FINISHED
+                || session.getRawStatus() == Auction.AuctionStatus.PAID
+                || session.getRawStatus() == Auction.AuctionStatus.CANCELED) {
+            return;
         }
 
-        System.out.println("Auction closed!");
+        if (!session.transitionTo(Auction.AuctionStatus.FINISHED)) {
+            return;
+        }
+
+        moveToCompleted(session);
+
+        User winner = session.getWinner();
+        if (winner == null) {
+            session.getItem().setStatus(Item.Status.AVAILABLE);
+            auctionDb.update(session);
+            System.out.println("Auction closed!");
+            return;
+        }
+
+        createPendingTransaction(session, winner);
         auctionDb.update(session);
+        System.out.println("Auction closed!");
     }
 
     public boolean cancelAuction(int auctionId) {
-        Auction canceledAuction = null;
-        for (Auction auction : activeSessions) {
-            if (auction.getId() == auctionId) {
-                canceledAuction = auction;
-                break;
-            }
+        Auction canceledAuction = findActiveAuction(auctionId);
+
+        if (canceledAuction == null) {
+            System.out.println("Unable to find auction id " + auctionId);
+            return false;
         }
 
-        if (canceledAuction != null) {
-            canceledAuction.getItem().setStatus(Item.Status.AVAILABLE);
+        canceledAuction.getItem().setStatus(Item.Status.AVAILABLE);
+        canceledAuction.transitionTo(Auction.AuctionStatus.CANCELED);
+        moveToCompleted(canceledAuction);
+        auctionDb.update(canceledAuction);
 
-            canceledAuction.transitionTo(Auction.AuctionStatus.CANCELED);
-            activeSessions.remove(canceledAuction);
-            completedSessions.add(canceledAuction);
+        System.out.println("Auction canceled!");
+        return true;
+    }
 
-            auctionDb.update(canceledAuction);
-
-            System.out.println("Auction canceled!");
-            return true;
+    public Transaction confirmReceipt(Auction auction, Member buyer) {
+        if (auction == null) {
+            throw new IllegalArgumentException("[Error]: Auction is required.");
         }
-        System.out.println("Unable to find auction id " + auctionId);
-        return false;
+        return confirmReceipt(auction.getId(), buyer);
+    }
+
+    public Transaction confirmReceipt(int auctionId, Member buyer) {
+        if (buyer == null) {
+            throw new IllegalArgumentException("[Error]: Buyer is required.");
+        }
+
+        Transaction transaction = transactionDb.getPendingByAuctionAndBuyer(auctionId, buyer.getId());
+        if (transaction == null) {
+            throw new IllegalArgumentException("[Error]: No pending transaction found for this auction.");
+        }
+
+        if (!buyer.isEqual(transaction.getBuyer())) {
+            throw new IllegalArgumentException("[Error]: Only the buyer can confirm receipt.");
+        }
+
+        transaction.markCompleted();
+        transaction.getAuction().transitionTo(Auction.AuctionStatus.PAID);
+        transactionDb.update(transaction);
+        auctionDb.update(transaction.getAuction());
+        return transaction;
     }
 
     public void checkAndCancelExpiredTransactions() {
@@ -160,33 +161,61 @@ public class AuctionManager {
                 .toList();
         UsersDAO usersDb = DaoFactory.createUsersDAO();
 
-        for (Transaction t : pendingTransactions) {
-            if (t.isExpired()) {
-                t.getAuction().transitionTo(Auction.AuctionStatus.CANCELED);
-
-                Member buyer = t.getBuyer();
-                buyer.unfreezeMoney(t.getFinalAmount());
-                usersDb.update(buyer);
-
-                System.out.println("[System]: Transaction " + t.getTransactionId() + " has expired. Money refunded to buyer.");
+        for (Transaction transaction : pendingTransactions) {
+            if (!transaction.isExpired()) {
+                continue;
             }
+
+            transaction.getAuction().transitionTo(Auction.AuctionStatus.CANCELED);
+
+            Member buyer = transaction.getBuyer();
+            buyer.unfreezeMoney(transaction.getFinalAmount());
+            usersDb.update(buyer);
+
+            System.out.println("[System]: Transaction " + transaction.getTransactionId()
+                    + " has expired. Money refunded to buyer.");
         }
     }
 
-    public List<Auction> getActiveSessions () {
-        if (activeSessions == null || activeSessions.isEmpty()) {
-            activeSessions = auctionDb.getAll();
-        }
-
+    public List<Auction> getActiveSessions() {
+        activeSessions = new ArrayList<>(auctionDb.getActiveAuctions());
         return activeSessions;
     }
 
-    public List<Auction> getAllSessions () {
+    public List<Auction> getAllSessions() {
+        return auctionDb.getAll();
+    }
 
-        if (activeSessions == null || activeSessions.isEmpty()) {
-            activeSessions = auctionDb.getAll();
+    private Auction findActiveAuction(int auctionId) {
+        return getActiveSessions().stream()
+                .filter(auction -> auction.getId() == auctionId)
+                .findFirst()
+                .orElse(null);
+    }
+
+    private void moveToCompleted(Auction session) {
+        activeSessions.removeIf(auction -> auction.getId() == session.getId());
+        if (completedSessions.stream().noneMatch(auction -> auction.getId() == session.getId())) {
+            completedSessions.add(session);
+        }
+    }
+
+    private void createPendingTransaction(Auction session, User winner) {
+        double finalPrice = session.getCurrentPrice();
+        if (winner.getFrozenBalance() < finalPrice && winner.freezeMoney(finalPrice - winner.getFrozenBalance())) {
+            System.out.println("[System]: Money frozen, moving onto transaction page...");
+        } else if (winner.getFrozenBalance() < finalPrice) {
+            System.out.println("[Warning]: Winner no longer has enough balance to freeze!");
         }
 
-        return activeSessions;
+        Transaction transaction = new Transaction(
+                session,
+                (Member) winner,
+                session.getOwner(),
+                finalPrice
+        );
+        transactionDb.save(transaction);
+        session.getItem().setStatus(Item.Status.SOLD);
+        System.out.println("[System]: Transaction created for winner: " + winner.getFullName());
     }
 }

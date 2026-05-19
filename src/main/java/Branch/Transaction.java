@@ -55,7 +55,6 @@ public class Transaction {
         if (buyer.spendFrozenMoney(finalAmount)) {
             try {
                 seller.depositMoney(finalAmount);
-                auction.transitionTo(Auction.AuctionStatus.PAID);
 
                 buyer.addItem(auction.getItem());
 
