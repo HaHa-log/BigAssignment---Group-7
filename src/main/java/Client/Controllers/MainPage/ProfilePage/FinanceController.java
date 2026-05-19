@@ -35,12 +35,22 @@ public class FinanceController extends BaseController {
     @FXML
     private void handleSaveDeposit() {
         try {
+
             double amount = Double.parseDouble(depositField.getText());
-            user.depositMoney(amount);
+
+            boolean success = user.depositMoney(amount);
+
+            if (!success) {throw new Exception();}
+
+            user.addTransaction("💰 DEPOSIT | +" + amount + " | Balance: " + String.format("%.2f", user.getBalance()));
+
             depositStatus.getStyleClass().setAll("success");
-            depositStatus.setText("Deposited " + amount+" successfully!");
+            depositStatus.setText("Deposited " + amount + " successfully!");
+
             refreshFinance();
+
         } catch (Exception e) {
+
             depositStatus.getStyleClass().setAll("error");
             depositStatus.setText("Invalid amount");
         }
@@ -51,14 +61,23 @@ public class FinanceController extends BaseController {
     private void handleSaveWithdraw() {
         try {
             double amount = Double.parseDouble(withdrawField.getText());
-            user.withdrawMoney(amount);
+            boolean success = user.withdrawMoney(amount);
+
+            if (!success) {throw new Exception();}
+
+            user.addTransaction("💸 WITHDRAW | -" + amount + " | Balance: " + String.format("%.2f", user.getBalance()));
+
             withdrawStatus.getStyleClass().setAll("success");
-            withdrawStatus.setText("Withdrawn " + amount+" successfully!");
+            withdrawStatus.setText("Withdrawn " + amount + " successfully!");
+
             refreshFinance();
+
         } catch (Exception e) {
+
             withdrawStatus.getStyleClass().setAll("error");
             withdrawStatus.setText("Invalid or exceeds balance");
         }
+
         withdrawField.clear();
     }
 

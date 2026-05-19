@@ -150,11 +150,15 @@ public class HistoryController extends BaseController {
                 getStyleClass().removeAll(
                         "transaction-deposit",
                         "transaction-withdraw",
+                        "transaction-freeze",
+                        "transaction-unfreeze",
+                        "transaction-payment",
                         "transaction-default"
                 );
 
                 if (empty || item == null) {
                     setText(null);
+                    setGraphic(null);
                     return;
                 }
 
@@ -164,7 +168,14 @@ public class HistoryController extends BaseController {
 
                 } else if (item.contains("WITHDRAW")) {getStyleClass().add("transaction-withdraw");
 
-                } else {getStyleClass().add("transaction-default");}
+                } else if (item.contains("UNFREEZE")) {getStyleClass().add("transaction-unfreeze");
+
+                } else if (item.contains("FREEZE")) {getStyleClass().add("transaction-freeze");
+
+                } else if (item.contains("PAYMENT")) {getStyleClass().add("transaction-payment");
+
+                } else {getStyleClass().add("transaction-default");
+                }
             }
         });
     }
