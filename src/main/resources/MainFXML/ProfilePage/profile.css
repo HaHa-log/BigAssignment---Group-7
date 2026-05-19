@@ -21,6 +21,30 @@
     -fx-scale-x: 0.95;
     -fx-scale-y: 0.95;
 }
+
+#profileTabPane .tab-header-area .tab-header-background {
+    -fx-background-color: transparent;
+}
+
+#profileTabPane .tab {
+    -fx-background-color: #E2E8F0;
+    -fx-background-radius: 8 8 0 0;
+    -fx-padding: 8 18;
+}
+
+#profileTabPane .tab:selected {
+    -fx-background-color: #3B82F6;
+}
+
+#profileTabPane .tab .tab-label {
+    -fx-text-fill: #475569;
+    -fx-font-weight: bold;
+}
+
+#profileTabPane .tab:selected .tab-label {
+    -fx-text-fill: white;
+}
+
 /* SUCCESS  */
 .success {
     -fx-text-fill: green;

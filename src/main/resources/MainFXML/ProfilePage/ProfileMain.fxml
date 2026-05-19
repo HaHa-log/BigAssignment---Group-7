@@ -10,81 +10,105 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 
-<BorderPane style="-fx-background-color: #0f172a; -fx-font-family: 'Segoe UI';" stylesheets="@/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controllers.MainPage.ProfilePage.ProfilePageController">
+<BorderPane style="-fx-background-color: #ECEFF3; -fx-font-family: 'Segoe UI';"
+            stylesheets="@/style.css"
+            xmlns="http://javafx.com/javafx/26"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Client.Controllers.MainPage.ProfilePage.ProfilePageController">
 
-    <!-- TOP -->
     <top>
-        <HBox alignment="CENTER_RIGHT" style="-fx-padding: 12 20; -fx-background-color: #FFFFFF; -fx-border-color: #2D3763;">
-            <Button onAction="#handleLogout" style="-fx-background-color: #2D3763; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 6 14; -fx-border-color: #37427c; -fx-border-radius: 5;" text="Logout" />
+        <HBox alignment="CENTER_RIGHT"
+              style="
+                -fx-padding: 14 24;
+                -fx-background-color: #FFFFFF;
+                -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.05), 10, 0, 0, 2);
+              ">
+            <Button onAction="#handleLogout"
+                    style="
+                        -fx-background-color: #EF4444; -fx-text-fill: white;
+                        -fx-background-radius: 6;
+                        -fx-padding: 8 16;
+                        -fx-font-weight: bold;
+                        -fx-cursor: hand;
+                    " text="Logout" />
         </HBox>
     </top>
 
-    <!-- LEFT -->
     <left>
-        <VBox alignment="TOP_CENTER" prefWidth="260" spacing="18" style="-fx-background-color: #2D3763; -fx-padding: 25; -fx-background-radius: 15;">
+        <VBox alignment="TOP_CENTER" prefWidth="260" spacing="20"
+              style="
+                -fx-background-color: #2E3A59; -fx-padding: 30 20;
+                -fx-background-radius: 16;
+                -fx-margin: 20 0 20 20; ">
 
-            <StackPane alignment="CENTER" maxHeight="120" maxWidth="120" minHeight="120" minWidth="120">
-                <style>
-                    -fx-background-color: white;
-                    -fx-background-radius: 100;
-                </style>
-
-                <Circle fx:id="avatarCircle" fill="LIGHTGRAY" radius="62.0" stroke="TRANSPARENT" />
+            <StackPane alignment="CENTER" maxHeight="120" maxWidth="120" minHeight="120" minWidth="120"
+                       style="
+                            -fx-background-color: #334155;
+                            -fx-background-radius: 100;
+                            -fx-border-color: #38BDF8; -fx-border-radius: 100;
+                            -fx-border-width: 2;
+                       ">
+                <Circle fx:id="avatarCircle" fill="#94A3B8" radius="56.0" stroke="TRANSPARENT" />
             </StackPane>
 
-            <Button onAction="#handleChooseAvatar" prefHeight="35.0" prefWidth="142.0" style="-fx-background-color: transparent; -fx-text-fill: #A0AEC0; -fx-border-color: #A0AEC0; -fx-border-radius: 5; -fx-font-size: 12;" text="Change Photo" />
+            <Button onAction="#handleChooseAvatar" prefHeight="32.0" prefWidth="130.0"
+                    style="
+                        -fx-background-color: transparent;
+                        -fx-text-fill: #94A3B8;
+                        -fx-border-color: #475569;
+                        -fx-border-radius: 6;
+                        -fx-font-size: 12;
+                        -fx-font-weight: 600;
+                        -fx-cursor: hand;
+                    " text="Change Photo" />
 
-            <Label fx:id="usernameLabel" style="-fx-text-fill: white; -fx-font-size: 24; -fx-font-weight: bold;" text="Username" />
+            <VBox alignment="CENTER" spacing="4">
+                <Label fx:id="usernameLabel" style="-fx-text-fill: #F8FAFC; -fx-font-size: 22; -fx-font-weight: bold;" text="Username" />
+                <Label fx:id="roleLabel" style="-fx-text-fill: #38BDF8; -fx-font-size: 14; -fx-font-weight: 600;" text="User role" />
+            </VBox>
 
-            <Label fx:id="roleLabel" style="-fx-text-fill: #A0AEC0; -fx-font-size: 16;" text="User role" />
-
-            <Button onAction="#showEditProfile" styleClass="edit-btn" text="Edit Profile" />
+            <Button onAction="#showEditProfile" styleClass="edit-btn" text="✏ Edit Profile"
+                    style="
+                        -fx-background-color: #38BDF8;
+                        -fx-text-fill: #0F172A;
+                        -fx-font-weight: bold;
+                        -fx-background-radius: 8;
+                        -fx-pref-width: 180;
+                        -fx-pref-height: 38;
+                        -fx-cursor: hand;
+                    "/>
         </VBox>
     </left>
 
-    <!-- CENTER -->
     <center>
-        <VBox spacing="25" style="-fx-padding: 25; -fx-background-color: #F8FAFC;">
+        <VBox spacing="20" style="-fx-padding: 20 25 25 25; -fx-background-color: #ECEFF3;">
 
-            <!-- TAB BAR -->
-            <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
-
+            <TabPane fx:id="tabPane" id="profileTabPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS"
+                     stylesheets="@profile.css"
+                     style="-fx-background-color: transparent; -fx-tab-header-background: transparent;">
                 <tabs>
-
                     <Tab text="My Profile">
                         <content>
-                            <StackPane fx:id="profilePane" />
+                            <StackPane fx:id="profilePane" style="-fx-padding: 15 0 0 0;"/>
                         </content>
                     </Tab>
-
                     <Tab text="Change Password">
                         <content>
-                            <StackPane fx:id="passwordPane" />
+                            <StackPane fx:id="passwordPane" style="-fx-padding: 15 0 0 0;"/>
                         </content>
                     </Tab>
-
                     <Tab text="Finance">
                         <content>
-                            <StackPane fx:id="financePane" />
+                            <StackPane fx:id="financePane" style="-fx-padding: 15 0 0 0;"/>
                         </content>
                     </Tab>
-
                     <Tab text="History">
                         <content>
-                            <StackPane fx:id="historyPane" />
+                            <StackPane fx:id="historyPane" style="-fx-padding: 15 0 0 0;"/>
                         </content>
                     </Tab>
-
                 </tabs>
             </TabPane>
-                <!-- EDIT -->
-
-                <!-- PASSWORD -->
-
-                <!-- FINANCE -->
-
-                <!-- HISTORY -->
-
         </VBox>
     </center>
 
