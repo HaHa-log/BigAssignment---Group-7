@@ -81,7 +81,6 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
     public boolean depositMoney(double amount) {
         boolean success = this.balance.deposit(amount);
         if (success) {
-            transactions.add("💰 DEPOSIT | +" + amount + " | Balance: " + getBalance());
             update();
         }
         return success;
@@ -90,7 +89,6 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
     public boolean withdrawMoney(double amount) {
         boolean success = this.balance.withdraw(amount);
         if (success) {
-            transactions.add("💸 WITHDRAW | -" + amount + " | Balance: " + getBalance());
             update();
         }
         return success;
@@ -104,7 +102,6 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
         if (!success) {return false;}
 
         this.frozenBalance += amount;
-        transactions.add("🔒 FREEZE | -" + amount + " | Frozen: " + frozenBalance);
 
         update();
         return true;
@@ -115,7 +112,6 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
         if (frozenBalance < amount) {return false;}
 
         frozenBalance -= amount;
-        transactions.add("🛒 PAYMENT | -" + amount + " | Frozen Used");
 
         update();
         return true;
@@ -127,7 +123,6 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
 
         frozenBalance -= amount;
         balance.deposit(amount);
-        transactions.add("🔓 UNFREEZE | +" + amount + " | Balance: " + getBalance());
 
         update();
         return true;
@@ -271,4 +266,6 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
     }
 
     public ObservableList<String> getTransactions() { return transactions; }
+
+    public void addTransaction(String message) {transactions.add(message);}
 }
