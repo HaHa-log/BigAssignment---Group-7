@@ -5,8 +5,8 @@ import Branch.Exceptions.CustomisedException;
 
 import java.io.Serializable;
 
-public class AutoBid implements Serializable {
-    private final Auction auction;
+public class AutoBid implements Serializable, Cloneable {
+    private Auction auction;
     private final Member user;
     private Price maxBid;
     private double increment;
@@ -16,6 +16,19 @@ public class AutoBid implements Serializable {
         this.user = user;
         this.maxBid = new Price(maxBid);
         this.increment = increment;
+    }
+
+    @Override
+    public AutoBid clone() {
+        try {
+            AutoBid clonedAutoBid = (AutoBid) super.clone();
+            clonedAutoBid.maxBid = new Price(this.getMaxBid());
+            return clonedAutoBid;
+
+        } catch (CloneNotSupportedException e) {
+            System.out.println("[Error]: Failed to clone AutoBid configuration: " + e.getMessage());
+            return null;
+        }
     }
 
     public void setMaxBid(double maximum) {
@@ -44,6 +57,10 @@ public class AutoBid implements Serializable {
         } else {
             throw new CustomisedException("[Error]: Invalid increment, increment must be lesser than maximum bid");
         }
+    }
+
+    public void setAuction(Auction auction) {
+        this.auction = auction;
     }
 
     public Auction getAuction() { return auction; }
