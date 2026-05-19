@@ -148,10 +148,27 @@ public class AuctionManager {
             throw new IllegalArgumentException("[Error]: Only the buyer can confirm receipt.");
         }
 
+        double amount = transaction.getFinalAmount();
+
+        boolean success = buyer.spendFrozenMoney(amount);
+
+        if (!success) {throw new IllegalArgumentException("[Error]: Payment failed.");
+        }
+        buyer.addTransaction("🛒 PAYMENT | -" + amount + " | Item: " + transaction.getAuction().getItem().getName()
+        );
+
+        Member seller = transaction.getSeller();
+        seller.depositMoney(amount);
+        
+        seller.addTransaction("💰 SALE | +" + amount + " | Item: " + transaction.getAuction().getItem().getName()
+        );
+
         transaction.markCompleted();
         transaction.getAuction().transitionTo(Auction.AuctionStatus.PAID);
+
         transactionDb.update(transaction);
         auctionDb.update(transaction.getAuction());
+
         return transaction;
     }
 
