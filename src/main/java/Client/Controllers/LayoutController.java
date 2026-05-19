@@ -15,7 +15,7 @@ public class LayoutController {
 
     @FXML
     public void redirectToProfile() {
-        SceneManager.switchContent("/MainFXML/Profile/ProfileMain.fxml");
+        SceneManager.switchContent("/MainFXML/ProfilePage/ProfileMain.fxml");
     }
 
     @FXML

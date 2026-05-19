@@ -64,16 +64,16 @@ public class ProfilePageController {
             BaseController.setNavigation(this);
 
             loadView(profilePane,
-                    "/MainFXML/Profile/ProfilePane.fxml");
+                    "/MainFXML/ProfilePage/ProfilePane.fxml");
 
             loadView(passwordPane,
-                    "/MainFXML/Profile/PasswordPane.fxml");
+                    "/MainFXML/ProfilePage/PasswordPane.fxml");
 
             loadView(financePane,
-                    "/MainFXML/Profile/FinancePane.fxml");
+                    "/MainFXML/ProfilePage/FinancePane.fxml");
 
             loadView(historyPane,
-                    "/MainFXML/Profile/HistoryPane.fxml");
+                    "/MainFXML/ProfilePage/HistoryPane.fxml");
         }
     }
 
@@ -173,14 +173,14 @@ public class ProfilePageController {
     public void showProfile() {
 
         loadView(profilePane,
-                "/MainFXML/Profile/ProfilePane.fxml");
+                "/MainFXML/ProfilePage/ProfilePane.fxml");
 
         tabPane.getSelectionModel().select(0);
     }
 
     @FXML
     private void showEditProfile() {
-        loadView(profilePane,"/MainFXML/Profile/EditPane.fxml");
+        loadView(profilePane, "/MainFXML/ProfilePage/EditPane.fxml");
     }
 
     @FXML
