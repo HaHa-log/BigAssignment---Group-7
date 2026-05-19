@@ -1,5 +1,6 @@
 package Client.Controllers.MainPage.HomePage;
 
+import Branch.Admin;
 import Branch.SessionManager;
 import Branch.User;
 import Client.Controllers.SceneManager;
@@ -16,13 +17,18 @@ public class HomePageController {
 
     @FXML
     private void initialize() {
+        user = SessionManager.getCurrentUser();
+        boolean isAdmin = user instanceof Admin || user != null && user.isAdmin();
+        managementNavigation.setVisible(isAdmin);
+        managementNavigation.setManaged(isAdmin);
+
+        if (user == null) {
+            welcomeLabel.setText("Welcome");
+            return;
+        }
+
         String userName = user.getFullName();
         welcomeLabel.setText("Welcome, " + userName);
-
-        if (user.isAdmin()) {
-            managementNavigation.setVisible(true);
-            managementNavigation.setManaged(true);
-        }
     }
 
     @FXML private void toAuctionList() { SceneManager.switchContent("/AuctionPageFXML/AuctionList.fxml"); }

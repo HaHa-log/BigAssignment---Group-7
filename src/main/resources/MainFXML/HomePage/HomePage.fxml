@@ -41,7 +41,9 @@
                 <Button fx:id="managementNavigation"
                         visible="false"
                         managed="false"
-                        onMouseClicked="#toManagementDashboard"
+
+                        prefWidth="220.0"
+                        onAction="#toManagementDashboard"
                         mnemonicParsing="false"
                         text="Management Dashboard"/>
 

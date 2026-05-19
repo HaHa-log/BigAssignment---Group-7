@@ -6,14 +6,16 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox alignment="TOP_RIGHT"
+      prefWidth="220.0"
       xmlns:fx="http://javafx.com/fxml/1"
       xmlns="http://javafx.com/javafx/25"
       fx:controller="Client.Controllers.MainPage.HomePage.NotificationController">
 
-    <StackPane alignment="CENTER_RIGHT">
+    <StackPane alignment="CENTER_RIGHT" prefWidth="220.0">
         <Button fx:id="notificationButton"
                 onAction="#showNotifications"
                 text="🔔 Notifications"
+                prefWidth="220.0"
                 style="-fx-cursor: hand;" />
         <ProgressIndicator
                 fx:id="loadingIndicator"
