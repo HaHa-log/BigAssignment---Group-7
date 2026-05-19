@@ -46,25 +46,26 @@
 
         <Label text="✦ About Me"
                style="
-                    -fx-font-size: 18;
+                    -fx-font-size: 16;
                     -fx-font-weight: bold;
-                    -fx-text-fill: #243B67;
+                    -fx-text-fill: #1E293B;
                "/>
 
-        <Label fx:id="aboutLabel"
-               wrapText="true"
-               text="User info..."
-               style="
-                    -fx-font-size: 14;
-                    -fx-line-spacing: 3;
-                    -fx-text-fill: #334155;
-                    -fx-font-weight: 500;
-                    -fx-background-color: #EDF3FA;
+        <VBox style="
+                    -fx-background-color: #FFFFFF;
                     -fx-padding: 16;
-                    -fx-background-radius: 15;
-                    -fx-border-radius: 15;
-                    -fx-border-color: #475569;
-               "/>
+                    -fx-background-radius: 12;
+                    -fx-border-radius: 12;
+                    -fx-border-color: #E2E8F0;
+              " maxWidth="600">
+            <Label fx:id="aboutLabel"
+                   wrapText="true"
+                   text="No description provided yet. Click 'Edit Profile' to add something about yourself."
+                   style="
+                        -fx-font-size: 14;
+                        -fx-text-fill: #94A3B8; -fx-font-style: italic;
+                   "/>
+        </VBox>
     </VBox>
 
     <!-- CONTACT  -->
