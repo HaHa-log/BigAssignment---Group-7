@@ -2,6 +2,8 @@ package Client.Controllers.MainPage.ProfilePage;
 
 import Branch.AuctionManager;
 import Branch.Common.AuctionHistoryEntry;
+import Client.Controllers.AuctionPage.AuctionDetailController;
+import Client.Controllers.SceneManager;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -89,37 +91,46 @@ public class HistoryController extends BaseController {
                 }
             }
         });
+
         colAction.setCellFactory(column -> new TableCell<>() {
 
-            private final Button confirmButton =
-                    new Button("Confirm");
+            private final Button confirmButton = new Button("Confirm");
 
             {
                 confirmButton.getStyleClass().add("confirm-button");
                 confirmButton.setOnAction(event -> {
 
-                    AuctionHistoryEntry entry =
-                            getTableView().getItems().get(getIndex());
+                    AuctionHistoryEntry entry = getTableView().getItems().get(getIndex());
 
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    try {
+                        Branch.Auction targetAuction = AuctionManager.getInstance().getAllSessions().stream()
+                                .filter(a -> a.getId() == entry.auctionId())
+                                .findFirst()
+                                .orElse(null);
 
-                    alert.setHeaderText(null);
+                        if (targetAuction != null) {
+                            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/AuctionPageFXML/AuctionDetail.fxml"));
+                            javafx.scene.Parent detailRoot = loader.load();
 
-                    alert.setContentText(
-                            "You confirmed receiving: "
-                                    + entry.itemName()
-                    );
+                            AuctionDetailController detailController = loader.getController();
+                            detailController.setAuctionData(targetAuction);
 
-                    alert.showAndWait();
+                            SceneManager.switchContent(detailRoot);
+                        } else {
+                            System.err.println("[Error]: Cannot find the specified auction data to complete payment.");
+                        }
 
-                    confirmButton.setDisable(true);
-                    confirmButton.setText("Done");
+                    } catch (java.io.IOException e) {
+                        e.printStackTrace();
+                    } catch (Exception e) {
+                        System.err.println("[System Error]: " + e.getMessage());
+                        e.printStackTrace();
+                    }
                 });
             }
 
             @Override
             protected void updateItem(Void item, boolean empty) {
-
                 super.updateItem(item, empty);
 
                 if (empty) {
@@ -127,14 +138,19 @@ public class HistoryController extends BaseController {
                     return;
                 }
 
-                AuctionHistoryEntry entry =
-                        getTableView().getItems().get(getIndex());
+                AuctionHistoryEntry entry = getTableView().getItems().get(getIndex());
 
-                if (entry.userState().contains("WON")) {
+                Branch.Auction currentAuction = AuctionManager.getInstance().getAllSessions().stream()
+                        .filter(a -> a.getId() == entry.auctionId())
+                        .findFirst()
+                        .orElse(null);
 
+                if (entry.userState() != null && entry.userState().contains("WON")
+                        && currentAuction != null && currentAuction.getRawStatus() != Branch.Auction.AuctionStatus.PAID) {
                     setGraphic(confirmButton);
-
-                } else {setGraphic(null);}
+                } else {
+                    setGraphic(null);
+                }
             }
         });
     }
