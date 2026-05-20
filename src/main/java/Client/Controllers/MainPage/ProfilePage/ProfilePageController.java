@@ -43,6 +43,9 @@ public class ProfilePageController {
     private TabPane tabPane;
 
     @FXML
+    private VBox mainContent;
+
+    @FXML
     private StackPane contentPane;
     @FXML private StackPane profilePane;
     @FXML private StackPane passwordPane;
@@ -84,12 +87,10 @@ public class ProfilePageController {
             if (file.exists()) {
                 Image img = new Image(file.toURI().toString());
 
-                // ImagePattern giúp ảnh tự động lấp đầy hình tròn và CĂN GIỮA
                 ImagePattern pattern = new ImagePattern(img);
                 avatarCircle.setFill(pattern);
             }
         } else {
-            // Ảnh mặc định nếu chưa có avatar
             avatarCircle.setFill(javafx.scene.paint.Color.GRAY);
         }
     }
@@ -127,15 +128,9 @@ public class ProfilePageController {
             dir.mkdirs();
         }
 
-        String fileName =
-                "avatar_" +
-                        user.getId() +
-                        "_" +
-                        System.currentTimeMillis() +
-                        ".png";
+        String fileName = "avatar_" + user.getId() + "_" + System.currentTimeMillis() + ".png";
 
-        File destFile =
-                new File(dir, fileName);
+        File destFile = new File(dir, fileName);
 
         Files.copy(
                 selectedAvatarFile.toPath(),
@@ -144,19 +139,14 @@ public class ProfilePageController {
         );
 
         user.setAvatarPath(fileName);
-
         user.update();
     }
 
     private void loadView(StackPane pane, String fxmlPath) {
 
         try {
-
-            FXMLLoader loader =
-                    new FXMLLoader(getClass().getResource(fxmlPath));
-
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             VBox view = loader.load();
-
             Object controller = loader.getController();
 
             if (controller instanceof BaseController base) {
@@ -175,12 +165,14 @@ public class ProfilePageController {
         loadView(profilePane,
                 "/MainFXML/ProfilePage/ProfilePane.fxml");
 
+        contentPane.getChildren().setAll(mainContent);
+
         tabPane.getSelectionModel().select(0);
     }
 
     @FXML
     private void showEditProfile() {
-        loadView(profilePane, "/MainFXML/ProfilePage/EditPane.fxml");
+        loadView(contentPane, "/MainFXML/ProfilePage/EditPane.fxml");
     }
 
     @FXML
