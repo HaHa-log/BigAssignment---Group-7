@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.TilePane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="TOP_CENTER" prefHeight="600.0" prefWidth="800.0" spacing="10" xmlns="http://javafx.com" xmlns:fx="http://fxml.com" fx:controller="Client.Controllers.Inventory.InventoryController">
+    <children>
+        <Label text="INVENTORY" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-padding: 10;" />
+
+        <VBox alignment="TOP_RIGHT" spacing="10" VBox.vgrow="ALWAYS" style="-fx-padding: 10;">
+            <children>
+                <fx:define>
+                    <ToggleGroup fx:id="viewToggleGroup"/>
+                </fx:define>
+
+                <ToolBar style="-fx-background-color: transparent;">
+                    <items>
+                        <ToggleButton fx:id="listToggleButton" text="☰ List View" toggleGroup="$viewToggleGroup" selected="true" onAction="#handleViewToggle"/>
+                        <ToggleButton fx:id="cardToggleButton" text="⊞ Card View" toggleGroup="$viewToggleGroup" onAction="#handleViewToggle"/>
+                    </items>
+                </ToolBar>
+
+                <StackPane fx:id="contentArea" VBox.vgrow="ALWAYS">
+                    <children>
+                        <TableView fx:id="tableView" visible="true">
+                            <columns>
+                                <TableColumn fx:id="nameColumn" text="Tên sản phẩm" prefWidth="300.0" />
+                                <TableColumn fx:id="sizeColumn" text="Kích thước / Số lượng" prefWidth="200.0" />
+                            </columns>
+                        </TableView>
+                        <ScrollPane fx:id="cardScrollPane" fitToWidth="true" visible="false">
+                            <content>
+                                <TilePane fx:id="tilePane" hgap="15.0" vgap="15.0" style="-fx-padding: 15;" />
+                            </content>
+                        </ScrollPane>
+
+                    </children>
+                </StackPane>
+            </children>
+        </VBox>
+    </children>
+</VBox>

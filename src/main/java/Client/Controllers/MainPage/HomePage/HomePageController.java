@@ -31,6 +31,17 @@ public class HomePageController {
         welcomeLabel.setText("Welcome, " + userName);
     }
 
-    @FXML private void toAuctionList() { SceneManager.switchContent("/AuctionPageFXML/AuctionList.fxml"); }
-    @FXML private void toManagementDashboard() { SceneManager.switchContent("/ManagementFXML/ManagementDashboard.fxml"); }
+    @FXML
+    private void toAuctionList() {
+        SceneManager.switchContent("/AuctionPageFXML/AuctionList.fxml");
+    }
+    @FXML
+    private void toInventory() {
+        SceneManager.switchContent("/InventoryFXML/InventoryPage.fxml");
+    }
+
+    @FXML
+    private void toManagementDashboard() {
+        SceneManager.switchContent("/ManagementFXML/ManagementDashboard.fxml");
+    }
 }
