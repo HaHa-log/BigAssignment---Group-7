@@ -137,6 +137,11 @@ public class Auction extends Entity implements Serializable {
 
     public boolean placeBid(Bidder bidder, double amount)
             throws AuctionClosedException, AuthenticationException, InvalidBidException, IllegalArgumentException {
+        return placeBid(bidder, amount, true);
+    }
+
+    public boolean placeBid(Bidder bidder, double amount, boolean isManual)
+            throws AuctionClosedException, AuthenticationException, InvalidBidException, IllegalArgumentException {
         lock().lock();
         try {
             User user = validateBidder(bidder, amount);
@@ -149,7 +154,11 @@ public class Auction extends Entity implements Serializable {
             applyWinningBid(bidder, bidAmount);
             persistBid(user, bidAmount);
             notifyBidPlaced(bidder, amount);
-            processPreviousWinnerAutoBid(previousWinner, bidder);
+
+            if (isManual) {
+                processPreviousWinnerAutoBid(previousWinner, bidder);
+            }
+
             return true;
         } finally {
             lock().unlock();

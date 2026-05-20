@@ -72,7 +72,7 @@ public class AuctionManager {
         }
 
         System.out.println("[System]: Auto-bidding for " + userConfig.getUser().getFullName());
-        userConfig.getUser().placeBid(auction, nextPrice);
+        auction.placeBid(userConfig.getUser(), nextPrice, false);
     }
 
     public void createAuction(Member owner, Item item, LocalDateTime startingTime, LocalDateTime endingTime) {
