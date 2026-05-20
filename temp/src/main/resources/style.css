@@ -1,0 +1,146 @@
+.root-pane {
+    -fx-background-color: linear-gradient(to bottom, #37427c, #C2D7FF);
+    -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+}
+.label {
+    -fx-text-fill: #37427c;
+}
+.button {
+    -fx-background-color: #006eff;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+    -fx-padding: 10 20;
+    -fx-margin: 10;
+}
+
+.button:hover {
+    -fx-background-color: #4092ff;
+}
+
+.text-field, .password-field {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-background-radius: 8;
+    -fx-border-color: #37427c;
+    -fx-border-radius: 8;
+
+    -fx-font-size: 13px;
+    -fx-font-family: "Segoe UI Semilight";
+}
+
+.text-field:focused, .password-field:focused {
+    -fx-border-color: #006eff;
+}
+
+/* TABLE */
+.table-view {
+  -fx-background-color: transparent;
+  -fx-background-radius: 0;
+  -fx-border-radius: 0;
+  -fx-border-color: #e0e0e0;
+  -fx-border-width: 1;
+}
+
+/* header */
+.table-view .column-header-background {
+  -fx-background-color: #37427c;
+  -fx-background-radius: 0;
+}
+
+.table-view .column-header {
+  -fx-background-color: transparent;
+  -fx-size: 50;
+}
+
+.table-view .column-header .label {
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+  -fx-alignment: center-left;
+}
+
+/* Remove default header separators */
+.table-view .column-header .filler,
+.table-view .column-header-background .filler {
+  -fx-background-color: transparent;
+}
+
+/* 2. Cell and Row Styling */
+.table-view .table-row-cell {
+  -fx-background-color: white;
+  -fx-border-color: transparent transparent #f0f0f0 transparent;
+}
+
+/* Hover effect */
+.table-view .table-cell:hover {
+  -fx-background-color: #f0f2ff;
+}
+
+.table-view .table-cell {
+  -fx-padding: 15;
+  -fx-text-fill: #555555;
+  -fx-alignment: center-left;
+}
+
+/* for placeholder */
+.table-view .placeholder .label {
+  -fx-text-fill: #999999;
+}
+
+/* TOGGLE BUTTON */
+.toggle-button {
+    -fx-background-radius: 15;
+    -fx-padding: 4 12;
+    -fx-font-size: 10;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-text-fill: white;
+    -fx-background-color: #22c55e; /* Green for Active */
+}
+
+.toggle-button:selected {
+    -fx-background-color: #ef4444; /* Red for Blocked */
+}
+/* TABS */
+.tab-pane {
+    -fx-background-color: #0f172a;
+}
+
+.tab-pane .tab-header-background {
+    -fx-border-width: 0 0 2 0;
+}
+
+.tab-pane .tab {
+    -fx-background-color: #37427c;
+    -fx-background-insets: 0 1 0 1;
+    -fx-background-radius: 10 10 0 0;
+    -fx-padding: 8 10 8 10;
+    -fx-cursor: hand;
+}
+
+.tab-pane .tab:hover {
+    -fx-background-color: #475569;
+}
+
+.tab-pane .tab:selected {
+    -fx-background-color: #C2D7FF;
+    -fx-background-insets: 0;
+}
+
+.tab-pane .tab .tab-label {
+    -fx-text-fill: white;
+}
+
+.tab-pane .tab:selected .tab-label {
+    -fx-text-fill: #0f172a;
+}
+
+.tab-pane .tab:focused {
+    -fx-focus-color: transparent;
+}
+
+.tab-pane .tab-content-area {
+    -fx-background-color: #F8FAFC;
+    -fx-padding: 0;
+}

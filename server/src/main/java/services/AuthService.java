@@ -1,0 +1,114 @@
+package services;
+
+import dto.auth.AuthResponse;
+import dto.auth.LoginRequest;
+import dto.auth.RegisterRequest;
+import models.Common.Email;
+import models.Common.PhoneNumber;
+import models.Member;
+import models.User;
+import repositories.UsersDAO;
+import repositories.impl.DaoFactory;
+
+public class AuthService {
+
+    private final UsersDAO userdb = DaoFactory.createUsersDAO();
+
+    public AuthResponse register(RegisterRequest request) {
+        validateRegisterRequest(request);
+
+        User existing = userdb.getByEmail(request.getEmail());
+        if (existing != null) {
+            throw new IllegalArgumentException("[Failure]: An account with this email already exists.");
+        }
+
+        double initialBalance = 0.0;
+        Member member = new Member(
+                request.getFirstName(),
+                request.getLastName(),
+                request.getEmail(),
+                request.getPhoneNumber(),
+                request.getPassword(),
+                initialBalance,
+                request.getAvatarPath()
+        );
+
+        userdb.save(member);
+
+        return toAuthResponse(member);
+    }
+
+    public AuthResponse login(LoginRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("[Failure]: Request body is required.");
+        }
+
+        if (isBlank(request.getEmail()) || isBlank(request.getPassword())) {
+            throw new IllegalArgumentException("[Failure]: Email and password are required.");
+        }
+
+        User user = userdb.getByEmail(request.getEmail());
+
+        if (user == null) {
+            throw new IllegalArgumentException("[Failure]: No account found with this email.");
+        }
+
+        if (!user.getPassword().equals(request.getPassword())) {
+            throw new IllegalArgumentException("[Failure]: Incorrect password.");
+        }
+
+        return toAuthResponse(user);
+    }
+
+    private void validateRegisterRequest(RegisterRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("[Failure]: Request body is required.");
+        }
+
+        if (isBlank(request.getFirstName())) {
+            throw new IllegalArgumentException("[Failure]: First name is required.");
+        }
+
+        if (isBlank(request.getLastName())) {
+            throw new IllegalArgumentException("[Failure]: Last name is required.");
+        }
+
+        if (isBlank(request.getEmail())) {
+            throw new IllegalArgumentException("[Failure]: Email is required.");
+        }
+
+        if (!Email.isValidEmail(request.getEmail())) {
+            throw new IllegalArgumentException("[Error]: Invalid email format");
+        }
+
+        if (isBlank(request.getPhoneNumber())) {
+            throw new IllegalArgumentException("[Failure]: Phone number is required.");
+        }
+
+        if (!PhoneNumber.isValidPhoneNumber(request.getPhoneNumber())) {
+            throw new IllegalArgumentException("[Error]: Invalid contact number format");
+        }
+
+        if (isBlank(request.getPassword())) {
+            throw new IllegalArgumentException("[Failure]: Password is required.");
+        }
+
+        if (request.getPassword().length() < 6) {
+            throw new IllegalArgumentException("[Error]: Password must have more than 6 digits");
+        }
+    }
+
+    private AuthResponse toAuthResponse(User user) {
+        return new AuthResponse(
+                user.getId(),
+                user.getFullName(),
+                user.getEmail(),
+                user.getRole(),
+                user.getBalance()
+        );
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
+    }
+}

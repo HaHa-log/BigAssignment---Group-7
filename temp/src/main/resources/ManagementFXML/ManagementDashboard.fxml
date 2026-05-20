@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: white;" stylesheets="@/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+          <Label text="MANAGEMENT DASHBOARD">
+              <font>
+                  <Font name="System Bold" size="18.0" />
+              </font>
+          </Label>
+   <Label fx:id="statusLabel" textAlignment="CENTER" />
+            <TabPane styleClass="tab-pane" tabClosingPolicy="UNAVAILABLE">
+              <tabs>
+                <Tab text="User">
+            <content>
+                <fx:include source="UserTab.fxml" />
+            </content>
+                </Tab>
+                <Tab text="Auctions">
+            <content>
+                <fx:include source="AuctionTab.fxml" />
+            </content>
+                </Tab>
+              </tabs>
+            </TabPane>
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+</VBox>

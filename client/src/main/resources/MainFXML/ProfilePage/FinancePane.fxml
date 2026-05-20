@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="controllers.MainPage.ProfilePage.FinanceController"
+      fx:id="financePane"
+      spacing="20"
+      stylesheets="@profile.css"
+      styleClass="background-card">
+
+    <Label text="💰 Finance Center"
+           style="-fx-font-size: 24;-fx-font-weight: bold;-fx-text-fill: #1e293b;"/>
+
+    <HBox spacing="18">
+
+        <!-- AVAILABLE BALANCE -->
+        <VBox spacing="8"
+              HBox.hgrow="ALWAYS"
+              maxWidth="Infinity"
+              styleClass="finance-card">
+
+            <Label text="💳 Available Balance"
+                   style="
+                    -fx-font-size: 14;
+                    -fx-text-fill: #64748b;
+                    -fx-font-weight: bold;
+               "/>
+
+            <Label fx:id="balanceLabel"
+                   text="0000"
+                   style="
+                    -fx-font-size: 20;
+                    -fx-font-weight: bold;
+                    -fx-text-fill: #16a34a;
+               "/>
+
+            <Label text="Ready to use"
+                   style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
+        </VBox>
+
+        <!-- FROZEN -->
+        <VBox spacing="8"
+              HBox.hgrow="ALWAYS"
+              maxWidth="Infinity"
+              styleClass="finance-card">
+
+            <Label text="🔒 Frozen Balance"
+                   style="
+                    -fx-font-size: 14;
+                    -fx-text-fill: #64748b;
+                    -fx-font-weight: bold;
+               "/>
+
+            <Label fx:id="frozenBalanceLabel"
+                   text="0000"
+                   style="
+                    -fx-font-size: 20;
+                    -fx-font-weight: bold;
+                    -fx-text-fill: #2563eb;
+               "/>
+
+            <Label text="Reserved for auctions"
+                   style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
+        </VBox>
+
+        <!-- TOTAL -->
+        <VBox spacing="8"
+              HBox.hgrow="ALWAYS"
+              maxWidth="Infinity"
+              styleClass="finance-card">
+
+            <Label text="📊 Total Assets"
+                   style="
+                    -fx-font-size: 14;
+                    -fx-text-fill: #64748b;
+                    -fx-font-weight: bold;
+               "/>
+
+            <Label fx:id="totalBalanceLabel"
+                   text="0000"
+                   style="
+                    -fx-font-size: 20;
+                    -fx-font-weight: bold;
+                    -fx-text-fill: #f59e0b;
+               "/>
+
+            <Label text="Available + Frozen"
+                   style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
+        </VBox>
+
+    </HBox>
+
+    <HBox spacing="22">
+        <!-- deposit -->
+        <VBox spacing="12"
+              HBox.hgrow="ALWAYS"
+              maxWidth="Infinity"
+              stylesheets="@profile.css"
+              styleClass="section-box" >
+
+            <Button text="⬆ Deposit"
+                    onAction="#handleDeposit"
+                    maxWidth="Infinity"
+                    styleClass="deposit-button"/>
+
+            <VBox fx:id="depositBox"
+                  spacing="10"
+                  visible="false"
+                  managed="false">
+
+                <TextField fx:id="depositField"
+                           promptText="Enter deposit amount"
+                           stylesheets="@profile.css"
+                           styleClass="input-field" />
+
+                <Button text="✔ Save Deposit"
+                        onAction="#handleSaveDeposit"
+                        stylesheets="@profile.css"
+                        styleClass="green-button" />
+
+                <Label fx:id="depositStatus"
+                       style="
+                            -fx-text-fill: #15803d;
+                            -fx-font-size: 12;
+                       "/>
+            </VBox>
+        </VBox>
+
+        <!-- withdraw -->
+        <VBox spacing="12"
+              HBox.hgrow="ALWAYS"
+              maxWidth="Infinity"
+              stylesheets="@profile.css"
+              styleClass="section-box" >
+
+            <Button text="⬇ Withdraw"
+                    onAction="#handleWithdraw"
+                    maxWidth="Infinity"
+                    styleClass="withdraw-button"/>
+
+            <VBox fx:id="withdrawBox"
+                  spacing="10"
+                  visible="false"
+                  managed="false">
+
+                <TextField fx:id="withdrawField"
+                           promptText="Enter withdraw amount"
+                           stylesheets="@profile.css"
+                           styleClass="input-field" />
+
+                <Button text="✖ Save Withdraw"
+                        onAction="#handleSaveWithdraw"
+                        stylesheets="@profile.css"
+                        styleClass="red-button" />
+
+                <Label fx:id="withdrawStatus"
+                       style="-fx-text-fill: #b91c1c;-fx-font-size: 12;"/>
+
+            </VBox>
+        </VBox>
+
+    </HBox>
+
+    <!-- STATUS -->
+    <Label fx:id="financeStatus"
+           text=""
+           style="-fx-text-fill: #475569;-fx-font-style: italic;-fx-font-size: 13;"/>
+
+</VBox>
+

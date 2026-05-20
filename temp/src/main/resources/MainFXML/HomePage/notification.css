@@ -1,0 +1,68 @@
+.notification-popup-container {
+    -fx-background-color: white;
+    -fx-padding: 15;
+    -fx-spacing: 12;
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-border-color: #e2e8f0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 20, 0, 0, 5);
+}
+
+.notification-header-row {
+    -fx-alignment: CENTER_LEFT;
+    -fx-max-width: infinity;
+}
+
+.notification-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+
+.popup-close-button {
+    -fx-background-color: #f1f5f9;
+    -fx-text-fill: #64748b;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 100;
+    -fx-cursor: hand;
+    -fx-pref-width: 24;
+    -fx-pref-height: 24;
+    -fx-min-width: 24;
+    -fx-min-height: 24;
+
+    -fx-margin-left: auto;
+}
+
+.popup-close-button:hover {
+    -fx-background-color: #e2e8f0;
+    -fx-text-fill: #334155;
+}
+
+.notification-list-view {
+    -fx-pref-width: 340;
+    -fx-pref-height: 220;
+    -fx-background-color: transparent;
+    -fx-control-inner-background: white;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: #dbe3ff;
+}
+
+.notification-list-view .virtual-flow {
+    -fx-background-radius: 12;
+}
+.button {
+    -fx-background-color: #006eff;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+    -fx-padding: 10 20;
+    -fx-margin: 10;
+}
+
+.button:hover {
+    -fx-background-color: #4092ff;
+}
