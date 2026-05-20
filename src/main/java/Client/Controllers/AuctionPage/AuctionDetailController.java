@@ -44,9 +44,9 @@ public class AuctionDetailController {
     @FXML
     private VBox confirmPane;
     @FXML
-    private TextField txtMaxBid;
+    private TextField maxBidInput;
     @FXML
-    private TextField txtIncrement;
+    private TextField stepInput;
 
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM HH:mm");
 
@@ -173,15 +173,15 @@ public class AuctionDetailController {
     }
 
     @FXML
-    private void handleEnableAutoBid() {
-        if (txtMaxBid.getText().isEmpty() || txtIncrement.getText().isEmpty()) {
+    private void checkAutoBidValidity() {
+        if (maxBidInput.getText().isEmpty() || stepInput.getText().isEmpty()) {
             bidPlacedResultLabel.setTextFill(RED);
             bidPlacedResultLabel.setText("Please enter Max Bid and Increment.");
             return;
         }
         try {
-            double maxBid = Double.parseDouble(txtMaxBid.getText());
-            double increment = Double.parseDouble(txtIncrement.getText());
+            double maxBid = Double.parseDouble(maxBidInput.getText());
+            double increment = Double.parseDouble(stepInput.getText());
             Member currentMember = (Member) currentUser;
 
             AutoBid config = new AutoBid(auction, currentMember, maxBid, increment);
