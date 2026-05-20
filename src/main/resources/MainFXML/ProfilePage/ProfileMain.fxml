@@ -11,7 +11,7 @@
 <?import javafx.scene.shape.Circle?>
 
 <BorderPane style="-fx-background-color: #ECEFF3; -fx-font-family: 'Segoe UI';"
-            stylesheets="@/style.css"
+            stylesheets="@profile.css"
             xmlns="http://javafx.com/javafx/26"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="Client.Controllers.MainPage.ProfilePage.ProfilePageController">
@@ -30,7 +30,7 @@
                         -fx-padding: 8 16;
                         -fx-font-weight: bold;
                         -fx-cursor: hand;
-                    " text="Logout" />
+                    " text="🚪 Logout" />
         </HBox>
     </top>
 
@@ -81,35 +81,39 @@
     </left>
 
     <center>
-        <VBox spacing="20" style="-fx-padding: 20 25 25 25; -fx-background-color: #ECEFF3;">
+        <StackPane fx:id="contentPane"
+                   style="-fx-background-color: #ECEFF3;">
 
-            <TabPane fx:id="tabPane" id="profileTabPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS"
-                     stylesheets="@profile.css"
-                     style="-fx-background-color: transparent; -fx-tab-header-background: transparent;">
-                <tabs>
-                    <Tab text="My Profile">
-                        <content>
-                            <StackPane fx:id="profilePane" style="-fx-padding: 15 0 0 0;"/>
-                        </content>
-                    </Tab>
-                    <Tab text="Change Password">
-                        <content>
-                            <StackPane fx:id="passwordPane" style="-fx-padding: 15 0 0 0;"/>
-                        </content>
-                    </Tab>
-                    <Tab text="Finance">
-                        <content>
-                            <StackPane fx:id="financePane" style="-fx-padding: 15 0 0 0;"/>
-                        </content>
-                    </Tab>
-                    <Tab text="History">
-                        <content>
-                            <StackPane fx:id="historyPane" style="-fx-padding: 15 0 0 0;"/>
-                        </content>
-                    </Tab>
-                </tabs>
-            </TabPane>
-        </VBox>
+            <VBox fx:id="mainContent" spacing="20" style="-fx-padding: 20 25 25 25; -fx-background-color: #ECEFF3;">
+
+                <TabPane fx:id="tabPane" id="profileTabPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS"
+                         stylesheets="@profile.css"
+                         style="-fx-background-color: transparent; -fx-tab-header-background: transparent;">
+                    <tabs>
+                        <Tab text="My Profile">
+                            <content>
+                                <StackPane fx:id="profilePane" style="-fx-padding: 15 0 0 0;"/>
+                            </content>
+                        </Tab>
+                        <Tab text="Change Password">
+                            <content>
+                                <StackPane fx:id="passwordPane" style="-fx-padding: 15 0 0 0;"/>
+                            </content>
+                        </Tab>
+                        <Tab text="Finance">
+                            <content>
+                                <StackPane fx:id="financePane" style="-fx-padding: 15 0 0 0;"/>
+                            </content>
+                        </Tab>
+                        <Tab text="History">
+                            <content>
+                                <StackPane fx:id="historyPane" style="-fx-padding: 15 0 0 0;"/>
+                            </content>
+                        </Tab>
+                    </tabs>
+                </TabPane>
+            </VBox>
+        </StackPane>
     </center>
 
 </BorderPane>
