@@ -11,9 +11,9 @@
       alignment="TOP_CENTER"
       maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
       onMouseClicked="#toAuctionDetail"
-      prefWidth="250.0" spacing="10.0"
+      prefWidth="230.0"
       stylesheets="@auctioncard.css"
-      styleClass="auction-card"
+      styleClass="card"
       xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="Client.Controllers.AuctionPage.AuctionCardController">
    <children>
@@ -39,7 +39,4 @@
          </VBox.margin>
       </VBox>
    </children>
-   <padding>
-      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-   </padding>
 </VBox>

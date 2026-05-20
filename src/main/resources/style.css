@@ -5,6 +5,11 @@
 .label {
     -fx-text-fill: #37427c;
 }
+.label-title {
+    -fx-font-family: "System";
+    -fx-font-weight: bold;
+    -fx-font-size: 22px;
+}
 .button {
     -fx-background-color: #006eff;
     -fx-text-fill: white;

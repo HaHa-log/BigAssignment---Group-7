@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 
 public class Item extends Entity {
     private Price startingPrice;
+    private Price currentPrice;
     private String description;
     private String name;
     public enum Status {

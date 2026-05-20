@@ -235,4 +235,8 @@ public class AuctionManager {
         session.getItem().setStatus(Item.Status.SOLD);
         System.out.println("[System]: Transaction created for winner: " + winner.getFullName());
     }
+
+    public Auction getAuctionByItem(Item item) {
+        return auctionDb.getByItem(item);
+    }
 }

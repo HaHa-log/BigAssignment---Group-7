@@ -127,6 +127,30 @@ public class AuctionsDAOImpl implements AuctionsDAO {
     }
 
     @Override
+    //Temporarily add before adding currentPrice into Item
+    public Auction getByItem(Item item) {
+        if (item == null) {
+            return null;
+        }
+
+        String sql = getAuctionBaseSQL() + "WHERE a.item_id = ?";
+
+        try (Connection conn = DB.getConnection();
+             PreparedStatement st = conn.prepareStatement(sql)) {
+
+            st.setInt(1, item.getId());
+            try (ResultSet rs = st.executeQuery()) {
+                if (rs.next()) {
+                    return instantiateAuction(rs);
+                }
+            }
+            return null;
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+    }
+
+    @Override
     public List<Auction> getAll() {
         String sql = getAuctionBaseSQL();
 
@@ -225,7 +249,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 rs.getBoolean("owner_isBlocked"),
                 rs.getObject("owner_blockedUntil", LocalDateTime.class),
                 rs.getString("owner_avatar_path")
-                );
+        );
         obj.setId(rs.getInt("owner_id"));
         return obj;
     }
@@ -259,7 +283,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 rs.getObject("winner_blockedUntil", LocalDateTime.class),
                 rs.getString("winner_avatar_path")
 
-                );
+        );
         obj.setId(rs.getInt("winner_id"));
         return obj;
     }

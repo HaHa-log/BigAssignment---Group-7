@@ -1,4 +1,7 @@
-.item-card {
+/* CARDS */
+.card {
+    -fx-spacing: 10;
+    -fx-padding: 5;
     -fx-background-color: #ffffff;
     -fx-background-radius: 8;
     -fx-border-color: #37427c;
@@ -9,7 +12,7 @@
     -fx-cursor: hand;
 }
 
-.item-card:hover {
+.card:hover {
     -fx-background-color: #C2D7FF;
 }
 
@@ -19,7 +22,7 @@
     -fx-font-weight: bold;
 }
 
-.auction-card:hover #itemNameLabel {
+.card:hover #itemNameLabel {
     -fx-font-size: 18px;
     -fx-text-fill: #212121;
 }
@@ -30,7 +33,7 @@
     -fx-text-transform: uppercase;
 }
 
-.auction-card:hover #statusLabel {
+.card:hover #statusLabel {
     -fx-font-size: 11px;
     -fx-text-fill: #757575;
 }
