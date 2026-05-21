@@ -16,12 +16,11 @@ public class AuctionResponse {
     private String status;
     private double startingPrice;
     private double currentPrice;
-    
+
     private LocalDateTime startingTime;
     private LocalDateTime endingTime;
 
     private Integer winnerId;
-    private String winnerName;
 
     public AuctionResponse() {
     }
@@ -53,21 +52,57 @@ public class AuctionResponse {
         this.startingTime = startingTime;
         this.endingTime = endingTime;
         this.winnerId = winnerId;
-        this.winnerName = winnerName;
     }
 
-    public int getId() { return id; }
-    public int getOwnerId() { return ownerId; }
-    public String getOwnerName() { return ownerName; }
-    public int getItemId() { return itemId; }
-    public String getItemName() { return itemName; }
-    public String getItemDescription() { return itemDescription; }
-    public String getItemImagePath() { return itemImagePath; }
-    public String getStatus() { return status; }
-    public double getStartingPrice() { return startingPrice; }
-    public double getCurrentPrice() { return currentPrice; }
-    public LocalDateTime getStartingTime() { return startingTime; }
-    public LocalDateTime getEndingTime() { return endingTime; }
-    public Integer getWinnerId() { return winnerId; }
-    public String getWinnerName() { return winnerName; }
+    public int getId() {
+        return id;
+    }
+
+    public int getOwnerId() {
+        return ownerId;
+    }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public int getItemId() {
+        return itemId;
+    }
+
+    public String getItemName() {
+        return itemName;
+    }
+
+    public String getItemDescription() {
+        return itemDescription;
+    }
+
+    public String getItemImagePath() {
+        return itemImagePath;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public double getStartingPrice() {
+        return startingPrice;
+    }
+
+    public double getCurrentPrice() {
+        return currentPrice;
+    }
+
+    public LocalDateTime getStartingTime() {
+        return startingTime;
+    }
+
+    public LocalDateTime getEndingTime() {
+        return endingTime;
+    }
+
+    public Integer getWinnerId() {
+        return winnerId;
+    }
 }

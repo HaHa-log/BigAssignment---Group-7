@@ -7,5 +7,7 @@ public class ConfirmReceiptRequest {
         this.buyerId = buyerId;
     }
 
-    public int getBuyerId() { return buyerId; }
+    public int getBuyerId() {
+        return buyerId;
+    }
 }

@@ -28,11 +28,32 @@ public class CreateAuctionRequest {
         this.imagePath = imagePath;
     }
 
-    public int getOwnerId() { return ownerId; }
-    public String getItemName() { return itemName; }
-    public String getDescription() { return description; }
-    public double getStartingPrice() { return startingPrice; }
-    public LocalDateTime getStartingTime() { return startingTime; }
-    public LocalDateTime getEndingTime() { return endingTime; }
-    public String getImagePath() { return imagePath; }
+
+    public int getOwnerId() {
+        return ownerId;
+    }
+
+    public String getItemName() {
+        return itemName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public double getStartingPrice() {
+        return startingPrice;
+    }
+
+    public LocalDateTime getStartingTime() {
+        return startingTime;
+    }
+
+    public LocalDateTime getEndingTime() {
+        return endingTime;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
 }

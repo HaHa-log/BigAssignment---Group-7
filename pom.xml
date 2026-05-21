@@ -12,7 +12,8 @@
 
     <modules>
         <module>server</module>
-        <module>client</module> </modules>
+        <module>client</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

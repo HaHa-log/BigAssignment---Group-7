@@ -9,6 +9,11 @@ public class BidRequest {
         this.amount = amount;
     }
 
-    public int getBidderId() { return bidderId; }
-    public double getAmount() { return amount; }
+    public int getBidderId() {
+        return bidderId;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
 }
