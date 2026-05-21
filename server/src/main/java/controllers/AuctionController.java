@@ -1,80 +1,95 @@
 package controllers;
 
-import dto.auction.AuctionResponse;
+import dto.auction.BidRequest;
+import dto.auction.ConfirmReceiptRequest;
+import dto.auction.CreateAuctionRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import services.AuctionService;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auctions")
 public class AuctionController {
+    private final AuctionService auctionService;
 
-    private final AuctionService auctionService = new AuctionService();
+    public AuctionController(AuctionService auctionService) {
+        this.auctionService = auctionService;
+    }
 
     @GetMapping
     public ResponseEntity<?> getAll() {
         try {
-            List<AuctionResponse> auctions = auctionService.getAllAuctions();
-            return ResponseEntity.ok(auctions);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", e.getMessage()));
+            return ResponseEntity.ok(auctionService.getAll());
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Cannot fetch auctions.", "detail", safeMessage(e)));
+            return serverError(e);
         }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable int id) {
         try {
-            AuctionResponse auction = auctionService.getAuctionById(id);
-            return ResponseEntity.ok(auction);
+            return ResponseEntity.ok(auctionService.getById(id));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", e.getMessage()));
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Cannot fetch auction.", "detail", safeMessage(e)));
+            return serverError(e);
         }
     }
 
-    @GetMapping
-    public ResponseEntity<?> getAll(@RequestParam(required = false) String status) {
+    @PostMapping
+    public ResponseEntity<?> create(@RequestBody CreateAuctionRequest request) {
         try {
-            List<AuctionResponse> auctions = auctionService.getByStatus(status);
-            return ResponseEntity.ok(auctions);
+            return ResponseEntity.status(HttpStatus.CREATED).body(auctionService.create(request));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", e.getMessage()));
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Cannot fetch auctions.", "detail", safeMessage(e)));
+            return serverError(e);
         }
     }
 
-    @GetMapping
-    public ResponseEntity<?> getActiveAuction() {
+    @PostMapping("/{id}/bids")
+    public ResponseEntity<?> placeBid(@PathVariable int id, @RequestBody BidRequest request) {
         try {
-             List<AuctionResponse> auctions = auctionService.getActiveAuctions();            return ResponseEntity.ok(auctions);
+            return ResponseEntity.ok(auctionService.placeBid(id, request.getBidderId(), request.getAmount()));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", e.getMessage()));
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Cannot fetch auctions.", "detail", safeMessage(e)));
+            return serverError(e);
         }
     }
 
-    private String safeMessage(Exception e) {
-        return e.getMessage() == null ? "no detail" : e.getMessage();
+    @PostMapping("/{id}/cancel")
+    public ResponseEntity<?> cancel(@PathVariable int id) {
+        try {
+            return ResponseEntity.ok(auctionService.cancel(id));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return serverError(e);
+        }
+    }
+
+    @PostMapping("/{id}/confirm-receipt")
+    public ResponseEntity<?> confirmReceipt(@PathVariable int id, @RequestBody ConfirmReceiptRequest request) {
+        try {
+            return ResponseEntity.ok(auctionService.confirmReceipt(id, request.getBuyerId()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return serverError(e);
+        }
+    }
+
+    private ResponseEntity<?> serverError(Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", e.getMessage() == null ? "Unexpected server error." : e.getMessage()));
     }
 }
