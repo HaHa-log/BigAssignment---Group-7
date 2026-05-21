@@ -1,76 +1,111 @@
 package services;
 
 import dto.auction.AuctionResponse;
+import dto.auction.CreateAuctionRequest;
 import models.Auction;
+import models.AuctionManager;
+import models.Bidder;
 import models.Item;
+import models.Member;
+import models.Transaction;
 import models.User;
+import org.springframework.stereotype.Service;
 import repositories.AuctionsDAO;
+import repositories.UsersDAO;
 import repositories.impl.DaoFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class AuctionService {
-
     private final AuctionsDAO auctionsDAO = DaoFactory.createAuctionsDAO();
+    private final UsersDAO usersDAO = DaoFactory.createUsersDAO();
 
-    public List<AuctionResponse> getAllAuctions() {
-        List<Auction> auctions = auctionsDAO.getAll();
-        List<AuctionResponse> result = new ArrayList<>();
-
-        for (Auction auction : auctions) {
-            result.add(toResponse(auction));
-        }
-
-        return result;
+    public List<AuctionResponse> getAll() {
+        return auctionsDAO.getAll().stream()
+                .map(this::toResponse)
+                .toList();
     }
 
-    public List<AuctionResponse> getByStatus(String status) {
-        List<Auction> auctions = auctionsDAO.getByStatus(status);
-        List<AuctionResponse> result = new ArrayList<>();
-
-        for (Auction auction : auctions) {
-            result.add(toResponse(auction));
-        }
-
-        return result;
-    }
-
-    public List<AuctionResponse> getActiveAuctions() {
-        List<Auction> auctions = auctionsDAO.getActiveAuctions();
-        List<AuctionResponse> result = new ArrayList<>();
-
-        for (Auction auction : auctions) {
-            result.add(toResponse(auction));
-        }
-
-        return result;
-    }
-
-    public AuctionResponse getAuctionById(int id) {
-        Auction auction = auctionsDAO.getById(id);
-        if (auction == null) {
-            throw new IllegalArgumentException("Auction not found: " + id);
-        }
+    public AuctionResponse getById(int id) {
+        Auction auction = requireAuction(id);
         return toResponse(auction);
     }
 
+    public AuctionResponse create(CreateAuctionRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("[Error]: Request body is required.");
+        }
+
+        User owner = usersDAO.getById(request.getOwnerId());
+        if (!(owner instanceof Member member)) {
+            throw new IllegalArgumentException("[Error]: Auction owner is invalid.");
+        }
+
+        Item item = new Item(request.getItemName(), request.getStartingPrice(), request.getDescription());
+        item.setOwnerId(member.getId());
+        item.setImagePath(request.getImagePath());
+
+        Auction auction = new Auction(member, item, request.getStartingTime(), request.getEndingTime());
+        auctionsDAO.save(auction);
+        auction.start();
+        auctionsDAO.update(auction);
+        return toResponse(auction);
+    }
+
+    public AuctionResponse placeBid(int auctionId, int bidderId, double amount) {
+        Auction auction = requireAuction(auctionId);
+        User bidder = usersDAO.getById(bidderId);
+        if (!(bidder instanceof Bidder)) {
+            throw new IllegalArgumentException("[Error]: Bidder is invalid.");
+        }
+
+        bidder.placeBid(auction, amount);
+        return toResponse(auctionsDAO.getById(auctionId));
+    }
+
+    public AuctionResponse cancel(int auctionId) {
+        Auction auction = requireAuction(auctionId);
+        auction.transitionTo(Auction.AuctionStatus.CANCELED);
+        auctionsDAO.update(auction);
+        return toResponse(auction);
+    }
+
+    public AuctionResponse confirmReceipt(int auctionId, int buyerId) {
+        User buyer = usersDAO.getById(buyerId);
+        if (!(buyer instanceof Member member)) {
+            throw new IllegalArgumentException("[Error]: Buyer is invalid.");
+        }
+
+        Transaction transaction = AuctionManager.getInstance().confirmReceipt(auctionId, member);
+        return toResponse(transaction.getAuction());
+    }
+
+    private Auction requireAuction(int id) {
+        Auction auction = auctionsDAO.getById(id);
+        if (auction == null) {
+            throw new IllegalArgumentException("[Error]: Auction not found.");
+        }
+        return auction;
+    }
+
     private AuctionResponse toResponse(Auction auction) {
-        Item item = auction.getItem();
-        User owner = auction.getOwner();
         User winner = auction.getWinner();
-
-        Integer itemId = item.getId();
-        String itemName = item.getName();
-
-        Integer ownerId = owner.getId();
-        String ownerName = owner.getFullName() ;
-
-        Integer winnerId = winner != null ? winner.getId() : null;
-        String winnerName = winner != null ? winner.getFullName() : null;
-
-        String status = auction.getRawStatus().name();
-
-        return new AuctionResponse(auction.getId(), itemId, itemName, ownerId, ownerName, winnerId, winnerName, auction.getCurrentPrice(), status);
+        return new AuctionResponse(
+                auction.getId(),
+                auction.getOwnerId(),
+                auction.getOwner().getFullName(),
+                auction.getItemId(),
+                auction.getItem().getName(),
+                auction.getItem().getDescription(),
+                auction.getItem().getImagePath(),
+                auction.getRawStatus().name(),
+                auction.getStartingPrice(),
+                auction.getCurrentPrice(),
+                auction.getStartingTime(),
+                auction.getEndingTime(),
+                winner != null ? winner.getId() : null,
+                winner != null ? winner.getFullName() : null
+        );
     }
 }

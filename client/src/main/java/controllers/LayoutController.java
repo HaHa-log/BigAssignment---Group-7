@@ -31,10 +31,10 @@ public class LayoutController {
 
     @FXML
     public void refreshPage() {
-        //String currentPath = SceneManager.getCurrentContent();
+        String currentPath = SceneManager.getCurrentContent();
 
-        //if (currentPath != null) {
-            //SceneManager.switchContent(currentPath);
-        //}
+        if (currentPath != null) {
+            SceneManager.switchContent(currentPath);
+        }
     }
 }

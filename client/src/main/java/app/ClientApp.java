@@ -8,8 +8,7 @@ public class ClientApp extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         SceneManager.setStage(stage);
-        //SceneManager.startApp();
-        SceneManager.switchScene("/LoginFXML/DemoPage.fxml");
+        SceneManager.startApp();
     }
 
     public static void main(String[] args) {

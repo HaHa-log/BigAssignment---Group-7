@@ -1,18 +1,14 @@
 package controllers.Inventory;
 
 import models.Auction;
+import models.AuctionManager;
 import models.Item;
-import controllers.AuctionPage.AuctionDetailController;
-import controllers.SceneManager;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import java.io.File;
-import java.io.IOException;
 
 public class ItemCardController {
     @FXML
@@ -26,43 +22,30 @@ public class ItemCardController {
     @FXML
     private ImageView imageContainer;
 
-    private Auction auction;
+    private Item item;
 
-    @FXML
-    private void toAuctionDetail() {
-        try {
-            String fxmlPath = "/AuctionPageFXML/AuctionDetail.fxml";
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/AuctionPageFXML/AuctionDetail.fxml"));
-            Parent detailRoot = loader.load();
-
-            AuctionDetailController controller = loader.getController();
-
-            //controller.setAuctionData(this.auction);
-            SceneManager.switchContent(detailRoot);
-
-        } catch (IOException e) {
-            e.printStackTrace();
+    /*
+    public void setItemData(Item item) {
+        this.item = item;
+        this.statusLabel.setText(item.getStatus().toString());
+        this.itemNameLabel.setText(item.getName());
+        this.startingPriceLabel.setText("Starting price: $" + item.getStartingPrice());
+        if (AuctionManager.getInstance().getAuctionByItem(item) ==  null) {
+            this.currentPriceLabel.setText("Current price: $" + item.getStartingPrice());
+        } else {
+            this.currentPriceLabel.setText("Current price: $" + AuctionManager.getInstance().getAuctionByItem(item).getCurrentPrice());
         }
-    }
-
-    public void setAuctionData(Auction auction) {
-        this.auction = auction;
-        this.statusLabel.setText(auction.getStatus().toString());
-        this.itemNameLabel.setText(auction.getItem().getName());
-        this.startingPriceLabel.setText("Starting price: $" + auction.getStartingPrice());
-        this.currentPriceLabel.setText("Current price: $" + auction.getCurrentPrice());
 
         setItemImage();
     }
 
     private void setItemImage() {
-        Item item = auction.getItem();
-        String filePath = item.getImagePath();
-
         File file = new File("src/main/resources/ItemImages/" + item.getImagePath());
         Image image = new Image(file.toURI().toString());
 
         imageContainer.setImage(image);
     }
+
+     */
 }
 

@@ -92,7 +92,7 @@ public class SceneManager {
             stage.setScene(new Scene(root));
             if (fxmlPath.contains("DemoPage")) {
                 stage.setFullScreen(false);
-                stage.setMinHeight(650);
+                stage.setMinHeight(700);
                 stage.setWidth(800);
                 stage.setResizable(true);
             } else {
@@ -115,26 +115,11 @@ public class SceneManager {
         return prefs.getBoolean(REMEMBER_KEY, false);
     }
 
-    //Handle cases when rememberMe is ticked
-    /*public static void startApp() {
-        if (SceneManager.userIsRemembered()) {
-            String savedEmail = SessionManager.getSavedEmail();
-
-            if (savedEmail != null) {
-                User user = userDb.getByEmail(savedEmail);
-                SessionManager.loginCurrentUser(user);
-                SceneManager.loadLayout();
-                SceneManager.switchContent("/MainFXML/HomePage/HomePage.fxml");
-            }
-            else {
-                SceneManager.switchScene("/LoginFXML/DemoPage.fxml");
-            }
-        } else {
-            SceneManager.switchScene("/LoginFXML/DemoPage.fxml");
-        }
+    public static void startApp() {
+        switchScene("/LoginFXML/DemoPage.fxml");
     }
 
     public static String getCurrentContent() {
         return currentContentPath;
-    }*/
+    }
 }

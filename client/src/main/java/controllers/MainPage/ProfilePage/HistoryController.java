@@ -100,7 +100,7 @@ public class HistoryController extends BaseController {
 
                     AuctionHistoryEntry entry = getTableView().getItems().get(getIndex());
 
-                    /*try {
+                    try {
                         Auction targetAuction = AuctionManager.getInstance().getAllSessions().stream()
                                 .filter(a -> a.getId() == entry.auctionId())
                                 .findFirst()
@@ -123,7 +123,7 @@ public class HistoryController extends BaseController {
                     } catch (Exception e) {
                         System.err.println("[System Error]: " + e.getMessage());
                         e.printStackTrace();
-                    }*/
+                    }
                 });
             }
 
@@ -138,7 +138,7 @@ public class HistoryController extends BaseController {
 
                 AuctionHistoryEntry entry = getTableView().getItems().get(getIndex());
 
-                /*Auction currentAuction = AuctionManager.getInstance().getAllSessions().stream()
+                Auction currentAuction = AuctionManager.getInstance().getAllSessions().stream()
                         .filter(a -> a.getId() == entry.auctionId())
                         .findFirst()
                         .orElse(null);
@@ -148,7 +148,7 @@ public class HistoryController extends BaseController {
                     setGraphic(confirmButton);
                 } else {
                     setGraphic(null);
-                }*/
+                }
             }
         });
     }
@@ -210,7 +210,7 @@ public class HistoryController extends BaseController {
 
         new Thread(() -> {
 
-            /*ObservableList<AuctionHistoryEntry> data =
+            ObservableList<AuctionHistoryEntry> data =
                     FXCollections.observableArrayList(
                             user.getTableHistory(
                                     AuctionManager.getInstance().getAllSessions()
@@ -225,7 +225,7 @@ public class HistoryController extends BaseController {
 
                 loadingIndicator.setVisible(false);
                 loadingIndicator.setManaged(false);
-            });*/
+            });
 
         }).start();
     }

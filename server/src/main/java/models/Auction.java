@@ -5,12 +5,11 @@ import models.Exceptions.AuctionClosedException;
 import models.Exceptions.AuthenticationException;
 import models.Exceptions.CustomisedException;
 import models.Exceptions.InvalidBidException;
-/*import model.AuctionsDAO;
-import model.AutoBidDAO;
-import model.BidsDAO;
-import model.UsersDAO;
-import model.impl.DaoFactory;
- */
+import repositories.AuctionsDAO;
+import repositories.AutoBidDAO;
+import repositories.BidsDAO;
+import repositories.UsersDAO;
+import repositories.impl.DaoFactory;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -39,11 +38,10 @@ public class Auction extends Entity implements Serializable {
     private transient List<User> participants;
     private transient ReentrantLock lock;
 
-    /*private transient AuctionsDAO auctionsDb;
+    private transient AuctionsDAO auctionsDb;
     private transient BidsDAO bidsDb;
     private transient UsersDAO usersDb;
     private transient AutoBidDAO autoBidDb;
-     */
 
     public enum AuctionStatus {
         OPEN, RUNNING, FINISHED, PAID, CANCELED
@@ -130,7 +128,7 @@ public class Auction extends Entity implements Serializable {
             AuctionStatus oldStatus = status;
             status = nextStatus;
             System.out.println("[Auction] Status changing from: " + oldStatus + " to " + nextStatus);
-            //auctionsDb().update(this);
+            updateIfPersisted();
             return true;
         } finally {
             lock().unlock();
@@ -222,10 +220,12 @@ public class Auction extends Entity implements Serializable {
         return owner.getId();
     }
 
-    /*public List<Bid> getBids() {
-        bids = bidsDb().getByAuctionId(getId());
+    public List<Bid> getBids() {
+        if (getId() > 0) {
+            bids = bidsDb().getByAuctionId(getId());
+        }
         return bids;
-    }*/
+    }
 
     public LocalDateTime getEndingTime() {
         return endingTime;
@@ -247,7 +247,7 @@ public class Auction extends Entity implements Serializable {
         return currentPrice;
     }
 
-    /*public List<User> getParticipants() {
+    public List<User> getParticipants() {
         participants().clear();
         for (Bid bid : getBids()) {
             User bidder = bid.getBidder();
@@ -256,7 +256,7 @@ public class Auction extends Entity implements Serializable {
             }
         }
         return participants();
-    }*/
+    }
 
     public User getWinner() {
         return winner instanceof User user ? user : null;
@@ -270,7 +270,7 @@ public class Auction extends Entity implements Serializable {
         }
 
         if (status == AuctionStatus.RUNNING && endingTime != null && now.isAfter(endingTime)) {
-            //AuctionManager.getInstance().closeAuction(this);
+            AuctionManager.getInstance().closeAuction(this);
         }
     }
 
@@ -336,7 +336,9 @@ public class Auction extends Entity implements Serializable {
         if (oldBidAmount > 0) {
             boolean success = oldUser.unfreezeMoney(oldBidAmount);
             if (success) {oldUser.addTransaction("🔓 UNFREEZE | +" + oldBidAmount + " | Balance: " + String.format("%.2f", oldUser.getBalance()));}
-            //usersDb().update(oldUser);
+            if (oldUser.getId() > 0) {
+                usersDb().update(oldUser);
+            }
             System.out.println("[System]: Unfrozen " + oldBidAmount + " for previous winner: " + oldUser.getFullName());
         }
     }
@@ -345,13 +347,19 @@ public class Auction extends Entity implements Serializable {
         currentPrice = bidAmount.getPrice();
         winner = bidder;
         handleSniping();
-        //usersDb().update((User) bidder);
-        //auctionsDb().update(this);
+        if (((User) bidder).getId() > 0) {
+            usersDb().update((User) bidder);
+        }
+        updateIfPersisted();
     }
 
     private void persistBid(User user, Price bidAmount) {
         if (user instanceof Member member) {
-            //bidsDb().save(new Bid(this, member, bidAmount));
+            Bid bid = new Bid(this, member, bidAmount);
+            bids.add(bid);
+            if (getId() > 0 && member.getId() > 0) {
+                bidsDb().save(bid);
+            }
         }
     }
 
@@ -364,10 +372,11 @@ public class Auction extends Entity implements Serializable {
     private void processPreviousWinnerAutoBid(Bidder previousWinner, Bidder bidder) {
         if (!(previousWinner instanceof User oldUser)
                 || !(bidder instanceof User newUser)
-                || oldUser.getId() == newUser.getId()) {
+                || oldUser.getId() == newUser.getId()
+                || auctionId <= 0
+                || oldUser.getId() <= 0) {
             return;
         }
-/*
         AutoBid config = AuctionManager.getInstance().getAutoBidConfig(auctionId, oldUser.getId());
         if (config == null) {
             return;
@@ -376,11 +385,11 @@ public class Auction extends Entity implements Serializable {
         if (!BidStepConfiguration.isValidStep(currentPrice, config.getIncrement())) {
             double minimumAllowedStep = BidStepConfiguration.getAllowedSteps(currentPrice).get(0);
             config.setIncrement(minimumAllowedStep);
-            //autoBidDb().update(config);
+            autoBidDb().update(config);
             System.out.println("[System]: AutoBid increment adjusted to " + minimumAllowedStep);
         }
 
-        AuctionManager.getInstance().processAutoBids(this, config);*/
+        AuctionManager.getInstance().processAutoBids(this, config);
     }
 
     private void handleSniping() {
@@ -423,7 +432,13 @@ public class Auction extends Entity implements Serializable {
         }
         return participants;
     }
-/*
+
+    private void updateIfPersisted() {
+        if (getId() > 0) {
+            auctionsDb().update(this);
+        }
+    }
+
     private AuctionsDAO auctionsDb() {
         if (auctionsDb == null) {
             auctionsDb = DaoFactory.createAuctionsDAO();
@@ -450,5 +465,5 @@ public class Auction extends Entity implements Serializable {
             autoBidDb = DaoFactory.createAutoBidDAO();
         }
         return autoBidDb;
-    }*/
+    }
 }

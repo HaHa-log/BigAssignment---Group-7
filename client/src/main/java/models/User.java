@@ -3,11 +3,16 @@ package models;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import models.Common.Balance;
+import models.Common.AuctionAlert;
+import models.Common.AuctionHistoryEntry;
 import models.Common.Email;
 import models.Common.FullName;
+import models.Common.NotificationType;
 import models.Common.PhoneNumber;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public abstract class User extends Entity implements Bidder, Seller, AuctionObserver {
@@ -180,7 +185,7 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
         return Objects.hash(getId());
     }
 
-    /*public boolean isHighestBidder(Auction auction) {
+    public boolean isHighestBidder(Auction auction) {
         return auction.getWinner() != null && auction.getWinner().equals(this);
     }
 
@@ -262,7 +267,7 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
             }
         }
         return alerts;
-    }*/
+    }
 
     public ObservableList<String> getTransactions() { return transactions; }
 

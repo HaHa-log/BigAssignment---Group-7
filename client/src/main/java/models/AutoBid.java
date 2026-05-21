@@ -14,8 +14,9 @@ public class AutoBid implements Serializable, Cloneable {
     public AutoBid(Auction auction, Member user, double maxBid, double increment) {
         this.auction = auction;
         this.user = user;
-        this.maxBid = new Price(maxBid);
-        this.increment = increment;
+        this.maxBid = new Price(0);
+        setMaxBid(maxBid);
+        setIncrement(increment);
     }
 
     @Override
@@ -32,15 +33,17 @@ public class AutoBid implements Serializable, Cloneable {
     }
 
     public void setMaxBid(double maximum) {
-        if (maximum <= ((User) user).getBalance()) {
-            this.maxBid = new Price(maximum);
-        } else if (maxBid.getPrice() <= auction.getCurrentPrice()) {
+        if (maximum <= auction.getCurrentPrice()) {
             throw new IllegalArgumentException("Max bid must be higher than current price.");
-        } else {
+        }
+
+        if (maximum > ((User) user).getBalance()) {
             throw new CustomisedException("[Error]: Maximum bid cannot exceed balance");
         }
+
+        this.maxBid = new Price(maximum);
     }
-/*
+
     public void setIncrement(double step) {
         if (step <= 0) {
             throw new CustomisedException("[Error]: Step must be greater than 0.");
@@ -57,7 +60,7 @@ public class AutoBid implements Serializable, Cloneable {
         } else {
             throw new CustomisedException("[Error]: Invalid increment, increment must be lesser than maximum bid");
         }
-    }*/
+    }
 
     public void setAuction(Auction auction) {
         this.auction = auction;

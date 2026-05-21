@@ -19,7 +19,6 @@ public class Item extends Entity {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String imagePath;
-    //private ItemsDAO itemsDb = DaoFactory.createItemDAO();
     private int ownerId;
 
     public Item(String name, double startingPrice, String description) {
@@ -41,27 +40,22 @@ public class Item extends Entity {
 
     public void setStartingPrice(double startPrice) {
         this.startingPrice = new Price(startPrice);
-        //itemsDb.update(this);
     }
 
     public void setDescription(String narrative) {
         this.description = narrative;
-        //itemsDb.update(this);
     }
 
     public void setStatus(Status status) {
         this.status = status;
-        //itemsDb.update(this);
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
-        //itemsDb.update(this);
     }
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
-        //itemsDb.update(this);
     }
 
     public void setOwnerId(int ownerId) {
@@ -70,7 +64,6 @@ public class Item extends Entity {
 
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
-        //itemsDb.update(this);
     }
 
     public double getStartingPrice() {
@@ -120,6 +113,5 @@ public class Item extends Entity {
     }
 
     public void saveItem() {
-        //itemsDb.save(this);
     }
 }

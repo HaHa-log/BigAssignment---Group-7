@@ -1,16 +1,10 @@
 package models;
-/*
-import model.TransactionDAO;
-import model.UsersDAO;
-import model.impl.DaoFactory;
-*/
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Admin extends Member {
-    //private UsersDAO userDb = DaoFactory.createUsersDAO();
-    //private TransactionDAO transactionDb = DaoFactory.createTransactionDAO();
-
     public Admin(String firstName, String lastName, String email, String phoneNumber, String password, double balance,String avatarPath) {
         super(firstName, lastName, email, phoneNumber,password, balance,avatarPath);
     }
@@ -39,7 +33,6 @@ public class Admin extends Member {
         }
 
         user.setBlocked(until);
-        //userDb.update(user);
 
         System.out.println(
                 "[Admin]: User with ID "
@@ -57,7 +50,6 @@ public class Admin extends Member {
         }
 
         user.isUnblocked();
-        //userDb.update(user);
 
         System.out.println(
                 "[Admin]: User with ID "
@@ -65,7 +57,6 @@ public class Admin extends Member {
                         + " unblocked."
         );
     }
-/*
     public boolean cancelAuction(int auctionId) {
         AuctionManager manager = AuctionManager.getInstance();
         boolean success = manager.cancelAuction(auctionId);
@@ -79,11 +70,11 @@ public class Admin extends Member {
     }
 
     public List<Transaction> getAllTransactions() {
-        return transactionDb.getAll();
+        return List.of();
     }
 
     public void printTransactionsByMember(int memberId) {
-        List<Transaction> all = transactionDb.getAll();
+        List<Transaction> all = getAllTransactions();
         List<Transaction> result = new ArrayList<>();
 
         for (Transaction transaction : all) {
@@ -100,5 +91,5 @@ public class Admin extends Member {
         for (Transaction transaction : result) {
             System.out.println(transaction.toString());
         }
-    }*/
+    }
 }

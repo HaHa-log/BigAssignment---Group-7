@@ -1,7 +1,6 @@
 package controllers.AuctionPage;
 
 import models.Auction;
-import models.AuctionManager;
 import controllers.AuctionPage.AuctionCardController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,6 +8,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
+import models.services.AuctionApiService;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ public class AuctionListController {
     @FXML
     private ProgressIndicator loadingSpinner;
 
-    //AuctionManager auctionManager = AuctionManager.getInstance();
+    private final AuctionApiService auctionApiService = new AuctionApiService();
 
     @FXML
     private void initialize() {
@@ -43,9 +43,9 @@ public class AuctionListController {
         auctionTilePane.setVisible(false);
         loadingSpinner.setVisible(true);
 
-        /*Thread thread = new Thread(() -> {
+        Thread thread = new Thread(() -> {
             try {
-                List<Auction> auctions = auctionManager.getAllSessions();
+                List<Auction> auctions = auctionApiService.getAll();
 
                 // Hide spinner as soon as data is fetched
                 javafx.application.Platform.runLater(() -> {
@@ -71,6 +71,6 @@ public class AuctionListController {
         });
 
         thread.setDaemon(true);
-        thread.start();*/
+        thread.start();
     }
 }

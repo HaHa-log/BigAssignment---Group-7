@@ -1,9 +1,10 @@
 package controllers.AuctionPage;
 
-import models.AuctionManager;
 import models.Item;
 import models.Member;
 import models.SessionManager;
+import models.dto.auction.CreateAuctionRequest;
+import models.services.AuctionApiService;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.DatePicker;
@@ -32,9 +33,7 @@ public class AuctionCreateController {
     @FXML private Label fileNameLabel, auctionCreateResult;
     @FXML private ImageView imagePreview;
 
-    // Use the global manager
-    //private final AuctionManager auctionManager = AuctionManager.getInstance();
-    private final Member seller = (Member) SessionManager.getCurrentUser();
+    private final AuctionApiService auctionApiService = new AuctionApiService();
 
     private File selectedImageFile;
     private static final long MAX_IMAGE_SIZE = 5 * 1024 * 1024;
@@ -61,6 +60,10 @@ public class AuctionCreateController {
         Task<Void> createTask = new Task<>() {
             @Override
             protected Void call() throws Exception {
+                if (!(SessionManager.getCurrentUser() instanceof Member seller)) {
+                    throw new IllegalArgumentException("[Error]: Session expired! Please log in again.");
+                }
+
                 double startingPrice = Double.parseDouble(startingPriceRaw);
                 LocalTime startTime = LocalTime.parse(sTimeStr);
                 LocalTime endTime = LocalTime.parse(eTimeStr);
@@ -69,17 +72,21 @@ public class AuctionCreateController {
 
                 Item item = new Item(itemName, startingPrice, description);
 
-                if (seller != null) {
-                    item.setOwnerId(seller.getId());
-                } else {
-                    throw new IllegalArgumentException("[Error]: Session expired! Please log in again.");
-                }
+                item.setOwnerId(seller.getId());
 
                 if (selectedImageFile != null) {
                     processImageUpload(item);
                 }
 
-                //auctionManager.createAuction(seller, item, startFull, endFull);
+                auctionApiService.create(new CreateAuctionRequest(
+                        seller.getId(),
+                        item.getName(),
+                        item.getDescription(),
+                        item.getStartingPrice(),
+                        startFull,
+                        endFull,
+                        item.getImagePath()
+                ));
 
                 return null;
             }

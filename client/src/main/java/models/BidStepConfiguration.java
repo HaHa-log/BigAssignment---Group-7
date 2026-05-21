@@ -1,34 +1,27 @@
 package models;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BidStepConfiguration {
-    /*public static List<Double> getAllowedSteps(double currentPrice) {
+    public static List<Double> getAllowedSteps(double currentPrice) {
         List<Double> allowedSteps = new ArrayList<>();
-        String sql = "SELECT allowed_steps FROM system_bid_steps WHERE ? >= min_price AND ? <= max_price";
 
-        try (Connection conn = DB.getConnection();
-             PreparedStatement st = conn.prepareStatement(sql)) {
+        if (currentPrice < 100) {
+            allowedSteps.add(10.0);
+            allowedSteps.add(20.0);
+            allowedSteps.add(50.0);
+        } else if (currentPrice < 1_000) {
+            allowedSteps.add(50.0);
+            allowedSteps.add(100.0);
+            allowedSteps.add(200.0);
+        } else {
+            allowedSteps.add(100.0);
+            allowedSteps.add(500.0);
+            allowedSteps.add(1_000.0);
+        }
 
-            st.setDouble(1, currentPrice);
-            st.setDouble(2, currentPrice);
-
-            try (ResultSet rs = st.executeQuery()) {
-                if (rs.next()) {
-                    String stepsRaw = rs.getString("allowed_steps");
-                    String[] tokens = stepsRaw.split(",");
-                    for (String token : tokens) {
-                        allowedSteps.add(Double.parseDouble(token.trim()));
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            System.out.println("[System Error]: Failed to retrieve bid step configuration: " + e.getMessage());
+        if (allowedSteps.isEmpty()) {
             allowedSteps.add(10.0);
         }
         return allowedSteps;
@@ -37,5 +30,5 @@ public class BidStepConfiguration {
     public static boolean isValidStep(double currentPrice, double userStep) {
         List<Double> allowed = getAllowedSteps(currentPrice);
         return allowed.contains(userStep);
-    }*/
+    }
 }

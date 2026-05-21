@@ -1,30 +1,23 @@
 package models;
-/*
-import model.AuctionsDAO;
-import model.AutoBidDAO;
-import model.TransactionDAO;
-import model.UsersDAO;
-import model.impl.DaoFactory;
-*/
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AuctionManager {
     private static AuctionManager instance;
 
-    /*private final AuctionsDAO auctionDb;
-    private final TransactionDAO transactionDb;
-    private final AutoBidDAO autoBidDb;*/
-    private List<Auction> activeSessions;
-    private List<Auction> completedSessions;
+    private final List<Auction> activeSessions;
+    private final List<Auction> completedSessions;
+    private final List<Transaction> transactions;
+    private int nextAuctionId = 1;
+    private int nextItemId = 1;
+    private int nextTransactionId = 1;
 
-/*
     private AuctionManager() {
-        /*auctionDb = DaoFactory.createAuctionsDAO();
-        transactionDb = DaoFactory.createTransactionDAO();
-        autoBidDb = DaoFactory.createAutoBidDAO();
         activeSessions = new ArrayList<>();
         completedSessions = new ArrayList<>();
+        transactions = new ArrayList<>();
     }
 
     public static synchronized AuctionManager getInstance() {
@@ -32,28 +25,6 @@ public class AuctionManager {
             instance = new AuctionManager();
         }
         return instance;
-    }
-
-    public AutoBid getAutoBidConfig(int auctionId, int userId) {
-        return autoBidDb.getByAuctionAndUser(auctionId, userId);
-    }
-
-    public void duplicateAutoBidConfig(int fromAuctionId, int toAuctionId, int userId) {
-        AutoBid sample = autoBidDb.getByAuctionAndUser(fromAuctionId, userId);
-        if (sample == null) {
-            System.out.println("[System]: No prototype configuration found in auction of ID " + fromAuctionId);
-            return;
-        }
-
-        AutoBid newConfig = sample.clone();
-        if (newConfig == null) {
-            return;
-        }
-
-        Auction newAuction = auctionDb.getById(toAuctionId);
-        newConfig.setAuction(newAuction);
-        autoBidDb.save(newConfig);
-        System.out.println("[System]: AutoBid config duplicated successfully!");
     }
 
     public void processAutoBids(Auction auction, AutoBid userConfig) {
@@ -71,15 +42,16 @@ public class AuctionManager {
             return;
         }
 
-        System.out.println("[System]: Auto-bidding for " + userConfig.getUser().getFullName());
         userConfig.getUser().placeBid(auction, nextPrice);
     }
 
     public void createAuction(Member owner, Item item, LocalDateTime startingTime, LocalDateTime endingTime) {
+        item.setOwnerId(owner.getId());
+        item.setId(nextItemId++);
         item.setStatus(Item.Status.IN_AUCTION);
 
         Auction session = new Auction(owner, item, startingTime, endingTime);
-        auctionDb.save(session);
+        session.setAuctionId(nextAuctionId++);
         activeSessions.add(session);
         session.start();
     }
@@ -100,30 +72,22 @@ public class AuctionManager {
         User winner = session.getWinner();
         if (winner == null) {
             session.getItem().setStatus(Item.Status.AVAILABLE);
-            auctionDb.update(session);
-            System.out.println("Auction closed!");
             return;
         }
 
         createPendingTransaction(session, winner);
-        auctionDb.update(session);
-        System.out.println("Auction closed!");
+        session.getItem().setStatus(Item.Status.SOLD);
     }
 
     public boolean cancelAuction(int auctionId) {
         Auction canceledAuction = findActiveAuction(auctionId);
-
         if (canceledAuction == null) {
-            System.out.println("Unable to find auction id " + auctionId);
             return false;
         }
 
         canceledAuction.getItem().setStatus(Item.Status.AVAILABLE);
         canceledAuction.transitionTo(Auction.AuctionStatus.CANCELED);
         moveToCompleted(canceledAuction);
-        auctionDb.update(canceledAuction);
-
-        System.out.println("Auction canceled!");
         return true;
     }
 
@@ -139,72 +103,31 @@ public class AuctionManager {
             throw new IllegalArgumentException("[Error]: Buyer is required.");
         }
 
-        Transaction transaction = transactionDb.getPendingByAuctionAndBuyer(auctionId, buyer.getId());
-        if (transaction == null) {
-            throw new IllegalArgumentException("[Error]: No pending transaction found for this auction.");
-        }
-
-        if (!buyer.isEqual(transaction.getBuyer())) {
-            throw new IllegalArgumentException("[Error]: Only the buyer can confirm receipt.");
-        }
-
-        double amount = transaction.getFinalAmount();
-
-        boolean success = buyer.spendFrozenMoney(amount);
-
-        if (!success) {throw new IllegalArgumentException("[Error]: Payment failed.");
-        }
-        buyer.addTransaction("🛒 PAYMENT | -" + amount + " | Item: " + transaction.getAuction().getItem().getName()
-        );
-
-        Member seller = transaction.getSeller();
-        seller.depositMoney(amount);
-        
-        seller.addTransaction("💰 SALE | +" + amount + " | Item: " + transaction.getAuction().getItem().getName()
-        );
+        Transaction transaction = transactions.stream()
+                .filter(t -> t.getAuction().getId() == auctionId
+                        && t.getBuyer().isEqual(buyer)
+                        && t.getStatus() == Transaction.TransactionStatus.PENDING)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "[Error]: No pending transaction found for this auction."));
 
         transaction.markCompleted();
         transaction.getAuction().transitionTo(Auction.AuctionStatus.PAID);
-
-        transactionDb.update(transaction);
-        auctionDb.update(transaction.getAuction());
-
         return transaction;
     }
 
-    public void checkAndCancelExpiredTransactions() {
-        List<Transaction> pendingTransactions = transactionDb.getAll().stream()
-                .filter(t -> t.getStatus() == Transaction.TransactionStatus.PENDING)
-                .toList();
-        UsersDAO usersDb = DaoFactory.createUsersDAO();
-
-        for (Transaction transaction : pendingTransactions) {
-            if (!transaction.isExpired()) {
-                continue;
-            }
-
-            transaction.getAuction().transitionTo(Auction.AuctionStatus.CANCELED);
-
-            Member buyer = transaction.getBuyer();
-            buyer.unfreezeMoney(transaction.getFinalAmount());
-            usersDb.update(buyer);
-
-            System.out.println("[System]: Transaction " + transaction.getTransactionId()
-                    + " has expired. Money refunded to buyer.");
-        }
-    }
-
     public List<Auction> getActiveSessions() {
-        activeSessions = new ArrayList<>(auctionDb.getActiveAuctions());
-        return activeSessions;
+        return new ArrayList<>(activeSessions);
     }
 
     public List<Auction> getAllSessions() {
-        return auctionDb.getAll();
+        List<Auction> all = new ArrayList<>(activeSessions);
+        all.addAll(completedSessions);
+        return all;
     }
 
     private Auction findActiveAuction(int auctionId) {
-        return getActiveSessions().stream()
+        return activeSessions.stream()
                 .filter(auction -> auction.getId() == auctionId)
                 .findFirst()
                 .orElse(null);
@@ -219,20 +142,8 @@ public class AuctionManager {
 
     private void createPendingTransaction(Auction session, User winner) {
         double finalPrice = session.getCurrentPrice();
-        if (winner.getFrozenBalance() < finalPrice && winner.freezeMoney(finalPrice - winner.getFrozenBalance())) {
-            System.out.println("[System]: Money frozen, moving onto transaction page...");
-        } else if (winner.getFrozenBalance() < finalPrice) {
-            System.out.println("[Warning]: Winner no longer has enough balance to freeze!");
-        }
-
-        Transaction transaction = new Transaction(
-                session,
-                (Member) winner,
-                session.getOwner(),
-                finalPrice
-        );
-        transactionDb.save(transaction);
-        session.getItem().setStatus(Item.Status.SOLD);
-        System.out.println("[System]: Transaction created for winner: " + winner.getFullName());
-    }*/
+        Transaction transaction = new Transaction(session, (Member) winner, session.getOwner(), finalPrice);
+        transaction.setTransactionId(nextTransactionId++);
+        transactions.add(transaction);
+    }
 }

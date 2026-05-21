@@ -7,6 +7,7 @@ module client {
         requires javafx.controls;
         requires java.net.http;
         requires com.fasterxml.jackson.databind;
+        requires com.fasterxml.jackson.datatype.jsr310;
 
         exports app to javafx.graphics;
 
@@ -14,9 +15,13 @@ module client {
         opens controllers.LoginPage to javafx.fxml;
         opens controllers.AuctionPage to javafx.fxml;
         opens controllers.MainPage.ProfilePage to javafx.fxml;
+        opens controllers.MainPage.HomePage to javafx.fxml;
         opens controllers.Management to javafx.fxml;
+        opens controllers.Inventory to javafx.fxml;
 
         opens models to javafx.fxml;
 
         opens models.dto.auth to com.fasterxml.jackson.databind;
+        opens models.dto.auction to com.fasterxml.jackson.databind;
+        opens models.dto.user to com.fasterxml.jackson.databind;
 }

@@ -32,13 +32,15 @@ public class AutoBid implements Serializable, Cloneable {
     }
 
     public void setMaxBid(double maximum) {
-        if (maximum <= ((User) user).getBalance()) {
-            this.maxBid = new Price(maximum);
-        } else if (maxBid.getPrice() <= auction.getCurrentPrice()) {
+        if (maximum <= auction.getCurrentPrice()) {
             throw new IllegalArgumentException("Max bid must be higher than current price.");
-        } else {
+        }
+
+        if (maximum > ((User) user).getBalance()) {
             throw new CustomisedException("[Error]: Maximum bid cannot exceed balance");
         }
+
+        this.maxBid = new Price(maximum);
     }
 
     public void setIncrement(double step) {

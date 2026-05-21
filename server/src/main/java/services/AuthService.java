@@ -7,9 +7,11 @@ import models.Common.Email;
 import models.Common.PhoneNumber;
 import models.Member;
 import models.User;
+import org.springframework.stereotype.Service;
 import repositories.UsersDAO;
 import repositories.impl.DaoFactory;
 
+@Service
 public class AuthService {
 
     private final UsersDAO userdb = DaoFactory.createUsersDAO();
@@ -101,10 +103,14 @@ public class AuthService {
     private AuthResponse toAuthResponse(User user) {
         return new AuthResponse(
                 user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
                 user.getFullName(),
                 user.getEmail(),
+                user.getPhoneNumber(),
                 user.getRole(),
-                user.getBalance()
+                user.getBalance(),
+                user.getAvatarPath()
         );
     }
 

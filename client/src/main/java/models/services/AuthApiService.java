@@ -12,9 +12,9 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class AuthApiService {
-    private static final String BASE_URL = "http://localhost:8080/api/auth";
+    private static final String BASE_URL = ApiConfig.baseUrl() + "/api/auth";
     private final HttpClient httpClient = HttpClient.newHttpClient();
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = ApiJson.mapper();
 
     public AuthResponse register(RegisterRequest req) throws IOException, InterruptedException {
         String json = mapper.writeValueAsString(req);
@@ -38,7 +38,8 @@ public class AuthApiService {
             throw new RuntimeException("Server error (" + response.statusCode() + "): " + response.body());
 
         } catch (java.net.ConnectException | java.net.UnknownHostException e) {
-            throw new IOException("Cannot connect to server.", e);
+            throw new IOException("Cannot connect to server at " + ApiConfig.baseUrl()
+                    + ". Start the Spring Boot server first.", e);
         }
     }
 
@@ -65,7 +66,8 @@ public class AuthApiService {
             throw new RuntimeException("Server error (" + response.statusCode() + "): " + response.body());
 
         } catch (java.net.ConnectException | java.net.UnknownHostException e) {
-            throw new IOException("Cannot connect to server.", e);
+            throw new IOException("Cannot connect to server at " + ApiConfig.baseUrl()
+                    + ". Start the Spring Boot server first.", e);
         }
     }
 
