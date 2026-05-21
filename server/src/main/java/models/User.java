@@ -207,8 +207,8 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
             if (isOwner(auction)) {
                 state = "MY AUCTION";
             } else if (hasParticipated(auction)) {
-                if (auction.getRawStatus() == Auction.AuctionStatus.FINISHED ||
-                        auction.getRawStatus() == Auction.AuctionStatus.PAID) {
+                if (auction.getStatus() == Auction.AuctionStatus.FINISHED ||
+                        auction.getStatus() == Auction.AuctionStatus.PAID) {
                     state = isWinner(auction) ? "WON" : "LOST";
                 } else {
                     state = isHighestBidder(auction) ? "LEADING" : "OUTBID";
@@ -219,7 +219,7 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
                 history.add(new AuctionHistoryEntry(
                         auction.getId(),
                         auction.getItem().getName(),
-                        auction.getRawStatus().toString(),
+                        auction.getStatus().toString(),
                         state
                 ));
             }
@@ -237,7 +237,7 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
 
             boolean isWinner = auction.getWinner() != null && auction.getWinner().getId() == this.getId();
 
-            if (auction.getRawStatus() == Auction.AuctionStatus.RUNNING) {
+            if (auction.getStatus() == Auction.AuctionStatus.RUNNING) {
                 if (isOwner(auction)) {
                     alerts.add(new AuctionAlert(NotificationType.MY_AUCTION_RUNNING, auction));
                 } else if (isHighestBidder(auction)) {
@@ -247,8 +247,8 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
                 }
             }
 
-            if (auction.getRawStatus() == Auction.AuctionStatus.FINISHED ||
-                    auction.getRawStatus() == Auction.AuctionStatus.PAID) {
+            if (auction.getStatus() == Auction.AuctionStatus.FINISHED ||
+                    auction.getStatus() == Auction.AuctionStatus.PAID) {
                 if (isOwner(auction)) {
                     alerts.add(new AuctionAlert(NotificationType.MY_AUCTION_FINISHED, auction));
                 } else if (isWinner) {

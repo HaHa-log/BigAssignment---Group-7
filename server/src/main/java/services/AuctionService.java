@@ -99,7 +99,7 @@ public class AuctionService {
                 auction.getItem().getName(),
                 auction.getItem().getDescription(),
                 auction.getItem().getImagePath(),
-                auction.getRawStatus().name(),
+                auction.getStatus().name(),
                 auction.getStartingPrice(),
                 auction.getCurrentPrice(),
                 auction.getStartingTime(),
