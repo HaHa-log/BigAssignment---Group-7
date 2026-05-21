@@ -3,7 +3,7 @@ package controllers.AuctionPage;
 import models.Item;
 import models.Member;
 import models.SessionManager;
-import services.dto.auction.CreateAuctionRequest;
+import com.group7.dto.auction.CreateAuctionRequest;
 import services.AuctionApiService;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;

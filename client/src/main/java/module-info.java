@@ -1,4 +1,6 @@
 module client {
+        requires common;
+
         requires java.sql;
         requires java.desktop;
         requires java.prefs;

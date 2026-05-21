@@ -1,6 +1,6 @@
 package services;
 
-import dto.user.UserResponse;
+import com.group7.dto.user.*;
 import models.User;
 import org.springframework.stereotype.Service;
 import repositories.UsersDAO;

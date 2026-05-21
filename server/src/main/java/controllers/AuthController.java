@@ -1,8 +1,6 @@
 package controllers;
 
-import dto.auth.AuthResponse;
-import dto.auth.LoginRequest;
-import dto.auth.RegisterRequest;
+import com.group7.dto.auth.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

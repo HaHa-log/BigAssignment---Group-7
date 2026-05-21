@@ -1,9 +1,7 @@
 package services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import services.dto.auth.AuthResponse;
-import services.dto.auth.LoginRequest;
-import services.dto.auth.RegisterRequest;
+import com.group7.dto.auth.*;
 
 import java.io.IOException;
 import java.net.URI;

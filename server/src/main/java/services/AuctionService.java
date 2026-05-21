@@ -1,7 +1,6 @@
 package services;
 
-import dto.auction.AuctionResponse;
-import dto.auction.CreateAuctionRequest;
+import com.group7.dto.auction.*;
 import models.Auction;
 import models.AuctionManager;
 import models.Bidder;

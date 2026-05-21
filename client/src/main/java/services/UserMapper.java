@@ -3,7 +3,7 @@ package services;
 import models.Admin;
 import models.Member;
 import models.User;
-import services.dto.user.UserResponse;
+import com.group7.dto.user.UserResponse;
 
 public final class UserMapper {
     private static final String SESSION_PASSWORD_PLACEHOLDER = "server-authenticated";

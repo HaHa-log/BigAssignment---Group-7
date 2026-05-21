@@ -3,10 +3,7 @@ package services;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import models.Auction;
-import services.dto.auction.AuctionResponse;
-import services.dto.auction.BidRequest;
-import services.dto.auction.ConfirmReceiptRequest;
-import services.dto.auction.CreateAuctionRequest;
+import com.group7.dto.auction.*;
 
 import java.io.IOException;
 import java.net.ConnectException;

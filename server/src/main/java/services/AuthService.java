@@ -1,8 +1,6 @@
 package services;
 
-import dto.auth.AuthResponse;
-import dto.auth.LoginRequest;
-import dto.auth.RegisterRequest;
+import com.group7.dto.auth.*;
 import models.Common.Email;
 import models.Common.PhoneNumber;
 import models.Member;

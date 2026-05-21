@@ -3,7 +3,7 @@ package services;
 import models.Auction;
 import models.Item;
 import models.Member;
-import services.dto.auction.AuctionResponse;
+import com.group7.dto.auction.*;
 
 public final class AuctionMapper {
     private static final String SESSION_PASSWORD_PLACEHOLDER = "server-authenticated";

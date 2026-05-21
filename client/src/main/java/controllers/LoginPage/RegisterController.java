@@ -1,6 +1,6 @@
 package controllers.LoginPage;
 
-import services.dto.auth.RegisterRequest;
+import com.group7.dto.auth.*;
 import services.AuthApiService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

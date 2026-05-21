@@ -1,9 +1,6 @@
 package controllers;
 
-import dto.auction.BidRequest;
-import dto.auction.ConfirmReceiptRequest;
-import dto.auction.CreateAuctionRequest;
-import models.Exceptions.AuctionClosedException;
+import com.group7.dto.auction.*;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
