@@ -9,6 +9,7 @@ public class UserResponse {
     private boolean blocked;
     private double balance;
     private String avatarPath;
+    private double frozenBalance;
 
     public UserResponse(
             int id,
@@ -18,7 +19,8 @@ public class UserResponse {
             String role,
             boolean blocked,
             double balance,
-            String avatarPath) {
+            String avatarPath,
+            double frozenBalance) {
         this.id = id;
         this.fullName = fullName;
         this.email = email;
@@ -27,6 +29,7 @@ public class UserResponse {
         this.blocked = blocked;
         this.balance = balance;
         this.avatarPath = avatarPath;
+        this.frozenBalance = frozenBalance;
     }
 
     public int getId() { return id; }
@@ -37,4 +40,6 @@ public class UserResponse {
     public boolean isBlocked() { return blocked; }
     public double getBalance() { return balance; }
     public String getAvatarPath() { return avatarPath; }
+    public double getFrozenBalance() { return frozenBalance; }
+    public void setFrozenBalance(double frozenBalance) { this.frozenBalance = frozenBalance; }
 }

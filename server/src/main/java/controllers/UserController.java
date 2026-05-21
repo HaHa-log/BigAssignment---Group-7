@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
 import services.UserService;
 
 import java.util.Map;
@@ -55,6 +56,61 @@ public class UserController {
     public ResponseEntity<?> unblock(@PathVariable int id) {
         try {
             return ResponseEntity.ok(userService.unblock(id));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return serverError(e);
+        }
+    }
+
+    @PostMapping("/{id}/deposit")
+    public ResponseEntity<?> deposit(@PathVariable int id, @RequestBody Map<String, Double> body) {
+        try {
+            return ResponseEntity.ok(userService.deposit(id, body.get("amount")));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return serverError(e);
+        }
+    }
+
+    @PostMapping("/{id}/withdraw")
+    public ResponseEntity<?> withdraw(@PathVariable int id, @RequestBody Map<String, Double> body) {
+        try {
+            return ResponseEntity.ok(userService.withdraw(id, body.get("amount")));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return serverError(e);
+        }
+    }
+
+    @PostMapping("/{id}/freeze")
+    public ResponseEntity<?> freeze(@PathVariable int id, @RequestBody Map<String, Double> body) {
+        try {
+            return ResponseEntity.ok(userService.freeze(id, body.get("amount")));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return serverError(e);
+        }
+    }
+
+    @PostMapping("/{id}/unfreeze")
+    public ResponseEntity<?> unfreeze(@PathVariable int id, @RequestBody Map<String, Double> body) {
+        try {
+            return ResponseEntity.ok(userService.unfreeze(id, body.get("amount")));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return serverError(e);
+        }
+    }
+
+    @PostMapping("/{id}/spend-frozen")
+    public ResponseEntity<?> spendFrozen(@PathVariable int id, @RequestBody Map<String, Double> body) {
+        try {
+            return ResponseEntity.ok(userService.spendFrozen(id, body.get("amount")));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
