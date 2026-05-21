@@ -33,12 +33,6 @@ public class Auction extends Entity implements Serializable {
     private transient List<User> participants;
     private transient ReentrantLock lock;
 
-    /*private transient AuctionsDAO auctionsDb;
-    private transient BidsDAO bidsDb;
-    private transient UsersDAO usersDb;
-    private transient AutoBidDAO autoBidDb;
-     */
-
     public enum AuctionStatus {
         OPEN, RUNNING, FINISHED, PAID, CANCELED
     }
@@ -124,7 +118,6 @@ public class Auction extends Entity implements Serializable {
             AuctionStatus oldStatus = status;
             status = nextStatus;
             System.out.println("[Auction] Status changing from: " + oldStatus + " to " + nextStatus);
-            //auctionsDb().update(this);
             return true;
         } finally {
             lock().unlock();
@@ -216,10 +209,9 @@ public class Auction extends Entity implements Serializable {
         return owner.getId();
     }
 
-    /*public List<Bid> getBids() {
-        bids = bidsDb().getByAuctionId(getId());
+    public List<Bid> getBids() {
         return bids;
-    }*/
+    }
 
     public LocalDateTime getEndingTime() {
         return endingTime;
@@ -241,7 +233,7 @@ public class Auction extends Entity implements Serializable {
         return currentPrice;
     }
 
-    /*public List<User> getParticipants() {
+    public List<User> getParticipants() {
         participants().clear();
         for (Bid bid : getBids()) {
             User bidder = bid.getBidder();
@@ -250,7 +242,7 @@ public class Auction extends Entity implements Serializable {
             }
         }
         return participants();
-    }*/
+    }
 
     public User getWinner() {
         return winner instanceof User user ? user : null;
@@ -264,7 +256,7 @@ public class Auction extends Entity implements Serializable {
         }
 
         if (status == AuctionStatus.RUNNING && endingTime != null && now.isAfter(endingTime)) {
-            //AuctionManager.getInstance().closeAuction(this);
+            AuctionManager.getInstance().closeAuction(this);
         }
     }
 
@@ -330,7 +322,6 @@ public class Auction extends Entity implements Serializable {
         if (oldBidAmount > 0) {
             boolean success = oldUser.unfreezeMoney(oldBidAmount);
             if (success) {oldUser.addTransaction("🔓 UNFREEZE | +" + oldBidAmount + " | Balance: " + String.format("%.2f", oldUser.getBalance()));}
-            //usersDb().update(oldUser);
             System.out.println("[System]: Unfrozen " + oldBidAmount + " for previous winner: " + oldUser.getFullName());
         }
     }
@@ -339,13 +330,11 @@ public class Auction extends Entity implements Serializable {
         currentPrice = bidAmount.getPrice();
         winner = bidder;
         handleSniping();
-        //usersDb().update((User) bidder);
-        //auctionsDb().update(this);
     }
 
     private void persistBid(User user, Price bidAmount) {
         if (user instanceof Member member) {
-            //bidsDb().save(new Bid(this, member, bidAmount));
+            bids.add(new Bid(this, member, bidAmount));
         }
     }
 
@@ -361,20 +350,7 @@ public class Auction extends Entity implements Serializable {
                 || oldUser.getId() == newUser.getId()) {
             return;
         }
-/*
-        AutoBid config = AuctionManager.getInstance().getAutoBidConfig(auctionId, oldUser.getId());
-        if (config == null) {
-            return;
-        }
-
-        if (!BidStepConfiguration.isValidStep(currentPrice, config.getIncrement())) {
-            double minimumAllowedStep = BidStepConfiguration.getAllowedSteps(currentPrice).get(0);
-            config.setIncrement(minimumAllowedStep);
-            //autoBidDb().update(config);
-            System.out.println("[System]: AutoBid increment adjusted to " + minimumAllowedStep);
-        }
-
-        AuctionManager.getInstance().processAutoBids(this, config);*/
+        // Auto-bid configurations are persisted on the server in the client-server app.
     }
 
     private void handleSniping() {
@@ -417,32 +393,4 @@ public class Auction extends Entity implements Serializable {
         }
         return participants;
     }
-/*
-    private AuctionsDAO auctionsDb() {
-        if (auctionsDb == null) {
-            auctionsDb = DaoFactory.createAuctionsDAO();
-        }
-        return auctionsDb;
-    }
-
-    private BidsDAO bidsDb() {
-        if (bidsDb == null) {
-            bidsDb = DaoFactory.createBidsDAO();
-        }
-        return bidsDb;
-    }
-
-    private UsersDAO usersDb() {
-        if (usersDb == null) {
-            usersDb = DaoFactory.createUsersDAO();
-        }
-        return usersDb;
-    }
-
-    private AutoBidDAO autoBidDb() {
-        if (autoBidDb == null) {
-            autoBidDb = DaoFactory.createAutoBidDAO();
-        }
-        return autoBidDb;
-    }*/
 }

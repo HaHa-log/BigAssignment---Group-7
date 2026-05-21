@@ -1,11 +1,6 @@
 package models;
 
 import models.Common.*;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-/*import model.UsersDAO;
-import model.impl.DaoFactory;*/
-import models.Common.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,7 +17,7 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
     private boolean isBlocked = false;
     private LocalDateTime blockedUntil = null;
     private String avatarPath;
-    private final ObservableList<String> transactions = FXCollections.observableArrayList();
+    private final List<String> transactions = new ArrayList<>();
     //private final UsersDAO userDatabase = DaoFactory.createUsersDAO();
     private double frozenBalance = 0;
 
@@ -182,7 +177,7 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
         return Objects.hash(getId());
     }
 
-    /*public boolean isHighestBidder(Auction auction) {
+    public boolean isHighestBidder(Auction auction) {
         return auction.getWinner() != null && auction.getWinner().equals(this);
     }
 
@@ -264,9 +259,9 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
             }
         }
         return alerts;
-    }*/
+    }
 
-    public ObservableList<String> getTransactions() { return transactions; }
+    public List<String> getTransactions() { return transactions; }
 
     public void addTransaction(String message) {transactions.add(message);}
 }

@@ -1,28 +1,25 @@
 package models;
-/*
-import model.AuctionsDAO;
-import model.AutoBidDAO;
-import model.TransactionDAO;
-import model.UsersDAO;
-import model.impl.DaoFactory;
-*/
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import repositories.AuctionsDAO;
+import repositories.AutoBidDAO;
+import repositories.TransactionDAO;
+import repositories.UsersDAO;
+import repositories.impl.DaoFactory;
 
 public class AuctionManager {
     private static AuctionManager instance;
 
-    /*private final AuctionsDAO auctionDb;
+    private final AuctionsDAO auctionDb;
     private final TransactionDAO transactionDb;
-    private final AutoBidDAO autoBidDb;*/
+    private final AutoBidDAO autoBidDb;
     private List<Auction> activeSessions;
     private List<Auction> completedSessions;
 
-/*
     private AuctionManager() {
-        /*auctionDb = DaoFactory.createAuctionsDAO();
+        auctionDb = DaoFactory.createAuctionsDAO();
         transactionDb = DaoFactory.createTransactionDAO();
         autoBidDb = DaoFactory.createAutoBidDAO();
         activeSessions = new ArrayList<>();
@@ -150,26 +147,17 @@ public class AuctionManager {
             throw new IllegalArgumentException("[Error]: Only the buyer can confirm receipt.");
         }
 
-        double amount = transaction.getFinalAmount();
-
-        boolean success = buyer.spendFrozenMoney(amount);
-
-        if (!success) {throw new IllegalArgumentException("[Error]: Payment failed.");
-        }
-        buyer.addTransaction("🛒 PAYMENT | -" + amount + " | Item: " + transaction.getAuction().getItem().getName()
-        );
-
-        Member seller = transaction.getSeller();
-        seller.depositMoney(amount);
-        
-        seller.addTransaction("💰 SALE | +" + amount + " | Item: " + transaction.getAuction().getItem().getName()
-        );
-
         transaction.markCompleted();
         transaction.getAuction().transitionTo(Auction.AuctionStatus.PAID);
 
         transactionDb.update(transaction);
         auctionDb.update(transaction.getAuction());
+
+        double amount = transaction.getFinalAmount();
+        buyer.addTransaction("PAYMENT | -" + amount + " | Item: " + transaction.getAuction().getItem().getName());
+        transaction.getSeller().addTransaction(
+                "SALE | +" + amount + " | Item: " + transaction.getAuction().getItem().getName()
+        );
 
         return transaction;
     }
@@ -236,5 +224,5 @@ public class AuctionManager {
         transactionDb.save(transaction);
         session.getItem().setStatus(Item.Status.SOLD);
         System.out.println("[System]: Transaction created for winner: " + winner.getFullName());
-    }*/
+    }
 }

@@ -35,9 +35,38 @@
 ---
 
 ### 5. Hướng dẫn cài đặt và chạy (Installation & Running)
-- **Yêu cầu:** Phiên bản JDK (8/11/17...), cơ sở dữ liệu (nếu có).
-- **Cách chạy Server:** Lệnh chạy hoặc file thực thi chính.
-- **Cách chạy Client:** Cách khởi động giao diện người dùng.
+- **Yêu cầu:** JDK 25, Maven, MySQL reachable from the values in `db.properties`.
+- **Cấu trúc Client-Server:**
+  - `server`: Spring Boot REST API, owns database access and business services.
+  - `client`: JavaFX application, talks to the server through HTTP DTO/services.
+  - `temp`: archived copy of the old monolithic source, no longer part of the Maven reactor.
+- **Cách chạy Server:**
+  ```bash
+  mvn -pl server spring-boot:run
+  ```
+  Health check: `GET http://localhost:8080/api/health`
+- **Cách chạy Client:**
+  ```bash
+  mvn -pl client javafx:run
+  ```
+  By default the client calls `http://localhost:8080`. To point it at another server:
+  ```bash
+  mvn -pl client javafx:run -Dserver.url=http://HOST:8080
+  ```
+- **Auth API hiện có:**
+  - `POST /api/auth/register`
+  - `POST /api/auth/login`
+- **Auction/User API hiện có:**
+  - `GET /api/auctions`
+  - `GET /api/auctions/{id}`
+  - `POST /api/auctions`
+  - `POST /api/auctions/{id}/bids`
+  - `POST /api/auctions/{id}/cancel`
+  - `POST /api/auctions/{id}/confirm-receipt`
+  - `GET /api/users`
+  - `GET /api/users/{id}`
+  - `POST /api/users/{id}/block`
+  - `POST /api/users/{id}/unblock`
 
 ---
 

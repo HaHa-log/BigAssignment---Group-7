@@ -10,12 +10,14 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.cell.PropertyValueFactory;
+import models.services.UserApiService;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class UserManagementController extends ManagementController<User> {
     Admin admin = (Admin) SessionManager.getCurrentUser();
+    private final UserApiService userApiService = new UserApiService();
 
     @FXML
     private TableColumn<User, Integer> userId;
@@ -58,10 +60,18 @@ public class UserManagementController extends ManagementController<User> {
 
                     boolean isNowBlocked = toggle.isSelected();
 
-                    if (isNowBlocked) {
-                        admin.blockUser(user, LocalDateTime.now().plusDays(100));
-                    } else {
-                        admin.unblockUser(user);
+                    try {
+                        if (isNowBlocked) {
+                            userApiService.block(user.getId());
+                            admin.blockUser(user, LocalDateTime.now().plusDays(100));
+                        } else {
+                            userApiService.unblock(user.getId());
+                            admin.unblockUser(user);
+                        }
+                    } catch (Exception e) {
+                        toggle.setSelected(!isNowBlocked);
+                        System.err.println(e.getMessage());
+                        return;
                     }
 
                     updateToggleVisuals(isNowBlocked);
@@ -94,11 +104,11 @@ public class UserManagementController extends ManagementController<User> {
 
     @Override
     protected List<User> fetchData() {
-        return List.of();
+        try {
+            return userApiService.getAll();
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            return List.of();
+        }
     }
-    /*
-    @Override
-    protected List<User> fetchData() {
-        return userDb.getAll();
-    }*/
 }

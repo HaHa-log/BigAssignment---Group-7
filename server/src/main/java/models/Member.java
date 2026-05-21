@@ -1,15 +1,13 @@
 package models;
-/*
-import model.ItemsDAO;
-import model.TransactionDAO;
-import model.impl.DaoFactory;
-*/
 import java.time.LocalDateTime;
 import java.util.List;
+import repositories.ItemsDAO;
+import repositories.TransactionDAO;
+import repositories.impl.DaoFactory;
 
 public class Member extends User implements Bidder, Seller, AuctionObserver {
-    //private TransactionDAO transactionDb = DaoFactory.createTransactionDAO();
-    //private ItemsDAO itemsDb = DaoFactory.createItemDAO();
+    private final TransactionDAO transactionDb = DaoFactory.createTransactionDAO();
+    private final ItemsDAO itemsDb = DaoFactory.createItemDAO();
 
     public Member(String firstName, String lastName, String email, String phoneNumber, String password, double balance,String avatarPath) {
         super(firstName, lastName, email, phoneNumber, password, balance,avatarPath);
@@ -46,7 +44,9 @@ public class Member extends User implements Bidder, Seller, AuctionObserver {
     public void addItem(Item item) {
         if (item != null) {
             item.setOwnerId(this.getId());
-            //itemsDb.update(item);
+            if (item.getId() > 0) {
+                itemsDb.update(item);
+            }
             System.out.println("[System]: Item " + item.getName() + " is now owned by " + this.getFullName());
         }
     }
@@ -54,7 +54,6 @@ public class Member extends User implements Bidder, Seller, AuctionObserver {
     public void removeItem(Item item) {
         System.out.println("[System]: Item " + item.getName() + " removed from " + this.getFullName() + "'s inventory.");
     }
-/*
     public List<Item> getInventory() {
         return itemsDb.getByOwnerId(this.getId());
     }
@@ -72,5 +71,5 @@ public class Member extends User implements Bidder, Seller, AuctionObserver {
         }
 
         list.forEach(transaction -> System.out.println(transaction.toString()));
-    }*/
+    }
 }

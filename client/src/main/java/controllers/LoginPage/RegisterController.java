@@ -67,7 +67,7 @@ public class RegisterController {
             registerLabel.setText(e.getMessage());
         } catch (IOException | InterruptedException e) {
             registerLabel.setTextFill(RED);
-            registerLabel.setText("Cannot connect to server.");
+            registerLabel.setText(e.getMessage());
         }
     }
 }

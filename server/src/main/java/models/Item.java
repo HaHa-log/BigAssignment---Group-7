@@ -3,10 +3,10 @@ package models;
 //Tạm thời sửa item từ abstract thành concrete class
 
 import models.Common.Price;
-/*import model.ItemsDAO;
-import model.impl.DaoFactory;*/
 
 import java.time.LocalDateTime;
+import repositories.ItemsDAO;
+import repositories.impl.DaoFactory;
 
 public class Item extends Entity {
     private Price startingPrice;
@@ -21,7 +21,7 @@ public class Item extends Entity {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String imagePath;
-    //private ItemsDAO itemsDb = DaoFactory.createItemDAO();
+    private final ItemsDAO itemsDb = DaoFactory.createItemDAO();
     private int ownerId;
 
     public Item(String name, double startingPrice, String description) {
@@ -43,27 +43,27 @@ public class Item extends Entity {
 
     public void setStartingPrice(double startPrice) {
         this.startingPrice = new Price(startPrice);
-        //itemsDb.update(this);
+        updateIfPersisted();
     }
 
     public void setDescription(String narrative) {
         this.description = narrative;
-        //itemsDb.update(this);
+        updateIfPersisted();
     }
 
     public void setStatus(Status status) {
         this.status = status;
-        //itemsDb.update(this);
+        updateIfPersisted();
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
-        //itemsDb.update(this);
+        updateIfPersisted();
     }
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
-        //itemsDb.update(this);
+        updateIfPersisted();
     }
 
     public void setOwnerId(int ownerId) {
@@ -72,7 +72,7 @@ public class Item extends Entity {
 
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
-        //itemsDb.update(this);
+        updateIfPersisted();
     }
 
     public double getStartingPrice() {
@@ -122,6 +122,12 @@ public class Item extends Entity {
     }
 
     public void saveItem() {
-        //itemsDb.save(this);
+        itemsDb.save(this);
+    }
+
+    private void updateIfPersisted() {
+        if (getId() > 0) {
+            itemsDb.update(this);
+        }
     }
 }

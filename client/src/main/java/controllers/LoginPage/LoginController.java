@@ -9,9 +9,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.CheckBox;
+import models.Exceptions.CustomisedException;
 import models.dto.auth.AuthResponse;
 import models.dto.auth.LoginRequest;
+import models.SessionManager;
 import models.services.AuthApiService;
+import models.services.AuthSessionMapper;
 
 import java.io.IOException;
 
@@ -49,6 +52,7 @@ public class LoginController {
         else {
             try {
                 AuthResponse response = authApiService.login(new LoginRequest(emailInput, passwordInput));
+                SessionManager.loginCurrentUser(AuthSessionMapper.toUser(response));
                 loginLabel.setTextFill(GREEN);
                 loginLabel.setText("Login successful!");
                 mainController.onSuccessfulLogin();
@@ -56,9 +60,12 @@ public class LoginController {
                 String message =  e.getMessage();
                 loginLabel.setTextFill(RED);
                 loginLabel.setText(message);
-            } catch (Exception e) {
+            } catch (CustomisedException e) {
+                String message =  e.getMessage();
                 loginLabel.setTextFill(RED);
-                loginLabel.setText("Cannot connect to server.");
+                loginLabel.setText(message);
+            } catch (Exception e) {
+               System.out.println(e.getMessage());
             }
         }
     }

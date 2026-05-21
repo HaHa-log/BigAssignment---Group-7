@@ -1,8 +1,6 @@
 package controllers.MainPage.HomePage;
 
-import models.Admin;
-import models.SessionManager;
-import models.User;
+import models.*;
 import controllers.SceneManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;

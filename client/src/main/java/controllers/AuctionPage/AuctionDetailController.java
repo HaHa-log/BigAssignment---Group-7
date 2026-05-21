@@ -14,6 +14,7 @@ import javafx.scene.layout.VBox;
 import java.io.File;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import models.services.AuctionApiService;
 
 import static javafx.scene.paint.Color.GREEN;
 import static javafx.scene.paint.Color.RED;
@@ -43,8 +44,9 @@ public class AuctionDetailController {
     private TextField stepInput;
 
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM HH:mm");
+    private final AuctionApiService auctionApiService = new AuctionApiService();
 
-    //private User currentUser = SessionManager.getCurrentUser();
+    private User currentUser = SessionManager.getCurrentUser();
     private Auction auction;
 
     @FXML
@@ -53,11 +55,17 @@ public class AuctionDetailController {
 
         if (bidAmountString == null || bidAmountString.trim().isEmpty()) {
             bidPlacedResultLabel.setText("Please enter an amount.");
+            return;
         }
 
-        /*try {
+        try {
+            currentUser = SessionManager.getCurrentUser();
+            if (currentUser == null) {
+                throw new IllegalArgumentException("[Error]: Session expired! Please log in again.");
+            }
             double bidAmount = Double.parseDouble(bidAmountString);
-            //boolean isSuccess = currentUser.placeBid(auction, bidAmount);
+            auction = auctionApiService.placeBid(auction.getId(), currentUser.getId(), bidAmount);
+            boolean isSuccess = true;
 
             if (isSuccess) {
                 bidPlacedResultLabel.setTextFill(GREEN);
@@ -75,9 +83,12 @@ public class AuctionDetailController {
         } catch (CustomisedException e) {
             String message = e.getMessage();
             bidPlacedResultLabel.setText(message);
+        } catch (Exception e) {
+            bidPlacedResultLabel.setTextFill(RED);
+            bidPlacedResultLabel.setText(e.getMessage());
         } finally {
             bidAmountInput.clear();
-        }*/
+        }
     }
 
     public void setAuctionData(Auction auction) {
@@ -85,14 +96,13 @@ public class AuctionDetailController {
         this.itemNameLabel.setText(auction.getItem().getName());
         this.startingPriceLabel.setText("Starting price: $" + auction.getStartingPrice());
         this.currentPriceLabel.setText("Current price: $" + auction.getCurrentPrice());
-/*
         setItemImage();
         getTableData(auction);
         updateBidChart();
-        if (((User) currentUser).isWinner(auction)
+        if (currentUser != null && currentUser.isWinner(auction)
                 && auction.getRawStatus() == Auction.AuctionStatus.FINISHED){
             setupConfirmPane();
-        };*/
+        }
     }
 
     public void getTableData(Auction auction) {
@@ -105,10 +115,13 @@ public class AuctionDetailController {
 
         durationLabel.setText(startStr + " - " + endStr);
     }
-/*
     private void setItemImage() {
         Item item = auction.getItem();
         String filePath = item.getImagePath();
+
+        if (filePath == null || filePath.isBlank()) {
+            return;
+        }
 
         File file = new File("src/main/resources/ItemImages/" + filePath);
         Image image = new Image(file.toURI().toString());
@@ -136,7 +149,7 @@ public class AuctionDetailController {
         bidHistoryChart.getData().add(series);
 
         bidHistoryChart.setAnimated(false);
-    }*/
+    }
 
     public void setupAuction() {
         auction.addObserver((AuctionObserver) SessionManager.getCurrentUser());
@@ -150,15 +163,18 @@ public class AuctionDetailController {
     @FXML
     private void confirm() {
         try {
-            //Transaction transaction = AuctionManager.getInstance().confirmReceipt(auction, (Member) currentUser);
-            //auction = transaction.getAuction();
+            currentUser = SessionManager.getCurrentUser();
+            if (!(currentUser instanceof Member member)) {
+                throw new IllegalArgumentException("[Error]: Only members can confirm receipt.");
+            }
+            auction = auctionApiService.confirmReceipt(auction.getId(), member.getId());
             auctionStatusLabel.setText(auction.getRawStatus().toString());
             confirmPane.setVisible(false);
             confirmPane.setManaged(false);
 
             bidPlacedResultLabel.setTextFill(GREEN);
             bidPlacedResultLabel.setText("Receipt confirmed. Transaction completed.");
-        } catch (IllegalArgumentException | CustomisedException e) {
+        } catch (Exception e) {
             bidPlacedResultLabel.setTextFill(RED);
             bidPlacedResultLabel.setText(e.getMessage());
         }
@@ -174,12 +190,13 @@ public class AuctionDetailController {
         try {
             double maxBid = Double.parseDouble(maxBidInput.getText());
             double increment = Double.parseDouble(stepInput.getText());
-            //Member currentMember = (Member) currentUser;
+            currentUser = SessionManager.getCurrentUser();
+            if (!(currentUser instanceof Member currentMember)) {
+                throw new IllegalArgumentException("[Error]: Only members can enable auto bidding.");
+            }
 
-            //AutoBid config = new AutoBid(auction, currentMember, maxBid, increment);
-            //autoBidDb.save(config);
-
-            //AuctionManager.getInstance().processAutoBids(auction, config);
+            AutoBid config = new AutoBid(auction, currentMember, maxBid, increment);
+            AuctionManager.getInstance().processAutoBids(auction, config);
 
             bidPlacedResultLabel.setTextFill(GREEN);
             bidPlacedResultLabel.setText("Auto Bid enabled successfully!");

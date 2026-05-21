@@ -4,13 +4,13 @@ import models.Common.Price;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class Bid extends Entity implements Serializable {
     private final Auction auction;
     private final Member bidder;
     private final Price bidPrice;
     private final LocalDateTime bidTime;
-    //private BidsDAO bidDb = DaoFactory.createBidsDAO();
 
     public Bid(Auction auction, Member bidder, Price bidPrice) {
         this.auction = auction;
@@ -27,12 +27,18 @@ public class Bid extends Entity implements Serializable {
     }
 
     public void saveBid(Bid bid) {
-        //bidDb.save(bid);
+        if (bid != null && bid.getAuction() != null) {
+            bid.getAuction().getBids().add(bid);
+        }
     }
 
-    //public List<Bid> getBidsByAuctionId(int auctionId) {
-        //return bidDb.getByAuctionId(auctionId);
-    //}
+    public List<Bid> getBidsByAuctionId(int auctionId) {
+        return AuctionManager.getInstance().getAllSessions().stream()
+                .filter(auction -> auction.getId() == auctionId)
+                .findFirst()
+                .map(Auction::getBids)
+                .orElse(List.of());
+    }
 
     public Auction getAuction() {
         return auction;

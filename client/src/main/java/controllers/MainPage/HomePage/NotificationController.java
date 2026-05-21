@@ -1,10 +1,9 @@
 package controllers.MainPage.HomePage;
 
-import models.AuctionManager;
+import models.*;
 import models.Common.AuctionAlert;
-import models.SessionManager;
-import models.User;
 import controllers.MainPage.ProfilePage.BaseController;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -13,13 +12,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Popup;
-
 import java.net.URL;
 import java.util.List;
+import javafx.scene.control.ProgressIndicator;
 
 public class NotificationController extends BaseController {
     private User getCurrentUser() {return SessionManager.getCurrentUser();}
@@ -49,7 +47,7 @@ public class NotificationController extends BaseController {
         updateNotificationCount();
 
         if (!loaded) {
-            //loadNotifications();
+            loadNotifications();
         }
     }
     @FXML
@@ -114,7 +112,7 @@ public class NotificationController extends BaseController {
         );
     }
 
-    /*private void loadNotifications() {
+    private void loadNotifications() {
         User user = getCurrentUser();
         if (user == null || loaded) return;
 
@@ -154,7 +152,7 @@ public class NotificationController extends BaseController {
         Thread thread = new Thread(task);
         thread.setDaemon(true);
         thread.start();
-    }*/
+    }
 
     private void updateNotificationCount() {
         notificationButton.setText("🔔 Notifications (" + cachedNotifications.size() + ")");

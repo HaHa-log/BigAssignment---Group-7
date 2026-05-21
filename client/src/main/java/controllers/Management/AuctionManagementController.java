@@ -12,6 +12,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
+import models.services.AuctionApiService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,7 +31,8 @@ public class AuctionManagementController extends ManagementController<Auction> {
     @FXML
     private TableColumn<Auction, Void> actionColumn;
 
-    //private final AuctionManager auctionManager = AuctionManager.getInstance();
+    private final AuctionManager auctionManager = AuctionManager.getInstance();
+    private final AuctionApiService auctionApiService = new AuctionApiService();
     private final Admin admin = (Admin) SessionManager.getCurrentUser();
 
     @Override
@@ -49,13 +51,13 @@ public class AuctionManagementController extends ManagementController<Auction> {
 
     @Override
     protected List<Auction> fetchData() {
-        return List.of();
+        try {
+            return auctionApiService.getAll();
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            return auctionManager.getAllSessions();
+        }
     }
-/*
-    @Override
-    protected List<Auction> fetchData() {
-        return auctionManager.getAllSessions();
-    }*/
 
     private void setupActionColumn() {
         Callback<TableColumn<Auction, Void>, TableCell<Auction, Void>> cellFactory = new Callback<>() {
@@ -98,10 +100,16 @@ public class AuctionManagementController extends ManagementController<Auction> {
     }
 
     private void handleCancelAuction(Auction auction) {
-        /*boolean success = admin.cancelAuction(auction.getId());
-
-        if (success) {
+        try {
+            auctionApiService.cancel(auction.getId());
             handleRefresh();
-        }*/
+        } catch (Exception e) {
+            boolean success = admin.cancelAuction(auction.getId());
+            if (success) {
+                handleRefresh();
+            } else {
+                System.err.println(e.getMessage());
+            }
+        }
     }
 }

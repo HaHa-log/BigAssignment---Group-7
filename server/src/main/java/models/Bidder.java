@@ -1,13 +1,11 @@
 package models;
-/*
-import model.BidsDAO;
-import model.impl.DaoFactory;
-*/
+
 import java.util.List;
+import repositories.BidsDAO;
+import repositories.impl.DaoFactory;
 
 public interface Bidder {
     double getBalance();
-    //BidsDAO bidsDb = DaoFactory.createBidsDAO();
 
     default boolean placeBid(Auction auction, double amount){
         if (this instanceof User && ((User) this).isBlocked()) {
@@ -31,7 +29,7 @@ public interface Bidder {
 
         User thisUser = (User) this;
 
-        /*List<Bid> userBids = bidsDb.getByAuctionId(auction.getId());
+        List<Bid> userBids = auction.getId() > 0 ? bidsDb().getByAuctionId(auction.getId()) : auction.getBids();
         for (Bid existingBid : userBids) {
             if (existingBid.getBidder() == null) {
                 continue;
@@ -41,7 +39,11 @@ public interface Bidder {
                     lastTimeBidAmount = existingBid.getBidPrice().getPrice();
                 }
             }
-        }*/
+        }
         return lastTimeBidAmount;
+    }
+
+    private static BidsDAO bidsDb() {
+        return DaoFactory.createBidsDAO();
     }
 }
