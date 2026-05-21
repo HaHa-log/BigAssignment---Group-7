@@ -125,6 +125,25 @@ public class AuctionsDAOImpl implements AuctionsDAO {
         }
     }
 
+    public List<Auction> getByStatus(String status) {
+        String sql = getAuctionBaseSQL() + "WHERE a.status = ? ";
+
+        try (Connection conn = DB.getConnection();
+             PreparedStatement st = conn.prepareStatement(sql)) {
+            st.setString(1, status);
+
+            try (ResultSet rs = st.executeQuery()) {
+                List<Auction> list = new ArrayList<>();
+                while (rs.next()) {
+                    list.add(instantiateAuction(rs));
+                }
+                return list;
+            }
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+    }
+
     @Override
     public List<Auction> getAll() {
         String sql = getAuctionBaseSQL();
