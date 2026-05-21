@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.prefs.Preferences;
 
 public class Auction extends Entity implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -42,6 +43,7 @@ public class Auction extends Entity implements Serializable {
     private transient BidsDAO bidsDb;
     private transient UsersDAO usersDb;
     private transient AutoBidDAO autoBidDb;
+
 
     public enum AuctionStatus {
         OPEN, RUNNING, FINISHED, PAID, CANCELED
@@ -97,6 +99,8 @@ public class Auction extends Entity implements Serializable {
             lock().unlock();
         }
     }
+
+    public AuctionStatus getRawStatus() {return status;}
 
     public String start() {
         lock().lock();
