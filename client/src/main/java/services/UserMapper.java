@@ -37,6 +37,9 @@ public final class UserMapper {
         }
 
         user.setId(response.getId());
+
+        user.setFrozenBalance(response.getFrozenBalance());
+
         if (response.isBlocked()) {
             user.setBlocked(java.time.LocalDateTime.now().plusDays(100));
         }
