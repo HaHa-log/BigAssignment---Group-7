@@ -9,6 +9,7 @@ public class UserResponse {
     private boolean blocked;
     private double balance;
     private String avatarPath;
+    private double frozenBalance;
 
     public int getId() {
         return id;
@@ -72,5 +73,13 @@ public class UserResponse {
 
     public void setAvatarPath(String avatarPath) {
         this.avatarPath = avatarPath;
+    }
+
+    public double getFrozenBalance() {
+        return frozenBalance;
+    }
+
+    public void setFrozenBalance(double frozenBalance) {
+        this.frozenBalance = frozenBalance;
     }
 }

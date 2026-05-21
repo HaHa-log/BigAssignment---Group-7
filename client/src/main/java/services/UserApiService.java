@@ -13,6 +13,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
+import java.util.Map;
 
 public class UserApiService {
     private static final String BASE_URL = ApiConfig.baseUrl() + "/api/users";
@@ -31,12 +32,51 @@ public class UserApiService {
         return users.stream().map(UserMapper::toUser).toList();
     }
 
+    public User getById(int id) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/" + id))
+                .GET()
+                .build();
+        return UserMapper.toUser(mapper.readValue(send(request).body(), UserResponse.class));
+    }
+
     public User block(int id) throws IOException, InterruptedException {
         return postStateChange(id, "block");
     }
 
     public User unblock(int id) throws IOException, InterruptedException {
         return postStateChange(id, "unblock");
+    }
+
+    public User deposit(int id, double amount) throws IOException, InterruptedException {
+        return postFinanceAction(id, "deposit", amount);
+    }
+
+    public User withdraw(int id, double amount) throws IOException, InterruptedException {
+        return postFinanceAction(id, "withdraw", amount);
+    }
+
+    public User freeze(int id, double amount) throws IOException, InterruptedException {
+        return postFinanceAction(id, "freeze", amount);
+    }
+
+    public User unfreeze(int id, double amount) throws IOException, InterruptedException {
+        return postFinanceAction(id, "unfreeze", amount);
+    }
+
+    public User spendFrozen(int id, double amount) throws IOException, InterruptedException {
+        return postFinanceAction(id, "spend-frozen", amount);
+    }
+
+    private User postFinanceAction(int id, String action, double amount)
+            throws IOException, InterruptedException {
+        String body = mapper.writeValueAsString(Map.of("amount", amount));
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/" + id + "/" + action))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
+        return UserMapper.toUser(mapper.readValue(send(request).body(), UserResponse.class));
     }
 
     private User postStateChange(int id, String action) throws IOException, InterruptedException {
