@@ -10,6 +10,7 @@ import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import models.services.AuctionApiService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AuctionListController {
@@ -46,6 +47,19 @@ public class AuctionListController {
         Thread thread = new Thread(() -> {
             try {
                 List<Auction> auctions = auctionApiService.getAll();
+
+                List<Auction> sortedAuctions = new ArrayList<>(auctions);
+                //Sorting logic for auction
+                sortedAuctions.sort((a1, a2) -> {
+                    boolean isA1Active = a1.getStatus() == Auction.AuctionStatus.OPEN ||
+                            a1.getStatus() == Auction.AuctionStatus.RUNNING;
+
+                    boolean isA2Active = a2.getStatus() == Auction.AuctionStatus.OPEN ||
+                            a2.getStatus() == Auction.AuctionStatus.RUNNING;
+                    if (isA1Active && !isA2Active) return 1;
+                    if (!isA1Active && isA2Active) return -1;
+                    return 0;
+                });
 
                 // Hide spinner as soon as data is fetched
                 javafx.application.Platform.runLater(() -> {
