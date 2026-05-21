@@ -38,7 +38,7 @@ public class AuctionController {
         return ResponseEntity.ok(auctionService.getById(id));
     }
 
-    @GetMapping("/api/items/images/{filename}")
+    @GetMapping("/images/{filename}")
     public ResponseEntity<Resource> getImage(@PathVariable String filename) throws IOException {
         Path path = Paths.get("src/main/resources/ItemImages/").resolve(filename);
         Resource resource = new UrlResource(path.toUri());

@@ -37,8 +37,7 @@ public class AuctionResponse {
             double currentPrice,
             LocalDateTime startingTime,
             LocalDateTime endingTime,
-            Integer winnerId,
-            String winnerName) {
+            Integer winnerId) {
         this.id = id;
         this.ownerId = ownerId;
         this.ownerName = ownerName;

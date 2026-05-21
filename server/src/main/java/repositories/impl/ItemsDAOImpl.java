@@ -34,7 +34,6 @@ public class ItemsDAOImpl implements ItemsDAO {
                     if (rs.next()) {
                         int id = rs.getInt(1);
                         item.setId(id);
-                        item.setCreatedAt(LocalDateTime.now());
                     }
                 }
             } else {
@@ -168,8 +167,6 @@ public class ItemsDAOImpl implements ItemsDAO {
                 rs.getDouble("startingPrice"),
                 rs.getString("description"),
                 Item.Status.valueOf(rs.getString("status")),
-                rs.getObject("createdAt", LocalDateTime.class),
-                rs.getObject("updatedAt", LocalDateTime.class),
                 rs.getString("imagePath")
         );
 

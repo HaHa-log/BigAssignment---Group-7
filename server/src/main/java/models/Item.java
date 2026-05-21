@@ -31,13 +31,11 @@ public class Item extends Entity {
         this.imagePath = null;
     }
 
-    public Item(String name, double startingPrice, String description, Status status, LocalDateTime createdAt, LocalDateTime updatedAt, String imagePath) {
+    public Item(String name, double startingPrice, String description, Status status, String imagePath) {
         this.name = name;
         this.startingPrice = new Price(startingPrice);
         this.description = description;
         this.status = status;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
         this.imagePath = imagePath;
     }
 
@@ -89,14 +87,6 @@ public class Item extends Entity {
 
     public Status getStatus() {
         return status;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
     }
 
     public boolean isAvailable() {

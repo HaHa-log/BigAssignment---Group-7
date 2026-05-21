@@ -53,10 +53,6 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
     public String getAvatarPath() { return avatarPath; }
     public void setAvatarPath(String avatarPath) { this.avatarPath = avatarPath; }
 
-    //public void update() {
-        //userDatabase.update(this);
-    //}
-
     public void setEmail(String email) {
         this.email = new Email(email);
         //update();
@@ -132,14 +128,12 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
     public void setBlocked(LocalDateTime until) {
         this.isBlocked = true;
         this.blockedUntil = until;
-        //update();
     }
 
     public boolean isBlocked() {
         if (isBlocked && blockedUntil != null && LocalDateTime.now().isAfter(blockedUntil)) {
             this.isBlocked = false;
             this.blockedUntil = null;
-            //update();
         }
         return isBlocked;
     }
@@ -147,7 +141,6 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
     public void isUnblocked() {
         this.isBlocked = false;
         this.blockedUntil = null;
-        //update();
     }
 
     public String getFullName() { return fullname.toString(); }
