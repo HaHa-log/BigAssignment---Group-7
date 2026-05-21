@@ -1,12 +1,12 @@
-package models.services;
+package services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import models.Auction;
-import models.dto.auction.AuctionResponse;
-import models.dto.auction.BidRequest;
-import models.dto.auction.ConfirmReceiptRequest;
-import models.dto.auction.CreateAuctionRequest;
+import services.dto.auction.AuctionResponse;
+import services.dto.auction.BidRequest;
+import services.dto.auction.ConfirmReceiptRequest;
+import services.dto.auction.CreateAuctionRequest;
 
 import java.io.IOException;
 import java.net.ConnectException;

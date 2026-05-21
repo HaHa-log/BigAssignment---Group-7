@@ -1,4 +1,4 @@
-package models.dto.auth;
+package services.dto.auth;
 
 public class RegisterRequest {
     private String firstName;

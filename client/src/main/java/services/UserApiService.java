@@ -1,9 +1,9 @@
-package models.services;
+package services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import models.User;
-import models.dto.user.UserResponse;
+import services.dto.user.UserResponse;
 
 import java.io.IOException;
 import java.net.ConnectException;

@@ -1,4 +1,4 @@
-package models.services;
+package services;
 
 public class ApiException extends RuntimeException {
     public ApiException(String message) {

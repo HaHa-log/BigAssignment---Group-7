@@ -1,4 +1,4 @@
-package models.dto.auth;
+package services.dto.auth;
 
 public class LoginRequest {
     private String email;

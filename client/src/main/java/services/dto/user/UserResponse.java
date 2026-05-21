@@ -1,4 +1,4 @@
-package models.dto.user;
+package services.dto.user;
 
 public class UserResponse {
     private int id;

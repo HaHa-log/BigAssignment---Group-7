@@ -14,7 +14,7 @@ import javafx.scene.layout.VBox;
 import java.io.File;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import models.services.AuctionApiService;
+import services.AuctionApiService;
 
 import static javafx.scene.paint.Color.GREEN;
 import static javafx.scene.paint.Color.RED;

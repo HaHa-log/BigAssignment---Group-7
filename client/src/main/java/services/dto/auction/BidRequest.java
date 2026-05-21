@@ -1,4 +1,4 @@
-package models.dto.auction;
+package services.dto.auction;
 
 public class BidRequest {
     private int bidderId;

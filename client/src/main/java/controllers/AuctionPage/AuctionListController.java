@@ -1,14 +1,13 @@
 package controllers.AuctionPage;
 
 import models.Auction;
-import controllers.AuctionPage.AuctionCardController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
-import models.services.AuctionApiService;
+import services.AuctionApiService;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -98,10 +98,6 @@ public class Auction extends Entity implements Serializable {
         }
     }
 
-    public AuctionStatus getRawStatus() {
-        return status;
-    }
-
     public String start() {
         lock().lock();
         try {

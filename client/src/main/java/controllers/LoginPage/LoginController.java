@@ -10,11 +10,11 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.CheckBox;
 import models.Exceptions.CustomisedException;
-import models.dto.auth.AuthResponse;
-import models.dto.auth.LoginRequest;
+import services.dto.auth.AuthResponse;
+import services.dto.auth.LoginRequest;
 import models.SessionManager;
-import models.services.AuthApiService;
-import models.services.AuthSessionMapper;
+import services.AuthApiService;
+import services.AuthSessionMapper;
 
 import java.io.IOException;
 

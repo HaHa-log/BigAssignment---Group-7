@@ -4,7 +4,6 @@ import models.Admin;
 import models.Auction;
 import models.AuctionManager;
 import models.SessionManager;
-import controllers.Management.ManagementController;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
@@ -12,7 +11,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
-import models.services.AuctionApiService;
+import services.AuctionApiService;
 
 import java.time.LocalDateTime;
 import java.util.List;

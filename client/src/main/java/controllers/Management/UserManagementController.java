@@ -3,14 +3,13 @@ package controllers.Management;
 import models.Admin;
 import models.SessionManager;
 import models.User;
-import controllers.Management.ManagementController;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.cell.PropertyValueFactory;
-import models.services.UserApiService;
+import services.UserApiService;
 
 import java.time.LocalDateTime;
 import java.util.List;

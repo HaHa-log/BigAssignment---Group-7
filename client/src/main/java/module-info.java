@@ -21,7 +21,7 @@ module client {
 
         opens models to javafx.fxml;
 
-        opens models.dto.auth to com.fasterxml.jackson.databind;
-        opens models.dto.auction to com.fasterxml.jackson.databind;
-        opens models.dto.user to com.fasterxml.jackson.databind;
+        opens services.dto.auth to com.fasterxml.jackson.databind;
+        opens services.dto.auction to com.fasterxml.jackson.databind;
+        opens services.dto.user to com.fasterxml.jackson.databind;
 }

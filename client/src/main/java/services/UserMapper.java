@@ -1,9 +1,9 @@
-package models.services;
+package services;
 
 import models.Admin;
 import models.Member;
 import models.User;
-import models.dto.user.UserResponse;
+import services.dto.user.UserResponse;
 
 public final class UserMapper {
     private static final String SESSION_PASSWORD_PLACEHOLDER = "server-authenticated";

@@ -1,7 +1,7 @@
 package controllers.LoginPage;
 
-import models.dto.auth.RegisterRequest;
-import models.services.AuthApiService;
+import services.dto.auth.RegisterRequest;
+import services.AuthApiService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;

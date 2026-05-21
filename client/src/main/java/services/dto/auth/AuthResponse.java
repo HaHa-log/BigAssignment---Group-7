@@ -1,4 +1,4 @@
-package models.dto.auth;
+package services.dto.auth;
 
 public class AuthResponse {
     private int userId;

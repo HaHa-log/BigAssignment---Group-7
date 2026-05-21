@@ -1,9 +1,9 @@
-package models.services;
+package services;
 
 import models.Auction;
 import models.Item;
 import models.Member;
-import models.dto.auction.AuctionResponse;
+import services.dto.auction.AuctionResponse;
 
 public final class AuctionMapper {
     private static final String SESSION_PASSWORD_PLACEHOLDER = "server-authenticated";
