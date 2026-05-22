@@ -1,8 +1,10 @@
 package services;
 
 import com.group7.dto.user.*;
+import models.Auction;
 import models.User;
 import org.springframework.stereotype.Service;
+import repositories.AuctionsDAO;
 import repositories.UsersDAO;
 import repositories.impl.DaoFactory;
 
@@ -13,6 +15,8 @@ import java.util.List;
 public class UserService {
     private final UsersDAO usersDAO = DaoFactory.createUsersDAO();
 
+    private final AuctionsDAO auctionsDAO = DaoFactory.createAuctionsDAO();
+    
     public List<UserResponse> getAll() {
         return usersDAO.getAll().stream()
                 .map(this::toResponse)
@@ -114,5 +118,31 @@ public class UserService {
                 user.getAvatarPath(),
                 user.getFrozenBalance()
         );
+    }
+
+    public List<NotificationResponse> getNotifications(int id) {
+        User user = requireUser(id);
+        List<Auction> allAuctions = auctionsDAO.getAll();
+
+        return user.getNotifications(allAuctions).stream()
+                .map(alert -> new NotificationResponse(
+                        alert.type().name(),
+                        alert.itemName(),
+                        alert.currentPrice()
+                ))
+                .toList();
+    }
+
+    public List<HistoryEntryResponse> getAuctionHistory(int id) {
+        User user = requireUser(id);
+        List<Auction> allAuctions = auctionsDAO.getAll();
+        return user.getTableHistory(allAuctions).stream()
+                .map(entry -> new HistoryEntryResponse(
+                        entry.auctionId(),
+                        entry.itemName(),
+                        entry.auctionStatus(),
+                        entry.userState()
+                ))
+                .toList();
     }
 }
