@@ -186,11 +186,10 @@ public class AuctionsDAOImpl implements AuctionsDAO {
     }
 
     private Auction instantiateAuction(ResultSet rs) throws SQLException {
-        Member owner = instantiateMember(rs);
         Item item = instantiateItem(rs);
         Bidder winner = instantiateWinner(rs);
         Auction obj = new Auction(
-                owner,
+                item.getOwner(),
                 item,
                 Auction.AuctionStatus.valueOf(rs.getString("status")),
                 rs.getObject("startingTime", LocalDateTime.class),
@@ -248,16 +247,16 @@ public class AuctionsDAOImpl implements AuctionsDAO {
     }
 
     private Item instantiateItem(ResultSet rs) throws SQLException {
+        Member owner = instantiateMember(rs);
         Item obj = new Item(
                 rs.getString("item_name"),
                 rs.getDouble("item_startingPrice"),
                 rs.getString("item_description"),
                 Item.Status.valueOf(rs.getString("item_status")),
-                rs.getString("item_imagePath"),
-                rs.getInt("owner_id")
+                rs.getString("item_imagePath")
         );
         obj.setId(rs.getInt("items_id"));
-        obj.setOwnerId(rs.getInt("item_owner_id"));
+        obj.setOwner(owner);
         return obj;
     }
 

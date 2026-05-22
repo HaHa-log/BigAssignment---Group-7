@@ -3,6 +3,7 @@ package repositories.impl;
 import models.Item;
 import config.DB;
 import config.DbException;
+import models.Member;
 import repositories.ItemsDAO;
 
 import java.sql.*;
@@ -161,18 +162,55 @@ public class ItemsDAOImpl implements ItemsDAO {
         }
     }
 
+    private String getAuctionBaseSQL() {
+        return "SELECT"
+                + "i.id,"
+                + "i.name,"
+                + "i.starting_price,"
+                + "i.description,"
+                + "i.status,"
+                + "i.image_path,"
+                + "i.owner_id,"
+                + "u_owner.users_id AS owner_id, "
+                + "u_owner.firstName AS owner_firstName, u_owner.lastName AS owner_lastName, "
+                + "u_owner.email AS owner_email, u_owner.phoneNumber AS owner_phoneNumber, "
+                + "u_owner.password AS owner_password, u_owner.balance AS owner_balance, "
+                + "u_owner.isAdmin AS owner_isAdmin, u_owner.isBlocked AS owner_isBlocked, "
+                + "u_owner.blockedUntil AS owner_blockedUntil, "
+                + "u_owner.avatar_path AS owner_avatar_path, "
+                + "FROM items i"
+                + "LEFT JOIN users u ON u.id = i.owner_id";
+    }
+
+    private Member instantiateMember(ResultSet rs) throws SQLException {
+        Member obj = new Member(
+                rs.getString("owner_firstName"),
+                rs.getString("owner_lastName"),
+                rs.getString("owner_email"),
+                rs.getString("owner_phoneNumber"),
+                rs.getString("owner_password"),
+                rs.getDouble("owner_balance"),
+                rs.getBoolean("owner_isAdmin"),
+                rs.getBoolean("owner_isBlocked"),
+                rs.getObject("owner_blockedUntil", LocalDateTime.class),
+                rs.getString("owner_avatar_path")
+        );
+        obj.setId(rs.getInt("owner_id"));
+        return obj;
+    }
+
     private Item instantiateItem(ResultSet rs) throws SQLException {
+        Member owner = instantiateMember(rs);
         Item obj = new Item(
                 rs.getString("name"),
                 rs.getDouble("startingPrice"),
                 rs.getString("description"),
                 Item.Status.valueOf(rs.getString("status")),
-                rs.getString("imagePath"),
-                rs.getInt("owner_id")
+                rs.getString("imagePath")
         );
 
         obj.setId(rs.getInt("items_id"));
-        obj.setOwnerId(rs.getInt("owner_id"));
+        obj.setOwner(owner);
         return obj;
     }
 }

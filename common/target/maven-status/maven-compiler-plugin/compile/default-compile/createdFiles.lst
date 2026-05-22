@@ -1,5 +1,6 @@
 com\group7\dto\auth\LoginRequest.class
 com\group7\dto\item\ItemRequest.class
+com\group7\dto\item\UpdateItemRequest.class
 com\group7\dto\user\UserResponse.class
 module-info.class
 com\group7\dto\auction\CreateAuctionRequest.class

@@ -57,6 +57,10 @@ public class Item extends Entity {
         this.owner = owner;
     }
 
+    public void setOwnerId(int id) {
+        this.owner.setId(id);
+    }
+
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
     }
