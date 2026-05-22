@@ -2,6 +2,7 @@ package controllers;
 
 //preferences API
 
+import exceptions.ApiException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -10,7 +11,6 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import models.SessionManager;
 import models.User;
-import services.AuthApiService;
 import services.UserApiService;
 
 import java.io.IOException;
@@ -132,7 +132,7 @@ public class SceneManager {
                     SceneManager.loadLayout();
                     SceneManager.switchContent("/MainFXML/HomePage/HomePage.fxml");
                     return;
-                } catch (models.Exceptions.ApiException e) {
+                } catch (ApiException e) {
                     // return to login if server throws an error
                     System.err.println("Auto-login failed due to server error: " + e.getMessage());
                     SceneManager.switchScene("/LoginFXML/DemoPage.fxml");

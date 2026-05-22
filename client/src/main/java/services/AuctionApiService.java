@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import config.ApiConfig;
 import models.Auction;
 import com.group7.dto.auction.*;
-import models.Exceptions.ApiException;
+import exceptions.ApiException;
 import utils.ApiJson;
 
 import java.io.IOException;
