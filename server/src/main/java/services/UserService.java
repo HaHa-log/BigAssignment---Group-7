@@ -16,7 +16,7 @@ public class UserService {
     private final UsersDAO usersDAO = DaoFactory.createUsersDAO();
 
     private final AuctionsDAO auctionsDAO = DaoFactory.createAuctionsDAO();
-    
+
     public List<UserResponse> getAll() {
         return usersDAO.getAll().stream()
                 .map(this::toResponse)
