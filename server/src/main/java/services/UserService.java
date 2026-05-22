@@ -23,6 +23,11 @@ public class UserService {
         return toResponse(requireUser(id));
     }
 
+    public UserResponse getByEmail(String email) {
+        return toResponse(requireUser(email));
+    }
+
+
     public UserResponse block(int id) {
         User user = requireUser(id);
         user.setBlocked(LocalDateTime.now().plusDays(100));
@@ -85,6 +90,14 @@ public class UserService {
         User user = usersDAO.getById(id);
         if (user == null) {
             throw new IllegalArgumentException("[Error]: User not found.");
+        }
+        return user;
+    }
+
+    private User requireUser(String email) {
+        User user = usersDAO.getByEmail(email); // Or whatever fetching method your DAO has
+        if (user == null) {
+            throw new IllegalArgumentException("[Error]: User not found with email: " + email);
         }
         return user;
     }

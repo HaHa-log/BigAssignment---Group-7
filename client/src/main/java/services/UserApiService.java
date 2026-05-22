@@ -35,6 +35,14 @@ public class UserApiService {
         return users.stream().map(UserMapper::toUser).toList();
     }
 
+    public User getByEmail(String email) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/email/" + email))
+                .GET()
+                .build();
+        return UserMapper.toUser(mapper.readValue(send(request).body(), UserResponse.class));
+    }
+
     public User getById(int id) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/" + id))
@@ -42,7 +50,6 @@ public class UserApiService {
                 .build();
         return UserMapper.toUser(mapper.readValue(send(request).body(), UserResponse.class));
     }
-
     public User block(int id) throws IOException, InterruptedException {
         return postStateChange(id, "block");
     }

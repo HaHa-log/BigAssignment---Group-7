@@ -31,6 +31,16 @@ public class UserController {
         return ResponseEntity.ok(userService.getById(id));
     }
 
+    @GetMapping("/email/{email:.+}")
+    public ResponseEntity<?> getByEmail(@PathVariable String email) {
+        try {
+            // Make sure your UserService has a method to find by email!
+            return ResponseEntity.ok(userService.getByEmail(email));
+        } catch (Exception e) {
+            return serverError(e);
+        }
+    }
+
     @PostMapping("/{id}/block")
     public ResponseEntity<?> block(@PathVariable int id) {
             return ResponseEntity.ok(userService.block(id));

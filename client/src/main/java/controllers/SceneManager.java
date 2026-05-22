@@ -8,6 +8,11 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import models.SessionManager;
+import models.User;
+import services.AuthApiService;
+import services.UserApiService;
+
 import java.io.IOException;
 import java.util.prefs.Preferences;
 
@@ -19,6 +24,7 @@ public class SceneManager {
 
     private static Preferences prefs = Preferences.userNodeForPackage(SceneManager.class);
     private static final String REMEMBER_KEY = "rememberUser";
+    private static final UserApiService userApiService = new UserApiService();
 
     public static void setStage(Stage stage) {
         SceneManager.stage = stage;
@@ -115,8 +121,27 @@ public class SceneManager {
         return prefs.getBoolean(REMEMBER_KEY, false);
     }
 
-    public static void startApp() {
-        switchScene("/LoginFXML/DemoPage.fxml");
+    public static void startApp() throws IOException, InterruptedException {
+        if (SceneManager.userIsRemembered()) {
+            String savedEmail = SessionManager.getSavedEmail();
+
+            if (savedEmail != null) {
+                try {
+                    User user = userApiService.getByEmail(savedEmail);
+                    SessionManager.loginCurrentUser(user);
+                    SceneManager.loadLayout();
+                    SceneManager.switchContent("/MainFXML/HomePage/HomePage.fxml");
+                    return;
+                } catch (models.Exceptions.ApiException e) {
+                    // return to login if server throws an error
+                    System.err.println("Auto-login failed due to server error: " + e.getMessage());
+                    SceneManager.switchScene("/LoginFXML/DemoPage.fxml");
+                    prefs.putBoolean(REMEMBER_KEY, false);
+                }
+            }
+        }
+
+        SceneManager.switchScene("/LoginFXML/DemoPage.fxml");
     }
 
     public static String getCurrentContent() {

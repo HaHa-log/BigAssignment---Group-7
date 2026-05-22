@@ -11,6 +11,9 @@ public class UserResponse {
     private String avatarPath;
     private double frozenBalance;
 
+    public UserResponse() {
+    }
+
     public UserResponse(
             int id,
             String fullName,
