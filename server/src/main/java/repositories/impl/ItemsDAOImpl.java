@@ -144,7 +144,7 @@ public class ItemsDAOImpl implements ItemsDAO {
 
     @Override
     public List<Item> getByOwnerId(int ownerId) {
-        String sql = "SELECT * FROM items WHERE owner_id = ?";
+        String sql = getAuctionBaseSQL() + " WHERE i.owner_id = ?";
         List<Item> list = new ArrayList<>();
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
@@ -163,23 +163,23 @@ public class ItemsDAOImpl implements ItemsDAO {
     }
 
     private String getAuctionBaseSQL() {
-        return "SELECT"
-                + "i.id,"
+        return "SELECT "
+                + "i.items_id, "
                 + "i.name,"
-                + "i.starting_price,"
-                + "i.description,"
-                + "i.status,"
-                + "i.image_path,"
-                + "i.owner_id,"
+                + "i.startingPrice, "
+                + "i.description, "
+                + "i.status, "
+                + "i.imagePath, "
+                + "i.owner_id, "
                 + "u_owner.users_id AS owner_id, "
                 + "u_owner.firstName AS owner_firstName, u_owner.lastName AS owner_lastName, "
                 + "u_owner.email AS owner_email, u_owner.phoneNumber AS owner_phoneNumber, "
                 + "u_owner.password AS owner_password, u_owner.balance AS owner_balance, "
                 + "u_owner.isAdmin AS owner_isAdmin, u_owner.isBlocked AS owner_isBlocked, "
                 + "u_owner.blockedUntil AS owner_blockedUntil, "
-                + "u_owner.avatar_path AS owner_avatar_path, "
-                + "FROM items i"
-                + "LEFT JOIN users u ON u.id = i.owner_id";
+                + "u_owner.avatar_path AS owner_avatar_path "
+                + "FROM items i "
+                + "LEFT JOIN users u_owner ON u_owner.users_id = i.owner_id";
     }
 
     private Member instantiateMember(ResultSet rs) throws SQLException {
