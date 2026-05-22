@@ -87,7 +87,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
 
             st.setInt(1, auction.getOwner().getId());
             st.setInt(2, auction.getItem().getId());
-            st.setString(3, auction.getRawStatus().name());
+            st.setString(3, auction.getStatus().name());
             st.setDouble(4, auction.getStartingPrice());
             st.setDouble(5, auction.getCurrentPrice());
             st.setTimestamp(6, auction.getStartingTime() != null
@@ -253,7 +253,8 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 rs.getDouble("item_startingPrice"),
                 rs.getString("item_description"),
                 Item.Status.valueOf(rs.getString("item_status")),
-                rs.getString("item_imagePath")
+                rs.getString("item_imagePath"),
+                rs.getInt("owner_id")
         );
         obj.setId(rs.getInt("items_id"));
         obj.setOwnerId(rs.getInt("item_owner_id"));

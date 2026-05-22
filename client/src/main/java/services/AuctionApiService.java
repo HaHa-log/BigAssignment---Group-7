@@ -2,8 +2,11 @@ package services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import config.ApiConfig;
 import models.Auction;
 import com.group7.dto.auction.*;
+import models.Exceptions.ApiException;
+import utils.ApiJson;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -40,7 +43,7 @@ public class AuctionApiService {
         return AuctionMapper.toAuction(mapper.readValue(send(request).body(), AuctionResponse.class));
     }
 
-    public Auction placeBid(int auctionId, int bidderId, double amount) throws IOException, InterruptedException {
+    public Auction placeBid(int auctionId, int bidderId, double amount) throws IOException, InterruptedException, IllegalArgumentException {
         BidRequest payload = new BidRequest(bidderId, amount);
         HttpRequest request = jsonRequest(BASE_URL + "/" + auctionId + "/bids", payload).POST(
                 HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload))

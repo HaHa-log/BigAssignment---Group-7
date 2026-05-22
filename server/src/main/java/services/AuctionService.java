@@ -89,22 +89,34 @@ public class AuctionService {
     }
 
     private AuctionResponse toResponse(Auction auction) {
+        String ownerName = (auction.getOwner() != null) ? auction.getOwner().getFullName() : "Unknown Owner";
+
+        String itemName = "";
+        String itemDesc = "";
+        String itemImg = "";
+        if (auction.getItem() != null) {
+            itemName = auction.getItem().getName();
+            itemDesc = auction.getItem().getDescription();
+            itemImg = auction.getItem().getImagePath();
+        }
+
         User winner = auction.getWinner();
+
         return new AuctionResponse(
                 auction.getId(),
                 auction.getOwnerId(),
-                auction.getOwner().getFullName(),
+                ownerName,
                 auction.getItemId(),
-                auction.getItem().getName(),
-                auction.getItem().getDescription(),
-                auction.getItem().getImagePath(),
-                auction.getRawStatus().name(),
+                itemName,
+                itemDesc,
+                itemImg,
+                auction.getStatus() != null ? auction.getStatus().name() : "PENDING",
                 auction.getStartingPrice(),
                 auction.getCurrentPrice(),
                 auction.getStartingTime(),
                 auction.getEndingTime(),
-                winner != null ? winner.getId() : null,
-                winner != null ? winner.getFullName() : null
+                winner != null ? winner.getId() : null,         // 13. winnerId
+                winner != null ? winner.getFullName() : null    // 14. winnerName
         );
     }
 }

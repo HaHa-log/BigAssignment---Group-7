@@ -167,7 +167,8 @@ public class ItemsDAOImpl implements ItemsDAO {
                 rs.getDouble("startingPrice"),
                 rs.getString("description"),
                 Item.Status.valueOf(rs.getString("status")),
-                rs.getString("imagePath")
+                rs.getString("imagePath"),
+                rs.getInt("owner_id")
         );
 
         obj.setId(rs.getInt("items_id"));

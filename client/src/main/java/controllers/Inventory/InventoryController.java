@@ -1,6 +1,11 @@
 package controllers.Inventory;
 
-import models.*;
+import models.Item;
+import models.User;
+import models.SessionManager;
+import services.ItemApiService;
+import services.AuctionApiService;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ComboBox;
@@ -10,19 +15,17 @@ import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class InventoryController {
-    @FXML
-    private VBox itemList;
-    @FXML
-    private ComboBox<String> statusFilter;
-    @FXML
-    private ProgressIndicator loadingSpinner;
+    @FXML private VBox itemList;
+    @FXML private ComboBox<String> statusFilter;
+    @FXML private ProgressIndicator loadingSpinner;
 
-    /*
-    private User user = SessionManager.getCurrentUser();
-    // Fetch the current user's local inventory list
-    private List<Item> items = ((Member) user).getInventory();
+    private final User user = SessionManager.getCurrentUser();
+    private final ItemApiService itemApiService = new ItemApiService();
+    private final AuctionApiService auctionApiService = new AuctionApiService();
 
     @FXML
     private void initialize() {
@@ -31,7 +34,6 @@ public class InventoryController {
             statusFilter.getItems().add(status.name());
         }
         statusFilter.setValue("ALL");
-
         statusFilter.setOnAction(e -> populateList());
 
         javafx.application.Platform.runLater(this::populateList);
@@ -45,6 +47,14 @@ public class InventoryController {
 
         Thread thread = new Thread(() -> {
             try {
+                if (user == null) return;
+
+                List<Item> items = itemApiService.fetchInventory(user.getId());
+                List<models.Auction> activeAuctions = auctionApiService.getAll();
+
+                Map<Integer, models.Auction> auctionMap = activeAuctions.stream()
+                        .collect(Collectors.toMap(models.Auction::getItemId, a -> a, (a1, a2) -> a1));
+
                 javafx.application.Platform.runLater(() -> {
                     loadingSpinner.setVisible(false);
                     itemList.setVisible(true);
@@ -55,14 +65,23 @@ public class InventoryController {
                         continue;
                     }
 
+                    double dynamicPrice = item.getStartingPrice();
+                    if (item.getStatus() == Item.Status.IN_AUCTION && auctionMap.containsKey(item.getId())) {
+                        dynamicPrice = auctionMap.get(item.getId()).getCurrentPrice();
+                    }
+
+                    final double finalPrice = dynamicPrice;
+
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/InventoryFXML/ItemCard.fxml"));
                     HBox card = loader.load();
                     ItemCardController cardController = loader.getController();
-                    cardController.setItemData(item);
 
-                    javafx.application.Platform.runLater(() -> itemList.getChildren().add(card));
+                    javafx.application.Platform.runLater(() -> {
+                        cardController.setItemData(item, finalPrice);
+                        itemList.getChildren().add(card);
+                    });
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 javafx.application.Platform.runLater(() -> loadingSpinner.setVisible(false));
             }
@@ -71,6 +90,4 @@ public class InventoryController {
         thread.setDaemon(true);
         thread.start();
     }
-
-     */
 }

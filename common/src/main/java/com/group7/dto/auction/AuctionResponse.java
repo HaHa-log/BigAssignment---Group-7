@@ -21,6 +21,7 @@ public class AuctionResponse {
     private LocalDateTime endingTime;
 
     private Integer winnerId;
+    private String winnerName;
 
     public AuctionResponse() {
     }
@@ -37,7 +38,8 @@ public class AuctionResponse {
             double currentPrice,
             LocalDateTime startingTime,
             LocalDateTime endingTime,
-            Integer winnerId) {
+            Integer winnerId,
+            String winnerName) {
         this.id = id;
         this.ownerId = ownerId;
         this.ownerName = ownerName;
@@ -51,6 +53,7 @@ public class AuctionResponse {
         this.startingTime = startingTime;
         this.endingTime = endingTime;
         this.winnerId = winnerId;
+        this.winnerName = winnerName;
     }
 
     public int getId() {
@@ -103,5 +106,9 @@ public class AuctionResponse {
 
     public Integer getWinnerId() {
         return winnerId;
+    }
+
+    public String getWinnerName() {
+        return winnerName;
     }
 }

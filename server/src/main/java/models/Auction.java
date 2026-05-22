@@ -99,7 +99,7 @@ public class Auction extends Entity implements Serializable {
             lock().unlock();
         }
     }
-    
+
     public String start() {
         lock().lock();
         try {
@@ -268,7 +268,11 @@ public class Auction extends Entity implements Serializable {
         }
 
         if (status == AuctionStatus.RUNNING && endingTime != null && now.isAfter(endingTime)) {
-            AuctionManager.getInstance().closeAuction(this);
+            boolean transitioned = transitionTo(AuctionStatus.FINISHED);
+
+            if (transitioned) {
+                AuctionManager.getInstance().closeAuction(this);
+            }
         }
     }
 

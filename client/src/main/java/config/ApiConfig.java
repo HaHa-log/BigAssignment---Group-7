@@ -1,4 +1,4 @@
-package services;
+package config;
 
 public final class ApiConfig {
     private static final String DEFAULT_BASE_URL = "http://localhost:8080";
