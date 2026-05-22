@@ -195,17 +195,28 @@ public class AuctionDetailController {
                 throw new IllegalArgumentException("[Error]: Only members can enable auto bidding.");
             }
 
-            AutoBid config = new AutoBid(auction, currentMember, maxBid, increment);
-            AuctionManager.getInstance().processAutoBids(auction, config);
+            com.group7.dto.bid.AutoBidRequest request = new com.group7.dto.bid.AutoBidRequest(
+                    currentMember.getId(),
+                    maxBid,
+                    increment
+            );
+
+            auctionApiService.enableAutoBid(auction.getId(), request);
 
             bidPlacedResultLabel.setTextFill(GREEN);
             bidPlacedResultLabel.setText("Auto Bid enabled successfully!");
-        }  catch (CustomisedException e) {
+
+            maxBidInput.clear();
+            stepInput.clear();
+        } catch (CustomisedException e) {
             bidPlacedResultLabel.setTextFill(RED);
             bidPlacedResultLabel.setText(e.getMessage());
         } catch (NumberFormatException e) {
             bidPlacedResultLabel.setTextFill(RED);
             bidPlacedResultLabel.setText("Please enter a valid number.");
+        } catch (Exception e) {
+            bidPlacedResultLabel.setTextFill(RED);
+            bidPlacedResultLabel.setText(e.getMessage());
         }
     }
 }

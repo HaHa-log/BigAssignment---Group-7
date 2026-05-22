@@ -60,7 +60,7 @@
                                  <ImageView fx:id="imagePreview" preserveRatio="true" />
                              </children>
                          </VBox>
-                        <Button mnemonicParsing="false" onMouseClicked="#createItem" text="CREATE ITEM" textAlignment="CENTER" />
+                        <Button mnemonicParsing="false" onMouseClicked="#createAuction" text="CREATE ITEM" textAlignment="CENTER" />
                      </children>
                   </VBox>
                   <VBox layoutX="21.0" layoutY="85.0" spacing="10.0">

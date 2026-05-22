@@ -52,6 +52,14 @@ public class AuctionApiService {
         return AuctionMapper.toAuction(mapper.readValue(send(request).body(), AuctionResponse.class));
     }
 
+    public void enableAutoBid(int auctionId, com.group7.dto.bid.AutoBidRequest payload) throws IOException, InterruptedException {
+        String url = ApiConfig.baseUrl() + "/api/autobids/" + auctionId;
+        HttpRequest request = jsonRequest(url, payload).POST(
+                HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload))
+        ).build();
+        send(request);
+    }
+
     public Auction cancel(int auctionId) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/" + auctionId + "/cancel"))

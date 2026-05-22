@@ -60,6 +60,8 @@ public class AuctionService {
         Bid bid = new Bid(auction, (Member) bidder, new Price(amount));
         bidsDAO.save(bid);
 
+        models.AuctionManager.getInstance().processAutoBids(auction, null);
+
         return toResponse(auctionsDAO.getById(auctionId));
     }
 
