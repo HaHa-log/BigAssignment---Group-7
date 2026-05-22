@@ -1,12 +1,13 @@
+com\group7\dto\bid\BidResponse.class
 com\group7\dto\auth\LoginRequest.class
 com\group7\dto\item\ItemRequest.class
-com\group7\dto\item\UpdateItemRequest.class
 com\group7\dto\user\UserResponse.class
-module-info.class
 com\group7\dto\auction\CreateAuctionRequest.class
 com\group7\dto\auction\AuctionResponse.class
-com\group7\dto\auction\BidRequest.class
-com\group7\dto\item\ItemResponse.class
 com\group7\dto\auth\RegisterRequest.class
+com\group7\dto\item\UpdateItemRequest.class
+module-info.class
+com\group7\dto\item\ItemResponse.class
 com\group7\dto\auction\ConfirmReceiptRequest.class
 com\group7\dto\auth\AuthResponse.class
+com\group7\dto\bid\BidRequest.class

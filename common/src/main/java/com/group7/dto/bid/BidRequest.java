@@ -1,4 +1,4 @@
-package com.group7.dto.auction;
+package com.group7.dto.bid;
 
 public class BidRequest {
     private int bidderId;

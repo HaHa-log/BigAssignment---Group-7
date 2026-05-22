@@ -1,15 +1,11 @@
 package services;
 
 import com.group7.dto.auction.*;
-import models.Auction;
-import models.AuctionManager;
-import models.Bidder;
-import models.Item;
-import models.Member;
-import models.Transaction;
-import models.User;
+import models.*;
+import models.Common.Price;
 import org.springframework.stereotype.Service;
 import repositories.AuctionsDAO;
+import repositories.BidsDAO;
 import repositories.UsersDAO;
 import repositories.impl.DaoFactory;
 
@@ -19,6 +15,7 @@ import java.util.List;
 public class AuctionService {
     private final AuctionsDAO auctionsDAO = DaoFactory.createAuctionsDAO();
     private final UsersDAO usersDAO = DaoFactory.createUsersDAO();
+    private final BidsDAO bidsDAO = DaoFactory.createBidsDAO();
 
     public List<AuctionResponse> getAll() {
         return auctionsDAO.getAll().stream()
@@ -58,8 +55,11 @@ public class AuctionService {
         if (!(bidder instanceof Bidder)) {
             throw new IllegalArgumentException("[Error]: Bidder is invalid.");
         }
-
         bidder.placeBid(auction, amount);
+
+        Bid bid = new Bid(auction, (Member) bidder, new Price(amount));
+        bidsDAO.save(bid);
+
         return toResponse(auctionsDAO.getById(auctionId));
     }
 
