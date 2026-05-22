@@ -271,6 +271,22 @@ public class Auction extends Entity implements Serializable {
             boolean transitioned = transitionTo(AuctionStatus.FINISHED);
 
             if (transitioned) {
+                if (winner instanceof User winnerUser) {
+
+                    double winningPrice = currentPrice;
+                    boolean success = winnerUser.spendFrozenMoney(winningPrice);
+
+                    if (success) {winnerUser.addTransaction("💸 PAYMENT | -" + winningPrice);
+                        owner.depositMoney(winningPrice);
+                        owner.addTransaction("💰 SOLD | +" + winningPrice);
+
+                        if (winnerUser.getId() > 0) {usersDb().update(winnerUser);}
+                        if (owner.getId() > 0) {usersDb().update(owner);}
+
+                        transitionTo(AuctionStatus.PAID);
+                    }
+                }
+
                 AuctionManager.getInstance().closeAuction(this);
             }
         }
@@ -330,7 +346,7 @@ public class Auction extends Entity implements Serializable {
     }
 
     private void releasePreviousWinnerHold(Bidder previousWinner, User currentBidder) {
-        if (!(previousWinner instanceof User oldUser) || oldUser.getId() == currentBidder.getId()) {
+        if (!(previousWinner instanceof User oldUser) || oldUser.equals(currentBidder)) {
             return;
         }
 
