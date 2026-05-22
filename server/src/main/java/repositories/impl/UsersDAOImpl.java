@@ -108,8 +108,11 @@ public class UsersDAOImpl implements UsersDAO {
             st.setInt(1, id);
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()){
-                    Member member = instantiateMember(rs);
-                    return member;
+                    if (rs.getBoolean("isAdmin")) {
+                        return instantiateAdmin(rs);
+                    } else {
+                        return instantiateMember(rs);
+                    }
                 }
             }
             return null;

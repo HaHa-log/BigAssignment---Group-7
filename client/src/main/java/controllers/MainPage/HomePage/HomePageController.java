@@ -15,18 +15,31 @@ public class HomePageController {
 
     @FXML
     private void initialize() {
-        user = SessionManager.getCurrentUser();
-        boolean isAdmin = user instanceof Admin || user != null && user.isAdmin();
-        managementNavigation.setVisible(isAdmin);
-        managementNavigation.setManaged(isAdmin);
+        //If cannot load user
+        managementNavigation.setVisible(false);
+        managementNavigation.setManaged(false);
+        welcomeLabel.setText("Welcome");
 
-        if (user == null) {
-            welcomeLabel.setText("Welcome");
-            return;
+        User savedUser = SessionManager.getCurrentUser();
+        if (savedUser != null) {
+            setupUserData(savedUser);
         }
+    }
 
-        String userName = user.getFullName();
-        welcomeLabel.setText("Welcome, " + userName);
+    public void setupUserData(User loggedInUser) {
+        this.user = loggedInUser;
+
+        if (user != null) {
+            boolean isAdmin = user instanceof Admin || user.isAdmin();
+
+            managementNavigation.setVisible(isAdmin);
+            managementNavigation.setManaged(isAdmin);
+
+            welcomeLabel.setText("Welcome, " + user.getFullName());
+
+            System.out.println("[UI Setup] Rendered views for type: " + user.getClass().getSimpleName());
+            System.out.println("[UI Setup] Admin Privileges Status: " + isAdmin);
+        }
     }
 
     @FXML

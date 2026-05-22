@@ -12,32 +12,37 @@ public final class UserMapper {
     }
 
     public static User toUser(UserResponse response) {
-        String[] nameParts = splitName(response.getFullName());
-        User user;
-        if ("Admin".equalsIgnoreCase(response.getRole())) {
-            user = new Admin(
-                    nameParts[0],
-                    nameParts[1],
-                    response.getEmail(),
-                    response.getPhoneNumber(),
-                    SESSION_PASSWORD_PLACEHOLDER,
-                    response.getBalance(),
-                    response.getAvatarPath()
-            );
-        } else {
-            user = new Member(
-                    nameParts[0],
-                    nameParts[1],
-                    response.getEmail(),
-                    response.getPhoneNumber(),
-                    SESSION_PASSWORD_PLACEHOLDER,
-                    response.getBalance(),
-                    response.getAvatarPath()
-            );
+        if (response == null) {
+            throw new IllegalArgumentException("User response is required.");
         }
 
-        user.setId(response.getId());
+        String[] nameParts = splitName(response.getFullName());
 
+        // Catch stringified booleans ("true") or direct strings ("Admin") securely
+        boolean isAdminUser = "true".equalsIgnoreCase(response.getRole())
+                || "Admin".equalsIgnoreCase(response.getRole());
+
+        User user = isAdminUser ?
+                new Admin(
+                        nameParts[0],
+                        nameParts[1],
+                        response.getEmail(),
+                        response.getPhoneNumber(),
+                        SESSION_PASSWORD_PLACEHOLDER,
+                        response.getBalance(),
+                        response.getAvatarPath()
+                ) :
+                new Member(
+                        nameParts[0],
+                        nameParts[1],
+                        response.getEmail(),
+                        response.getPhoneNumber(),
+                        SESSION_PASSWORD_PLACEHOLDER,
+                        response.getBalance(),
+                        response.getAvatarPath()
+                );
+
+        user.setId(response.getId());
         user.setFrozenBalance(response.getFrozenBalance());
 
         if (response.isBlocked()) {

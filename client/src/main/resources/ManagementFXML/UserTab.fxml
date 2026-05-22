@@ -5,7 +5,7 @@
 
 <TableView fx:id="table"
            xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="Client.Controllers.Management.UserManagementController" styleClass="table">
+           fx:controller="controllers.Management.UserManagementController" styleClass="table">
     <columns>
         <TableColumn fx:id="userId" prefWidth="75.0" text="User ID" />
         <TableColumn fx:id="username" prefWidth="150.0" text="Username" />

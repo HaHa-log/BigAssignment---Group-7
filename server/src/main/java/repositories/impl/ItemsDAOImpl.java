@@ -85,37 +85,36 @@ public class ItemsDAOImpl implements ItemsDAO {
             throw new DbException(ex.getMessage());
         }
     }
-
     @Override
     public Item getById(int id) {
-        String sql = "SELECT * From items WHERE items_id = ?";
+        // FIX: Use getAuctionBaseSQL() instead of SELECT *
+        String sql = getAuctionBaseSQL() + " WHERE i.items_id = ?";
         try(Connection conn = DB.getConnection();
-             PreparedStatement st = conn.prepareStatement(sql)) {
+            PreparedStatement st = conn.prepareStatement(sql)) {
 
             st.setInt(1, id);
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()) {
-                    Item item = instantiateItem(rs);
-                    return item;
+                    return instantiateItem(rs);
                 }
             }
             return null;
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             throw new DbException(e.getMessage());
         }
     }
 
     @Override
     public Item getByName(String name) {
-        String sql = "SELECT * FROM items WHERE name = ?";
+        // FIX: Use getAuctionBaseSQL() instead of SELECT *
+        String sql = getAuctionBaseSQL() + " WHERE i.name = ?";
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
 
             st.setString(1, name);
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()) {
-                    Item item = instantiateItem(rs);
-                    return item;
+                    return instantiateItem(rs);
                 }
             }
             return null;
@@ -126,10 +125,11 @@ public class ItemsDAOImpl implements ItemsDAO {
 
     @Override
     public List<Item> getAll() {
-        String sql = "SELECT * FROM items";
+        // FIX: Use getAuctionBaseSQL() instead of SELECT *
+        String sql = getAuctionBaseSQL();
         List<Item> list = new ArrayList<>();
         try(Connection conn = DB.getConnection();
-             PreparedStatement st = conn.prepareStatement(sql);
+            PreparedStatement st = conn.prepareStatement(sql);
             ResultSet rs = st.executeQuery()) {
 
             while (rs.next()) {
@@ -137,7 +137,7 @@ public class ItemsDAOImpl implements ItemsDAO {
             }
             return list;
 
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             throw new DbException(e.getMessage());
         }
     }
@@ -171,7 +171,6 @@ public class ItemsDAOImpl implements ItemsDAO {
                 + "i.status, "
                 + "i.imagePath, "
                 + "i.owner_id, "
-                + "u_owner.users_id AS owner_id, "
                 + "u_owner.firstName AS owner_firstName, u_owner.lastName AS owner_lastName, "
                 + "u_owner.email AS owner_email, u_owner.phoneNumber AS owner_phoneNumber, "
                 + "u_owner.password AS owner_password, u_owner.balance AS owner_balance, "

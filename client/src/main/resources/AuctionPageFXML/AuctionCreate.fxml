@@ -25,7 +25,7 @@
                                 <Font name="System Bold" size="36.0" />
                             </font>
                         </Label>
-                  <VBox spacing="10.0">
+                  <VBox alignment="TOP_CENTER" spacing="10.0">
                      <children>
                         <HBox alignment="CENTER" maxWidth="1.7976931348623157E308" prefHeight="20.0">
                            <children>
@@ -60,6 +60,7 @@
                                  <ImageView fx:id="imagePreview" preserveRatio="true" />
                              </children>
                          </VBox>
+                        <Button mnemonicParsing="false" onMouseClicked="#createItem" text="CREATE ITEM" textAlignment="CENTER" />
                      </children>
                   </VBox>
                   <VBox layoutX="21.0" layoutY="85.0" spacing="10.0">
@@ -103,14 +104,14 @@
                                     <VBox>
                                        <children>
                                           <Text text="Starting Date" />
-                                          <DatePicker fx:id="startingDateInput" maxWidth="1.7976931348623157E308" prefHeight="30.0"  />
+                                          <DatePicker fx:id="startingDateInput" maxWidth="1.7976931348623157E308" prefHeight="30.0" />
                                        </children>
                                     </VBox>
                                     <Region maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="0.0" HBox.hgrow="ALWAYS" />
                                     <VBox layoutX="10.0" layoutY="10.0">
                                        <children>
                                           <Text text="Starting Time" />
-                                          <TextField fx:id="startingTimeInput" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="30.0" promptText="HH:mm"/>
+                                          <TextField fx:id="startingTimeInput" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="30.0" promptText="HH:mm" />
                                        </children>
                                     </VBox>
                                  </children>
@@ -127,7 +128,7 @@
                                     <VBox layoutX="10.0" layoutY="10.0">
                                        <children>
                                           <Text text="Ending Time" />
-                                          <TextField fx:id="endingTimeInput" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="30.0" promptText="HH:mm"/>
+                                          <TextField fx:id="endingTimeInput" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="30.0" promptText="HH:mm" />
                                        </children>
                                     </VBox>
                                  </children>
@@ -136,7 +137,7 @@
                         </VBox>
                      </children>
                   </VBox>
-                  <Button mnemonicParsing="false" onMouseClicked="#createAuction" text="CREATE" />
+                  <Button mnemonicParsing="false" onMouseClicked="#createAuction" text="CREATE AUCTION" />
                   <Label fx:id="auctionCreateResult" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" textAlignment="CENTER" />
                     </children>
                <padding>

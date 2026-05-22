@@ -13,6 +13,7 @@ import java.util.List;
 
 public class AuctionsDAOImpl implements AuctionsDAO {
     private final ItemsDAO itemsDAO = DaoFactory.createItemDAO();
+
     protected AuctionsDAOImpl() {
     }
 
@@ -107,7 +108,8 @@ public class AuctionsDAOImpl implements AuctionsDAO {
 
     @Override
     public Auction getById(int id) {
-        String sql = getAuctionBaseSQL() + "WHERE a.auctions_id = ?";
+        // FIX: Added explicit space before WHERE to guarantee safe execution
+        String sql = getAuctionBaseSQL() + " WHERE a.auctions_id = ?";
 
         try (Connection conn = DB.getConnection();
              PreparedStatement st = conn.prepareStatement(sql)) {
@@ -115,8 +117,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
             st.setInt(1, id);
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()) {
-                    Auction auction = instantiateAuction(rs);
-                    return auction;
+                    return instantiateAuction(rs);
                 }
             }
             return null;
@@ -125,8 +126,10 @@ public class AuctionsDAOImpl implements AuctionsDAO {
         }
     }
 
+    @Override
     public List<Auction> getByStatus(String status) {
-        String sql = getAuctionBaseSQL() + "WHERE a.status = ? ";
+        // FIX: Added explicit space before WHERE
+        String sql = getAuctionBaseSQL() + " WHERE a.status = ? ";
 
         try (Connection conn = DB.getConnection();
              PreparedStatement st = conn.prepareStatement(sql)) {
@@ -153,7 +156,6 @@ public class AuctionsDAOImpl implements AuctionsDAO {
              ResultSet rs = st.executeQuery()) {
 
             List<Auction> list = new ArrayList<>();
-
             while (rs.next()) {
                 list.add(instantiateAuction(rs));
             }
@@ -166,7 +168,8 @@ public class AuctionsDAOImpl implements AuctionsDAO {
 
     @Override
     public List<Auction> getActiveAuctions() {
-        String sql = getAuctionBaseSQL() + "WHERE a.status = ? OR a.status = ?";
+        // FIX: Added explicit space before WHERE
+        String sql = getAuctionBaseSQL() + " WHERE a.status = ? OR a.status = ?";
 
         try (Connection conn = DB.getConnection();
              PreparedStatement st = conn.prepareStatement(sql)) {
@@ -226,28 +229,44 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 + "FROM auctions a "
                 + "INNER JOIN users u_owner ON a.owner_id = u_owner.users_id "
                 + "INNER JOIN items i ON a.item_id = i.items_id "
-                + "LEFT JOIN users u_winner ON a.winner_id = u_winner.users_id ";
+                + "LEFT JOIN users u_winner ON a.winner_id = u_winner.users_id";
     }
 
-    private Member instantiateMember(ResultSet rs) throws SQLException {
-        Member obj = new Member(
+    // FIX: Dynamically instantiates Admin or Member based on the owner_isAdmin flag
+    private User instantiateOwner(ResultSet rs) throws SQLException {
+        boolean isAdmin = rs.getBoolean("owner_isAdmin");
+
+        User obj = isAdmin ? new Admin(
                 rs.getString("owner_firstName"),
                 rs.getString("owner_lastName"),
                 rs.getString("owner_email"),
                 rs.getString("owner_phoneNumber"),
                 rs.getString("owner_password"),
                 rs.getDouble("owner_balance"),
-                rs.getBoolean("owner_isAdmin"),
+                true,
                 rs.getBoolean("owner_isBlocked"),
                 rs.getObject("owner_blockedUntil", LocalDateTime.class),
                 rs.getString("owner_avatar_path")
-                );
+        ) : new Member(
+                rs.getString("owner_firstName"),
+                rs.getString("owner_lastName"),
+                rs.getString("owner_email"),
+                rs.getString("owner_phoneNumber"),
+                rs.getString("owner_password"),
+                rs.getDouble("owner_balance"),
+                false,
+                rs.getBoolean("owner_isBlocked"),
+                rs.getObject("owner_blockedUntil", LocalDateTime.class),
+                rs.getString("owner_avatar_path")
+        );
+
         obj.setId(rs.getInt("owner_id"));
         return obj;
     }
 
     private Item instantiateItem(ResultSet rs) throws SQLException {
-        Member owner = instantiateMember(rs);
+        // FIX: Now calls the polymorphic owner lookup method
+        User owner = instantiateOwner(rs);
         Item obj = new Item(
                 rs.getString("item_name"),
                 rs.getDouble("item_startingPrice"),
@@ -256,25 +275,41 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 rs.getString("item_imagePath")
         );
         obj.setId(rs.getInt("items_id"));
-        obj.setOwner(owner);
+        obj.setOwner((Member) owner); // Cast is safe since Admin extends Member
         return obj;
     }
 
+    // FIX: Dynamically instantiates Admin or Member based on the winner_isAdmin flag
     private Bidder instantiateWinner(ResultSet rs) throws SQLException {
-        if (rs.getObject("winner_id") == null) return null;  // Winner có thể null
-        Member obj = new Member(
+        if (rs.getObject("winner_id") == null || rs.getInt("winner_id") == 0) {
+            return null;
+        }
+
+        boolean isAdmin = rs.getBoolean("winner_isAdmin");
+        User obj = isAdmin ? new Admin(
                 rs.getString("winner_firstName"),
                 rs.getString("winner_lastName"),
                 rs.getString("winner_email"),
                 rs.getString("winner_phoneNumber"),
                 rs.getString("winner_password"),
                 rs.getDouble("winner_balance"),
-                rs.getBoolean("winner_isAdmin"),
+                true,
                 rs.getBoolean("winner_isBlocked"),
                 rs.getObject("winner_blockedUntil", LocalDateTime.class),
                 rs.getString("winner_avatar_path")
+        ) : new Member(
+                rs.getString("winner_firstName"),
+                rs.getString("winner_lastName"),
+                rs.getString("winner_email"),
+                rs.getString("winner_phoneNumber"),
+                rs.getString("winner_password"),
+                rs.getDouble("winner_balance"),
+                false,
+                rs.getBoolean("winner_isBlocked"),
+                rs.getObject("winner_blockedUntil", LocalDateTime.class),
+                rs.getString("winner_avatar_path")
+        );
 
-                );
         obj.setId(rs.getInt("winner_id"));
         return obj;
     }

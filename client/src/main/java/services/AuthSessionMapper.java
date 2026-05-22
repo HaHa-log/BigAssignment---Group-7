@@ -16,28 +16,28 @@ public final class AuthSessionMapper {
             throw new IllegalArgumentException("Auth response is required.");
         }
 
-        User user;
-        if ("Admin".equalsIgnoreCase(response.getRole())) {
-            user = new Admin(
-                    response.getFirstName(),
-                    response.getLastName(),
-                    response.getEmail(),
-                    response.getPhoneNumber(),
-                    SESSION_PASSWORD_PLACEHOLDER,
-                    response.getBalance(),
-                    response.getAvatarPath()
-            );
-        } else {
-            user = new Member(
-                    response.getFirstName(),
-                    response.getLastName(),
-                    response.getEmail(),
-                    response.getPhoneNumber(),
-                    SESSION_PASSWORD_PLACEHOLDER,
-                    response.getBalance(),
-                    response.getAvatarPath()
-            );
-        }
+        boolean isAdminUser = "true".equalsIgnoreCase(response.getRole())
+                || "Admin".equalsIgnoreCase(response.getRole());
+
+        User user = isAdminUser ?
+                new Admin(
+                        response.getFirstName(),
+                        response.getLastName(),
+                        response.getEmail(),
+                        response.getPhoneNumber(),
+                        SESSION_PASSWORD_PLACEHOLDER,
+                        response.getBalance(),
+                        response.getAvatarPath()
+                ) :
+                new Member(
+                        response.getFirstName(),
+                        response.getLastName(),
+                        response.getEmail(),
+                        response.getPhoneNumber(),
+                        SESSION_PASSWORD_PLACEHOLDER,
+                        response.getBalance(),
+                        response.getAvatarPath()
+                );
 
         user.setId(response.getUserId());
         return user;

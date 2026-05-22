@@ -21,5 +21,4 @@ module client {
     opens controllers.Management to javafx.fxml;
     opens controllers.Inventory to javafx.fxml;
 
-    opens models to javafx.fxml;
-}
+    opens models to javafx.fxml, javafx.base;}
