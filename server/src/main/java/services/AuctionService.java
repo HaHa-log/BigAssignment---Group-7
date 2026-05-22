@@ -42,7 +42,7 @@ public class AuctionService {
         }
 
         Item item = new Item(request.getItemName(), request.getStartingPrice(), request.getDescription());
-        item.setOwnerId(member.getId());
+        item.setOwner(member);
         item.setImagePath(request.getImagePath());
 
         Auction auction = new Auction(member, item, request.getStartingTime(), request.getEndingTime());
