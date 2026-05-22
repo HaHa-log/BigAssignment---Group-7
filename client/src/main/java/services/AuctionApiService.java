@@ -2,6 +2,7 @@ package services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.group7.dto.bid.BidRequest;
 import config.ApiConfig;
 import models.Auction;
 import com.group7.dto.auction.*;

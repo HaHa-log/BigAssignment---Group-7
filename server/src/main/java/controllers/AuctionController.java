@@ -1,6 +1,8 @@
 package controllers;
 
 import com.group7.dto.auction.*;
+import com.group7.dto.bid.BidRequest;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
@@ -23,9 +25,14 @@ import java.util.Map;
 @RequestMapping("/api/auctions")
 public class AuctionController {
     private final AuctionService auctionService;
+    private final Path itemStoragePath;
 
-    public AuctionController(AuctionService auctionService) {
+    public AuctionController(
+            AuctionService auctionService,
+            @Value("${app.storage.items}") String itemStorageDir
+    ) {
         this.auctionService = auctionService;
+        this.itemStoragePath = Paths.get(itemStorageDir).toAbsolutePath().normalize();
     }
 
     @GetMapping
