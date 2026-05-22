@@ -80,4 +80,21 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("error", e.getMessage() == null ? "Unexpected server error." : e.getMessage()));
     }
+    @GetMapping("/{id}/notifications")
+    public ResponseEntity<?> getNotifications(@PathVariable int id) {
+        try {
+            return ResponseEntity.ok(userService.getNotifications(id));
+        } catch (Exception e) {
+            return serverError(e);
+        }
+    }
+
+    @GetMapping("/{id}/history")
+    public ResponseEntity<?> getAuctionHistory(@PathVariable int id) {
+        try {
+            return ResponseEntity.ok(userService.getAuctionHistory(id));
+        } catch (Exception e) {
+            return serverError(e);
+        }
+    }
 }

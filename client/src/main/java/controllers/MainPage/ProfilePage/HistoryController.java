@@ -1,5 +1,8 @@
 package controllers.MainPage.ProfilePage;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.group7.dto.user.HistoryEntryResponse;
 import models.Auction;
 import models.AuctionManager;
 import models.Common.AuctionHistoryEntry;
@@ -11,6 +14,11 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class HistoryController extends BaseController {
@@ -39,6 +47,7 @@ public class HistoryController extends BaseController {
         setupTransactionList();
 
         historyTable.setItems(masterData);
+        loadHistory();
     }
 
     @Override
@@ -202,31 +211,50 @@ public class HistoryController extends BaseController {
     }
 
     private void loadHistory() {
-
         if (user == null) return;
-
         loadingIndicator.setManaged(true);
         loadingIndicator.setVisible(true);
 
         new Thread(() -> {
+            try {
+                HttpClient client = HttpClient.newHttpClient();
+                ObjectMapper mapper = new ObjectMapper();
 
-            ObservableList<AuctionHistoryEntry> data =
-                    FXCollections.observableArrayList(
-                            user.getTableHistory(
-                                    AuctionManager.getInstance().getAllSessions()
-                            )
-                    );
+                HttpRequest histReq = HttpRequest.newBuilder()
+                        .uri(URI.create("http://localhost:8080/api/users/"
+                                + user.getId() + "/history"))
+                        .GET().build();
+                String histBody = client
+                        .send(histReq, HttpResponse.BodyHandlers.ofString())
+                        .body();
+                List<HistoryEntryResponse> response = mapper.readValue(histBody, new TypeReference<List<HistoryEntryResponse>>() {});
 
-            Platform.runLater(() -> {
+                List<AuctionHistoryEntry> historyData =
+                        response.stream()
+                                .map(h -> new AuctionHistoryEntry(
+                                        h.auctionId(),
+                                        h.itemName(),
+                                        h.auctionStatus(),
+                                        h.userState()
+                                ))
+                                .toList();
 
-                masterData.setAll(data);
-                historyTable.setItems(masterData);
-                transactionList.setItems(user.getTransactions());
+                Platform.runLater(() -> {
+                    masterData.setAll(historyData);
+                    historyTable.setItems(masterData);
 
-                loadingIndicator.setVisible(false);
-                loadingIndicator.setManaged(false);
-            });
+                    transactionList.setItems(user.getTransactions());
+                    loadingIndicator.setVisible(false);
+                    loadingIndicator.setManaged(false);
+                });
 
+            } catch (Exception e) {
+                System.err.println("Failed to load history: " + e.getMessage());
+                Platform.runLater(() -> {
+                    loadingIndicator.setVisible(false);
+                    loadingIndicator.setManaged(false);
+                });
+            }
         }).start();
     }
 

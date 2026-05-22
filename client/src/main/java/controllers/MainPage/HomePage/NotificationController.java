@@ -1,5 +1,8 @@
 package controllers.MainPage.HomePage;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.group7.dto.user.NotificationResponse;
 import models.*;
 import models.Common.AuctionAlert;
 import controllers.MainPage.ProfilePage.BaseController;
@@ -15,7 +18,12 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Popup;
+
+import java.net.URI;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.List;
 import javafx.scene.control.ProgressIndicator;
 
@@ -115,43 +123,54 @@ public class NotificationController extends BaseController {
     private void loadNotifications() {
         User user = getCurrentUser();
         if (user == null || loaded) return;
-
         setLoading(true);
 
         Task<ObservableList<String>> task = new Task<>() {
             @Override
-            protected ObservableList<String> call() {
-                ObservableList<String> displayLines = FXCollections.observableArrayList();
-                var globalAuctions = AuctionManager.getInstance().getAllSessions();
+            protected ObservableList<String> call() throws Exception {
+                HttpClient client = HttpClient.newHttpClient();
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create("http://localhost:8080/api/users/"
+                                + user.getId() + "/notifications"))
+                        .GET().build();
 
-                List<AuctionAlert> rawAlerts = user.getNotifications(globalAuctions);
+                HttpResponse<String> response =
+                        client.send(request, HttpResponse.BodyHandlers.ofString());
 
-                for (AuctionAlert alert : rawAlerts) {
+                ObjectMapper mapper = new ObjectMapper();
+                List<NotificationResponse> alerts = mapper.readValue(
+                        response.body(), new TypeReference<>() {}
+                );
+
+                ObservableList<String> lines = FXCollections.observableArrayList();
+                for (NotificationResponse alert : alerts) {
                     String line = switch (alert.type()) {
-                        case LEADING             -> "🔥 LEADING | " + alert.itemName() + " | " + alert.currentPrice();
-                        case OUTBID              -> "⚠️ OUTBID | " + alert.itemName() + " | " + alert.currentPrice();
-                        case WON                 -> "🏆 WON | " + alert.itemName() + " | " + alert.currentPrice();
-                        case LOST                -> "❌ LOST | " + alert.itemName() + " | " + alert.currentPrice();
-                        case MY_AUCTION_RUNNING  -> "📢 MY AUCTION RUNNING | " + alert.itemName() + " | " + alert.currentPrice();
-                        case MY_AUCTION_FINISHED -> "🏁 MY AUCTION FINISHED | " + alert.itemName() + " | Closed at: " + alert.currentPrice();
+                        case "LEADING"             -> "🔥 LEADING | " + alert.itemName() + " | " + alert.currentPrice();
+                        case "OUTBID"              -> "⚠️ OUTBID | " + alert.itemName() + " | " + alert.currentPrice();
+                        case "WON"                 -> "🏆 WON | " + alert.itemName() + " | " + alert.currentPrice();
+                        case "LOST"                -> "❌ LOST | " + alert.itemName() + " | " + alert.currentPrice();
+                        case "MY_AUCTION_RUNNING"  -> "📢 RUNNING | " + alert.itemName()+ " | " + alert.currentPrice();
+                        case "MY_AUCTION_FINISHED" -> "🏁 FINISHED | " + alert.itemName() + " | Closed at: " + alert.currentPrice();
+                        default -> alert.type() + " | " + alert.itemName();
                     };
-                    displayLines.add(line);
+                    lines.add(line);
                 }
-                return displayLines;
+                return lines;
             }
         };
 
-        task.setOnSucceeded(event -> {
+        task.setOnSucceeded(e -> {
             cachedNotifications.setAll(task.getValue());
             loaded = true;
             updateNotificationCount();
-
+            setLoading(false);
+        });
+        task.setOnFailed(e -> {
+            System.err.println("Failed to load notifications: " + task.getException().getMessage());
             setLoading(false);
         });
 
-        Thread thread = new Thread(task);
-        thread.setDaemon(true);
-        thread.start();
+        new Thread(task).start();
     }
 
     private void updateNotificationCount() {
