@@ -2,7 +2,7 @@ package models.Common;
 
 import models.Auction;
 import models.Item;
-import models.User;
+import models.Member;
 
 import java.time.LocalDateTime;
 
@@ -14,9 +14,9 @@ public class ParticipationDetails {
     private final Price finalPrice;
     private final LocalDateTime startTime;
     private final LocalDateTime endTime;
-    private final User leadingBidder;
+    private final Member leadingBidder;
 
-    public ParticipationDetails(Auction auction, User accountUser) {
+    public ParticipationDetails(Auction auction, Member accountUser) {
         this.idForDetails = auction.getId();
         this.overallStatus = auction.getStatus();
         this.itemSold = auction.getItem();
@@ -27,9 +27,9 @@ public class ParticipationDetails {
         this.leadingBidder = auction.getWinner();
     }
 
-    public boolean isUserWinning(User currentUser) {
+    public boolean isUserWinning(Member currentUser) {
         return leadingBidder != null &&
-                ((User) leadingBidder).getId() == currentUser.getId();
+                leadingBidder.getId() == currentUser.getId();
     }
 
     public int getIdForDetails() { return idForDetails; }
@@ -44,7 +44,7 @@ public class ParticipationDetails {
 
     public LocalDateTime getEndTime() { return endTime; }
 
-    public User getLeadingBidder() { return leadingBidder; }
+    public Member getLeadingBidder() { return leadingBidder; }
 
     public Auction.AuctionStatus getOverallStatus() { return overallStatus; }
 }
