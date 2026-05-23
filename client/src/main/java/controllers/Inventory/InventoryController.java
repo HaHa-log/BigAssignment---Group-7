@@ -11,7 +11,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.FlowPane;
 
 import java.io.IOException;
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class InventoryController {
-    @FXML private VBox itemList;
+    @FXML private FlowPane itemList;
     @FXML private ComboBox<String> statusFilter;
     @FXML private ProgressIndicator loadingSpinner;
 

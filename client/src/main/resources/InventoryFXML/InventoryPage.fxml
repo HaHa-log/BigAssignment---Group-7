@@ -4,24 +4,36 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="10" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.Inventory.InventoryController">
+<VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="15"
+      stylesheets="@itemcard.css"
+      xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.Inventory.InventoryController">
     <children>
-        <Label alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="label-title" style="-fx-text-fill: #c2d7ff;" text="INVENTORY">
+        <Label alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="inventory-title" style="-fx-font-size: 24px; -fx-font-weight: bold;" text="INVENTORY">
             <VBox.margin>
-                <Insets bottom="10.0" top="20.0" />
+                <Insets bottom="5.0" top="15.0" />
             </VBox.margin>
         </Label>
 
-        <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 0 10 0 10;">
+        <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 0 20 0 20;">
             <children>
-                <Label text="Filter Status:" style="-fx-text-fill: #c2d7ff;" />
-                <ComboBox fx:id="statusFilter" prefWidth="150.0" />
+                <Label text="Filter Status:" styleClass="filter-label" />
+                <ComboBox fx:id="statusFilter" prefWidth="150.0" style="-fx-background-radius: 5;" />
             </children>
         </HBox>
 
-        <StackPane VBox.vgrow="ALWAYS">
+        <StackPane VBox.vgrow="ALWAYS" style="-fx-padding: 0 20 10 20;">
             <children>
-                <VBox fx:id="itemList" alignment="TOP_CENTER" spacing="10" style="-fx-padding: 10;" VBox.vgrow="ALWAYS" />
+                <ScrollPane fitToWidth="true"
+                            style="-fx-background-color: transparent; -fx-background-insets: 0; -fx-padding: 0; -fx-hbar-policy: NEVER; -fx-vbar-policy: NEVER;">
+                    <content>
+                        <FlowPane fx:id="itemList" hgap="15.0" vgap="15.0" prefWrapLength="600.0" style="-fx-background-color: transparent;">
+                            <padding>
+                                <Insets bottom="10.0" top="10.0" />
+                            </padding>
+                        </FlowPane>
+                    </content>
+                </ScrollPane>
                 <ProgressIndicator fx:id="loadingSpinner" maxHeight="50.0" maxWidth="50.0" visible="false" />
             </children>
         </StackPane>
