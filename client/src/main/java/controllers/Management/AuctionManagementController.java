@@ -4,6 +4,7 @@ import models.Admin;
 import models.Auction;
 import models.AuctionManager;
 import models.SessionManager;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
@@ -37,8 +38,10 @@ public class AuctionManagementController extends ManagementController<Auction> {
     @Override
     protected void configureColumns() {
         auctionsId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        ownerId.setCellValueFactory(new PropertyValueFactory<>("ownerId"));
-        itemId.setCellValueFactory(new PropertyValueFactory<>("itemId"));
+
+        ownerId.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getOwner().getId()));
+        itemId.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getItem().getId()));
+
         status.setCellValueFactory(new PropertyValueFactory<>("status"));
         startingPrice.setCellValueFactory(new PropertyValueFactory<>("startingPrice"));
         currentPrice.setCellValueFactory(new PropertyValueFactory<>("currentPrice"));
@@ -62,7 +65,6 @@ public class AuctionManagementController extends ManagementController<Auction> {
         Callback<TableColumn<Auction, Void>, TableCell<Auction, Void>> cellFactory = new Callback<>() {
             @Override
             public TableCell<Auction, Void> call(final TableColumn<Auction, Void> param) {
-                //create button
                 return new TableCell<>() {
                     private final Button button = new Button("Cancel");
 
@@ -80,7 +82,6 @@ public class AuctionManagementController extends ManagementController<Auction> {
                             setGraphic(null);
                         } else {
                             Auction auction = getTableView().getItems().get(getIndex());
-
                             Auction.AuctionStatus currentStatus = auction.getRawStatus();
 
                             boolean shouldDisable = currentStatus == Auction.AuctionStatus.CANCELED ||
