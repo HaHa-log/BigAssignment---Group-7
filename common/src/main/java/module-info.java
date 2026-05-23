@@ -11,6 +11,5 @@ module common {
     opens com.group7.dto.item to com.fasterxml.jackson.databind;
     opens com.group7.dto.bid to com.fasterxml.jackson.databind;
 
-    // This requires the Jackson dependency from your pom.xml
     requires com.fasterxml.jackson.databind;
 }

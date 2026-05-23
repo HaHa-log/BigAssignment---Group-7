@@ -171,12 +171,14 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
     }
 
     public boolean isHighestBidder(Auction auction) {
-        return auction.getWinner() != null && auction.getWinner().equals(this);
+        return auction != null
+                && auction.getWinner() != null
+                && this.getId() == auction.getWinner().getId();
     }
 
     public boolean isWinner(Auction auction) {
-        return (auction.getStatus() == Auction.AuctionStatus.FINISHED || auction.getStatus() == Auction.AuctionStatus.PAID)
-                && isHighestBidder(auction);
+        return isHighestBidder(auction)
+                && (auction.getStatus() == Auction.AuctionStatus.FINISHED || auction.getStatus() == Auction.AuctionStatus.PAID);
     }
 
     public boolean isOwner(Auction auction) {

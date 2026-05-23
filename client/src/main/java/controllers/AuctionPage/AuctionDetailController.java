@@ -99,6 +99,7 @@ public class AuctionDetailController {
         setItemImage();
         getTableData(auction);
         updateBidChart();
+
         if (currentUser != null && currentUser.isWinner(auction)
                 && auction.getRawStatus() == Auction.AuctionStatus.FINISHED){
             setupConfirmPane();

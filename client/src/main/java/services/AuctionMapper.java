@@ -36,6 +36,23 @@ public final class AuctionMapper {
         item.setId(response.getItemId());
         item.setOwnerId(response.getOwnerId());
 
+        // --- MAP THE WINNER DIRECTLY FROM THE DTO ---
+        Member winner = null;
+        if (response.getWinnerId() != null && response.getWinnerId() > 0) {
+            String[] winnerNameParts = splitName(response.getWinnerName());
+            winner = new Member(
+                    winnerNameParts[0],
+                    winnerNameParts[1],
+                    "winner-" + response.getWinnerId() + "@server.local",
+                    "0000000000",
+                    SESSION_PASSWORD_PLACEHOLDER,
+                    0,
+                    null
+            );
+            winner.setId(response.getWinnerId());
+        }
+        // --------------------------------------------
+
         Auction auction = new Auction(
                 owner,
                 item,
@@ -44,7 +61,7 @@ public final class AuctionMapper {
                 response.getEndingTime(),
                 response.getStartingPrice(),
                 response.getCurrentPrice(),
-                null
+                winner
         );
         auction.setAuctionId(response.getId());
         return auction;
