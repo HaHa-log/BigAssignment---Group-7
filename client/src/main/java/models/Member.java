@@ -1,17 +1,18 @@
 package models;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class Member extends User implements Bidder, Seller, AuctionObserver {
 
-    public Member(String firstName, String lastName, String email, String phoneNumber, String password, double balance,String avatarPath) {
-        super(firstName, lastName, email, phoneNumber, password, balance,avatarPath);
+    public Member(String firstName, String lastName, String email, String phoneNumber, String password, double balance, String avatarPath) {
+        super(firstName, lastName, email, phoneNumber, password, balance, avatarPath);
     }
 
     public Member(String firstName, String lastName, String email, String phoneNumber, String password, double balance, boolean isAdmin, boolean isBlocked, LocalDateTime blockedUntil, String avatarPath) {
-
-        super(firstName, lastName, email, phoneNumber, password, balance, isAdmin, isBlocked, blockedUntil,avatarPath);
+        super(firstName, lastName, email, phoneNumber, password, balance, isAdmin, isBlocked, blockedUntil, avatarPath);
     }
+
     @Override
     public boolean isAdmin() {
         return false;
@@ -29,7 +30,7 @@ public class Member extends User implements Bidder, Seller, AuctionObserver {
             return;
         }
 
-        String bidderName = ((User) bidder).getFullName();
+        String bidderName = ((Member) bidder).getFullName();
         System.out.println("[Notification]: "
                 + bidderName + " has bidded " + amount
                 + " in auction of ID " + auction.getId()
@@ -46,10 +47,10 @@ public class Member extends User implements Bidder, Seller, AuctionObserver {
     public void removeItem(Item item) {
         System.out.println("[System]: Item " + item.getName() + " removed from " + this.getFullName() + "'s inventory.");
     }
+
     public List<Item> getInventory() {
         return List.of();
     }
-
 
     public List<Transaction> getMyTransactions() {
         return List.of();

@@ -69,7 +69,7 @@ public class AuctionManager {
 
         moveToCompleted(session);
 
-        User winner = session.getWinner();
+        Member winner = session.getWinner();
         if (winner == null) {
             session.getItem().setStatus(Item.Status.AVAILABLE);
             return;
@@ -140,9 +140,9 @@ public class AuctionManager {
         }
     }
 
-    private void createPendingTransaction(Auction session, User winner) {
+    private void createPendingTransaction(Auction session, Member winner) {
         double finalPrice = session.getCurrentPrice();
-        Transaction transaction = new Transaction(session, (Member) winner, session.getOwner(), finalPrice);
+        Transaction transaction = new Transaction(session, winner, session.getOwner(), finalPrice);
         transaction.setTransactionId(nextTransactionId++);
         transactions.add(transaction);
     }

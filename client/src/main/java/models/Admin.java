@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Admin extends Member {
-    public Admin(String firstName, String lastName, String email, String phoneNumber, String password, double balance,String avatarPath) {
-        super(firstName, lastName, email, phoneNumber,password, balance,avatarPath);
+    public Admin(String firstName, String lastName, String email, String phoneNumber, String password, double balance, String avatarPath) {
+        super(firstName, lastName, email, phoneNumber, password, balance, avatarPath);
     }
 
-    public Admin(String firstName, String lastName, String email, String phoneNumber, String password, double balance, boolean isAdmin, boolean isBlocked, LocalDateTime blockedUntil,String avatarPath) {
-        super(firstName, lastName, email, phoneNumber, password, balance, isAdmin, isBlocked, blockedUntil,avatarPath);
+    public Admin(String firstName, String lastName, String email, String phoneNumber, String password, double balance, boolean isAdmin, boolean isBlocked, LocalDateTime blockedUntil, String avatarPath) {
+        super(firstName, lastName, email, phoneNumber, password, balance, isAdmin, isBlocked, blockedUntil, avatarPath);
     }
 
     @Override
@@ -23,40 +23,37 @@ public class Admin extends Member {
         return "Admin";
     }
 
-    //requires for block/active toggle button
-    //the button only changes if the value in the actual object changes
-    public void blockUser(User user, LocalDateTime until) {
-
-        if (user == null) {
-            System.out.println("[Error]: User not found");
+    public void blockUser(Member member, LocalDateTime until) {
+        if (member == null) {
+            System.out.println("[Error]: Member not found");
             return;
         }
 
-        user.setBlocked(until);
+        member.setBlocked(until);
 
         System.out.println(
-                "[Admin]: User with ID "
-                        + user.getId()
+                "[Admin]: Member with ID "
+                        + member.getId()
                         + " blocked until "
                         + until
         );
     }
 
-    public void unblockUser(User user) {
-
-        if (user == null) {
-            System.out.println("[Error]: User not found");
+    public void unblockUser(Member member) {
+        if (member == null) {
+            System.out.println("[Error]: Member not found");
             return;
         }
 
-        user.isUnblocked();
+        member.isUnblocked();
 
         System.out.println(
-                "[Admin]: User with ID "
-                        + user.getId()
+                "[Admin]: Member with ID "
+                        + member.getId()
                         + " unblocked."
         );
     }
+
     public boolean cancelAuction(int auctionId) {
         AuctionManager manager = AuctionManager.getInstance();
         boolean success = manager.cancelAuction(auctionId);

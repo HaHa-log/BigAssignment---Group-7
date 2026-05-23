@@ -62,7 +62,7 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
     public void setAvatarPath(String avatarPath) { this.avatarPath = avatarPath; }
 
     //public void update() {
-        //userDatabase.update(this);
+    //userDatabase.update(this);
     //}
 
     public void setEmail(String email) {
