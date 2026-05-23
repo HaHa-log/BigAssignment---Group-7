@@ -276,9 +276,8 @@ public class Auction extends Entity implements Serializable {
                     double winningPrice = currentPrice;
                     boolean success = winnerUser.spendFrozenMoney(winningPrice);
 
-                    if (success) {winnerUser.addTransaction("💸 PAYMENT | -" + winningPrice);
+                    if (success) {
                         owner.depositMoney(winningPrice);
-                        owner.addTransaction("💰 SOLD | +" + winningPrice);
 
                         if (winnerUser.getId() > 0) {usersDb().update(winnerUser);}
                         if (owner.getId() > 0) {usersDb().update(owner);}
@@ -327,9 +326,9 @@ public class Auction extends Entity implements Serializable {
         if (previousSelfBid > 0) {
             boolean unfrozen = user.unfreezeMoney(previousSelfBid);
 
-            if (unfrozen) {user.addTransaction("🔓 UNFREEZE | +" + previousSelfBid + " | Balance: " + String.format("%.2f", user.getBalance()));}
+            if (unfrozen) {
 
-            System.out.println("[System]: Unfrozen old self-bid of " + previousSelfBid + " for " + user.getFullName());
+            System.out.println("[System]: Unfrozen old self-bid of " + previousSelfBid + " for " + user.getFullName());}
         }
 
         if (newBidAmount < 0) {
@@ -342,7 +341,6 @@ public class Auction extends Entity implements Serializable {
             }
             throw new IllegalArgumentException("[Error]: Insufficient balance for bidding.");
         }
-        user.addTransaction("🔒 FREEZE | -" + newBidAmount + " | Frozen: " + String.format("%.2f", user.getFrozenBalance()));
     }
 
     private void releasePreviousWinnerHold(Bidder previousWinner, User currentBidder) {
@@ -353,7 +351,7 @@ public class Auction extends Entity implements Serializable {
         double oldBidAmount = oldUser.getHighestBid(this);
         if (oldBidAmount > 0) {
             boolean success = oldUser.unfreezeMoney(oldBidAmount);
-            if (success) {oldUser.addTransaction("🔓 UNFREEZE | +" + oldBidAmount + " | Balance: " + String.format("%.2f", oldUser.getBalance()));}
+            if (success) {}
             if (oldUser.getId() > 0) {
                 usersDb().update(oldUser);
             }
