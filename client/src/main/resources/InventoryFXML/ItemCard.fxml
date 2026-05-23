@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<HBox prefWidth="320.0" maxWidth="350.0" spacing="15.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.Inventory.ItemCardController" stylesheets="@itemcard.css" styleClass="card">
+<HBox prefWidth="300.0" maxWidth="300.0" spacing="15.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.Inventory.ItemCardController" stylesheets="@itemcard.css" styleClass="card">
    <children>
       <StackPane style="-fx-background-color: #f1f2f6; -fx-background-radius: 6;" minWidth="100.0" minHeight="100.0">
          <children>
@@ -23,7 +23,7 @@
             </Label>
             <Label fx:id="statusLabel" text="STATUS: SOLD" styleClass="status-label"/>
             <Label fx:id="startingPriceLabel" text="Starting price: $0.00" />
-            <Label fx:id="currentPriceLabel" text="Current price: $0.00" style="-fx-font-weight: bold;" />
+            <Label fx:id="currentPriceLabel" text="Current price: $0.00" />
          </children>
       </VBox>
    </children>

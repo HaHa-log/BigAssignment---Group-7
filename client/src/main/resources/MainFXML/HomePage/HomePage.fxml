@@ -29,7 +29,7 @@
                               </ScrollPane>
                           </children>
                       </StackPane>
-                   <StackPane fx:id="itemContainer" styleClass="homepage" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="260.0" onMouseClicked="#toInventory" prefWidth="320.0" style="-fx-background-color: #37427c; -fx-cursor: hand;" HBox.hgrow="ALWAYS">                     <children>
+                   <StackPane fx:id="itemContainer" styleClass="homepage" maxHeight="1.7976931348623157E308" maxWidth="350.0" minWidth="300.0" onMouseClicked="#toInventory" prefWidth="320.0" style="-fx-background-color: #37427c; -fx-cursor: hand;" HBox.hgrow="ALWAYS">                     <children>
                         <ScrollPane fitToWidth="true" hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" onMouseClicked="#toInventory" pannable="true" style="-fx-background: transparent; -fx-background-color: transparent;" stylesheets="@/style.css" vbarPolicy="AS_NEEDED">
                            <content>
                               <fx:include fx:id="inventory" source="../../InventoryFXML/InventoryPage.fxml" />
