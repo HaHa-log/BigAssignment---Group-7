@@ -1,7 +1,6 @@
 package models;
 
 import models.Common.Price;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,14 +28,6 @@ public class Bid extends Entity implements Serializable {
         this.bidTime = bidTime;
     }
 
-    public void saveBid(Bid bid) {
-        bidDb.save(bid);
-    }
-
-    public List<Bid> getBidsByAuctionId(int auctionId) {
-        return bidDb.getByAuctionId(auctionId);
-    }
-
     public Auction getAuction() {
         return auction;
     }
@@ -51,5 +42,13 @@ public class Bid extends Entity implements Serializable {
 
     public LocalDateTime getBidTime() {
         return bidTime;
+    }
+
+    public void saveBid(Bid bid) {
+        bidDb.save(bid);
+    }
+
+    public List<Bid> getBidsByAuctionId(int auctionId) {
+        return bidDb.getByAuctionId(auctionId);
     }
 }

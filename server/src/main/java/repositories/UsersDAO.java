@@ -2,13 +2,11 @@ package repositories;
 
 import models.Admin;
 import models.Member;
-import models.User;
-
 import java.util.List;
 
-public interface UsersDAO extends DAO<User> {
+public interface UsersDAO extends DAO<Member> {
 
-    User getByEmail(String email);
+    Member getByEmail(String email);
 
     List<Member> getAllMember();
 

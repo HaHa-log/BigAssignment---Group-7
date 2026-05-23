@@ -32,9 +32,9 @@ public class TransactionDAOImpl implements TransactionDAO {
             st.setInt(3, transaction.getSeller().getId());
             st.setDouble(4, transaction.getFinalAmount());
             st.setTimestamp(5, transaction.getPaidAt() != null
-                    ? Timestamp.valueOf(transaction.getPaidAt()) : null);;
+                    ? Timestamp.valueOf(transaction.getPaidAt()) : null);
             st.setTimestamp(6, transaction.getCompletedAt() != null
-                    ? Timestamp.valueOf(transaction.getCompletedAt()) : null);;
+                    ? Timestamp.valueOf(transaction.getCompletedAt()) : null);
             st.setString(7, transaction.getStatus().name());
             st.setTimestamp(8, transaction.getExpiryTime() != null ? Timestamp.valueOf(transaction.getExpiryTime()) : null);
 
@@ -86,9 +86,9 @@ public class TransactionDAOImpl implements TransactionDAO {
             st.setInt(3, transaction.getSeller().getId());
             st.setDouble(4, transaction.getFinalAmount());
             st.setTimestamp(5, transaction.getPaidAt() != null
-                    ? Timestamp.valueOf(transaction.getPaidAt()) : null);;
+                    ? Timestamp.valueOf(transaction.getPaidAt()) : null);
             st.setTimestamp(6, transaction.getCompletedAt() != null
-                    ? Timestamp.valueOf(transaction.getCompletedAt()) : null);;
+                    ? Timestamp.valueOf(transaction.getCompletedAt()) : null);
             st.setString(7, transaction.getStatus().name());
             st.setTimestamp(8, transaction.getExpiryTime() != null ? Timestamp.valueOf(transaction.getExpiryTime()) : null);
             st.setInt(9, transaction.getTransactionId());
@@ -109,8 +109,7 @@ public class TransactionDAOImpl implements TransactionDAO {
             st.setInt(1, id);
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()){
-                    Transaction transaction = instantiateTransaction(rs);
-                    return transaction;
+                    return instantiateTransaction(rs);
                 }
             }
             return null;
@@ -187,17 +186,14 @@ public class TransactionDAOImpl implements TransactionDAO {
     private Transaction instantiateTransaction(ResultSet rs) throws SQLException {
         Transaction obj = new Transaction(
                 auctionsDAO.getById(rs.getInt("auction_id")),
-                (Member) userDAO.getById(rs.getInt("buyer_id")),
-                (Member) userDAO.getById(rs.getInt("seller_id")),
+                userDAO.getById(rs.getInt("buyer_id")),
+                userDAO.getById(rs.getInt("seller_id")),
                 rs.getDouble("finalAmount"),
                 rs.getObject("paidAt", LocalDateTime.class),
                 rs.getObject("completedAt", LocalDateTime.class),
-                Transaction.TransactionStatus.valueOf(rs.getString("status"))
+                Transaction.TransactionStatus.valueOf(rs.getString("status")),
+                rs.getTimestamp("expiry_time") != null ? rs.getTimestamp("expiry_time").toLocalDateTime() : null
         );
-
-        if (rs.getTimestamp("expiry_time") != null) {
-            obj.setExpiryTime(rs.getTimestamp("expiry_time").toLocalDateTime());
-        }
 
         obj.setTransactionId(rs.getInt("transaction_id"));
         return obj;

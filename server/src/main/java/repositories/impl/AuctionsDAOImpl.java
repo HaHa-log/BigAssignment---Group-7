@@ -95,8 +95,9 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                     ? Timestamp.valueOf(auction.getStartingTime()) : null);
             st.setTimestamp(7, auction.getEndingTime() != null
                     ? Timestamp.valueOf(auction.getEndingTime()) : null);
+
             st.setObject(8, auction.getWinner() != null
-                    ? ((User) auction.getWinner()).getId() : null);
+                    ? ((Member) auction.getWinner()).getId() : null);
             st.setInt(9, auction.getId());
 
             st.executeUpdate();
@@ -108,7 +109,6 @@ public class AuctionsDAOImpl implements AuctionsDAO {
 
     @Override
     public Auction getById(int id) {
-        // FIX: Added explicit space before WHERE to guarantee safe execution
         String sql = getAuctionBaseSQL() + " WHERE a.auctions_id = ?";
 
         try (Connection conn = DB.getConnection();
@@ -128,7 +128,6 @@ public class AuctionsDAOImpl implements AuctionsDAO {
 
     @Override
     public List<Auction> getByStatus(String status) {
-        // FIX: Added explicit space before WHERE
         String sql = getAuctionBaseSQL() + " WHERE a.status = ? ";
 
         try (Connection conn = DB.getConnection();
@@ -168,7 +167,6 @@ public class AuctionsDAOImpl implements AuctionsDAO {
 
     @Override
     public List<Auction> getActiveAuctions() {
-        // FIX: Added explicit space before WHERE
         String sql = getAuctionBaseSQL() + " WHERE a.status = ? OR a.status = ?";
 
         try (Connection conn = DB.getConnection();
@@ -232,11 +230,10 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 + "LEFT JOIN users u_winner ON a.winner_id = u_winner.users_id";
     }
 
-    // FIX: Dynamically instantiates Admin or Member based on the owner_isAdmin flag
-    private User instantiateOwner(ResultSet rs) throws SQLException {
+    private Member instantiateOwner(ResultSet rs) throws SQLException {
         boolean isAdmin = rs.getBoolean("owner_isAdmin");
 
-        User obj = isAdmin ? new Admin(
+        Member obj = isAdmin ? new Admin(
                 rs.getString("owner_firstName"),
                 rs.getString("owner_lastName"),
                 rs.getString("owner_email"),
@@ -265,8 +262,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
     }
 
     private Item instantiateItem(ResultSet rs) throws SQLException {
-        // FIX: Now calls the polymorphic owner lookup method
-        User owner = instantiateOwner(rs);
+        Member owner = instantiateOwner(rs);
         Item obj = new Item(
                 rs.getString("item_name"),
                 rs.getDouble("item_startingPrice"),
@@ -275,18 +271,17 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 rs.getString("item_imagePath")
         );
         obj.setId(rs.getInt("items_id"));
-        obj.setOwner((Member) owner); // Cast is safe since Admin extends Member
+        obj.setOwner(owner);
         return obj;
     }
 
-    // FIX: Dynamically instantiates Admin or Member based on the winner_isAdmin flag
     private Bidder instantiateWinner(ResultSet rs) throws SQLException {
         if (rs.getObject("winner_id") == null || rs.getInt("winner_id") == 0) {
             return null;
         }
 
         boolean isAdmin = rs.getBoolean("winner_isAdmin");
-        User obj = isAdmin ? new Admin(
+        Member obj = isAdmin ? new Admin(
                 rs.getString("winner_firstName"),
                 rs.getString("winner_lastName"),
                 rs.getString("winner_email"),

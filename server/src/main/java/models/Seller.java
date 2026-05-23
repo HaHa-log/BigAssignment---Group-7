@@ -2,7 +2,6 @@ package models;
 
 import models.Exceptions.AuthenticationException;
 import models.Exceptions.CustomisedException;
-
 import java.time.LocalDateTime;
 
 public interface Seller {
@@ -28,6 +27,8 @@ public interface Seller {
                 AuctionManager.getInstance().createAuction(owner, item, createdAt, terminatedAt);
                 System.out.println("[System]: Auction created successfully for item: " + item.getName());
             } catch (Exception e) {
-                throw new CustomisedException("System error: " + e.getMessage());            }
-    }   }
+                throw new CustomisedException("System error: " + e.getMessage());
+            }
+        }
+    }
 }

@@ -2,8 +2,7 @@ package models.Common;
 
 import models.Auction;
 import models.Item;
-import models.User;
-
+import models.Member;
 import java.time.LocalDateTime;
 
 public class ParticipationDetails {
@@ -14,9 +13,9 @@ public class ParticipationDetails {
     private final Price finalPrice;
     private final LocalDateTime startTime;
     private final LocalDateTime endTime;
-    private final User leadingBidder;
+    private final Member leadingBidder;
 
-    public ParticipationDetails(Auction auction, User accountUser) {
+    public ParticipationDetails(Auction auction, Member accountUser) {
         this.idForDetails = auction.getId();
         this.overallStatus = auction.getStatus();
         this.itemSold = auction.getItem();
@@ -27,24 +26,39 @@ public class ParticipationDetails {
         this.leadingBidder = auction.getWinner();
     }
 
-    public boolean isUserWinning(User currentUser) {
-        return leadingBidder != null &&
-                ((User) leadingBidder).getId() == currentUser.getId();
+    public int getIdForDetails() {
+        return idForDetails;
     }
 
-    public int getIdForDetails() { return idForDetails; }
+    public Auction.AuctionStatus getOverallStatus() {
+        return overallStatus;
+    }
 
-    public String getItemSold() { return itemSold.getName(); }
+    public String getItemSold() {
+        return itemSold.getName();
+    }
 
-    public double getInitialPrice() { return initialPrice.getPrice(); }
+    public double getInitialPrice() {
+        return initialPrice.getPrice();
+    }
 
-    public double getFinalPrice() { return finalPrice.getPrice(); }
+    public double getFinalPrice() {
+        return finalPrice.getPrice();
+    }
 
-    public LocalDateTime getStartTime() { return startTime; }
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
 
-    public LocalDateTime getEndTime() { return endTime; }
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
 
-    public User getLeadingBidder() { return leadingBidder; }
+    public Member getLeadingBidder() {
+        return leadingBidder;
+    }
 
-    public Auction.AuctionStatus getOverallStatus() { return overallStatus; }
+    public boolean isUserWinning(Member currentUser) {
+        return leadingBidder != null && leadingBidder.getId() == currentUser.getId();
+    }
 }

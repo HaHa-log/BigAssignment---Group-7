@@ -1,10 +1,15 @@
 package models;
 
 import models.Exceptions.IllegalTransactionException;
-
 import java.time.LocalDateTime;
 
 public class Transaction {
+    public enum TransactionStatus {
+        PENDING,
+        COMPLETED,
+        REFUNDED
+    }
+
     private int transactionId;
     private final Auction auction;
     private final Member buyer;
@@ -14,12 +19,6 @@ public class Transaction {
     private LocalDateTime completedAt;
     private TransactionStatus status;
     private LocalDateTime expiryTime;
-
-    public enum TransactionStatus {
-        PENDING,
-        COMPLETED,
-        REFUNDED
-    }
 
     public Transaction(Auction auction, Member buyer, Member seller, double finalAmount) {
         this.auction = auction;
@@ -32,8 +31,7 @@ public class Transaction {
         this.expiryTime = LocalDateTime.now().plusMinutes(30);
     }
 
-
-    public Transaction(Auction auction, Member buyer, Member seller, double finalAmount, LocalDateTime paidAt, LocalDateTime completedAt, TransactionStatus status) {
+    public Transaction(Auction auction, Member buyer, Member seller, double finalAmount, LocalDateTime paidAt, LocalDateTime completedAt, TransactionStatus status, LocalDateTime expiryTime) {
         this.auction = auction;
         this.buyer = buyer;
         this.seller = seller;
@@ -42,6 +40,54 @@ public class Transaction {
         this.completedAt = completedAt;
         this.status = status;
         this.expiryTime = expiryTime;
+    }
+
+    public int getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(int id) {
+        this.transactionId = id;
+    }
+
+    public Auction getAuction() {
+        return auction;
+    }
+
+    public Member getBuyer() {
+        return buyer;
+    }
+
+    public Member getSeller() {
+        return seller;
+    }
+
+    public double getFinalAmount() {
+        return finalAmount;
+    }
+
+    public LocalDateTime getPaidAt() {
+        return paidAt;
+    }
+
+    public LocalDateTime getCompletedAt() {
+        return completedAt;
+    }
+
+    public TransactionStatus getStatus() {
+        return status;
+    }
+
+    public LocalDateTime getExpiryTime() {
+        return expiryTime;
+    }
+
+    public void setExpiryTime(LocalDateTime time) {
+        this.expiryTime = time;
+    }
+
+    public boolean isExpired() {
+        return status == TransactionStatus.PENDING && LocalDateTime.now().isAfter(expiryTime);
     }
 
     public void markCompleted() throws IllegalTransactionException {
@@ -56,9 +102,7 @@ public class Transaction {
         if (buyer.spendFrozenMoney(finalAmount)) {
             try {
                 seller.depositMoney(finalAmount);
-
                 buyer.addItem(auction.getItem());
-
                 this.status = TransactionStatus.COMPLETED;
                 this.completedAt = LocalDateTime.now();
                 System.out.println("[System]: Transaction completed! " + buyer.getFullName() + " has made a payment of " + finalAmount);
@@ -66,7 +110,6 @@ public class Transaction {
                 buyer.unfreezeMoney(finalAmount);
                 throw new IllegalTransactionException("[Error]: Failure to transfer payment to seller. Refund issued to buyer");
             }
-
         } else {
             throw new IllegalTransactionException("[System]: Buyer does not have enough balance to complete the payment");
         }
@@ -80,53 +123,16 @@ public class Transaction {
         if (seller.withdrawMoney(finalAmount)) {
             try {
                 buyer.depositMoney(finalAmount);
-
                 seller.addItem(auction.getItem());
-
                 this.status = TransactionStatus.REFUNDED;
                 System.out.println("[Transaction]: Refund successful for Auction ID " + auction.getId());
             } catch (Exception e) {
                 seller.depositMoney(finalAmount);
                 throw new IllegalTransactionException("[Error]: Failure to refund during transfer. Seller has been reimbursed.");
             }
-
         } else {
             throw new IllegalTransactionException("[Error]: Seller does not have enough balance to issue a refund");
         }
-    }
-
-    public void setTransactionId(int id) {
-        this.transactionId = id;
-    }
-
-    public int getTransactionId() {
-        return transactionId;
-    }
-
-    public TransactionStatus getStatus() { return status; }
-
-    public double getFinalAmount() { return finalAmount; }
-
-    public Member getBuyer() { return buyer; }
-
-    public Member getSeller() { return seller; }
-
-    public Auction getAuction() { return auction; }
-
-    public LocalDateTime getPaidAt() { return paidAt; }
-
-    public LocalDateTime getCompletedAt() { return completedAt; }
-
-    public void setExpiryTime(LocalDateTime time) {
-        this.expiryTime = time;
-    }
-
-    public LocalDateTime getExpiryTime() {
-        return expiryTime;
-    }
-
-    public boolean isExpired() {
-        return status == TransactionStatus.PENDING && LocalDateTime.now().isAfter(expiryTime);
     }
 
     @Override

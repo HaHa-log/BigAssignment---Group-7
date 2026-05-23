@@ -12,12 +12,10 @@ import repositories.UsersDAO;
 import repositories.impl.DaoFactory;
 
 import java.io.Serializable;
-import java.nio.file.FileStore;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.prefs.Preferences;
 
 public class Auction extends Entity implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -37,7 +35,7 @@ public class Auction extends Entity implements Serializable {
     private int extendCount;
     private List<Bid> bids;
     private transient List<AuctionObserver> observers;
-    private transient List<User> participants;
+    private transient List<Member> participants;
     private transient ReentrantLock lock;
 
     private transient AuctionsDAO auctionsDb;
@@ -51,6 +49,11 @@ public class Auction extends Entity implements Serializable {
 
     public Auction(Member owner, Item item, LocalDateTime startingTime, LocalDateTime endingTime) {
         this(owner, item, AuctionStatus.OPEN, startingTime, endingTime,
+                item.getStartingPrice(), item.getStartingPrice(), null);
+    }
+
+    public Auction(Member owner, Item item, AuctionStatus status, LocalDateTime startingTime, LocalDateTime endingTime) {
+        this(owner, item, status, startingTime, endingTime,
                 item.getStartingPrice(), item.getStartingPrice(), null);
     }
 
@@ -72,94 +75,9 @@ public class Auction extends Entity implements Serializable {
         this.participants = new ArrayList<>();
     }
 
-    public Auction(Member owner, Item item, AuctionStatus status, LocalDateTime startingTime, LocalDateTime endingTime) {
-        this(owner, item, status, startingTime, endingTime,
-                item.getStartingPrice(), item.getStartingPrice(), null);
-    }
-
-    public List<AuctionObserver> getObservers() {
-        return observers();
-    }
-
-    public void addObserver(AuctionObserver observer) {
-        if (observer != null && !observers().contains(observer)) {
-            observers().add(observer);
-            if (observer instanceof User user) {
-                System.out.println("[System]: " + user.getFullName() + " is now viewing this auction");
-            }
-        }
-    }
-
-    public AuctionStatus getStatus() {
-        lock().lock();
-        try {
-            refreshTimedStatus();
-            return status;
-        } finally {
-            lock().unlock();
-        }
-    }
-
-    public String start() {
-        lock().lock();
-        try {
-            if (startingTime != null && LocalDateTime.now().isBefore(startingTime)) {
-                status = AuctionStatus.OPEN;
-                return "[System]: Auction will be available at " + startingTime;
-            }
-
-            transitionTo(AuctionStatus.RUNNING);
-            return "[System]: An auction has been started!";
-        } finally {
-            lock().unlock();
-        }
-    }
-
-    public boolean transitionTo(AuctionStatus nextStatus) {
-        lock().lock();
-        try {
-            if (!isValidTransition(nextStatus)) {
-                System.out.println("[Auction] Cannot change from " + status + " to " + nextStatus);
-                return false;
-            }
-
-            AuctionStatus oldStatus = status;
-            status = nextStatus;
-            System.out.println("[Auction] Status changing from: " + oldStatus + " to " + nextStatus);
-            updateIfPersisted();
-            return true;
-        } finally {
-            lock().unlock();
-        }
-    }
-
-    public boolean placeBid(Bidder bidder, double amount)
-            throws AuctionClosedException, AuthenticationException, InvalidBidException, IllegalArgumentException {
-        lock().lock();
-        try {
-            User user = validateBidder(bidder, amount);
-            Price bidAmount = new Price(amount);
-            Bidder previousWinner = winner;
-            double previousSelfBid = bidder.getHighestBid(this);
-
-            replaceSelfBidHold(user, previousSelfBid, bidAmount.getPrice());
-            releasePreviousWinnerHold(previousWinner, user);
-            applyWinningBid(bidder, bidAmount);
-            persistBid(user, bidAmount);
-            notifyBidPlaced(bidder, amount);
-            processPreviousWinnerAutoBid(previousWinner, bidder);
-            return true;
-        } finally {
-            lock().unlock();
-        }
-    }
-
-    public void setStartingTime(LocalDateTime startingTime) {
-        this.startingTime = startingTime;
-    }
-
-    public void setEndingTime(LocalDateTime endingTime) {
-        this.endingTime = endingTime;
+    @Override
+    public int getId() {
+        return auctionId;
     }
 
     public void setAuctionId(int idOfAuction) {
@@ -169,6 +87,42 @@ public class Auction extends Entity implements Serializable {
         } finally {
             lock().unlock();
         }
+    }
+
+    public Member getOwner() {
+        return owner;
+    }
+
+    public int getOwnerId() {
+        return owner.getId();
+    }
+
+    public Item getItem() {
+        return item;
+    }
+
+    public int getItemId() {
+        return item.getId();
+    }
+
+    public LocalDateTime getStartingTime() {
+        return startingTime;
+    }
+
+    public void setStartingTime(LocalDateTime startingTime) {
+        this.startingTime = startingTime;
+    }
+
+    public LocalDateTime getEndingTime() {
+        return endingTime;
+    }
+
+    public void setEndingTime(LocalDateTime endingTime) {
+        this.endingTime = endingTime;
+    }
+
+    public double getStartingPrice() {
+        return startingPrice;
     }
 
     public void setStartingPrice(double startingPrice) {
@@ -185,10 +139,24 @@ public class Auction extends Entity implements Serializable {
         }
     }
 
+    public double getCurrentPrice() {
+        return currentPrice;
+    }
+
     public void setCurrentPrice(Double currentPrice) {
         lock().lock();
         try {
             this.currentPrice = currentPrice;
+        } finally {
+            lock().unlock();
+        }
+    }
+
+    public AuctionStatus getStatus() {
+        lock().lock();
+        try {
+            refreshTimedStatus();
+            return status;
         } finally {
             lock().unlock();
         }
@@ -202,22 +170,6 @@ public class Auction extends Entity implements Serializable {
         System.out.println("[System]: The auction is now " + this.status);
     }
 
-    public int getId() {
-        return auctionId;
-    }
-
-    public double getStartingPrice() {
-        return startingPrice;
-    }
-
-    public Member getOwner() {
-        return owner;
-    }
-
-    public int getOwnerId() {
-        return owner.getId();
-    }
-
     public List<Bid> getBids() {
         if (getId() > 0) {
             bids = bidsDb().getByAuctionId(getId());
@@ -225,30 +177,14 @@ public class Auction extends Entity implements Serializable {
         return bids;
     }
 
-    public LocalDateTime getEndingTime() {
-        return endingTime;
+    public List<AuctionObserver> getObservers() {
+        return observers();
     }
 
-    public LocalDateTime getStartingTime() {
-        return startingTime;
-    }
-
-    public Item getItem() {
-        return item;
-    }
-
-    public int getItemId() {
-        return item.getId();
-    }
-
-    public double getCurrentPrice() {
-        return currentPrice;
-    }
-
-    public List<User> getParticipants() {
+    public List<Member> getParticipants() {
         participants().clear();
         for (Bid bid : getBids()) {
-            User bidder = bid.getBidder();
+            Member bidder = bid.getBidder();
             if (bidder != null && !participants().contains(bidder)) {
                 participants().add(bidder);
             }
@@ -256,37 +192,95 @@ public class Auction extends Entity implements Serializable {
         return participants();
     }
 
-    public User getWinner() {
-        return winner instanceof User user ? user : null;
+    public Member getWinner() {
+        return winner instanceof Member member ? member : null;
+    }
+
+    public void addObserver(AuctionObserver observer) {
+        if (observer != null && !observers().contains(observer)) {
+            observers().add(observer);
+            if (observer instanceof Member member) {
+                System.out.println("[System]: " + member.getFullName() + " is now viewing this auction");
+            }
+        }
+    }
+
+    public String start() {
+        lock().lock();
+        try {
+            if (startingTime != null && LocalDateTime.now().isBefore(startingTime)) {
+                status = AuctionStatus.OPEN;
+                return "[System]: Auction will be available at " + startingTime;
+            }
+            transitionTo(AuctionStatus.RUNNING);
+            return "[System]: An auction has been started!";
+        } finally {
+            lock().unlock();
+        }
+    }
+
+    public boolean transitionTo(AuctionStatus nextStatus) {
+        lock().lock();
+        try {
+            if (!isValidTransition(nextStatus)) {
+                System.out.println("[Auction] Cannot change from " + status + " to " + nextStatus);
+                return false;
+            }
+            AuctionStatus oldStatus = status;
+            status = nextStatus;
+            System.out.println("[Auction] Status changing from: " + oldStatus + " to " + nextStatus);
+            updateIfPersisted();
+            return true;
+        } finally {
+            lock().unlock();
+        }
+    }
+
+    public boolean placeBid(Bidder bidder, double amount)
+            throws AuctionClosedException, AuthenticationException, InvalidBidException, IllegalArgumentException {
+        lock().lock();
+        try {
+            Member member = validateBidder(bidder, amount);
+            Price bidAmount = new Price(amount);
+            Bidder previousWinner = winner;
+            double previousSelfBid = bidder.getHighestBid(this);
+
+            replaceSelfBidHold(member, previousSelfBid, bidAmount.getPrice());
+            releasePreviousWinnerHold(previousWinner, member);
+            applyWinningBid(bidder, bidAmount);
+            persistBid(member, bidAmount);
+            notifyBidPlaced(bidder, amount);
+            processPreviousWinnerAutoBid(previousWinner, bidder);
+            return true;
+        } finally {
+            lock().unlock();
+        }
     }
 
     private void refreshTimedStatus() {
         LocalDateTime now = LocalDateTime.now();
-
         if (status == AuctionStatus.OPEN && startingTime != null && now.isAfter(startingTime)) {
             start();
         }
-
         if (status == AuctionStatus.RUNNING && endingTime != null && now.isAfter(endingTime)) {
             boolean transitioned = transitionTo(AuctionStatus.FINISHED);
-
             if (transitioned) {
-                if (winner instanceof User winnerUser) {
-
+                if (winner instanceof Member winnerMember) {
                     double winningPrice = currentPrice;
-                    boolean success = winnerUser.spendFrozenMoney(winningPrice);
-
-                    if (success) {winnerUser.addTransaction("💸 PAYMENT | -" + winningPrice);
+                    boolean success = winnerMember.spendFrozenMoney(winningPrice);
+                    if (success) {
+                        winnerMember.addTransaction("💸 PAYMENT | -" + winningPrice);
                         owner.depositMoney(winningPrice);
                         owner.addTransaction("💰 SOLD | +" + winningPrice);
-
-                        if (winnerUser.getId() > 0) {usersDb().update(winnerUser);}
-                        if (owner.getId() > 0) {usersDb().update(owner);}
-
+                        if (winnerMember.getId() > 0) {
+                            usersDb().update(winnerMember);
+                        }
+                        if (owner.getId() > 0) {
+                            usersDb().update(owner);
+                        }
                         transitionTo(AuctionStatus.PAID);
                     }
                 }
-
                 AuctionManager.getInstance().closeAuction(this);
             }
         }
@@ -301,63 +295,58 @@ public class Auction extends Entity implements Serializable {
         };
     }
 
-    private User validateBidder(Bidder bidder, double amount)
+    private Member validateBidder(Bidder bidder, double amount)
             throws AuctionClosedException, AuthenticationException, InvalidBidException {
-        if (!(bidder instanceof User user)) {
+        if (!(bidder instanceof Member member)) {
             throw new AuthenticationException("[Error]: Invalid Bidder type.");
         }
-
         if (getStatus() != AuctionStatus.RUNNING) {
             throw new AuctionClosedException(status.toString());
         }
-
-        if (user.isEqual(owner)) {
+        if (member.isEqual(owner)) {
             throw new AuthenticationException("[Error]: Sellers cannot bid on their own listings!");
         }
-
         if (amount <= currentPrice) {
             throw new InvalidBidException(currentPrice, amount);
         }
-
-        return user;
+        return member;
     }
 
-    private void replaceSelfBidHold(User user, double previousSelfBid, double newBidAmount)
+    private void replaceSelfBidHold(Member member, double previousSelfBid, double newBidAmount)
             throws InvalidBidException {
         if (previousSelfBid > 0) {
-            boolean unfrozen = user.unfreezeMoney(previousSelfBid);
-
-            if (unfrozen) {user.addTransaction("🔓 UNFREEZE | +" + previousSelfBid + " | Balance: " + String.format("%.2f", user.getBalance()));}
-
-            System.out.println("[System]: Unfrozen old self-bid of " + previousSelfBid + " for " + user.getFullName());
+            boolean unfrozen = member.unfreezeMoney(previousSelfBid);
+            if (unfrozen) {
+                member.addTransaction("🔓 UNFREEZE | +" + previousSelfBid + " | Balance: " + String.format("%.2f", member.getBalance()));
+            }
+            System.out.println("[System]: Unfrozen old self-bid of " + previousSelfBid + " for " + member.getFullName());
         }
-
         if (newBidAmount < 0) {
             throw new InvalidBidException(currentPrice, newBidAmount);
         }
-
-        if (!user.freezeMoney(newBidAmount)) {
+        if (!member.freezeMoney(newBidAmount)) {
             if (previousSelfBid > 0) {
-                user.freezeMoney(previousSelfBid);
+                member.freezeMoney(previousSelfBid);
             }
             throw new IllegalArgumentException("[Error]: Insufficient balance for bidding.");
         }
-        user.addTransaction("🔒 FREEZE | -" + newBidAmount + " | Frozen: " + String.format("%.2f", user.getFrozenBalance()));
+        member.addTransaction("🔒 FREEZE | -" + newBidAmount + " | Frozen: " + String.format("%.2f", member.getFrozenBalance()));
     }
 
-    private void releasePreviousWinnerHold(Bidder previousWinner, User currentBidder) {
-        if (!(previousWinner instanceof User oldUser) || oldUser.equals(currentBidder)) {
+    private void releasePreviousWinnerHold(Bidder previousWinner, Member currentBidder) {
+        if (!(previousWinner instanceof Member oldMember) || oldMember.equals(currentBidder)) {
             return;
         }
-
-        double oldBidAmount = oldUser.getHighestBid(this);
+        double oldBidAmount = oldMember.getHighestBid(this);
         if (oldBidAmount > 0) {
-            boolean success = oldUser.unfreezeMoney(oldBidAmount);
-            if (success) {oldUser.addTransaction("🔓 UNFREEZE | +" + oldBidAmount + " | Balance: " + String.format("%.2f", oldUser.getBalance()));}
-            if (oldUser.getId() > 0) {
-                usersDb().update(oldUser);
+            boolean success = oldMember.unfreezeMoney(oldBidAmount);
+            if (success) {
+                oldMember.addTransaction("🔓 UNFREEZE | +" + oldBidAmount + " | Balance: " + String.format("%.2f", oldMember.getBalance()));
             }
-            System.out.println("[System]: Unfrozen " + oldBidAmount + " for previous winner: " + oldUser.getFullName());
+            if (oldMember.getId() > 0) {
+                usersDb().update(oldMember);
+            }
+            System.out.println("[System]: Unfrozen " + oldBidAmount + " for previous winner: " + oldMember.getFullName());
         }
     }
 
@@ -365,19 +354,17 @@ public class Auction extends Entity implements Serializable {
         currentPrice = bidAmount.getPrice();
         winner = bidder;
         handleSniping();
-        if (((User) bidder).getId() > 0) {
-            usersDb().update((User) bidder);
+        if (((Member) bidder).getId() > 0) {
+            usersDb().update((Member) bidder);
         }
         updateIfPersisted();
     }
 
-    private void persistBid(User user, Price bidAmount) {
-        if (user instanceof Member member) {
-            Bid bid = new Bid(this, member, bidAmount);
-            bids.add(bid);
-            if (getId() > 0 && member.getId() > 0) {
-                bidsDb().save(bid);
-            }
+    private void persistBid(Member member, Price bidAmount) {
+        Bid bid = new Bid(this, member, bidAmount);
+        bids.add(bid);
+        if (getId() > 0 && member.getId() > 0) {
+            bidsDb().save(bid);
         }
     }
 
@@ -388,36 +375,32 @@ public class Auction extends Entity implements Serializable {
     }
 
     private void processPreviousWinnerAutoBid(Bidder previousWinner, Bidder bidder) {
-        if (!(previousWinner instanceof User oldUser)
-                || !(bidder instanceof User newUser)
-                || oldUser.getId() == newUser.getId()
+        if (!(previousWinner instanceof Member oldMember)
+                || !(bidder instanceof Member newMember)
+                || oldMember.getId() == newMember.getId()
                 || auctionId <= 0
-                || oldUser.getId() <= 0) {
+                || oldMember.getId() <= 0) {
             return;
         }
-        AutoBid config = AuctionManager.getInstance().getAutoBidConfig(auctionId, oldUser.getId());
+        AutoBid config = AuctionManager.getInstance().getAutoBidConfig(auctionId, oldMember.getId());
         if (config == null) {
             return;
         }
-
         if (!BidStepConfiguration.isValidStep(currentPrice, config.getIncrement())) {
             double minimumAllowedStep = BidStepConfiguration.getAllowedSteps(currentPrice).get(0);
             config.setIncrement(minimumAllowedStep);
             autoBidDb().update(config);
             System.out.println("[System]: AutoBid increment adjusted to " + minimumAllowedStep);
         }
-
         AuctionManager.getInstance().processAutoBids(this, config);
     }
 
     private void handleSniping() {
         LocalDateTime now = LocalDateTime.now();
-
         if (endingTime == null || !now.isBefore(endingTime)
                 || !now.isAfter(endingTime.minusMinutes(SNIPE_WINDOW_MINUTES))) {
             return;
         }
-
         if (extendCount < MAX_EXTENDS) {
             endingTime = now.plusMinutes(SNIPE_WINDOW_MINUTES);
             extendCount++;
@@ -444,7 +427,7 @@ public class Auction extends Entity implements Serializable {
         return observers;
     }
 
-    private List<User> participants() {
+    private List<Member> participants() {
         if (participants == null) {
             participants = new ArrayList<>();
         }

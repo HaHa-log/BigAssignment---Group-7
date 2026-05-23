@@ -1,26 +1,23 @@
 package models;
 
-//Tạm thời sửa item từ abstract thành concrete class
-
 import models.Common.Price;
-
-import java.time.LocalDateTime;
 import repositories.ItemsDAO;
 import repositories.impl.DaoFactory;
 
 public class Item extends Entity {
-    private Price startingPrice;
-    private String description;
-    private String name;
     public enum Status {
         AVAILABLE,
         IN_AUCTION,
         SOLD
     }
+
+    private Price startingPrice;
+    private String description;
+    private String name;
     private Status status = Status.AVAILABLE;
     private String imagePath;
-    private final ItemsDAO itemsDb = DaoFactory.createItemDAO();
     private Member owner;
+    private final ItemsDAO itemsDb = DaoFactory.createItemDAO();
 
     public Item(String name, double startingPrice, String description) {
         this.name = name;
@@ -37,57 +34,64 @@ public class Item extends Entity {
         this.imagePath = imagePath;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public void setName(String name) {
         this.name = name;
+    }
+
+    public double getStartingPrice() {
+        return startingPrice.getPrice();
     }
 
     public void setStartingPrice(double startPrice) {
         this.startingPrice = new Price(startPrice);
     }
 
+    public String getDescription() {
+        return description;
+    }
+
     public void setDescription(String narrative) {
         this.description = narrative;
+    }
+
+    public Status getStatus() {
+        return status;
     }
 
     public void setStatus(Status status) {
         this.status = status;
     }
 
-    public void setOwner(Member owner) {
-        this.owner = owner;
-    }
-
-    public void setOwnerId(int id) {
-        this.owner.setId(id);
+    public String getImagePath() {
+        return imagePath;
     }
 
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
     }
 
-    public double getStartingPrice() {
-        return startingPrice.getPrice();
-    }
-    public String getName() {
-        return name;
-    }
-    public String getDescription() {
-        return description;
-    }
-    public Status getStatus() {
-        return status;
-    }
-    public boolean isAvailable() {
-        return this.status == Status.AVAILABLE;
-    }
     public Member getOwner() {
         return owner;
     }
+
+    public void setOwner(Member owner) {
+        this.owner = owner;
+    }
+
     public int getOwnerId() {
         return owner.getId();
     }
-    public String getImagePath() {
-        return imagePath;
+
+    public void setOwnerId(int id) {
+        this.owner.setId(id);
+    }
+
+    public boolean isAvailable() {
+        return this.status == Status.AVAILABLE;
     }
 
     @Override
