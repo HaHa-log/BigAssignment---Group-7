@@ -4,6 +4,7 @@ import models.Auction;
 import models.Item;
 import models.Member;
 import com.group7.dto.auction.*;
+import java.time.LocalDateTime;
 
 public final class AuctionMapper {
     private static final String SESSION_PASSWORD_PLACEHOLDER = "server-authenticated";
@@ -29,14 +30,13 @@ public final class AuctionMapper {
                 response.getStartingPrice(),
                 response.getItemDescription(),
                 Item.Status.IN_AUCTION,
-                null,
-                null,
+                LocalDateTime.now(),
+                LocalDateTime.now(),
                 response.getItemImagePath()
         );
         item.setId(response.getItemId());
         item.setOwnerId(response.getOwnerId());
 
-        // --- MAP THE WINNER DIRECTLY FROM THE DTO ---
         Member winner = null;
         if (response.getWinnerId() != null && response.getWinnerId() > 0) {
             String[] winnerNameParts = splitName(response.getWinnerName());
@@ -51,7 +51,6 @@ public final class AuctionMapper {
             );
             winner.setId(response.getWinnerId());
         }
-        // --------------------------------------------
 
         Auction auction = new Auction(
                 owner,
