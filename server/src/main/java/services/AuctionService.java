@@ -33,8 +33,8 @@ public class AuctionService {
             throw new IllegalArgumentException("[Error]: Request body is required.");
         }
 
-        User owner = usersDAO.getById(request.getOwnerId());
-        if (!(owner instanceof Member member)) {
+        Member member = usersDAO.getById(request.getOwnerId());
+        if (member == null) {
             throw new IllegalArgumentException("[Error]: Auction owner is invalid.");
         }
 
@@ -51,13 +51,13 @@ public class AuctionService {
 
     public AuctionResponse placeBid(int auctionId, int bidderId, double amount) {
         Auction auction = requireAuction(auctionId);
-        User bidder = usersDAO.getById(bidderId);
-        if (!(bidder instanceof Bidder)) {
+        Member bidder = usersDAO.getById(bidderId);
+        if (bidder == null) {
             throw new IllegalArgumentException("[Error]: Bidder is invalid.");
         }
         bidder.placeBid(auction, amount);
 
-        Bid bid = new Bid(auction, (Member) bidder, new Price(amount));
+        Bid bid = new Bid(auction, bidder, new Price(amount));
         bidsDAO.save(bid);
 
         models.AuctionManager.getInstance().processAutoBids(auction, null);
@@ -73,8 +73,8 @@ public class AuctionService {
     }
 
     public AuctionResponse confirmReceipt(int auctionId, int buyerId) {
-        User buyer = usersDAO.getById(buyerId);
-        if (!(buyer instanceof Member member)) {
+        Member member = usersDAO.getById(buyerId);
+        if (member == null) {
             throw new IllegalArgumentException("[Error]: Buyer is invalid.");
         }
 
@@ -102,7 +102,7 @@ public class AuctionService {
             itemImg = auction.getItem().getImagePath();
         }
 
-        User winner = auction.getWinner();
+        Member winner = auction.getWinner();
 
         return new AuctionResponse(
                 auction.getId(),
@@ -117,8 +117,8 @@ public class AuctionService {
                 auction.getCurrentPrice(),
                 auction.getStartingTime(),
                 auction.getEndingTime(),
-                winner != null ? winner.getId() : null,         // 13. winnerId
-                winner != null ? winner.getFullName() : null    // 14. winnerName
+                winner != null ? winner.getId() : null,
+                winner != null ? winner.getFullName() : null
         );
     }
 }

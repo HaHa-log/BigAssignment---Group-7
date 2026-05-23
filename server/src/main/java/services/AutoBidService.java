@@ -5,7 +5,6 @@ import com.group7.dto.bid.AutoBidResponse;
 import models.Auction;
 import models.AutoBid;
 import models.Member;
-import models.User;
 import org.springframework.stereotype.Service;
 import repositories.AuctionsDAO;
 import repositories.AutoBidDAO;
@@ -26,8 +25,8 @@ public class AutoBidService {
         }
 
         Auction auction = requireAuction(auctionId);
-        User user = usersDAO.getById(request.getBidderId());
-        if (!(user instanceof Member member)) {
+        Member member = usersDAO.getById(request.getBidderId());
+        if (member == null) {
             throw new IllegalArgumentException("[Error]: Bidder is invalid.");
         }
 
@@ -35,8 +34,6 @@ public class AutoBidService {
         autoBidDAO.save(autoBid);
 
         models.AuctionManager.getInstance().processAutoBids(auction, autoBid);
-
-        auction = auctionsDAO.getById(auctionId);
 
         return toResponse(autoBid);
     }

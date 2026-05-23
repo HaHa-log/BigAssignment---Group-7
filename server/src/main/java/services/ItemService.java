@@ -5,7 +5,6 @@ import com.group7.dto.item.ItemResponse;
 import com.group7.dto.item.UpdateItemRequest;
 import models.Item;
 import models.Member;
-import models.User;
 import org.springframework.stereotype.Service;
 import repositories.ItemsDAO;
 import repositories.UsersDAO;
@@ -35,8 +34,8 @@ public class ItemService {
     public void createNewItem(ItemRequest request) {
         validateCreateRequest(request);
 
-        User user = usersDb.getById(request.getOwnerId());
-        if (!(user instanceof Member owner)) {
+        Member owner = usersDb.getById(request.getOwnerId());
+        if (owner == null) {
             throw new IllegalArgumentException("[Error]: Owner not found or not a member.");
         }
         Item item = new Item(request.getName(), request.getStartingPrice(), request.getDescription());
@@ -50,7 +49,7 @@ public class ItemService {
     }
 
     public List<ItemResponse> getItemsByOwner(int ownerId) {
-        List<Item> databaseItems = itemsDb.getByOwnerId(ownerId); // Assumes this exists in your DAO
+        List<Item> databaseItems = itemsDb.getByOwnerId(ownerId);
         List<ItemResponse> responses = new ArrayList<>();
 
         for (Item item : databaseItems) {

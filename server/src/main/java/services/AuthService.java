@@ -4,7 +4,6 @@ import com.group7.dto.auth.*;
 import models.Common.Email;
 import models.Common.PhoneNumber;
 import models.Member;
-import models.User;
 import org.springframework.stereotype.Service;
 import repositories.UsersDAO;
 import repositories.impl.DaoFactory;
@@ -17,7 +16,7 @@ public class AuthService {
     public AuthResponse register(RegisterRequest request) {
         validateRegisterRequest(request);
 
-        User existing = userdb.getByEmail(request.getEmail());
+        Member existing = userdb.getByEmail(request.getEmail());
         if (existing != null) {
             throw new IllegalArgumentException("[Failure]: An account with this email already exists.");
         }
@@ -47,17 +46,17 @@ public class AuthService {
             throw new IllegalArgumentException("[Failure]: Email and password are required.");
         }
 
-        User user = userdb.getByEmail(request.getEmail());
+        Member member = userdb.getByEmail(request.getEmail());
 
-        if (user == null) {
+        if (member == null) {
             throw new IllegalArgumentException("[Failure]: No account found with this email.");
         }
 
-        if (!user.getPassword().equals(request.getPassword())) {
+        if (!member.getPassword().equals(request.getPassword())) {
             throw new IllegalArgumentException("[Failure]: Incorrect password.");
         }
 
-        return toAuthResponse(user);
+        return toAuthResponse(member);
     }
 
     private void validateRegisterRequest(RegisterRequest request) {
@@ -98,17 +97,17 @@ public class AuthService {
         }
     }
 
-    private AuthResponse toAuthResponse(User user) {
+    private AuthResponse toAuthResponse(Member member) {
         return new AuthResponse(
-                user.getId(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getFullName(),
-                user.getEmail(),
-                user.getPhoneNumber(),
-                user.getRole(),
-                user.getBalance(),
-                user.getAvatarPath()
+                member.getId(),
+                member.getFirstName(),
+                member.getLastName(),
+                member.getFullName(),
+                member.getEmail(),
+                member.getPhoneNumber(),
+                member.getRole(),
+                member.getBalance(),
+                member.getAvatarPath()
         );
     }
 

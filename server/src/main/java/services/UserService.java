@@ -2,7 +2,7 @@ package services;
 
 import com.group7.dto.user.*;
 import models.Auction;
-import models.User;
+import models.Member;
 import org.springframework.stereotype.Service;
 import repositories.AuctionsDAO;
 import repositories.UsersDAO;
@@ -14,7 +14,6 @@ import java.util.List;
 @Service
 public class UserService {
     private final UsersDAO usersDAO = DaoFactory.createUsersDAO();
-
     private final AuctionsDAO auctionsDAO = DaoFactory.createAuctionsDAO();
 
     public List<UserResponse> getAll() {
@@ -31,100 +30,99 @@ public class UserService {
         return toResponse(requireUser(email));
     }
 
-
     public UserResponse block(int id) {
-        User user = requireUser(id);
-        user.setBlocked(LocalDateTime.now().plusDays(100));
-        usersDAO.update(user);
-        return toResponse(user);
+        Member member = requireUser(id);
+        member.setBlocked(LocalDateTime.now().plusDays(100));
+        usersDAO.update(member);
+        return toResponse(member);
     }
 
     public UserResponse unblock(int id) {
-        User user = requireUser(id);
-        user.isUnblocked();
-        usersDAO.update(user);
-        return toResponse(user);
+        Member member = requireUser(id);
+        member.isUnblocked();
+        usersDAO.update(member);
+        return toResponse(member);
     }
 
     public UserResponse deposit(int id, double amount) {
         if (amount <= 0) throw new IllegalArgumentException("Amount must be positive.");
-        User user = requireUser(id);
-        user.depositMoney(amount);
-        usersDAO.update(user);
-        return toResponse(user);
+        Member member = requireUser(id);
+        member.depositMoney(amount);
+        usersDAO.update(member);
+        return toResponse(member);
     }
 
     public UserResponse withdraw(int id, double amount) {
         if (amount <= 0) throw new IllegalArgumentException("Amount must be positive.");
-        User user = requireUser(id);
-        boolean success = user.withdrawMoney(amount);
+        Member member = requireUser(id);
+        boolean success = member.withdrawMoney(amount);
         if (!success) throw new IllegalArgumentException("Insufficient balance.");
-        usersDAO.update(user);
-        return toResponse(user);
+        usersDAO.update(member);
+        return toResponse(member);
     }
 
     public UserResponse freeze(int id, double amount) {
         if (amount <= 0) throw new IllegalArgumentException("Amount must be positive.");
-        User user = requireUser(id);
-        boolean success = user.freezeMoney(amount);
+        Member member = requireUser(id);
+        boolean success = member.freezeMoney(amount);
         if (!success) throw new IllegalArgumentException("Insufficient balance.");
-        usersDAO.update(user);
-        return toResponse(user);
+        usersDAO.update(member);
+        return toResponse(member);
     }
 
     public UserResponse unfreeze(int id, double amount) {
         if (amount <= 0) throw new IllegalArgumentException("Amount must be positive.");
-        User user = requireUser(id);
-        boolean success = user.unfreezeMoney(amount);
+        Member member = requireUser(id);
+        boolean success = member.unfreezeMoney(amount);
         if (!success) throw new IllegalArgumentException("Insufficient frozen balance.");
-        usersDAO.update(user);
-        return toResponse(user);
+        usersDAO.update(member);
+        return toResponse(member);
     }
 
     public UserResponse spendFrozen(int id, double amount) {
         if (amount <= 0) throw new IllegalArgumentException("Amount must be positive.");
-        User user = requireUser(id);
-        boolean success = user.spendFrozenMoney(amount);
+        Member member = requireUser(id);
+        boolean success = member.spendFrozenMoney(amount);
         if (!success) throw new IllegalArgumentException("Insufficient frozen balance.");
-        usersDAO.update(user);
-        return toResponse(user);
+        usersDAO.update(member);
+        return toResponse(member);
     }
 
-    private User requireUser(int id) {
-        User user = usersDAO.getById(id);
-        if (user == null) {
+    private Member requireUser(int id) {
+        Member member = usersDAO.getById(id);
+        if (member == null) {
             throw new IllegalArgumentException("[Error]: User not found.");
         }
-        return user;
+        return member;
     }
 
-    private User requireUser(String email) {
-        User user = usersDAO.getByEmail(email); // Or whatever fetching method your DAO has
-        if (user == null) {
+    private Member requireUser(String email) {
+        Member member = usersDAO.getByEmail(email);
+        if (member == null) {
             throw new IllegalArgumentException("[Error]: User not found with email: " + email);
         }
-        return user;
+        return member;
     }
 
-    private UserResponse toResponse(User user) {
+    private UserResponse toResponse(Member member) {
         return new UserResponse(
-                user.getId(),
-                user.getFullName(),
-                user.getEmail(),
-                user.getPhoneNumber(),
-                user.getRole(),
-                user.isBlocked(),
-                user.getBalance(),
-                user.getAvatarPath(),
-                user.getFrozenBalance()
+                member.getId(),
+                member.getFullName(),
+                member.getEmail(),
+                member.getPhoneNumber(),
+                member.getRole(),
+                member.isBlocked(),
+                member.getBalance(),
+                member.getAvatarPath(),
+                member.getFrozenBalance()
         );
     }
 
     public List<NotificationResponse> getNotifications(int id) {
-        User user = requireUser(id);
+        Member member = requireUser(id);
         List<Auction> allAuctions = auctionsDAO.getAll();
 
-        return user.getNotifications(allAuctions).stream()
+        return member.getNotifications(allAuctions).stream()
                 .map(alert -> new NotificationResponse(
                         alert.type().name(),
                         alert.itemName(),
@@ -134,9 +132,9 @@ public class UserService {
     }
 
     public List<HistoryEntryResponse> getAuctionHistory(int id) {
-        User user = requireUser(id);
+        Member member = requireUser(id);
         List<Auction> allAuctions = auctionsDAO.getAll();
-        return user.getTableHistory(allAuctions).stream()
+        return member.getTableHistory(allAuctions).stream()
                 .map(entry -> new HistoryEntryResponse(
                         entry.auctionId(),
                         entry.itemName(),
