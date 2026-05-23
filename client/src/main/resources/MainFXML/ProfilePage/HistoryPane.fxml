@@ -50,7 +50,19 @@
 
             <Tab text="Transactions">
                 <content>
-                    <ListView fx:id="transactionList"/>
+                    <TableView fx:id="transactionTable" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="colTxId"     text="ID"       prefWidth="50"/>
+                            <TableColumn fx:id="colTxItem"   text="Item"     prefWidth="150"/>
+                            <TableColumn fx:id="colTxAmount" text="Amount"   prefWidth="100"/>
+                            <TableColumn fx:id="colTxRole"   text="Role"     prefWidth="80"/>
+                            <TableColumn fx:id="colTxStatus" text="Status"   prefWidth="100"/>
+                            <TableColumn fx:id="colTxDate"   text="Date"     prefWidth="150"/>
+                        </columns>
+                        <columnResizePolicy>
+                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                        </columnResizePolicy>
+                    </TableView>
                 </content>
             </Tab>
         </tabs>
