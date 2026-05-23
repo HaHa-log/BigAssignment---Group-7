@@ -16,6 +16,11 @@ public class AuctionService {
     private final AuctionsDAO auctionsDAO = DaoFactory.createAuctionsDAO();
     private final UsersDAO usersDAO = DaoFactory.createUsersDAO();
     private final BidsDAO bidsDAO = DaoFactory.createBidsDAO();
+    private final TransactionService transactionService; // ← thêm
+
+    public AuctionService(TransactionService transactionService) {
+        this.transactionService = transactionService;
+    }
 
     public List<AuctionResponse> getAll() {
         return auctionsDAO.getAll().stream()
@@ -74,13 +79,14 @@ public class AuctionService {
 
     public AuctionResponse confirmReceipt(int auctionId, int buyerId) {
         User buyer = usersDAO.getById(buyerId);
-        if (!(buyer instanceof Member member)) {
+        if (!(buyer instanceof Member)) {
             throw new IllegalArgumentException("[Error]: Buyer is invalid.");
         }
 
-        Transaction transaction = AuctionManager.getInstance().confirmReceipt(auctionId, member);
-        return toResponse(transaction.getAuction());
+        transactionService.confirmReceipt(auctionId, buyerId); // ← thay dòng này
+        return toResponse(requireAuction(auctionId));
     }
+
 
     private Auction requireAuction(int id) {
         Auction auction = auctionsDAO.getById(id);

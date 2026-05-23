@@ -11,7 +11,7 @@ public record TransactionResponse(
         int sellerId,
         String sellerName,
         double finalAmount,
-        String status,           
+        String status,
         LocalDateTime paidAt,
         LocalDateTime completedAt,
         LocalDateTime expiryTime

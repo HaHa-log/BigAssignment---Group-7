@@ -4,6 +4,8 @@ import models.Member;
 import models.Transaction;
 import config.DB;
 import config.DbException;
+import models.User;
+import models.Auction;
 import repositories.AuctionsDAO;
 import repositories.TransactionDAO;
 import repositories.UsersDAO;
@@ -132,7 +134,8 @@ public class TransactionDAOImpl implements TransactionDAO {
 
             try (ResultSet rs = st.executeQuery()) {
                 while (rs.next()) {
-                    list.add(instantiateTransaction(rs));
+                    Transaction t = instantiateTransaction(rs);
+                    if (t != null) list.add(t);
                 }
             }
             return list;
@@ -185,10 +188,20 @@ public class TransactionDAOImpl implements TransactionDAO {
     }
 
     private Transaction instantiateTransaction(ResultSet rs) throws SQLException {
+        int auctionId = rs.getInt("auction_id");
+        if (rs.wasNull()) return null;
+
+        Auction auction = auctionsDAO.getById(auctionId);
+        if (auction == null) return null;
+
+        User buyer = userDAO.getById(rs.getInt("buyer_id"));
+        User seller = userDAO.getById(rs.getInt("seller_id"));
+        if (!(buyer instanceof Member) || !(seller instanceof Member)) return null;
+
         Transaction obj = new Transaction(
-                auctionsDAO.getById(rs.getInt("auction_id")),
-                (Member) userDAO.getById(rs.getInt("buyer_id")),
-                (Member) userDAO.getById(rs.getInt("seller_id")),
+                auction,
+                (Member) buyer,
+                (Member) seller,
                 rs.getDouble("finalAmount"),
                 rs.getObject("paidAt", LocalDateTime.class),
                 rs.getObject("completedAt", LocalDateTime.class),
@@ -198,7 +211,6 @@ public class TransactionDAOImpl implements TransactionDAO {
         if (rs.getTimestamp("expiry_time") != null) {
             obj.setExpiryTime(rs.getTimestamp("expiry_time").toLocalDateTime());
         }
-
         obj.setTransactionId(rs.getInt("transaction_id"));
         return obj;
     }
