@@ -5,10 +5,7 @@ import com.group7.dto.item.ItemRequest;
 import models.*;
 import models.Common.Price;
 import org.springframework.stereotype.Service;
-import repositories.AuctionsDAO;
-import repositories.BidsDAO;
-import repositories.DAO;
-import repositories.UsersDAO;
+import repositories.*;
 import repositories.impl.DaoFactory;
 
 import java.util.List;
@@ -18,7 +15,7 @@ public class AuctionService {
     private final AuctionsDAO auctionsDAO = DaoFactory.createAuctionsDAO();
     private final UsersDAO usersDAO = DaoFactory.createUsersDAO();
     private final BidsDAO bidsDAO = DaoFactory.createBidsDAO();
-    private final ItemDAO itemsDAO = DaoFactory.createItemDAO();
+    private final ItemsDAO itemsDAO = DaoFactory.createItemDAO();
     private final ItemService itemService = new ItemService();
     private final TransactionService transactionService; // ← thêm
 

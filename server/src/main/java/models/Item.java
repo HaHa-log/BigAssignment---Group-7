@@ -14,7 +14,7 @@ public class Item extends Entity {
     private String name;
     private Status status = Status.AVAILABLE;
     private String imagePath;
-    private Member owner;
+    private User owner;
 
     public Item(String name, double startingPrice, String description) {
         this.name = name;
