@@ -7,12 +7,12 @@ import repositories.impl.DaoFactory;
 public interface Bidder {
     double getBalance();
 
-    default boolean placeBid(Auction auction, double amount){
-        if (this instanceof User && ((User) this).isBlocked()) {
+    default boolean placeBid(Auction auction, double amount) {
+        if (this instanceof User user && user.isBlocked()) {
             throw new IllegalArgumentException("[Error]: Your account is blocked");
         }
 
-        if (amount > ((User) this).getBalance()) {
+        if (this instanceof User user && amount > user.getBalance()) {
             throw new IllegalArgumentException("Bid cannot be greater than your balance");
         }
 
@@ -27,16 +27,16 @@ public interface Bidder {
     default double getHighestBid(Auction auction) {
         double lastTimeBidAmount = 0;
 
-        User thisUser = (User) this;
-
-        List<Bid> userBids = auction.getId() > 0 ? bidsDb().getByAuctionId(auction.getId()) : auction.getBids();
-        for (Bid existingBid : userBids) {
-            if (existingBid.getBidder() == null) {
-                continue;
-            }
-            if (existingBid.getBidder().isEqual(thisUser)) {
-                if (existingBid.getBidPrice().getPrice() > lastTimeBidAmount) {
-                    lastTimeBidAmount = existingBid.getBidPrice().getPrice();
+        if (this instanceof User thisUser) {
+            List<Bid> userBids = auction.getId() > 0 ? bidsDb().getByAuctionId(auction.getId()) : auction.getBids();
+            for (Bid existingBid : userBids) {
+                if (existingBid.getBidder() == null) {
+                    continue;
+                }
+                if (existingBid.getBidder().isEqual(thisUser)) {
+                    if (existingBid.getBidPrice().getPrice() > lastTimeBidAmount) {
+                        lastTimeBidAmount = existingBid.getBidPrice().getPrice();
+                    }
                 }
             }
         }

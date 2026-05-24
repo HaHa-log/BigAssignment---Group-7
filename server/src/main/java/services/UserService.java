@@ -14,7 +14,6 @@ import java.util.List;
 @Service
 public class UserService {
     private final UsersDAO usersDAO = DaoFactory.createUsersDAO();
-
     private final AuctionsDAO auctionsDAO = DaoFactory.createAuctionsDAO();
 
     public List<UserResponse> getAll() {
@@ -105,7 +104,7 @@ public class UserService {
     }
 
     private User requireUser(String email) {
-        User user = usersDAO.getByEmail(email); // Or whatever fetching method your DAO has
+        User user = usersDAO.getByEmail(email);
         if (user == null) {
             throw new IllegalArgumentException("[Error]: User not found with email: " + email);
         }

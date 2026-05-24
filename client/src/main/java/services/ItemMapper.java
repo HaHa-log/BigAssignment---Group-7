@@ -2,6 +2,7 @@ package services;
 
 import com.group7.dto.item.ItemResponse;
 import models.Item;
+import java.time.LocalDateTime;
 
 public final class ItemMapper {
 
@@ -10,7 +11,6 @@ public final class ItemMapper {
     public static Item toItem(ItemResponse response) {
         if (response == null) return null;
 
-        // Map String status back to your local Java enum safety layer
         Item.Status mappedStatus = Item.Status.valueOf(response.getStatus());
 
         Item item = new Item(
@@ -18,8 +18,8 @@ public final class ItemMapper {
                 response.getStartingPrice(),
                 response.getDescription(),
                 mappedStatus,
-                null, // Winner (Null if just sitting in inventory)
-                null, // Auction reference
+                LocalDateTime.now(),
+                LocalDateTime.now(),
                 response.getImagePath()
         );
 

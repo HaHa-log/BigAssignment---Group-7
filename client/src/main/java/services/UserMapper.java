@@ -2,7 +2,7 @@ package services;
 
 import models.Admin;
 import models.Member;
-import models.User;
+
 import com.group7.dto.user.UserResponse;
 
 public final class UserMapper {
@@ -11,7 +11,7 @@ public final class UserMapper {
     private UserMapper() {
     }
 
-    public static User toUser(UserResponse response) {
+    public static Member toMember(UserResponse response) {
         if (response == null) {
             throw new IllegalArgumentException("User response is required.");
         }
@@ -22,7 +22,7 @@ public final class UserMapper {
         boolean isAdminUser = "true".equalsIgnoreCase(response.getRole())
                 || "Admin".equalsIgnoreCase(response.getRole());
 
-        User user = isAdminUser ?
+        Member member = isAdminUser ?
                 new Admin(
                         nameParts[0],
                         nameParts[1],
@@ -42,13 +42,13 @@ public final class UserMapper {
                         response.getAvatarPath()
                 );
 
-        user.setId(response.getId());
-        user.setFrozenBalance(response.getFrozenBalance());
+        member.setId(response.getId());
+        member.setFrozenBalance(response.getFrozenBalance());
 
         if (response.isBlocked()) {
-            user.setBlocked(java.time.LocalDateTime.now().plusDays(100));
+            member.setBlocked(java.time.LocalDateTime.now().plusDays(100));
         }
-        return user;
+        return member;
     }
 
     private static String[] splitName(String fullName) {

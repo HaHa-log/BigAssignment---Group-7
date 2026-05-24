@@ -2,12 +2,11 @@ package models;
 
 import models.Exceptions.AuthenticationException;
 import models.Exceptions.CustomisedException;
-
 import java.time.LocalDateTime;
 
 public interface Seller {
     default void createAuction(Item item, LocalDateTime createdAt, LocalDateTime terminatedAt) {
-        if (this instanceof Member owner) {
+        if (this instanceof User owner) {
             if (owner.isBlocked()) {
                 throw new AuthenticationException("Your account is currently blocked and cannot create auctions.");
             }
@@ -28,6 +27,8 @@ public interface Seller {
                 AuctionManager.getInstance().createAuction(owner, item, createdAt, terminatedAt);
                 System.out.println("[System]: Auction created successfully for item: " + item.getName());
             } catch (Exception e) {
-                throw new CustomisedException("System error: " + e.getMessage());            }
-    }   }
+                throw new CustomisedException("System error: " + e.getMessage());
+            }
+        }
+    }
 }

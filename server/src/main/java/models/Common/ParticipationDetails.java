@@ -27,24 +27,39 @@ public class ParticipationDetails {
         this.leadingBidder = auction.getWinner();
     }
 
-    public boolean isUserWinning(User currentUser) {
-        return leadingBidder != null &&
-                ((User) leadingBidder).getId() == currentUser.getId();
+    public int getIdForDetails() {
+        return idForDetails;
     }
 
-    public int getIdForDetails() { return idForDetails; }
+    public Auction.AuctionStatus getOverallStatus() {
+        return overallStatus;
+    }
 
-    public String getItemSold() { return itemSold.getName(); }
+    public String getItemSold() {
+        return itemSold.getName();
+    }
 
-    public double getInitialPrice() { return initialPrice.getPrice(); }
+    public double getInitialPrice() {
+        return initialPrice.getPrice();
+    }
 
-    public double getFinalPrice() { return finalPrice.getPrice(); }
+    public double getFinalPrice() {
+        return finalPrice.getPrice();
+    }
 
-    public LocalDateTime getStartTime() { return startTime; }
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
 
-    public LocalDateTime getEndTime() { return endTime; }
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
 
-    public User getLeadingBidder() { return leadingBidder; }
+    public User getLeadingBidder() {
+        return leadingBidder;
+    }
 
-    public Auction.AuctionStatus getOverallStatus() { return overallStatus; }
+    public boolean isUserWinning(User currentUser) {
+        return leadingBidder != null && leadingBidder.getId() == currentUser.getId();
+    }
 }

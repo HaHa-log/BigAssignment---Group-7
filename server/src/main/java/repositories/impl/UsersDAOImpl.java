@@ -1,7 +1,6 @@
 package repositories.impl;
 
 import models.Admin;
-import models.Member;
 import models.User;
 import config.DB;
 import config.DbException;
@@ -131,8 +130,8 @@ public class UsersDAOImpl implements UsersDAO {
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()) {
                     if (rs.getBoolean("isAdmin") == false) {
-                        Member member = instantiateMember(rs);
-                        return member;
+                        User user = instantiateMember(rs);
+                        return user;
                     } else if (rs.getBoolean("isAdmin") == true) {
                         Admin admin = instantiateAdmin(rs);
                         return admin;
@@ -168,9 +167,9 @@ public class UsersDAOImpl implements UsersDAO {
     }
 
     @Override
-    public List<Member> getAllMember() {
+    public List<User> getAllMember() {
         String sql = "SELECT * FROM users WHERE isAdmin = ?";
-        List<Member> list = new ArrayList<>();
+        List<User> list = new ArrayList<>();
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
 
@@ -208,8 +207,8 @@ public class UsersDAOImpl implements UsersDAO {
     }
 
 
-    private Member instantiateMember(ResultSet rs) throws SQLException {
-        Member obj = new Member(
+    private User instantiateMember(ResultSet rs) throws SQLException {
+        User obj = new User(
                 rs.getString("firstName"),
                 rs.getString("lastName"),
                 rs.getString("email"),
@@ -220,7 +219,7 @@ public class UsersDAOImpl implements UsersDAO {
                 rs.getBoolean("isBlocked"),
                 rs.getObject("blockedUntil", LocalDateTime.class),
                 rs.getString("avatar_path")
-                );
+        );
         obj.setFrozenBalance(rs.getDouble("frozen_balance"));
         obj.setId(rs.getInt("users_id"));
         return obj;

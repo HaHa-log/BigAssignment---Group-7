@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import config.ApiConfig;
 import exceptions.ApiException;
-import models.User;
+import models.Member;
 import com.group7.dto.user.UserResponse;
 import utils.ApiJson;
 
@@ -23,7 +23,7 @@ public class UserApiService {
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final ObjectMapper mapper = ApiJson.mapper();
 
-    public List<User> getAll() throws IOException, InterruptedException {
+    public List<Member> getAll() throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL))
                 .GET()
@@ -32,53 +32,54 @@ public class UserApiService {
                 send(request).body(),
                 new TypeReference<List<UserResponse>>() {}
         );
-        return users.stream().map(UserMapper::toUser).toList();
+        return users.stream().map(UserMapper::toMember).toList();
     }
 
-    public User getByEmail(String email) throws IOException, InterruptedException {
+    public Member getByEmail(String email) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/email/" + email))
                 .GET()
                 .build();
-        return UserMapper.toUser(mapper.readValue(send(request).body(), UserResponse.class));
+        return UserMapper.toMember(mapper.readValue(send(request).body(), UserResponse.class));
     }
 
-    public User getById(int id) throws IOException, InterruptedException {
+    public Member getById(int id) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/" + id))
                 .GET()
                 .build();
-        return UserMapper.toUser(mapper.readValue(send(request).body(), UserResponse.class));
+        return UserMapper.toMember(mapper.readValue(send(request).body(), UserResponse.class));
     }
-    public User block(int id) throws IOException, InterruptedException {
+
+    public Member block(int id) throws IOException, InterruptedException {
         return postStateChange(id, "block");
     }
 
-    public User unblock(int id) throws IOException, InterruptedException {
+    public Member unblock(int id) throws IOException, InterruptedException {
         return postStateChange(id, "unblock");
     }
 
-    public User deposit(int id, double amount) throws IOException, InterruptedException {
+    public Member deposit(int id, double amount) throws IOException, InterruptedException {
         return postFinanceAction(id, "deposit", amount);
     }
 
-    public User withdraw(int id, double amount) throws IOException, InterruptedException {
+    public Member withdraw(int id, double amount) throws IOException, InterruptedException {
         return postFinanceAction(id, "withdraw", amount);
     }
 
-    public User freeze(int id, double amount) throws IOException, InterruptedException {
+    public Member freeze(int id, double amount) throws IOException, InterruptedException {
         return postFinanceAction(id, "freeze", amount);
     }
 
-    public User unfreeze(int id, double amount) throws IOException, InterruptedException {
+    public Member unfreeze(int id, double amount) throws IOException, InterruptedException {
         return postFinanceAction(id, "unfreeze", amount);
     }
 
-    public User spendFrozen(int id, double amount) throws IOException, InterruptedException {
+    public Member spendFrozen(int id, double amount) throws IOException, InterruptedException {
         return postFinanceAction(id, "spend-frozen", amount);
     }
 
-    private User postFinanceAction(int id, String action, double amount)
+    private Member postFinanceAction(int id, String action, double amount)
             throws IOException, InterruptedException {
         String body = mapper.writeValueAsString(Map.of("amount", amount));
         HttpRequest request = HttpRequest.newBuilder()
@@ -86,15 +87,15 @@ public class UserApiService {
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
-        return UserMapper.toUser(mapper.readValue(send(request).body(), UserResponse.class));
+        return UserMapper.toMember(mapper.readValue(send(request).body(), UserResponse.class));
     }
 
-    private User postStateChange(int id, String action) throws IOException, InterruptedException {
+    private Member postStateChange(int id, String action) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/" + id + "/" + action))
                 .POST(HttpRequest.BodyPublishers.noBody())
                 .build();
-        return UserMapper.toUser(mapper.readValue(send(request).body(), UserResponse.class));
+        return UserMapper.toMember(mapper.readValue(send(request).body(), UserResponse.class));
     }
 
     private HttpResponse<String> send(HttpRequest request) throws IOException, InterruptedException {

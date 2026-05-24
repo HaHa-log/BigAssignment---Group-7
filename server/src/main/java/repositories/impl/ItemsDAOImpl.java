@@ -3,7 +3,7 @@ package repositories.impl;
 import models.Item;
 import config.DB;
 import config.DbException;
-import models.Member;
+import models.User;
 import repositories.ItemsDAO;
 
 import java.sql.*;
@@ -181,8 +181,8 @@ public class ItemsDAOImpl implements ItemsDAO {
                 + "LEFT JOIN users u_owner ON u_owner.users_id = i.owner_id";
     }
 
-    private Member instantiateMember(ResultSet rs) throws SQLException {
-        Member obj = new Member(
+    private User instantiateMember(ResultSet rs) throws SQLException {
+        User obj = new User(
                 rs.getString("owner_firstName"),
                 rs.getString("owner_lastName"),
                 rs.getString("owner_email"),
@@ -199,7 +199,7 @@ public class ItemsDAOImpl implements ItemsDAO {
     }
 
     private Item instantiateItem(ResultSet rs) throws SQLException {
-        Member owner = instantiateMember(rs);
+        User owner = instantiateMember(rs);
         Item obj = new Item(
                 rs.getString("name"),
                 rs.getDouble("startingPrice"),

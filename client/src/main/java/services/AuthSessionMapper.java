@@ -2,7 +2,6 @@ package services;
 
 import models.Admin;
 import models.Member;
-import models.User;
 import com.group7.dto.auth.*;
 
 public final class AuthSessionMapper {
@@ -11,7 +10,7 @@ public final class AuthSessionMapper {
     private AuthSessionMapper() {
     }
 
-    public static User toUser(AuthResponse response) {
+    public static Member toMember(AuthResponse response) {
         if (response == null) {
             throw new IllegalArgumentException("Auth response is required.");
         }
@@ -19,7 +18,7 @@ public final class AuthSessionMapper {
         boolean isAdminUser = "true".equalsIgnoreCase(response.getRole())
                 || "Admin".equalsIgnoreCase(response.getRole());
 
-        User user = isAdminUser ?
+        Member member = isAdminUser ?
                 new Admin(
                         response.getFirstName(),
                         response.getLastName(),
@@ -39,7 +38,7 @@ public final class AuthSessionMapper {
                         response.getAvatarPath()
                 );
 
-        user.setId(response.getUserId());
-        return user;
+        member.setId(response.getUserId());
+        return member;
     }
 }

@@ -1,17 +1,18 @@
 package models;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class Member extends User implements Bidder, Seller, AuctionObserver {
+public class Member extends User implements Bidder, Seller {
 
-    public Member(String firstName, String lastName, String email, String phoneNumber, String password, double balance,String avatarPath) {
-        super(firstName, lastName, email, phoneNumber, password, balance,avatarPath);
+    public Member(String firstName, String lastName, String email, String phoneNumber, String password, double balance, String avatarPath) {
+        super(firstName, lastName, email, phoneNumber, password, balance, avatarPath);
     }
 
     public Member(String firstName, String lastName, String email, String phoneNumber, String password, double balance, boolean isAdmin, boolean isBlocked, LocalDateTime blockedUntil, String avatarPath) {
-
-        super(firstName, lastName, email, phoneNumber, password, balance, isAdmin, isBlocked, blockedUntil,avatarPath);
+        super(firstName, lastName, email, phoneNumber, password, balance, isAdmin, isBlocked, blockedUntil, avatarPath);
     }
+
     @Override
     public boolean isAdmin() {
         return false;
@@ -20,20 +21,6 @@ public class Member extends User implements Bidder, Seller, AuctionObserver {
     @Override
     public String getRole() {
         return "Member";
-    }
-
-    @Override
-    public void onBidPlaced(Auction auction, Bidder bidder, double amount) {
-        if (bidder == this) {
-            System.out.println("[System]: You have successfully placed a bid of " + amount + " in auction of ID " + auction.getId());
-            return;
-        }
-
-        String bidderName = ((User) bidder).getFullName();
-        System.out.println("[Notification]: "
-                + bidderName + " has bidded " + amount
-                + " in auction of ID " + auction.getId()
-                + " for " + auction.getItem().getName());
     }
 
     public void addItem(Item item) {
@@ -46,10 +33,10 @@ public class Member extends User implements Bidder, Seller, AuctionObserver {
     public void removeItem(Item item) {
         System.out.println("[System]: Item " + item.getName() + " removed from " + this.getFullName() + "'s inventory.");
     }
+
     public List<Item> getInventory() {
         return List.of();
     }
-
 
     public List<Transaction> getMyTransactions() {
         return List.of();

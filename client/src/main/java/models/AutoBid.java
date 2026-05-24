@@ -37,7 +37,7 @@ public class AutoBid implements Serializable, Cloneable {
             throw new IllegalArgumentException("Max bid must be higher than current price.");
         }
 
-        if (maximum > ((User) user).getBalance()) {
+        if (maximum > user.getBalance()) {
             throw new CustomisedException("[Error]: Maximum bid cannot exceed balance");
         }
 

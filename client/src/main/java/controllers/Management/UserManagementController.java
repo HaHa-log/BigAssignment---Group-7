@@ -2,7 +2,7 @@ package controllers.Management;
 
 import models.Admin;
 import models.SessionManager;
-import models.User;
+import models.Member;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableCell;
@@ -14,20 +14,20 @@ import services.UserApiService;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class UserManagementController extends ManagementController<User> {
+public class UserManagementController extends ManagementController<Member> {
     Admin admin = (Admin) SessionManager.getCurrentUser();
     private final UserApiService userApiService = new UserApiService();
 
     @FXML
-    private TableColumn<User, Integer> userId;
+    private TableColumn<Member, Integer> userId;
     @FXML
-    private TableColumn<User, String> username;
+    private TableColumn<Member, String> username;
     @FXML
-    private TableColumn<User, String> email;
+    private TableColumn<Member, String> email;
     @FXML
-    private TableColumn<User, String> role;
+    private TableColumn<Member, String> role;
     @FXML
-    private TableColumn<User, Boolean> status;
+    private TableColumn<Member, Boolean> status;
 
     @Override
     protected void configureColumns() {
@@ -36,36 +36,34 @@ public class UserManagementController extends ManagementController<User> {
         email.setCellValueFactory(new PropertyValueFactory<>("email"));
         role.setCellValueFactory(new PropertyValueFactory<>("role"));
 
-       configureStatusColumn();
+        configureStatusColumn();
     }
 
     private void configureStatusColumn() {
-
-        //get isBlocked status
         status.setCellValueFactory(cellData ->
                 new SimpleBooleanProperty(cellData.getValue().isBlocked()));
 
         status.setCellFactory(column -> createBlockedToggleCell());
     }
 
-    private TableCell<User, Boolean> createBlockedToggleCell() {
+    private TableCell<Member, Boolean> createBlockedToggleCell() {
         return new TableCell<>() {
             private final ToggleButton toggle = new ToggleButton();
 
             {
                 toggle.setOnAction(event -> {
-                    User user = getTableRow().getItem(); // Safer object retrieval
-                    if (user == null) return;
+                    Member member = getTableRow().getItem();
+                    if (member == null) return;
 
                     boolean isNowBlocked = toggle.isSelected();
 
                     try {
                         if (isNowBlocked) {
-                            userApiService.block(user.getId());
-                            admin.blockUser(user, LocalDateTime.now().plusDays(100));
+                            userApiService.block(member.getId());
+                            admin.blockUser(member, LocalDateTime.now().plusDays(100));
                         } else {
-                            userApiService.unblock(user.getId());
-                            admin.unblockUser(user);
+                            userApiService.unblock(member.getId());
+                            admin.unblockUser(member);
                         }
                     } catch (Exception e) {
                         toggle.setSelected(!isNowBlocked);
@@ -102,7 +100,7 @@ public class UserManagementController extends ManagementController<User> {
     }
 
     @Override
-    protected List<User> fetchData() {
+    protected List<Member> fetchData() {
         try {
             return userApiService.getAll();
         } catch (Exception e) {

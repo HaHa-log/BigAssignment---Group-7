@@ -29,5 +29,5 @@ public interface Seller {
                 System.out.println("[System]: Auction created successfully for item: " + item.getName());
             } catch (Exception e) {
                 throw new CustomisedException("System error: " + e.getMessage());            }
-    }   }
+        }   }
 }

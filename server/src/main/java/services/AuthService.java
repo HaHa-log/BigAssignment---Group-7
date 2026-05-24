@@ -3,7 +3,6 @@ package services;
 import com.group7.dto.auth.*;
 import models.Common.Email;
 import models.Common.PhoneNumber;
-import models.Member;
 import models.User;
 import org.springframework.stereotype.Service;
 import repositories.UsersDAO;
@@ -23,7 +22,7 @@ public class AuthService {
         }
 
         double initialBalance = 0.0;
-        Member member = new Member(
+        User user = new User(
                 request.getFirstName(),
                 request.getLastName(),
                 request.getEmail(),
@@ -33,9 +32,9 @@ public class AuthService {
                 request.getAvatarPath()
         );
 
-        userdb.save(member);
+        userdb.save(user);
 
-        return toAuthResponse(member);
+        return toAuthResponse(user);
     }
 
     public AuthResponse login(LoginRequest request) {

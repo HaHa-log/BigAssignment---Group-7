@@ -51,7 +51,7 @@ public class LoginController {
         else {
             try {
                 AuthResponse response = authApiService.login(new LoginRequest(emailInput, passwordInput));
-                SessionManager.loginCurrentUser(AuthSessionMapper.toUser(response));
+                SessionManager.loginCurrentUser(AuthSessionMapper.toMember(response));
                 loginLabel.setTextFill(GREEN);
                 loginLabel.setText("Login successful!");
                 mainController.onSuccessfulLogin();

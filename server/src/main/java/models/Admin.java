@@ -7,16 +7,16 @@ import repositories.TransactionDAO;
 import repositories.UsersDAO;
 import repositories.impl.DaoFactory;
 
-public class Admin extends Member {
+public class Admin extends User {
     private final UsersDAO userDb = DaoFactory.createUsersDAO();
     private final TransactionDAO transactionDb = DaoFactory.createTransactionDAO();
 
-    public Admin(String firstName, String lastName, String email, String phoneNumber, String password, double balance,String avatarPath) {
-        super(firstName, lastName, email, phoneNumber,password, balance,avatarPath);
+    public Admin(String firstName, String lastName, String email, String phoneNumber, String password, double balance, String avatarPath) {
+        super(firstName, lastName, email, phoneNumber, password, balance, avatarPath);
     }
 
-    public Admin(String firstName, String lastName, String email, String phoneNumber, String password, double balance, boolean isAdmin, boolean isBlocked, LocalDateTime blockedUntil,String avatarPath) {
-        super(firstName, lastName, email, phoneNumber, password, balance, isAdmin, isBlocked, blockedUntil,avatarPath);
+    public Admin(String firstName, String lastName, String email, String phoneNumber, String password, double balance, boolean isAdmin, boolean isBlocked, LocalDateTime blockedUntil, String avatarPath) {
+        super(firstName, lastName, email, phoneNumber, password, balance, isAdmin, isBlocked, blockedUntil, avatarPath);
     }
 
     @Override
@@ -29,10 +29,7 @@ public class Admin extends Member {
         return "Admin";
     }
 
-    //requires for block/active toggle button
-    //the button only changes if the value in the actual object changes
     public void blockUser(User user, LocalDateTime until) {
-
         if (user == null) {
             System.out.println("[Error]: User not found");
             return;
@@ -41,16 +38,10 @@ public class Admin extends Member {
         user.setBlocked(until);
         userDb.update(user);
 
-        System.out.println(
-                "[Admin]: User with ID "
-                        + user.getId()
-                        + " blocked until "
-                        + until
-        );
+        System.out.println("[Admin]: User with ID " + user.getId() + " blocked until " + until);
     }
 
     public void unblockUser(User user) {
-
         if (user == null) {
             System.out.println("[Error]: User not found");
             return;
@@ -59,12 +50,9 @@ public class Admin extends Member {
         user.isUnblocked();
         userDb.update(user);
 
-        System.out.println(
-                "[Admin]: User with ID "
-                        + user.getId()
-                        + " unblocked."
-        );
+        System.out.println("[Admin]: User with ID " + user.getId() + " unblocked.");
     }
+
     public boolean cancelAuction(int auctionId) {
         AuctionManager manager = AuctionManager.getInstance();
         boolean success = manager.cancelAuction(auctionId);

@@ -3,7 +3,7 @@ package repositories.impl;
 import config.DB;
 import config.DbException;
 import models.Bid;
-import models.Member;
+import models.User;
 import repositories.AuctionsDAO;
 import repositories.BidsDAO;
 import repositories.UsersDAO;
@@ -14,8 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BidsDAOImpl implements BidsDAO {
-    private AuctionsDAO auctionDb = DaoFactory.createAuctionsDAO();
-    private UsersDAO bidderDb = DaoFactory.createUsersDAO();
+    private final AuctionsDAO auctionDb = DaoFactory.createAuctionsDAO();
+    private final UsersDAO bidderDb = DaoFactory.createUsersDAO();
 
     protected BidsDAOImpl() {}
 
@@ -77,7 +77,7 @@ public class BidsDAOImpl implements BidsDAO {
             st.setDouble(3, bid.getBidPrice().getPrice());
             st.setTimestamp(4, bid.getBidTime() != null
                     ? Timestamp.valueOf(bid.getBidTime()) : null);
-            st.setDouble(5, bid.getId());
+            st.setInt(5, bid.getId());
 
             st.executeUpdate();
 
@@ -96,8 +96,7 @@ public class BidsDAOImpl implements BidsDAO {
             st.setInt(1, id);
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()){
-                    Bid bid = instantiateBid(rs);
-                    return bid;
+                    return instantiateBid(rs);
                 }
             }
             return null;
@@ -116,7 +115,6 @@ public class BidsDAOImpl implements BidsDAO {
 
             st.setInt(1, id);
             try (ResultSet rs = st.executeQuery()) {
-                //if to while to return all bids
                 while (rs.next()){
                     list.add(instantiateBid(rs));
                 }
@@ -136,7 +134,6 @@ public class BidsDAOImpl implements BidsDAO {
             ResultSet rs = st.executeQuery()) {
 
             List<Bid> list = new ArrayList<>();
-
             while (rs.next()) {
                 list.add(instantiateBid(rs));
             }
@@ -148,19 +145,14 @@ public class BidsDAOImpl implements BidsDAO {
     }
 
     private Bid instantiateBid(ResultSet rs) throws SQLException {
-
-        Member bidder =
-                (Member) bidderDb.getById(rs.getInt("bidder_id"));
-
+        User bidder = bidderDb.getById(rs.getInt("bidder_id"));
         Bid obj = new Bid(
-                null,
+                auctionDb.getById(rs.getInt("auction_id")),
                 bidder,
                 rs.getDouble("bidPrice"),
                 rs.getObject("bidTime", LocalDateTime.class)
         );
-
         obj.setId(rs.getInt("bids_id"));
-
         return obj;
     }
 }

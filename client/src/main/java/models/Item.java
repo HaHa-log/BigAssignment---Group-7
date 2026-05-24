@@ -1,7 +1,5 @@
 package models;
 
-//Tạm thời sửa item từ abstract thành concrete class
-
 import models.Common.Price;
 
 import java.time.LocalDateTime;

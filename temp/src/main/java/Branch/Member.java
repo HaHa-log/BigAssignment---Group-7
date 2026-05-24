@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Member extends User implements Bidder, Seller, AuctionObserver {
+public class Member extends User implements Bidder, Seller {
     private TransactionDAO transactionDb = DaoFactory.createTransactionDAO();
     private ItemsDAO itemsDb = DaoFactory.createItemDAO();
 

@@ -2,45 +2,49 @@ package models;
 
 import models.Common.Price;
 import models.Exceptions.CustomisedException;
-
 import java.io.Serializable;
 
 public class AutoBid implements Serializable, Cloneable {
     private Auction auction;
-    private final Member user;
+    private final User user;
     private Price maxBid;
     private double increment;
 
-    public AutoBid(Auction auction, Member user, double maxBid, double increment) {
+    public AutoBid(Auction auction, User user, double maxBid, double increment) {
         this.auction = auction;
         this.user = user;
         this.maxBid = new Price(maxBid);
         this.increment = increment;
     }
 
-    @Override
-    public AutoBid clone() {
-        try {
-            AutoBid clonedAutoBid = (AutoBid) super.clone();
-            clonedAutoBid.maxBid = new Price(this.getMaxBid());
-            return clonedAutoBid;
+    public Auction getAuction() {
+        return auction;
+    }
 
-        } catch (CloneNotSupportedException e) {
-            System.out.println("[Error]: Failed to clone AutoBid configuration: " + e.getMessage());
-            return null;
-        }
+    public void setAuction(Auction auction) {
+        this.auction = auction;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public double getMaxBid() {
+        return maxBid.getPrice();
     }
 
     public void setMaxBid(double maximum) {
         if (maximum <= auction.getCurrentPrice()) {
             throw new IllegalArgumentException("Max bid must be higher than current price.");
         }
-
-        if (maximum > ((User) user).getBalance()) {
+        if (maximum > user.getBalance()) {
             throw new CustomisedException("[Error]: Maximum bid cannot exceed balance");
         }
-
         this.maxBid = new Price(maximum);
+    }
+
+    public double getIncrement() {
+        return increment;
     }
 
     public void setIncrement(double step) {
@@ -61,12 +65,15 @@ public class AutoBid implements Serializable, Cloneable {
         }
     }
 
-    public void setAuction(Auction auction) {
-        this.auction = auction;
+    @Override
+    public AutoBid clone() {
+        try {
+            AutoBid clonedAutoBid = (AutoBid) super.clone();
+            clonedAutoBid.maxBid = new Price(this.getMaxBid());
+            return clonedAutoBid;
+        } catch (CloneNotSupportedException e) {
+            System.out.println("[Error]: Failed to clone AutoBid configuration: " + e.getMessage());
+            return null;
+        }
     }
-
-    public Auction getAuction() { return auction; }
-    public Member getUser() { return user; }
-    public double getMaxBid() { return maxBid.getPrice(); }
-    public double getIncrement() { return increment; }
 }

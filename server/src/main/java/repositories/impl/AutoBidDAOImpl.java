@@ -2,7 +2,7 @@ package repositories.impl;
 
 import models.AutoBid;
 import models.BidStepConfiguration;
-import models.Member;
+import models.User;
 import config.DB;
 import config.DbException;
 import repositories.AuctionsDAO;
@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AutoBidDAOImpl implements AutoBidDAO {
-    private UsersDAO userDb = DaoFactory.createUsersDAO();
-    private AuctionsDAO auctionsDAO = DaoFactory.createAuctionsDAO();
+    private final UsersDAO userDb = DaoFactory.createUsersDAO();
+    private final AuctionsDAO auctionsDAO = DaoFactory.createAuctionsDAO();
 
     protected AutoBidDAOImpl() {}
 
@@ -129,7 +129,10 @@ public class AutoBidDAOImpl implements AutoBidDAO {
         }
     }
 
-    @Override public AutoBid getById(int id) { return null; }
+    @Override
+    public AutoBid getById(int id) {
+        return null;
+    }
 
     @Override
     public List<AutoBid> getAll() {
@@ -149,7 +152,7 @@ public class AutoBidDAOImpl implements AutoBidDAO {
     }
 
     private AutoBid instantiateAutoBid(ResultSet rs) throws SQLException {
-        Member user = (Member) userDb.getById(rs.getInt("user_id"));
+        User user = userDb.getById(rs.getInt("user_id"));
         return new AutoBid(
                 auctionsDAO.getById(rs.getInt("auction_id")),
                 user,

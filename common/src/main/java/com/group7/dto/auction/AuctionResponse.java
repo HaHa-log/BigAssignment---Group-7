@@ -1,6 +1,8 @@
 package com.group7.dto.auction;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import com.group7.dto.bid.BidResponse;
 
 public class AuctionResponse {
     private int id;
@@ -23,6 +25,8 @@ public class AuctionResponse {
     private Integer winnerId;
     private String winnerName;
 
+    private List<BidResponse> bids;
+
     public AuctionResponse() {
     }
 
@@ -39,7 +43,8 @@ public class AuctionResponse {
                            LocalDateTime startingTime,
                            LocalDateTime endingTime,
                            Integer winnerId,
-                           String winnerName) {
+                           String winnerName,
+                           List<BidResponse> bids) {
         this.id = id;
         this.ownerId = ownerId;
         this.ownerName = ownerName;
@@ -54,6 +59,7 @@ public class AuctionResponse {
         this.endingTime = endingTime;
         this.winnerId = winnerId;
         this.winnerName = winnerName;
+        this.bids = bids;
     }
 
     public int getId() {
@@ -114,5 +120,13 @@ public class AuctionResponse {
 
     public void setItemImagePath(String itemImagePath) {
         this.itemImagePath = itemImagePath;
+    }
+
+    public List<BidResponse> getBids() {
+        return bids;
+    }
+
+    public void setBids(List<BidResponse> bids) {
+        this.bids = bids;
     }
 }

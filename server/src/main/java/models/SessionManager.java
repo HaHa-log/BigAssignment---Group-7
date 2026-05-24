@@ -9,7 +9,6 @@ public class SessionManager {
 
     public static String getSavedEmail() {
         return prefs.get(USER_EMAIL_KEY, null);
-        // Trả về null nếu không có
     }
 
     public static void loginCurrentUser(User user) {
@@ -17,7 +16,6 @@ public class SessionManager {
             System.err.println("Login failed: User object is null.");
             return;
         }
-
         currentUser = user;
         prefs.put(USER_EMAIL_KEY, user.getEmail());
     }

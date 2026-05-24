@@ -1,13 +1,16 @@
 package models;
 
 import models.Common.*;
+import repositories.ItemsDAO;
+import repositories.TransactionDAO;
+import repositories.impl.DaoFactory;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class User extends Entity implements Bidder, Seller, AuctionObserver {
+public class User extends Entity implements Bidder, Seller {
     private FullName fullname;
     private Email email;
     private PhoneNumber phoneNumber;
@@ -18,8 +21,10 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
     private LocalDateTime blockedUntil = null;
     private String avatarPath;
     private final List<String> transactions = new ArrayList<>();
-    //private final UsersDAO userDatabase = DaoFactory.createUsersDAO();
     private double frozenBalance = 0;
+
+    private final TransactionDAO transactionDb = DaoFactory.createTransactionDAO();
+    private final ItemsDAO itemsDb = DaoFactory.createItemDAO();
 
     public User(String firstName, String lastName, String email, String phoneNumber, String password, double balance, String avatarPath) {
         this.fullname = new FullName(firstName, lastName);
@@ -27,12 +32,9 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
         this.phoneNumber = new PhoneNumber(phoneNumber);
         this.avatarPath = avatarPath;
         this.balance = new Balance(balance);
-
-        // Enforce password logic consistently
         setPassword(password);
     }
 
-    // DB hydration constructor
     public User(String firstName, String lastName, String email, String phoneNumber, String password, double balance, boolean isAdmin, boolean isBlocked, LocalDateTime blockedUntil, String avatarPath) {
         this(firstName, lastName, email, phoneNumber, password, balance, avatarPath);
         this.isAdmin = isAdmin;
@@ -40,28 +42,31 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
         this.blockedUntil = blockedUntil;
     }
 
+    public String getFullName() { return fullname.toString(); }
+    public String getFirstName() { return fullname.getFirstName(); }
+    public String getLastName() { return fullname.getLastName(); }
+
     public void setFirstName(String fstName) {
         this.fullname = new FullName(fstName, fullname.getLastName());
-        //update();
     }
 
     public void setLastName(String lstName) {
         this.fullname = new FullName(fullname.getFirstName(), lstName);
-        //update();
     }
 
-    public String getAvatarPath() { return avatarPath; }
-    public void setAvatarPath(String avatarPath) { this.avatarPath = avatarPath; }
+    public String getEmail() { return email.toString(); }
 
     public void setEmail(String email) {
         this.email = new Email(email);
-        //update();
     }
+
+    public String getPhoneNumber() { return phoneNumber.toString(); }
 
     public void setPhoneNumber(String number) {
         this.phoneNumber = new PhoneNumber(number);
-        //update();
     }
+
+    public String getPassword() { return password; }
 
     public void setPassword(String pass) {
         if (pass == null || pass.length() < 6) {
@@ -70,64 +75,13 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
         this.password = pass;
     }
 
-    public boolean depositMoney(double amount) {
-        boolean success = this.balance.deposit(amount);
-        if (success) {
-            //update();
-        }
-        return success;
-    }
-
-    public boolean withdrawMoney(double amount) {
-        boolean success = this.balance.withdraw(amount);
-        if (success) {
-            //update();
-        }
-        return success;
-    }
-
-    public boolean freezeMoney(double amount) {
-        if (amount <= 0) {return false;}
-        if (this.balance.showBalance() < amount) {return false;}
-
-        boolean success = this.balance.withdraw(amount);
-        if (!success) {return false;}
-
-        this.frozenBalance += amount;
-
-        //update();
-        return true;
-    }
-
-    public boolean spendFrozenMoney(double amount) {
-        if (amount <= 0) {return false;}
-        if (frozenBalance < amount) {return false;}
-
-        frozenBalance -= amount;
-
-        //update();
-        return true;
-    }
-
-    public boolean unfreezeMoney(double amount) {
-        if (amount <= 0) {return false;}
-        if (frozenBalance < amount) {return false;}
-
-        frozenBalance -= amount;
-        balance.deposit(amount);
-
-        //update();
-        return true;
-    }
-
-    public double getCurrentBalance() { return this.balance.showBalance(); }
     public double getBalance() { return balance.showBalance(); }
-    public double getFrozenBalance() { return frozenBalance; }
-    public void setFrozenBalance(double frozenBalance) { this.frozenBalance = frozenBalance; }
+    public double getCurrentBalance() { return this.balance.showBalance(); }
 
-    public void setBlocked(LocalDateTime until) {
-        this.isBlocked = true;
-        this.blockedUntil = until;
+    public boolean isAdmin() { return isAdmin; }
+
+    public String getRole() {
+        return isAdmin ? "Admin" : "User";
     }
 
     public boolean isBlocked() {
@@ -138,37 +92,61 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
         return isBlocked;
     }
 
+    public void setBlocked(LocalDateTime until) {
+        this.isBlocked = true;
+        this.blockedUntil = until;
+    }
+
     public void isUnblocked() {
         this.isBlocked = false;
         this.blockedUntil = null;
     }
 
-    public String getFullName() { return fullname.toString(); }
-    public String getFirstName() { return fullname.getFirstName(); }
-    public String getLastName() { return fullname.getLastName(); }
-    public String getEmail() { return email.toString(); }
-    public String getPhoneNumber() { return phoneNumber.toString(); }
-    public String getPassword() { return password; }
+    public String getAvatarPath() { return avatarPath; }
+    public void setAvatarPath(String avatarPath) { this.avatarPath = avatarPath; }
 
-    public abstract String getRole();
-    public abstract boolean isAdmin();
+    public List<String> getTransactions() { return transactions; }
 
-    public boolean isEqual(User other) {
-        if (other == null) return false;
-        return this.getId() == other.getId();
+    public double getFrozenBalance() { return frozenBalance; }
+    public void setFrozenBalance(double frozenBalance) { this.frozenBalance = frozenBalance; }
+
+    public boolean depositMoney(double amount) {
+        return this.balance.deposit(amount);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof User user)) return false;
-        return this.getId() == user.getId();
+    public boolean withdrawMoney(double amount) {
+        return this.balance.withdraw(amount);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId());
+    public boolean freezeMoney(double amount) {
+        if (amount <= 0) return false;
+        if (this.balance.showBalance() < amount) return false;
+
+        boolean success = this.balance.withdraw(amount);
+        if (!success) return false;
+
+        this.frozenBalance += amount;
+        return true;
     }
+
+    public boolean spendFrozenMoney(double amount) {
+        if (amount <= 0) return false;
+        if (frozenBalance < amount) return false;
+
+        frozenBalance -= amount;
+        return true;
+    }
+
+    public boolean unfreezeMoney(double amount) {
+        if (amount <= 0) return false;
+        if (frozenBalance < amount) return false;
+
+        frozenBalance -= amount;
+        balance.deposit(amount);
+        return true;
+    }
+
+    public void addTransaction(String message) { transactions.add(message); }
 
     public boolean isHighestBidder(Auction auction) {
         return auction != null
@@ -256,7 +234,53 @@ public abstract class User extends Entity implements Bidder, Seller, AuctionObse
         return alerts;
     }
 
-    public List<String> getTransactions() { return transactions; }
+    public void addItem(Item item) {
+        if (item != null) {
+            item.setOwner(this);
+            if (item.getId() > 0) {
+                itemsDb.update(item);
+            }
+            System.out.println("[System]: Item " + item.getName() + " is now owned by " + this.getFullName());
+        }
+    }
 
-    public void addTransaction(String message) {transactions.add(message);}
+    public void removeItem(Item item) {
+        System.out.println("[System]: Item " + item.getName() + " removed from " + this.getFullName() + "'s inventory.");
+    }
+
+    public List<Item> getInventory() {
+        return itemsDb.getByOwnerId(this.getId());
+    }
+
+    public List<Transaction> getMyTransactions() {
+        return transactionDb.getByUserId(this.getId());
+    }
+
+    public void printMyTransactions() {
+        List<Transaction> list = getMyTransactions();
+
+        if (list.isEmpty()) {
+            System.out.println("[System]: No transactions found.");
+            return;
+        }
+
+        list.forEach(transaction -> System.out.println(transaction.toString()));
+    }
+
+    public boolean isEqual(User other) {
+        if (other == null) return false;
+        return this.getId() == other.getId();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User user)) return false;
+        return this.getId() == user.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
+    }
 }

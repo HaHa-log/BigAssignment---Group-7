@@ -1,7 +1,5 @@
 package controllers;
 
-//preferences API
-
 import exceptions.ApiException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,7 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import models.SessionManager;
-import models.User;
+import models.Member;
 import services.UserApiService;
 
 import java.io.IOException;
@@ -19,9 +17,7 @@ import java.util.prefs.Preferences;
 public class SceneManager {
     private static Stage stage;
     private static StackPane contentArea;
-
     private static String currentContentPath;
-
     private static Preferences prefs = Preferences.userNodeForPackage(SceneManager.class);
     private static final String REMEMBER_KEY = "rememberUser";
     private static final UserApiService userApiService = new UserApiService();
@@ -31,12 +27,10 @@ public class SceneManager {
         setupStage();
     }
 
-    // New setter so the Controller can provide the Pane
     public static void setContentArea(StackPane area) {
         SceneManager.contentArea = area;
     }
 
-    //setup Icons and Exit
     private static void setupStage() {
         try {
             var iconStream = SceneManager.class.getResourceAsStream("/logo.png");
@@ -50,13 +44,9 @@ public class SceneManager {
         }
 
         stage.setTitle("Hệ thống Đấu giá");
-
-        stage.setOnCloseRequest(event -> {
-            javafx.application.Platform.exit();
-        });
+        stage.setOnCloseRequest(event -> javafx.application.Platform.exit());
     }
 
-    //Load general layout
     public static void loadLayout() {
         try {
             Parent shell = FXMLLoader.load(SceneManager.class.getResource("/Layout.fxml"));
@@ -112,7 +102,6 @@ public class SceneManager {
         }
     }
 
-    //RememberMe
     public static void setRememberUser(boolean value) {
         prefs.putBoolean(REMEMBER_KEY, value);
     }
@@ -127,20 +116,18 @@ public class SceneManager {
 
             if (savedEmail != null) {
                 try {
-                    User user = userApiService.getByEmail(savedEmail);
-                    SessionManager.loginCurrentUser(user);
+                    Member member = userApiService.getByEmail(savedEmail);
+                    SessionManager.loginCurrentUser(member);
                     SceneManager.loadLayout();
                     SceneManager.switchContent("/MainFXML/HomePage/HomePage.fxml");
                     return;
                 } catch (ApiException e) {
-                    // return to login if server throws an error
                     System.err.println("Auto-login failed due to server error: " + e.getMessage());
                     SceneManager.switchScene("/LoginFXML/DemoPage.fxml");
                     prefs.putBoolean(REMEMBER_KEY, false);
                 }
             }
         }
-
         SceneManager.switchScene("/LoginFXML/DemoPage.fxml");
     }
 

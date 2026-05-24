@@ -18,8 +18,13 @@ public class AuctionService {
     private final AuctionsDAO auctionsDAO = DaoFactory.createAuctionsDAO();
     private final UsersDAO usersDAO = DaoFactory.createUsersDAO();
     private final BidsDAO bidsDAO = DaoFactory.createBidsDAO();
-    private final DAO<Item> itemsDAO = DaoFactory.createItemDAO();
+    private final ItemDAO itemsDAO = DaoFactory.createItemDAO();
     private final ItemService itemService = new ItemService();
+    private final TransactionService transactionService; // ← thêm
+
+    public AuctionService(TransactionService transactionService) {
+        this.transactionService = transactionService;
+    }
 
     public List<AuctionResponse> getAll() {
         return auctionsDAO.getAll().stream()
@@ -48,8 +53,8 @@ public class AuctionService {
         Item item = itemService.createNewItem(itemRequest); //Kiểm tra xem item, owner có hợp lệ không nhưng chưa lưu item
 
         Auction auction = new Auction(item.getOwner(), item, request.getStartingTime(), request.getEndingTime());
-        auctionsDAO.save(auction);
-        auction.start(); // Đặt start trước để kiểm tra lỗi input, rồi mới lưu auction với item
+        auctionsDAO.save(auction);  //Lưu auction và lưu item
+        auction.start();
         auctionsDAO.update(auction);
         return toResponse(auction);
     }
@@ -57,12 +62,12 @@ public class AuctionService {
     public AuctionResponse placeBid(int auctionId, int bidderId, double amount) {
         Auction auction = requireAuction(auctionId);
         User bidder = usersDAO.getById(bidderId);
-        if (!(bidder instanceof Bidder)) {
+        if (bidder == null) {
             throw new IllegalArgumentException("[Error]: Bidder is invalid.");
         }
         bidder.placeBid(auction, amount);
 
-        Bid bid = new Bid(auction, (Member) bidder, new Price(amount));
+        Bid bid = new Bid(auction, bidder, new Price(amount));
         bidsDAO.save(bid);
 
         models.AuctionManager.getInstance().processAutoBids(auction, null);
@@ -78,14 +83,15 @@ public class AuctionService {
     }
 
     public AuctionResponse confirmReceipt(int auctionId, int buyerId) {
-        User buyer = usersDAO.getById(buyerId);
-        if (!(buyer instanceof Member member)) {
+        User user = usersDAO.getById(buyerId);
+        if (user == null) {
             throw new IllegalArgumentException("[Error]: Buyer is invalid.");
         }
 
-        Transaction transaction = AuctionManager.getInstance().confirmReceipt(auctionId, member);
-        return toResponse(transaction.getAuction());
+        transactionService.confirmReceipt(auctionId, buyerId); // ← thay dòng này
+        return toResponse(requireAuction(auctionId));
     }
+
 
     private Auction requireAuction(int id) {
         Auction auction = auctionsDAO.getById(id);
@@ -109,6 +115,21 @@ public class AuctionService {
 
         User winner = auction.getWinner();
 
+        List<com.group7.dto.bid.BidResponse> bidResponses = java.util.Collections.emptyList();
+        if (auction.getId() > 0) {
+            List<Bid> bids = bidsDAO.getByAuctionId(auction.getId());
+            if (bids != null) {
+                bidResponses = bids.stream().map(bid -> new com.group7.dto.bid.BidResponse(
+                        bid.getId(),
+                        auction.getId(),
+                        bid.getBidder() != null ? bid.getBidder().getId() : 0,
+                        bid.getBidder() != null ? bid.getBidder().getFullName() : "Unknown",
+                        bid.getBidPrice() != null ? bid.getBidPrice().getPrice() : 0.0,
+                        bid.getBidTime()
+                )).toList();
+            }
+        }
+
         return new AuctionResponse(
                 auction.getId(),
                 auction.getOwnerId(),
@@ -122,8 +143,9 @@ public class AuctionService {
                 auction.getCurrentPrice(),
                 auction.getStartingTime(),
                 auction.getEndingTime(),
-                winner != null ? winner.getId() : null,         // 13. winnerId
-                winner != null ? winner.getFullName() : null    // 14. winnerName
+                winner != null ? winner.getId() : null,
+                winner != null ? winner.getFullName() : null,
+                bidResponses
         );
     }
 }

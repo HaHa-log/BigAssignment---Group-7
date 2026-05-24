@@ -34,7 +34,6 @@ public class Auction extends Entity implements Serializable {
     private Bidder winner;
     private int extendCount;
     private List<Bid> bids;
-    private transient List<AuctionObserver> observers;
     private transient List<User> participants;
     private transient ReentrantLock lock;
 
@@ -73,19 +72,6 @@ public class Auction extends Entity implements Serializable {
     public Auction(Member owner, Item item, AuctionStatus status, LocalDateTime startingTime, LocalDateTime endingTime) {
         this(owner, item, status, startingTime, endingTime,
                 item.getStartingPrice(), item.getStartingPrice(), null);
-    }
-
-    public List<AuctionObserver> getObservers() {
-        return observers();
-    }
-
-    public void addObserver(AuctionObserver observer) {
-        if (observer != null && !observers().contains(observer)) {
-            observers().add(observer);
-            if (observer instanceof User user) {
-                System.out.println("[System]: " + user.getFullName() + " is now viewing this auction");
-            }
-        }
     }
 
     public AuctionStatus getStatus() {
@@ -362,12 +348,6 @@ public class Auction extends Entity implements Serializable {
         }
     }
 
-    private void notifyBidPlaced(Bidder bidder, double amount) {
-        for (AuctionObserver observer : observers()) {
-            observer.onBidPlaced(this, bidder, amount);
-        }
-    }
-
     private void processPreviousWinnerAutoBid(Bidder previousWinner, Bidder bidder) {
         if (!(previousWinner instanceof User oldUser)
                 || !(bidder instanceof User newUser)
@@ -415,13 +395,6 @@ public class Auction extends Entity implements Serializable {
             lock = new ReentrantLock();
         }
         return lock;
-    }
-
-    private List<AuctionObserver> observers() {
-        if (observers == null) {
-            observers = new ArrayList<>();
-        }
-        return observers;
     }
 
     private List<User> participants() {
