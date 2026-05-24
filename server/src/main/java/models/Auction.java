@@ -267,12 +267,12 @@ public class Auction extends Entity implements Serializable {
             if (transitioned) {
                 if (winner instanceof Member winnerMember) {
                     double winningPrice = currentPrice;
-                    boolean success = winnerUser.spendFrozenMoney(winningPrice);
+                    boolean success = winnerMember.spendFrozenMoney(winningPrice);
 
                     if (success) {
                         owner.depositMoney(winningPrice);
 
-                        if (winnerUser.getId() > 0) {usersDb().update(winnerUser);}
+                        if (winnerMember.getId() > 0) {usersDb().update(winnerMember);}
                         if (owner.getId() > 0) {usersDb().update(owner);}
 
                         transitionTo(AuctionStatus.PAID);
@@ -312,11 +312,11 @@ public class Auction extends Entity implements Serializable {
     private void replaceSelfBidHold(Member member, double previousSelfBid, double newBidAmount)
             throws InvalidBidException {
         if (previousSelfBid > 0) {
-            boolean unfrozen = user.unfreezeMoney(previousSelfBid);
+            boolean unfrozen = member.unfreezeMoney(previousSelfBid);
 
             if (unfrozen) {
 
-            System.out.println("[System]: Unfrozen old self-bid of " + previousSelfBid + " for " + user.getFullName());}
+            System.out.println("[System]: Unfrozen old self-bid of " + previousSelfBid + " for " + member.getFullName());}
         }
         if (newBidAmount < 0) {
             throw new InvalidBidException(currentPrice, newBidAmount);
@@ -335,10 +335,10 @@ public class Auction extends Entity implements Serializable {
         }
         double oldBidAmount = oldMember.getHighestBid(this);
         if (oldBidAmount > 0) {
-            boolean success = oldUser.unfreezeMoney(oldBidAmount);
+            boolean success = oldMember.unfreezeMoney(oldBidAmount);
             if (success) {}
-            if (oldUser.getId() > 0) {
-                usersDb().update(oldUser);
+            if (oldMember.getId() > 0) {
+                usersDb().update(oldMember);
             }
             if (oldMember.getId() > 0) {
                 usersDb().update(oldMember);

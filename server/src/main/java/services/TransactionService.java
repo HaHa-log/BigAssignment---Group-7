@@ -23,7 +23,7 @@ public class TransactionService {
     public TransactionResponse createPendingTransaction(int auctionId) {
         Auction auction = requireAuction(auctionId);
 
-        User winner = auction.getWinner();
+        Member winner = auction.getWinner();
         if (winner == null) {
             throw new IllegalArgumentException("[Error]: Auction has no winner.");
         }
@@ -45,7 +45,7 @@ public class TransactionService {
     }
     //buyer confirm
     public TransactionResponse confirmReceipt(int auctionId, int buyerId) {
-        User buyer = usersDAO.getById(buyerId);
+        Member buyer = usersDAO.getById(buyerId);
         if (!(buyer instanceof Member member)) {
             throw new IllegalArgumentException("[Error]: Buyer is invalid.");
         }

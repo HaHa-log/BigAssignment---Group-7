@@ -4,7 +4,6 @@ import models.Member;
 import models.Transaction;
 import config.DB;
 import config.DbException;
-import models.User;
 import models.Auction;
 import repositories.AuctionsDAO;
 import repositories.TransactionDAO;
@@ -193,8 +192,8 @@ public class TransactionDAOImpl implements TransactionDAO {
         Auction auction = auctionsDAO.getById(auctionId);
         if (auction == null) return null;
 
-        User buyer = userDAO.getById(rs.getInt("buyer_id"));
-        User seller = userDAO.getById(rs.getInt("seller_id"));
+        Member buyer = userDAO.getById(rs.getInt("buyer_id"));
+        Member seller = userDAO.getById(rs.getInt("seller_id"));
         if (!(buyer instanceof Member) || !(seller instanceof Member)) return null;
 
         Transaction obj = new Transaction(
