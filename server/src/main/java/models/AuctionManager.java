@@ -92,20 +92,41 @@ public class AuctionManager {
                 || session.getStatus() == Auction.AuctionStatus.CANCELED) {
             return;
         }
+
         if (!session.transitionTo(Auction.AuctionStatus.FINISHED)) {
             return;
         }
+
         moveToCompleted(session);
+
         User winner = session.getWinner();
         if (winner == null) {
             session.getItem().setStatus(Item.Status.AVAILABLE);
             auctionDb.update(session);
-            System.out.println("Auction closed!");
+            System.out.println("[System]: Auction #" + session.getAuctionId() + " closed with no winner.");
             return;
         }
+
+        // Tạo bản ghi giao dịch chờ thanh toán, không xử lý dịch chuyển số dư tài khoản
         createPendingTransaction(session, winner);
         auctionDb.update(session);
-        System.out.println("Auction closed!");
+        System.out.println("[System]: Auction #" + session.getAuctionId() + " moved to pending invoice confirmation.");
+    }
+
+    private void createPendingTransaction(Auction session, User winner) {
+        // KIỂM TRA CHỐNG LỖI TẠO TRÙNG BẢN GHI (Duplicate Record):
+        Transaction existingTx = transactionDb.getPendingByAuctionAndBuyer(session.getId(), winner.getId());
+        if (existingTx != null) {
+            System.out.println("[System Warning]: Pending transaction already exists in DB for auction ID " + session.getId());
+            return;
+        }
+
+        double finalPrice = session.getCurrentPrice();
+        Transaction transaction = new Transaction(session, winner, session.getOwner(), finalPrice);
+        transactionDb.save(transaction);
+
+        session.getItem().setStatus(Item.Status.SOLD);
+        System.out.println("[System]: Pending invoice generated for Auction Winner: " + winner.getFullName());
     }
 
     public boolean cancelAuction(int auctionId) {
@@ -133,21 +154,31 @@ public class AuctionManager {
         if (buyer == null) {
             throw new IllegalArgumentException("[Error]: Buyer is required.");
         }
+
+        // Ép cập nhật trạng thái thời gian thực tế của DB Server trước khi tìm kiếm hóa đơn
+        Auction auction = auctionDb.getById(auctionId);
+        if (auction != null) {
+            auction.getStatus();
+        }
+
         Transaction transaction = transactionDb.getPendingByAuctionAndBuyer(auctionId, buyer.getId());
         if (transaction == null) {
             throw new IllegalArgumentException("[Error]: No pending transaction found for this auction.");
         }
+
         if (!buyer.isEqual(transaction.getBuyer())) {
             throw new IllegalArgumentException("[Error]: Only the buyer can confirm receipt.");
         }
+
         transaction.markCompleted();
         transaction.getAuction().transitionTo(Auction.AuctionStatus.PAID);
+
+        // DB update
         transactionDb.update(transaction);
         auctionDb.update(transaction.getAuction());
+        DaoFactory.createUsersDAO().update(buyer);
+        DaoFactory.createUsersDAO().update(transaction.getSeller());
 
-        double amount = transaction.getFinalAmount();
-        buyer.addTransaction("PAYMENT | -" + amount + " | Item: " + transaction.getAuction().getItem().getName());
-        transaction.getSeller().addTransaction("SALE | +" + amount + " | Item: " + transaction.getAuction().getItem().getName());
         return transaction;
     }
 
@@ -182,18 +213,5 @@ public class AuctionManager {
         if (completedSessions.stream().noneMatch(auction -> auction.getId() == session.getId())) {
             completedSessions.add(session);
         }
-    }
-
-    private void createPendingTransaction(Auction session, User winner) {
-        double finalPrice = session.getCurrentPrice();
-        if (winner.getFrozenBalance() < finalPrice && winner.freezeMoney(finalPrice - winner.getFrozenBalance())) {
-            System.out.println("[System]: Money frozen, moving onto transaction page...");
-        } else if (winner.getFrozenBalance() < finalPrice) {
-            System.out.println("[Warning]: Winner no longer has enough balance to freeze!");
-        }
-        Transaction transaction = new Transaction(session, winner, session.getOwner(), finalPrice);
-        transactionDb.save(transaction);
-        session.getItem().setStatus(Item.Status.SOLD);
-        System.out.println("[System]: Transaction created for winner: " + winner.getFullName());
     }
 }

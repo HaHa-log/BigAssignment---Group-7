@@ -1,10 +1,9 @@
 package controllers.AuctionPage;
 
 import models.Auction;
-import models.Item;
-import models.Member;
 import models.SessionManager;
 import com.group7.dto.auction.CreateAuctionRequest;
+import models.User;
 import services.AuctionApiService;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -60,7 +59,7 @@ public class AuctionCreateController {
         Task<Void> createTask = new Task<>() {
             @Override
             protected Void call() throws Exception {
-                if (!(SessionManager.getCurrentUser() instanceof Member seller)) {
+                if (!(SessionManager.getCurrentUser() instanceof User seller)) {
                     throw new IllegalArgumentException("[Error]: Session expired! Please log in again.");
                 }
 

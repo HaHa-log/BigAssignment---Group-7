@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 public interface Seller {
     default void createAuction(Item item, LocalDateTime createdAt, LocalDateTime terminatedAt) {
-        if (this instanceof Member owner) {
+        if (this instanceof User owner) {
             if (owner.isBlocked()) {
                 throw new AuthenticationException("Your account is currently blocked and cannot create auctions.");
             }

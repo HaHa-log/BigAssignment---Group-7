@@ -4,11 +4,11 @@ public interface Bidder {
     double getBalance();
 
     default boolean placeBid(Auction auction, double amount){
-        if (this instanceof Member member && member.isBlocked()) {
+        if (this instanceof User member && member.isBlocked()) {
             throw new IllegalArgumentException("[Error]: Your account is blocked");
         }
 
-        if (this instanceof Member member && amount > member.getBalance()) {
+        if (this instanceof User user && amount > user.getBalance()) {
             throw new IllegalArgumentException("Bid cannot be greater than your balance");
         }
 
@@ -23,7 +23,7 @@ public interface Bidder {
     default double getHighestBid(Auction auction) {
         double lastTimeBidAmount = 0;
 
-        if (!(this instanceof Member thisMember)) {
+        if (!(this instanceof User thisMember)) {
             return 0;
         }
 

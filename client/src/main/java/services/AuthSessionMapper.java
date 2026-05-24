@@ -1,7 +1,6 @@
 package services;
 
-import models.Admin;
-import models.Member;
+import models.User;
 import com.group7.dto.auth.*;
 
 public final class AuthSessionMapper {
@@ -10,35 +9,29 @@ public final class AuthSessionMapper {
     private AuthSessionMapper() {
     }
 
-    public static Member toMember(AuthResponse response) {
+    public static User toUser(AuthResponse response) {
         if (response == null) {
             throw new IllegalArgumentException("Auth response is required.");
         }
 
+        // Kiểm tra phân quyền dựa vào chuỗi role trả về từ DTO JSON của Server
         boolean isAdminUser = "true".equalsIgnoreCase(response.getRole())
                 || "Admin".equalsIgnoreCase(response.getRole());
 
-        Member member = isAdminUser ?
-                new Admin(
-                        response.getFirstName(),
-                        response.getLastName(),
-                        response.getEmail(),
-                        response.getPhoneNumber(),
-                        SESSION_PASSWORD_PLACEHOLDER,
-                        response.getBalance(),
-                        response.getAvatarPath()
-                ) :
-                new Member(
-                        response.getFirstName(),
-                        response.getLastName(),
-                        response.getEmail(),
-                        response.getPhoneNumber(),
-                        SESSION_PASSWORD_PLACEHOLDER,
-                        response.getBalance(),
-                        response.getAvatarPath()
-                );
+        User user = new User(
+                response.getFirstName(),
+                response.getLastName(),
+                response.getEmail(),
+                response.getPhoneNumber(),
+                SESSION_PASSWORD_PLACEHOLDER,
+                response.getBalance(),
+                isAdminUser,              // Tham số isAdmin gán trực tiếp
+                false,                    // Tham số isBlocked mặc định false khi đăng nhập
+                null,                     // Tham số blockedUntil mặc định null
+                response.getAvatarPath()
+        );
 
-        member.setId(response.getUserId());
-        return member;
+        user.setId(response.getUserId());
+        return user;
     }
 }
