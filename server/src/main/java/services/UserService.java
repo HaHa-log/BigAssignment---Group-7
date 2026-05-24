@@ -31,6 +31,12 @@ public class UserService {
         return toResponse(requireUser(email));
     }
 
+    public UserResponse updateAvatar(int id, String filename) {
+        User user = requireUser(id);
+        user.setAvatarPath(filename);
+        usersDAO.update(user);
+        return toResponse(user);
+    }
 
     public UserResponse block(int id) {
         User user = requireUser(id);

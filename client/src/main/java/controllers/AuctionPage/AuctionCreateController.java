@@ -1,5 +1,6 @@
 package controllers.AuctionPage;
 
+import models.Auction;
 import models.Item;
 import models.Member;
 import models.SessionManager;
@@ -14,11 +15,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import services.ItemApiService;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -34,10 +34,10 @@ public class AuctionCreateController {
     @FXML private ImageView imagePreview;
 
     private final AuctionApiService auctionApiService = new AuctionApiService();
+    private final ItemApiService itemApiService = new ItemApiService();
 
     private File selectedImageFile;
     private static final long MAX_IMAGE_SIZE = 5 * 1024 * 1024;
-    private static final String IMAGES_DIR = "src/main/resources/ItemImages";
 
     @FXML
     private void createAuction() {
@@ -70,23 +70,17 @@ public class AuctionCreateController {
                 LocalDateTime startFull = startDate.atTime(startTime);
                 LocalDateTime endFull = endDate.atTime(endTime);
 
-                Item item = new Item(itemName, startingPrice, description);
-
-                item.setOwnerId(seller.getId());
-
-                if (selectedImageFile != null) {
-                    processImageUpload(item);
-                }
-
-                auctionApiService.create(new CreateAuctionRequest(
-                        seller.getId(),
-                        item.getName(),
-                        item.getDescription(),
-                        item.getStartingPrice(),
-                        startFull,
-                        endFull,
-                        item.getImagePath()
+                Auction auction = auctionApiService.create(new CreateAuctionRequest(
+                        seller.getId(), itemName, description,
+                        startingPrice, startFull, endFull,
+                        null
                 ));
+
+                if (selectedImageFile == null) {
+                    return null; // No image to upload, just return
+                } else {
+                    itemApiService.uploadItemImage(auction.getItem().getId(), selectedImageFile);
+                }
 
                 return null;
             }
@@ -113,22 +107,6 @@ public class AuctionCreateController {
         });
 
         new Thread(createTask).start();
-    }
-
-    private void processImageUpload(Item item) throws IOException {
-        if (selectedImageFile.length() > MAX_IMAGE_SIZE) {
-            throw new IOException("Image too large (Max 5MB)");
-        }
-
-        File imagesDir = new File(IMAGES_DIR);
-        if (!imagesDir.exists()) imagesDir.mkdirs();
-
-        String fileName = "item_" + System.currentTimeMillis() + "_" + selectedImageFile.getName();
-        File destFile = new File(imagesDir, fileName);
-
-        Files.copy(selectedImageFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-        item.setImagePath(fileName);
     }
 
     private void clearInputs() {

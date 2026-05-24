@@ -71,12 +71,9 @@ public class BidService {
     }
 
     private BidResponse toResponse(Bid bid) {
-        int auctionId = bid.getAuction() != null ? bid.getAuction().getId() : 0;
-        String auctionName = bid.getAuction() != null && bid.getAuction().getItem() != null
-                ? bid.getAuction().getItem().getName()
-                : null;
+        int auctionId = bid.getAuction().getId();
 
-        int bidderId = bid.getBidder() != null ? bid.getBidder().getId() : 0;
+        int bidderId = bid.getBidder().getId();
         String bidderName = bid.getBidder() != null ? bid.getBidder().getFullName() : null;
 
         return new BidResponse(

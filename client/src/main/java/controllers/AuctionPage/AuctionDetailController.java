@@ -1,5 +1,6 @@
 package controllers.AuctionPage;
 
+import com.group7.dto.bid.AutoBidRequest;
 import models.*;
 import models.Exceptions.CustomisedException;
 import javafx.fxml.FXML;
@@ -196,7 +197,7 @@ public class AuctionDetailController {
                 throw new IllegalArgumentException("[Error]: Only members can enable auto bidding.");
             }
 
-            com.group7.dto.bid.AutoBidRequest request = new com.group7.dto.bid.AutoBidRequest(
+            AutoBidRequest request = new AutoBidRequest(
                     currentMember.getId(),
                     maxBid,
                     increment

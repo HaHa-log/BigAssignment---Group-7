@@ -1,24 +1,28 @@
 package controllers;
 
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import services.FileStorageService;
 import services.UserService;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
+    private final FileStorageService fileStorageService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, FileStorageService fileStorageService) {
         this.userService = userService;
+        this.fileStorageService = fileStorageService;
     }
 
     @GetMapping
@@ -34,11 +38,34 @@ public class UserController {
     @GetMapping("/email/{email:.+}")
     public ResponseEntity<?> getByEmail(@PathVariable String email) {
         try {
-            // Make sure your UserService has a method to find by email!
             return ResponseEntity.ok(userService.getByEmail(email));
         } catch (Exception e) {
             return serverError(e);
         }
+    }
+
+    @PostMapping(value = "/{id}/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadAvatar(@PathVariable int id, @RequestPart("file") MultipartFile file) {
+        String filename = fileStorageService.saveAvatar(file, id);
+        return ResponseEntity.ok(userService.updateAvatar(id, filename));
+    }
+
+    @GetMapping("/avatars/{filename}")
+    public ResponseEntity<Resource> getAvatar(@PathVariable String filename) throws IOException {
+        Path path = fileStorageService.resolveAvatar(filename);
+        Resource resource = new UrlResource(path.toUri());
+        if (!resource.exists() || !resource.isReadable()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        String lower = filename.toLowerCase();
+        String contentType = lower.endsWith(".png") ? "image/png"
+                : lower.endsWith(".webp") ? "image/webp"
+                : "image/jpeg";
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .body(resource);
     }
 
     @PostMapping("/{id}/block")
@@ -80,6 +107,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("error", e.getMessage() == null ? "Unexpected server error." : e.getMessage()));
     }
+
     @GetMapping("/{id}/notifications")
     public ResponseEntity<?> getNotifications(@PathVariable int id) {
         try {

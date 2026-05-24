@@ -1,7 +1,6 @@
 package controllers.AuctionPage;
 
 import models.Auction;
-import models.Item;
 import controllers.SceneManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,7 +9,6 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import java.io.File;
 import java.io.IOException;
 
 public class AuctionCardController {
@@ -30,7 +28,6 @@ public class AuctionCardController {
     @FXML
     private void toAuctionDetail() {
         try {
-            String fxmlPath = "/AuctionPageFXML/AuctionDetail.fxml";
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/AuctionPageFXML/AuctionDetail.fxml"));
             Parent detailRoot = loader.load();
 
@@ -55,12 +52,15 @@ public class AuctionCardController {
     }
 
     private void setItemImage() {
-        Item item = auction.getItem();
-        String filePath = item.getImagePath();
+        String imagePath = auction.getItem().getImagePath();
 
-        File file = new File("src/main/resources/ItemImages/" + item.getImagePath());
-        Image image = new Image(file.toURI().toString());
+        if (imagePath == null || imagePath.isBlank() || "null".equalsIgnoreCase(imagePath)) {
+            imageContainer.setImage(null); // hoặc set default image resource
+            return;
+        }
 
+        String imageUrl = config.ApiConfig.baseUrl() + "/api/items/images/" + imagePath;
+        Image image = new Image(imageUrl, true);
         imageContainer.setImage(image);
     }
 }

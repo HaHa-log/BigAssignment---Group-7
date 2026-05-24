@@ -1,11 +1,13 @@
 package services;
 
 import com.group7.dto.auction.*;
+import com.group7.dto.item.ItemRequest;
 import models.*;
 import models.Common.Price;
 import org.springframework.stereotype.Service;
 import repositories.AuctionsDAO;
 import repositories.BidsDAO;
+import repositories.DAO;
 import repositories.UsersDAO;
 import repositories.impl.DaoFactory;
 
@@ -16,6 +18,8 @@ public class AuctionService {
     private final AuctionsDAO auctionsDAO = DaoFactory.createAuctionsDAO();
     private final UsersDAO usersDAO = DaoFactory.createUsersDAO();
     private final BidsDAO bidsDAO = DaoFactory.createBidsDAO();
+    private final DAO<Item> itemsDAO = DaoFactory.createItemDAO();
+    private final ItemService itemService = new ItemService();
 
     public List<AuctionResponse> getAll() {
         return auctionsDAO.getAll().stream()
@@ -33,18 +37,19 @@ public class AuctionService {
             throw new IllegalArgumentException("[Error]: Request body is required.");
         }
 
-        User owner = usersDAO.getById(request.getOwnerId());
-        if (!(owner instanceof Member member)) {
-            throw new IllegalArgumentException("[Error]: Auction owner is invalid.");
-        }
+        ItemRequest itemRequest = new ItemRequest(
+                request.getItemName(),
+                request.getStartingPrice(),
+                request.getDescription(),
+                request.getImagePath(),
+                request.getOwnerId()
+        );
 
-        Item item = new Item(request.getItemName(), request.getStartingPrice(), request.getDescription());
-        item.setOwner(member);
-        item.setImagePath(request.getImagePath());
+        Item item = itemService.createNewItem(itemRequest); //Kiểm tra xem item, owner có hợp lệ không nhưng chưa lưu item
 
-        Auction auction = new Auction(member, item, request.getStartingTime(), request.getEndingTime());
+        Auction auction = new Auction(item.getOwner(), item, request.getStartingTime(), request.getEndingTime());
         auctionsDAO.save(auction);
-        auction.start();
+        auction.start(); // Đặt start trước để kiểm tra lỗi input, rồi mới lưu auction với item
         auctionsDAO.update(auction);
         return toResponse(auction);
     }

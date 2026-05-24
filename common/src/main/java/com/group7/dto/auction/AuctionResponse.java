@@ -27,19 +27,19 @@ public class AuctionResponse {
     }
 
     public AuctionResponse(int id,
-            int ownerId,
-            String ownerName,
-            int itemId,
-            String itemName,
-            String itemDescription,
-            String itemImagePath,
-            String status,
-            double startingPrice,
-            double currentPrice,
-            LocalDateTime startingTime,
-            LocalDateTime endingTime,
-            Integer winnerId,
-            String winnerName) {
+                           int ownerId,
+                           String ownerName,
+                           int itemId,
+                           String itemName,
+                           String itemDescription,
+                           String itemImagePath,
+                           String status,
+                           double startingPrice,
+                           double currentPrice,
+                           LocalDateTime startingTime,
+                           LocalDateTime endingTime,
+                           Integer winnerId,
+                           String winnerName) {
         this.id = id;
         this.ownerId = ownerId;
         this.ownerName = ownerName;
@@ -110,5 +110,9 @@ public class AuctionResponse {
 
     public String getWinnerName() {
         return winnerName;
+    }
+
+    public void setItemImagePath(String itemImagePath) {
+        this.itemImagePath = itemImagePath;
     }
 }

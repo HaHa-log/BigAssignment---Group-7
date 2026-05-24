@@ -32,7 +32,7 @@ public class ItemService {
         return itemsDb.getByOwnerId(ownerId).stream().map(this::toResponse).toList();
     }
 
-    public void createNewItem(ItemRequest request) {
+    public Item createNewItem(ItemRequest request) {
         validateCreateRequest(request);
 
         User user = usersDb.getById(request.getOwnerId());
@@ -41,12 +41,9 @@ public class ItemService {
         }
         Item item = new Item(request.getName(), request.getStartingPrice(), request.getDescription());
         item.setOwner(owner);
-        if (request.getImagePath() != null && !request.getImagePath().isBlank()) {
-            item.setImagePath(request.getImagePath().trim());
-        }
         item.setStatus(Item.Status.AVAILABLE);
 
-        itemsDb.save(item);
+        return item;
     }
 
     public List<ItemResponse> getItemsByOwner(int ownerId) {
@@ -91,6 +88,13 @@ public class ItemService {
             item.setStatus(parseStatus(req.getStatus()));
         }
 
+        itemsDb.update(item);
+        return toResponse(item);
+    }
+
+    public ItemResponse updateImage(int id, String filename) {
+        Item item = requireItem(id);
+        item.setImagePath(filename); // save filename
         itemsDb.update(item);
         return toResponse(item);
     }

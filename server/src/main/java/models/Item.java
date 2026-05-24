@@ -4,10 +4,6 @@ package models;
 
 import models.Common.Price;
 
-import java.time.LocalDateTime;
-import repositories.ItemsDAO;
-import repositories.impl.DaoFactory;
-
 public class Item extends Entity {
     private Price startingPrice;
     private String description;
@@ -19,7 +15,6 @@ public class Item extends Entity {
     }
     private Status status = Status.AVAILABLE;
     private String imagePath;
-    private final ItemsDAO itemsDb = DaoFactory.createItemDAO();
     private Member owner;
 
     public Item(String name, double startingPrice, String description) {

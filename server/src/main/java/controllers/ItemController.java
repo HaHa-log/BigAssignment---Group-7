@@ -3,11 +3,18 @@ package controllers;
 import com.group7.dto.item.ItemRequest;
 import com.group7.dto.item.ItemResponse;
 import com.group7.dto.item.UpdateItemRequest;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import services.FileStorageService;
 import services.ItemService;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 @RestController
@@ -15,9 +22,11 @@ import java.util.List;
 public class ItemController {
 
     private final ItemService itemService;
+    private final FileStorageService fileStorageService;
 
-    public ItemController(ItemService itemService) {
+    public ItemController(ItemService itemService, FileStorageService fileStorageService) {
         this.itemService = itemService;
+        this.fileStorageService = fileStorageService;
     }
 
     @GetMapping
@@ -40,6 +49,30 @@ public class ItemController {
     public ResponseEntity<?> createItem(@RequestBody ItemRequest request) {
         itemService.createNewItem(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadItemImage(@PathVariable int id, @RequestPart("file") MultipartFile file) {
+        String filename = fileStorageService.saveItemImage(file, id);
+        return ResponseEntity.ok(itemService.updateImage(id, filename));
+    }
+
+    @GetMapping("/images/{filename}")
+    public ResponseEntity<Resource> getItemImage(@PathVariable String filename) throws IOException {
+        Path path = fileStorageService.resolveItem(filename);
+        Resource resource = new UrlResource(path.toUri());
+        if (!resource.exists() || !resource.isReadable()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        String lower = filename.toLowerCase();
+        String contentType = lower.endsWith(".png") ? "image/png"
+                : lower.endsWith(".webp") ? "image/webp"
+                : "image/jpeg";
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .body(resource);
     }
 
     @PutMapping("/{id}")
