@@ -88,10 +88,18 @@ public class Auction extends Entity implements Serializable {
         }
     }
 
-    public AuctionStatus getRawStatus() {
-        return status;
+    public List<Bid> getBids() {
+        return bids;
     }
 
+    public void setBids(List<Bid> bids) {
+        lock().lock();
+        try {
+            this.bids = bids != null ? bids : new ArrayList<>();
+        } finally {
+            lock().unlock();
+        }
+    }
     public String start() {
         lock().lock();
         try {
@@ -207,10 +215,6 @@ public class Auction extends Entity implements Serializable {
 
     public int getOwnerId() {
         return owner.getId();
-    }
-
-    public List<Bid> getBids() {
-        return bids;
     }
 
     public LocalDateTime getEndingTime() {

@@ -10,6 +10,8 @@ module common {
     opens com.group7.dto.auction to com.fasterxml.jackson.databind;
     opens com.group7.dto.item to com.fasterxml.jackson.databind;
     opens com.group7.dto.bid to com.fasterxml.jackson.databind;
+    exports com.group7.dto.transaction;
+    opens com.group7.dto.transaction to com.fasterxml.jackson.databind;
 
     requires com.fasterxml.jackson.databind;
 }

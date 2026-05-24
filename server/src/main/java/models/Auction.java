@@ -267,17 +267,14 @@ public class Auction extends Entity implements Serializable {
             if (transitioned) {
                 if (winner instanceof Member winnerMember) {
                     double winningPrice = currentPrice;
-                    boolean success = winnerMember.spendFrozenMoney(winningPrice);
+                    boolean success = winnerUser.spendFrozenMoney(winningPrice);
+
                     if (success) {
-                        winnerMember.addTransaction("💸 PAYMENT | -" + winningPrice);
                         owner.depositMoney(winningPrice);
-                        owner.addTransaction("💰 SOLD | +" + winningPrice);
-                        if (winnerMember.getId() > 0) {
-                            usersDb().update(winnerMember);
-                        }
-                        if (owner.getId() > 0) {
-                            usersDb().update(owner);
-                        }
+
+                        if (winnerUser.getId() > 0) {usersDb().update(winnerUser);}
+                        if (owner.getId() > 0) {usersDb().update(owner);}
+
                         transitionTo(AuctionStatus.PAID);
                     }
                 }
@@ -315,11 +312,11 @@ public class Auction extends Entity implements Serializable {
     private void replaceSelfBidHold(Member member, double previousSelfBid, double newBidAmount)
             throws InvalidBidException {
         if (previousSelfBid > 0) {
-            boolean unfrozen = member.unfreezeMoney(previousSelfBid);
+            boolean unfrozen = user.unfreezeMoney(previousSelfBid);
+
             if (unfrozen) {
-                member.addTransaction("🔓 UNFREEZE | +" + previousSelfBid + " | Balance: " + String.format("%.2f", member.getBalance()));
-            }
-            System.out.println("[System]: Unfrozen old self-bid of " + previousSelfBid + " for " + member.getFullName());
+
+            System.out.println("[System]: Unfrozen old self-bid of " + previousSelfBid + " for " + user.getFullName());}
         }
         if (newBidAmount < 0) {
             throw new InvalidBidException(currentPrice, newBidAmount);
@@ -330,7 +327,6 @@ public class Auction extends Entity implements Serializable {
             }
             throw new IllegalArgumentException("[Error]: Insufficient balance for bidding.");
         }
-        member.addTransaction("🔒 FREEZE | -" + newBidAmount + " | Frozen: " + String.format("%.2f", member.getFrozenBalance()));
     }
 
     private void releasePreviousWinnerHold(Bidder previousWinner, Member currentBidder) {
@@ -339,9 +335,10 @@ public class Auction extends Entity implements Serializable {
         }
         double oldBidAmount = oldMember.getHighestBid(this);
         if (oldBidAmount > 0) {
-            boolean success = oldMember.unfreezeMoney(oldBidAmount);
-            if (success) {
-                oldMember.addTransaction("🔓 UNFREEZE | +" + oldBidAmount + " | Balance: " + String.format("%.2f", oldMember.getBalance()));
+            boolean success = oldUser.unfreezeMoney(oldBidAmount);
+            if (success) {}
+            if (oldUser.getId() > 0) {
+                usersDb().update(oldUser);
             }
             if (oldMember.getId() > 0) {
                 usersDb().update(oldMember);

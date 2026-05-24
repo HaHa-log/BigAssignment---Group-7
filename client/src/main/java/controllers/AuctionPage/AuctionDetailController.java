@@ -88,6 +88,7 @@ public class AuctionDetailController {
             bidPlacedResultLabel.setText(e.getMessage());
         } finally {
             bidAmountInput.clear();
+            updateBidChart();
         }
     }
 
@@ -101,7 +102,7 @@ public class AuctionDetailController {
         updateBidChart();
 
         if (currentUser != null && currentUser.isWinner(auction)
-                && auction.getRawStatus() == Auction.AuctionStatus.FINISHED){
+                && auction.getStatus() == Auction.AuctionStatus.FINISHED){
             setupConfirmPane();
         }
     }
@@ -138,20 +139,22 @@ public class AuctionDetailController {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Price History ($)");
 
-        for (Bid bid : bids) {
-            //return time if is not null, N/A if null
-            String time = (bid.getBidTime() != null)
-                    ? bid.getBidTime().format(dateTimeFormatter)
-                    : "N/A";
-            series.getData().add(new XYChart.Data<>(time, bid.getBidPrice().getPrice()));
+        if (bids != null) {
+            for (Bid bid : bids) {
+                String time = (bid.getBidTime() != null)
+                        ? bid.getBidTime().format(dateTimeFormatter)
+                        : "N/A";
+                series.getData().add(new XYChart.Data<>(time, bid.getBidPrice().getPrice()));
+            }
         }
 
-        bidHistoryChart.getData().clear();
-        bidHistoryChart.getData().add(series);
-
         bidHistoryChart.setAnimated(false);
-    }
 
+        javafx.application.Platform.runLater(() -> {
+            bidHistoryChart.getData().clear();
+            bidHistoryChart.getData().add(series);
+        });
+    }
     public void setupAuction() {
         auction.addObserver((AuctionObserver) SessionManager.getCurrentUser());
     }
@@ -169,7 +172,7 @@ public class AuctionDetailController {
                 throw new IllegalArgumentException("[Error]: Only members can confirm receipt.");
             }
             auction = auctionApiService.confirmReceipt(auction.getId(), member.getId());
-            auctionStatusLabel.setText(auction.getRawStatus().toString());
+            auctionStatusLabel.setText(auction.getStatus().toString());
             confirmPane.setVisible(false);
             confirmPane.setManaged(false);
 

@@ -16,6 +16,11 @@ public class AuctionService {
     private final AuctionsDAO auctionsDAO = DaoFactory.createAuctionsDAO();
     private final UsersDAO usersDAO = DaoFactory.createUsersDAO();
     private final BidsDAO bidsDAO = DaoFactory.createBidsDAO();
+    private final TransactionService transactionService; // ← thêm
+
+    public AuctionService(TransactionService transactionService) {
+        this.transactionService = transactionService;
+    }
 
     public List<AuctionResponse> getAll() {
         return auctionsDAO.getAll().stream()
@@ -78,9 +83,10 @@ public class AuctionService {
             throw new IllegalArgumentException("[Error]: Buyer is invalid.");
         }
 
-        Transaction transaction = AuctionManager.getInstance().confirmReceipt(auctionId, member);
-        return toResponse(transaction.getAuction());
+        transactionService.confirmReceipt(auctionId, buyerId); // ← thay dòng này
+        return toResponse(requireAuction(auctionId));
     }
+
 
     private Auction requireAuction(int id) {
         Auction auction = auctionsDAO.getById(id);
@@ -104,6 +110,21 @@ public class AuctionService {
 
         Member winner = auction.getWinner();
 
+        List<com.group7.dto.bid.BidResponse> bidResponses = java.util.Collections.emptyList();
+        if (auction.getId() > 0) {
+            List<Bid> bids = bidsDAO.getByAuctionId(auction.getId());
+            if (bids != null) {
+                bidResponses = bids.stream().map(bid -> new com.group7.dto.bid.BidResponse(
+                        bid.getId(),
+                        auction.getId(),
+                        bid.getBidder() != null ? bid.getBidder().getId() : 0,
+                        bid.getBidder() != null ? bid.getBidder().getFullName() : "Unknown",
+                        bid.getBidPrice() != null ? bid.getBidPrice().getPrice() : 0.0,
+                        bid.getBidTime()
+                )).toList();
+            }
+        }
+
         return new AuctionResponse(
                 auction.getId(),
                 auction.getOwnerId(),
@@ -118,7 +139,8 @@ public class AuctionService {
                 auction.getStartingTime(),
                 auction.getEndingTime(),
                 winner != null ? winner.getId() : null,
-                winner != null ? winner.getFullName() : null
+                winner != null ? winner.getFullName() : null,
+                bidResponses
         );
     }
 }

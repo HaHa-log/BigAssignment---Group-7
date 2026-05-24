@@ -57,9 +57,9 @@ public class AuctionManager {
     }
 
     public void closeAuction(Auction session) {
-        if (session == null || session.getRawStatus() == Auction.AuctionStatus.FINISHED
-                || session.getRawStatus() == Auction.AuctionStatus.PAID
-                || session.getRawStatus() == Auction.AuctionStatus.CANCELED) {
+        if (session == null || session.getStatus() == Auction.AuctionStatus.FINISHED
+                || session.getStatus() == Auction.AuctionStatus.PAID
+                || session.getStatus() == Auction.AuctionStatus.CANCELED) {
             return;
         }
 

@@ -82,7 +82,8 @@ public class AuctionManagementController extends ManagementController<Auction> {
                             setGraphic(null);
                         } else {
                             Auction auction = getTableView().getItems().get(getIndex());
-                            Auction.AuctionStatus currentStatus = auction.getRawStatus();
+
+                            Auction.AuctionStatus currentStatus = auction.getStatus();
 
                             boolean shouldDisable = currentStatus == Auction.AuctionStatus.CANCELED ||
                                     currentStatus == Auction.AuctionStatus.FINISHED ||
