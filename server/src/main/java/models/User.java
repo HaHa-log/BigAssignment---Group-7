@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class User extends Entity implements Bidder, Seller, AuctionObserver {
+public class User extends Entity implements Bidder, Seller {
     private FullName fullname;
     private Email email;
     private PhoneNumber phoneNumber;
@@ -232,20 +232,6 @@ public class User extends Entity implements Bidder, Seller, AuctionObserver {
             }
         }
         return alerts;
-    }
-
-    @Override
-    public void onBidPlaced(Auction auction, Bidder bidder, double amount) {
-        if (bidder == this) {
-            System.out.println("[System]: You have successfully placed a bid of " + amount + " in auction of ID " + auction.getId());
-            return;
-        }
-
-        String bidderName = ((User) bidder).getFullName();
-        System.out.println("[Notification]: "
-                + bidderName + " has bidded " + amount
-                + " in auction of ID " + auction.getId()
-                + " for " + auction.getItem().getName());
     }
 
     public void addItem(Item item) {

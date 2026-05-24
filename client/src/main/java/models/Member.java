@@ -3,7 +3,7 @@ package models;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class Member extends User implements Bidder, Seller, AuctionObserver {
+public class Member extends User implements Bidder, Seller {
 
     public Member(String firstName, String lastName, String email, String phoneNumber, String password, double balance, String avatarPath) {
         super(firstName, lastName, email, phoneNumber, password, balance, avatarPath);
@@ -21,20 +21,6 @@ public class Member extends User implements Bidder, Seller, AuctionObserver {
     @Override
     public String getRole() {
         return "Member";
-    }
-
-    @Override
-    public void onBidPlaced(Auction auction, Bidder bidder, double amount) {
-        if (bidder == this) {
-            System.out.println("[System]: You have successfully placed a bid of " + amount + " in auction of ID " + auction.getId());
-            return;
-        }
-
-        String bidderName = ((Member) bidder).getFullName();
-        System.out.println("[Notification]: "
-                + bidderName + " has bidded " + amount
-                + " in auction of ID " + auction.getId()
-                + " for " + auction.getItem().getName());
     }
 
     public void addItem(Item item) {

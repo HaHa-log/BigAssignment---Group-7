@@ -34,7 +34,6 @@ public class Auction extends Entity implements Serializable {
     private Bidder winner;
     private int extendCount;
     private List<Bid> bids;
-    private transient List<AuctionObserver> observers;
     private transient List<User> participants;
     private transient ReentrantLock lock;
 
@@ -71,7 +70,6 @@ public class Auction extends Entity implements Serializable {
         this.isInCountDown = false;
         this.extendCount = 0;
         this.bids = new ArrayList<>();
-        this.observers = new ArrayList<>();
         this.participants = new ArrayList<>();
     }
 
@@ -177,10 +175,6 @@ public class Auction extends Entity implements Serializable {
         return bids;
     }
 
-    public List<AuctionObserver> getObservers() {
-        return observers();
-    }
-
     public List<User> getParticipants() {
         participants().clear();
         for (Bid bid : getBids()) {
@@ -194,15 +188,6 @@ public class Auction extends Entity implements Serializable {
 
     public User getWinner() {
         return winner instanceof User user ? user : null;
-    }
-
-    public void addObserver(AuctionObserver observer) {
-        if (observer != null && !observers().contains(observer)) {
-            observers().add(observer);
-            if (observer instanceof User user) {
-                System.out.println("[System]: " + user.getFullName() + " is now viewing this auction");
-            }
-        }
     }
 
     public String start() {
@@ -249,7 +234,6 @@ public class Auction extends Entity implements Serializable {
             releasePreviousWinnerHold(previousWinner, user);
             applyWinningBid(bidder, bidAmount);
             persistBid(user, bidAmount);
-            notifyBidPlaced(bidder, amount);
             processPreviousWinnerAutoBid(previousWinner, bidder);
             return true;
         } finally {
@@ -365,12 +349,6 @@ public class Auction extends Entity implements Serializable {
         }
     }
 
-    private void notifyBidPlaced(Bidder bidder, double amount) {
-        for (AuctionObserver observer : observers()) {
-            observer.onBidPlaced(this, bidder, amount);
-        }
-    }
-
     private void processPreviousWinnerAutoBid(Bidder previousWinner, Bidder bidder) {
         if (!(previousWinner instanceof User oldUser)
                 || !(bidder instanceof User newUser)
@@ -415,13 +393,6 @@ public class Auction extends Entity implements Serializable {
             lock = new ReentrantLock();
         }
         return lock;
-    }
-
-    private List<AuctionObserver> observers() {
-        if (observers == null) {
-            observers = new ArrayList<>();
-        }
-        return observers;
     }
 
     private List<User> participants() {

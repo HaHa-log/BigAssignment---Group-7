@@ -155,9 +155,6 @@ public class AuctionDetailController {
             bidHistoryChart.getData().add(series);
         });
     }
-    public void setupAuction() {
-        auction.addObserver((AuctionObserver) SessionManager.getCurrentUser());
-    }
 
     private void setupConfirmPane() {
         confirmPane.setVisible(true);

@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class User extends Entity implements Bidder, Seller, AuctionObserver {
+public abstract class User extends Entity implements Bidder, Seller {
     private FullName fullname;
     private Email email;
     private PhoneNumber phoneNumber;

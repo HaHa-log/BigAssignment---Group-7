@@ -146,10 +146,6 @@ public class AuctionDetailController {
         bidHistoryChart.setAnimated(false);
     }
 
-    public void setupAuction() {
-        auction.addObserver((AuctionObserver) SessionManager.getCurrentUser());
-    }
-
     private void setupConfirmPane() {
         confirmPane.setVisible(true);
         confirmPane.setManaged(true);
