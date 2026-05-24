@@ -60,6 +60,9 @@ public class TransactionService {
             throw new IllegalArgumentException(e.getMessage());
         }
 
+        usersDAO.update(transaction.getBuyer());
+        usersDAO.update(transaction.getSeller());
+
         transactionDAO.update(transaction);
 
         Auction auction = transaction.getAuction();
