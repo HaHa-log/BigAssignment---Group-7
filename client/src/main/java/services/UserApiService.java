@@ -8,6 +8,7 @@ import models.Member;
 import com.group7.dto.user.UserResponse;
 import utils.ApiJson;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.URI;
@@ -15,11 +16,12 @@ import java.net.UnknownHostException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
 public class UserApiService {
-    private static final String BASE_URL = ApiConfig.baseUrl() + "/api/users";
+    private final String BASE_URL = ApiConfig.baseUrl() + "/api/users";
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final ObjectMapper mapper = ApiJson.mapper();
 
@@ -51,6 +53,32 @@ public class UserApiService {
         return UserMapper.toMember(mapper.readValue(send(request).body(), UserResponse.class));
     }
 
+    public Member uploadAvatar(int userId, File avatarFile) throws IOException, InterruptedException {
+        String boundary = "----Boundary" + System.currentTimeMillis();
+
+        byte[] fileBytes = java.nio.file.Files.readAllBytes(avatarFile.toPath());
+        String header = "--" + boundary + "\r\n"
+                + "Content-Disposition: form-data; name=\"file\"; filename=\"" + avatarFile.getName() + "\"\r\n"
+                + "Content-Type: application/octet-stream\r\n\r\n";
+        String footer = "\r\n--" + boundary + "--\r\n";
+
+        byte[] h = header.getBytes(StandardCharsets.UTF_8);
+        byte[] f = footer.getBytes(StandardCharsets.UTF_8);
+        byte[] body = new byte[h.length + fileBytes.length + f.length];
+
+        System.arraycopy(h, 0, body, 0, h.length);
+        System.arraycopy(fileBytes, 0, body, h.length, fileBytes.length);
+        System.arraycopy(f, 0, body, h.length + fileBytes.length, f.length);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/" + userId + "/avatar"))
+                .header("Content-Type", "multipart/form-data; boundary=" + boundary)
+                .POST(HttpRequest.BodyPublishers.ofByteArray(body))
+                .build();
+
+        return UserMapper.toMember(mapper.readValue(send(request).body(), UserResponse.class));
+    }
+
     public Member block(int id) throws IOException, InterruptedException {
         return postStateChange(id, "block");
     }
@@ -77,6 +105,13 @@ public class UserApiService {
 
     public Member spendFrozen(int id, double amount) throws IOException, InterruptedException {
         return postFinanceAction(id, "spend-frozen", amount);
+    }
+
+    public String getAvatarUrl(String avatarPath) {
+        if (avatarPath == null || avatarPath.isBlank() || "null".equalsIgnoreCase(avatarPath)) {
+            return null;
+        }
+        return BASE_URL + "/avatars/" + avatarPath;
     }
 
     private Member postFinanceAction(int id, String action, double amount)

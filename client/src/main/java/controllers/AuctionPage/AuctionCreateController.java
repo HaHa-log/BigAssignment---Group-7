@@ -1,7 +1,6 @@
 package controllers.AuctionPage;
 
 import models.Auction;
-import models.Item;
 import models.Member;
 import models.SessionManager;
 import com.group7.dto.auction.CreateAuctionRequest;
@@ -37,7 +36,6 @@ public class AuctionCreateController {
     private final ItemApiService itemApiService = new ItemApiService();
 
     private File selectedImageFile;
-    private static final long MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
     @FXML
     private void createAuction() {
@@ -121,7 +119,7 @@ public class AuctionCreateController {
     @FXML
     private void handleChooseImage() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.webp"));
         selectedImageFile = fileChooser.showOpenDialog(new Stage());
 
         if (selectedImageFile != null) {

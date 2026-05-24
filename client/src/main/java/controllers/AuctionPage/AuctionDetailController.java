@@ -16,6 +16,7 @@ import java.io.File;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import services.AuctionApiService;
+import services.ItemApiService;
 
 import static javafx.scene.paint.Color.GREEN;
 import static javafx.scene.paint.Color.RED;
@@ -46,6 +47,7 @@ public class AuctionDetailController {
 
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM HH:mm");
     private final AuctionApiService auctionApiService = new AuctionApiService();
+    private final ItemApiService itemApiService = new ItemApiService();
 
     private User currentUser = SessionManager.getCurrentUser();
     private Auction auction;
@@ -122,14 +124,13 @@ public class AuctionDetailController {
         Item item = auction.getItem();
         String filePath = item.getImagePath();
 
-        if (filePath == null || filePath.isBlank()) {
+        if (filePath == null || filePath.isBlank() || "null".equalsIgnoreCase(filePath)) {
+            imageContainer.setImage(null);
             return;
         }
 
-        File file = new File("src/main/resources/ItemImages/" + filePath);
-        Image image = new Image(file.toURI().toString());
-
-        imageContainer.setImage(image);
+        String imageUrl = itemApiService.getItemImageUrl(filePath);
+        imageContainer.setImage(new Image(imageUrl, true));
     }
 
     private void updateBidChart() {

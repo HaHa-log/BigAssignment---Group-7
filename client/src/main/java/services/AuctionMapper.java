@@ -3,10 +3,10 @@ package services;
 import models.Auction;
 import models.Item;
 import models.Member;
-import models.Bid; // Added import for Bid
+import models.Bid;
 import com.group7.dto.auction.*;
 import java.time.LocalDateTime;
-import java.util.List; // Added import for List
+import java.util.List;
 
 public final class AuctionMapper {
     private static final String SESSION_PASSWORD_PLACEHOLDER = "server-authenticated";

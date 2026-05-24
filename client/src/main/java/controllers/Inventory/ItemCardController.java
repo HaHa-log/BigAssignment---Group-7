@@ -34,21 +34,14 @@ public class ItemCardController {
     }
 
     private void setItemImage() {
-        if (item.getImagePath() == null || item.getImagePath().trim().isEmpty()) {
+        String imagePath = item.getImagePath();
+
+        if (imagePath == null || imagePath.isBlank() || "null".equalsIgnoreCase(imagePath)) {
+            imageContainer.setImage(null);
             return;
         }
 
-        try {
-            String fullPath = "/ItemImages/" + item.getImagePath();
-            InputStream is = getClass().getResourceAsStream(fullPath);
-
-            if (is != null) {
-                imageContainer.setImage(new Image(is));
-            } else {
-                System.err.println("Could not find image resource file: " + fullPath);
-            }
-        } catch (Exception e) {
-            System.err.println("Failed to load item image: " + e.getMessage());
-        }
+        String imageUrl = config.ApiConfig.baseUrl() + "/api/items/images/" + imagePath;
+        imageContainer.setImage(new Image(imageUrl, true));
     }
 }

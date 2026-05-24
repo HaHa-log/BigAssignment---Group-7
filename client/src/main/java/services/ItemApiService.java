@@ -33,9 +33,9 @@ public class ItemApiService {
         byte[] h = header.getBytes(java.nio.charset.StandardCharsets.UTF_8);
         byte[] f = footer.getBytes(java.nio.charset.StandardCharsets.UTF_8);
         byte[] body = new byte[h.length + fileBytes.length + f.length];
-        System.arraycopy(h,         0, body, 0,                                h.length);
+        System.arraycopy(h,0, body, 0,                                h.length);
         System.arraycopy(fileBytes, 0, body, h.length,                         fileBytes.length);
-        System.arraycopy(f,         0, body, h.length + fileBytes.length,      f.length);
+        System.arraycopy(f, 0, body, h.length + fileBytes.length,      f.length);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(baseUrl + "/" + itemId + "/image"))
@@ -74,5 +74,12 @@ public class ItemApiService {
         } else {
             throw new RuntimeException("Failed to load inventory. Server responded with code: " + response.statusCode());
         }
+    }
+
+    public String getItemImageUrl(String imagePath) {
+        if (imagePath == null || imagePath.isBlank() || "null".equalsIgnoreCase(imagePath)) {
+            return null;
+        }
+        return baseUrl + "/images/" + imagePath;
     }
 }

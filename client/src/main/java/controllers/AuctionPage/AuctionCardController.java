@@ -55,7 +55,7 @@ public class AuctionCardController {
         String imagePath = auction.getItem().getImagePath();
 
         if (imagePath == null || imagePath.isBlank() || "null".equalsIgnoreCase(imagePath)) {
-            imageContainer.setImage(null); // hoặc set default image resource
+            imageContainer.setImage(null);
             return;
         }
 

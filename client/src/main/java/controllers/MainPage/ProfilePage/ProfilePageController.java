@@ -1,8 +1,8 @@
 package controllers.MainPage.ProfilePage;
 
+import models.Member;
 import models.SessionManager;
 import models.User;
-import controllers.MainPage.ProfilePage.BaseController;
 import controllers.SceneManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,11 +14,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
+import services.ImageFileValidator;
+import services.UserApiService;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 
 
 public class ProfilePageController {
@@ -27,8 +27,7 @@ public class ProfilePageController {
 
     private File selectedAvatarFile;
 
-    private static final String AVATAR_DIR =
-            "src/main/resources/Avatars";
+    private final UserApiService userApiService = new UserApiService();
 
     @FXML
     private Label usernameLabel;
@@ -50,7 +49,6 @@ public class ProfilePageController {
     @FXML private StackPane profilePane;
     @FXML private StackPane passwordPane;
     @FXML private StackPane financePane;
-    @FXML private StackPane notificationPane;
     @FXML private StackPane historyPane;
 
     @FXML
@@ -83,62 +81,54 @@ public class ProfilePageController {
     private void loadAvatar() {
         String avatarPath = user.getAvatarPath();
         if (avatarPath != null && !avatarPath.isEmpty()) {
-            File file = new File(AVATAR_DIR + "/" + avatarPath);
-            if (file.exists()) {
-                Image img = new Image(file.toURI().toString());
+            String avatarUrl = userApiService.getAvatarUrl(user.getAvatarPath());
 
-                ImagePattern pattern = new ImagePattern(img);
-                avatarCircle.setFill(pattern);
+            if (avatarUrl == null) {
+                avatarCircle.setFill(javafx.scene.paint.Color.GRAY);
+                return;
             }
-        } else {
-            avatarCircle.setFill(javafx.scene.paint.Color.GRAY);
+
+            Image img = new Image(avatarUrl, false);
+            if (img.isError()) {
+                avatarCircle.setFill(javafx.scene.paint.Color.GRAY);
+                return;
+            }
+
+            avatarCircle.setFill(new ImagePattern(img));
         }
     }
 
     @FXML
     private void handleChooseAvatar() {
         FileChooser chooser = new FileChooser();
-
         chooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg")
+                new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.webp")
         );
+
+        ImageFileValidator.validate(selectedAvatarFile);
 
         selectedAvatarFile = chooser.showOpenDialog(avatarCircle.getScene().getWindow());
 
-        if (selectedAvatarFile != null) {
-            try {
-                processAvatarUpload();
-
-                Image img = new Image(selectedAvatarFile.toURI().toString());
-
-                avatarCircle.setFill(new ImagePattern(img));
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void processAvatarUpload()
-            throws IOException {
-
-        File dir = new File(AVATAR_DIR);
-
-        if (!dir.exists()) {
-            dir.mkdirs();
+        if (selectedAvatarFile == null) {
+            return;
         }
 
-        String fileName = "avatar_" + user.getId() + "_" + System.currentTimeMillis() + ".png";
+        try {
+            ImageFileValidator.validate(selectedAvatarFile);
 
-        File destFile = new File(dir, fileName);
+            Member updatedUser = userApiService.uploadAvatar(user.getId(), selectedAvatarFile);
+            SessionManager.updateCurrentUser(updatedUser);
+            user = updatedUser;
 
-        Files.copy(
-                selectedAvatarFile.toPath(),
-                destFile.toPath(),
-                StandardCopyOption.REPLACE_EXISTING
-        );
+            loadAvatar();
 
-        user.setAvatarPath(fileName);
+        } catch (IllegalArgumentException | exceptions.ApiException e) {
+            System.err.println(e.getMessage());
+        } catch (IOException e) {
+            System.err.println("File Error: Could not upload avatar.");
+        } catch (Exception e) {
+            System.err.println("Unexpected error: " + e.getMessage());
+        }
     }
 
     private void loadView(StackPane pane, String fxmlPath) {
