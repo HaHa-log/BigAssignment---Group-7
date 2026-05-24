@@ -3,7 +3,7 @@ package models;
 import java.util.prefs.Preferences;
 
 public class SessionManager {
-    private static Member currentUser;
+    private static User currentUser;
     private static final Preferences prefs = Preferences.userNodeForPackage(SessionManager.class);
     private static final String USER_EMAIL_KEY = "remembered_user_email";
 
@@ -11,14 +11,14 @@ public class SessionManager {
         return prefs.get(USER_EMAIL_KEY, null);
     }
 
-    public static void loginCurrentUser(Member member) {
-        if (member == null) {
+    public static void loginCurrentUser(User user) {
+        if (user == null) {
             System.err.println("Login failed: Member object is null.");
             return;
         }
 
-        currentUser = member;
-        prefs.put(USER_EMAIL_KEY, member.getEmail());
+        currentUser = user;
+        prefs.put(USER_EMAIL_KEY, user.getEmail());
     }
 
     public static void updateCurrentUser(Member member) {

@@ -37,6 +37,14 @@ public class AuctionApiService {
         return auctions.stream().map(AuctionMapper::toAuction).toList();
     }
 
+    public Auction getById(int auctionId) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/" + auctionId))
+                .GET()
+                .build();
+        return AuctionMapper.toAuction(mapper.readValue(send(request).body(), AuctionResponse.class));
+    }
+
     public Auction create(CreateAuctionRequest payload) throws IOException, InterruptedException {
         HttpRequest request = jsonRequest(BASE_URL, payload).POST(
                 HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload))

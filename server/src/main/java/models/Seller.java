@@ -19,8 +19,8 @@ public interface Seller {
                 throw new CustomisedException("The auction termination time must be in the future.");
             }
 
-            if (terminatedAt.isBefore(createdAt)) {
-                throw new CustomisedException("Ending time cannot be before starting time.");
+            if (!terminatedAt.isAfter(createdAt)) {
+                throw new CustomisedException("Ending time must be after starting time.");
             }
 
             try {

@@ -100,50 +100,29 @@ public class HistoryController extends BaseController {
                 confirmButton.getStyleClass().add("confirm-button");
                 confirmButton.setOnAction(event -> {
                     AuctionHistoryEntry entry = getTableView().getItems().get(getIndex());
-                    confirmButton.setDisable(true);
-                    confirmButton.setText("Processing...");
 
                     new Thread(() -> {
                         try {
-                            HttpClient client = HttpClient.newHttpClient();
-                            //  API pending
-                            HttpRequest pendingReq = HttpRequest.newBuilder()
-                                    .uri(URI.create("http://localhost:8080/api/transactions/auction/"
-                                            + entry.auctionId() + "/create-pending"))
-                                    .POST(HttpRequest.BodyPublishers.noBody())
-                                    .build();
-                            client.send(pendingReq, HttpResponse.BodyHandlers.ofString());
-
-                            //  API confirm receipt
-                            String body = "{\"buyerId\":" + user.getId() + "}";
-                            HttpRequest confirmReq = HttpRequest.newBuilder()
-                                    .uri(URI.create("http://localhost:8080/api/transactions/auction/"
-                                            + entry.auctionId() + "/confirm-receipt"))
-                                    .header("Content-Type", "application/json")
-                                    .POST(HttpRequest.BodyPublishers.ofString(body))
-                                    .build();
-                            HttpResponse<String> response = client.send(confirmReq,
-                                    HttpResponse.BodyHandlers.ofString());
+                            services.AuctionApiService apiService = new services.AuctionApiService();
+                            Auction auction = apiService.getById(entry.auctionId());
 
                             Platform.runLater(() -> {
-                                if (response.statusCode() == 200) {
-                                    loadHistory();
-                                } else {
-                                    confirmButton.setDisable(false);
-                                    confirmButton.setText("Confirm Receipt");
-                                    System.err.println("[Error]: " + response.body());
+                                try {
+                                    javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                                            getClass().getResource("/AuctionPageFXML/AuctionDetail.fxml"));
+                                    javafx.scene.Parent detailRoot = loader.load();
+                                    AuctionDetailController detailController = loader.getController();
+                                    detailController.setAuctionData(auction);
+                                    SceneManager.switchContent(detailRoot);
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
                                 }
                             });
-
                         } catch (Exception e) {
-                            Platform.runLater(() -> {
-                                confirmButton.setDisable(false);
-                                confirmButton.setText("Confirm Receipt");
-                                e.printStackTrace();
-                            });
+                            e.printStackTrace();
                         }
                     }).start();
-                });
+                });;
             }
 
             @Override
@@ -153,9 +132,17 @@ public class HistoryController extends BaseController {
 
                 AuctionHistoryEntry entry = getTableView().getItems().get(getIndex());
 
-                boolean showConfirm = "WON".equals(entry.userState()) && "FINISHED".equals(entry.auctionStatus());
-
-                setGraphic(showConfirm ? confirmButton : null);
+                if ("WON".equals(entry.userState()) && "FINISHED".equals(entry.auctionStatus())) {
+                    confirmButton.setDisable(false);
+                    confirmButton.setText("Confirm Receipt");
+                    setGraphic(confirmButton);
+                } else if ("WON".equals(entry.userState()) && "PAID".equals(entry.auctionStatus())) {
+                    confirmButton.setDisable(true);
+                    confirmButton.setText("✓ Confirmed");
+                    setGraphic(confirmButton);
+                } else {
+                    setGraphic(null);
+                }
             }
         });
     }

@@ -78,6 +78,10 @@ public class Transaction {
         return status;
     }
 
+    public void setStatus(TransactionStatus status) {
+        this.status = status;
+    }
+
     public LocalDateTime getExpiryTime() {
         return expiryTime;
     }
@@ -87,7 +91,7 @@ public class Transaction {
     }
 
     public boolean isExpired() {
-        return status == TransactionStatus.PENDING && LocalDateTime.now().isAfter(expiryTime);
+        return status == TransactionStatus.PENDING && expiryTime != null && LocalDateTime.now().isAfter(expiryTime);
     }
 
     public void markCompleted() throws IllegalTransactionException {
@@ -138,9 +142,10 @@ public class Transaction {
     @Override
     public String toString() {
         return "Transaction{" +
-                "auctionId=" + auction.getId() +
-                ", seller=" + seller.getFullName() +
-                ", item=" + auction.getItem().getName() +
+                "transactionId=" + transactionId +
+                ", auctionId=" + (auction != null ? auction.getId() : "N/A") +
+                ", seller=" + (seller != null ? seller.getFullName() : "N/A") +
+                ", item=" + (auction != null && auction.getItem() != null ? auction.getItem().getName() : "N/A") +
                 ", amount=" + finalAmount +
                 ", status=" + status +
                 ", paidAt=" + paidAt +

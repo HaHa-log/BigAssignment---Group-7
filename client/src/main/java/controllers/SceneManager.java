@@ -8,7 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import models.SessionManager;
-import models.Member;
+import models.User;
 import services.UserApiService;
 
 import java.io.IOException;
@@ -116,7 +116,7 @@ public class SceneManager {
 
             if (savedEmail != null) {
                 try {
-                    Member member = userApiService.getByEmail(savedEmail);
+                    User member = userApiService.getByEmail(savedEmail);
                     SessionManager.loginCurrentUser(member);
                     SceneManager.loadLayout();
                     SceneManager.switchContent("/MainFXML/HomePage/HomePage.fxml");

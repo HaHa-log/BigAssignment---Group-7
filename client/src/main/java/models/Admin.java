@@ -4,13 +4,16 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Admin extends Member {
+public class Admin extends User {
+
     public Admin(String firstName, String lastName, String email, String phoneNumber, String password, double balance, String avatarPath) {
         super(firstName, lastName, email, phoneNumber, password, balance, avatarPath);
+        setAdmin(true);
     }
 
     public Admin(String firstName, String lastName, String email, String phoneNumber, String password, double balance, boolean isAdmin, boolean isBlocked, LocalDateTime blockedUntil, String avatarPath) {
         super(firstName, lastName, email, phoneNumber, password, balance, isAdmin, isBlocked, blockedUntil, avatarPath);
+        setAdmin(true);
     }
 
     @Override
@@ -23,33 +26,34 @@ public class Admin extends Member {
         return "Admin";
     }
 
-    public void blockUser(Member member, LocalDateTime until) {
-        if (member == null) {
-            System.out.println("[Error]: Member not found");
+    // ĐỒNG BỘ DTO: Đổi tham số từ Member cũ sang lớp User phẳng mới để tránh lỗi ClassCastException
+    public void blockUser(User targetUser, LocalDateTime until) {
+        if (targetUser == null) {
+            System.out.println("[Error]: User not found");
             return;
         }
 
-        member.setBlocked(until);
+        targetUser.setBlocked(until);
 
         System.out.println(
-                "[Admin]: Member with ID "
-                        + member.getId()
+                "[Admin]: User with ID "
+                        + targetUser.getId()
                         + " blocked until "
                         + until
         );
     }
 
-    public void unblockUser(Member member) {
-        if (member == null) {
-            System.out.println("[Error]: Member not found");
+    public void unblockUser(User targetUser) {
+        if (targetUser == null) {
+            System.out.println("[Error]: User not found");
             return;
         }
 
-        member.isUnblocked();
+        targetUser.isUnblocked();
 
         System.out.println(
-                "[Admin]: Member with ID "
-                        + member.getId()
+                "[Admin]: User with ID "
+                        + targetUser.getId()
                         + " unblocked."
         );
     }
@@ -67,21 +71,26 @@ public class Admin extends Member {
     }
 
     public List<Transaction> getAllTransactions() {
-        return List.of();
+        return new ArrayList<>();
     }
 
-    public void printTransactionsByMember(int memberId) {
-        List<Transaction> all = getAllTransactions();
+    public void printTransactionsByUser(int userId, List<Transaction> allTransactions) {
+        if (allTransactions == null || allTransactions.isEmpty()) {
+            System.out.println("[System]: No transactions found.");
+            return;
+        }
+
         List<Transaction> result = new ArrayList<>();
 
-        for (Transaction transaction : all) {
-            if (transaction.getBuyer().getId() == memberId || transaction.getSeller().getId() == memberId) {
+        for (Transaction transaction : allTransactions) {
+            if ((transaction.getBuyer() != null && transaction.getBuyer().getId() == userId) ||
+                    (transaction.getSeller() != null && transaction.getSeller().getId() == userId)) {
                 result.add(transaction);
             }
         }
 
         if (result.isEmpty()) {
-            System.out.println("[System]: No transactions found for member ID: " + memberId);
+            System.out.println("[System]: No transactions found for user ID: " + userId);
             return;
         }
 

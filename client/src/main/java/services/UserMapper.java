@@ -1,8 +1,6 @@
 package services;
 
-import models.Admin;
-import models.Member;
-
+import models.User;
 import com.group7.dto.user.UserResponse;
 
 public final class UserMapper {
@@ -11,44 +9,37 @@ public final class UserMapper {
     private UserMapper() {
     }
 
-    public static Member toMember(UserResponse response) {
+    public static User toUser(UserResponse response) {
         if (response == null) {
             throw new IllegalArgumentException("User response is required.");
         }
 
         String[] nameParts = splitName(response.getFullName());
 
-        // Catch stringified booleans ("true") or direct strings ("Admin") securely
         boolean isAdminUser = "true".equalsIgnoreCase(response.getRole())
                 || "Admin".equalsIgnoreCase(response.getRole());
 
-        Member member = isAdminUser ?
-                new Admin(
-                        nameParts[0],
-                        nameParts[1],
-                        response.getEmail(),
-                        response.getPhoneNumber(),
-                        SESSION_PASSWORD_PLACEHOLDER,
-                        response.getBalance(),
-                        response.getAvatarPath()
-                ) :
-                new Member(
-                        nameParts[0],
-                        nameParts[1],
-                        response.getEmail(),
-                        response.getPhoneNumber(),
-                        SESSION_PASSWORD_PLACEHOLDER,
-                        response.getBalance(),
-                        response.getAvatarPath()
-                );
+        java.time.LocalDateTime blockedUntilTime = response.isBlocked()
+                ? java.time.LocalDateTime.now().plusDays(100)
+                : null;
 
-        member.setId(response.getId());
-        member.setFrozenBalance(response.getFrozenBalance());
+        User user = new User(
+                nameParts[0],
+                nameParts[1],
+                response.getEmail(),
+                response.getPhoneNumber(),
+                SESSION_PASSWORD_PLACEHOLDER,
+                response.getBalance(),
+                isAdminUser,
+                response.isBlocked(),
+                blockedUntilTime,
+                response.getAvatarPath()
+        );
 
-        if (response.isBlocked()) {
-            member.setBlocked(java.time.LocalDateTime.now().plusDays(100));
-        }
-        return member;
+        user.setId(response.getId());
+        user.setFrozenBalance(response.getFrozenBalance());
+
+        return user;
     }
 
     private static String[] splitName(String fullName) {

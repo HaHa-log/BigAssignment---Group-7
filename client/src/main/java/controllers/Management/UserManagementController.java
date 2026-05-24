@@ -1,8 +1,7 @@
 package controllers.Management;
 
-import models.Admin;
+import models.User;
 import models.SessionManager;
-import models.Member;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableCell;
@@ -14,20 +13,24 @@ import services.UserApiService;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class UserManagementController extends ManagementController<Member> {
-    Admin admin = (Admin) SessionManager.getCurrentUser();
+// ĐỒNG BỘ: Đổi kiểu Generics từ <Member> sang <User>
+public class UserManagementController extends ManagementController<User> {
+
+    // ĐỒNG BỘ: Sử dụng lớp User phẳng cho tài khoản Admin hiện hành thay vì ép kiểu (Admin) cũ gây crash
+    private final User admin = SessionManager.getCurrentUser();
     private final UserApiService userApiService = new UserApiService();
 
+    // ĐỒNG BỘ: Sửa đổi toàn bộ các tham số cột TableColumn sang kiểu thực thể <User>
     @FXML
-    private TableColumn<Member, Integer> userId;
+    private TableColumn<User, Integer> userId;
     @FXML
-    private TableColumn<Member, String> username;
+    private TableColumn<User, String> username;
     @FXML
-    private TableColumn<Member, String> email;
+    private TableColumn<User, String> email;
     @FXML
-    private TableColumn<Member, String> role;
+    private TableColumn<User, String> role;
     @FXML
-    private TableColumn<Member, Boolean> status;
+    private TableColumn<User, Boolean> status;
 
     @Override
     protected void configureColumns() {
@@ -46,24 +49,27 @@ public class UserManagementController extends ManagementController<Member> {
         status.setCellFactory(column -> createBlockedToggleCell());
     }
 
-    private TableCell<Member, Boolean> createBlockedToggleCell() {
+    // ĐỒNG BỘ: Sửa kiểu trả về của ô cell tương tác sang <User, Boolean>
+    private TableCell<User, Boolean> createBlockedToggleCell() {
         return new TableCell<>() {
             private final ToggleButton toggle = new ToggleButton();
 
             {
                 toggle.setOnAction(event -> {
-                    Member member = getTableRow().getItem();
-                    if (member == null) return;
+                    User targetUser = getTableRow().getItem();
+                    if (targetUser == null) return;
 
                     boolean isNowBlocked = toggle.isSelected();
 
                     try {
                         if (isNowBlocked) {
-                            userApiService.block(member.getId());
-                            admin.blockUser(member, LocalDateTime.now().plusDays(100));
+                            userApiService.block(targetUser.getId());
+                            // SỬA LỖI: Cập nhật trực tiếp trạng thái lên thực thể targetUser thông qua hàm setBlocked
+                            // thay vì gọi hàm admin.blockUser(member) cũ của lớp Admin đã xóa
+                            targetUser.setBlocked(LocalDateTime.now().plusDays(100));
                         } else {
-                            userApiService.unblock(member.getId());
-                            admin.unblockUser(member);
+                            userApiService.unblock(targetUser.getId());
+                            targetUser.isUnblocked();
                         }
                     } catch (Exception e) {
                         toggle.setSelected(!isNowBlocked);
@@ -100,7 +106,7 @@ public class UserManagementController extends ManagementController<Member> {
     }
 
     @Override
-    protected List<Member> fetchData() {
+    protected List<User> fetchData() {
         try {
             return userApiService.getAll();
         } catch (Exception e) {

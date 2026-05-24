@@ -45,7 +45,7 @@ public class AuctionManager {
         userConfig.getUser().placeBid(auction, nextPrice);
     }
 
-    public void createAuction(Member owner, Item item, LocalDateTime startingTime, LocalDateTime endingTime) {
+    public void createAuction(User owner, Item item, LocalDateTime startingTime, LocalDateTime endingTime) {
         item.setOwnerId(owner.getId());
         item.setId(nextItemId++);
         item.setStatus(Item.Status.IN_AUCTION);
@@ -69,7 +69,7 @@ public class AuctionManager {
 
         moveToCompleted(session);
 
-        Member winner = session.getWinner();
+        User winner = session.getWinner();
         if (winner == null) {
             session.getItem().setStatus(Item.Status.AVAILABLE);
             return;
@@ -91,27 +91,29 @@ public class AuctionManager {
         return true;
     }
 
-    public Transaction confirmReceipt(Auction auction, Member buyer) {
+    public Transaction confirmReceipt(Auction auction, User buyer) {
         if (auction == null) {
             throw new IllegalArgumentException("[Error]: Auction is required.");
         }
-        return confirmReceipt(auction.getId(), buyer);
+        return confirmReceipt(auction.getAuctionId(), buyer);
     }
 
-    public Transaction confirmReceipt(int auctionId, Member buyer) {
+    public Transaction confirmReceipt(int auctionId, User buyer) {
         if (buyer == null) {
             throw new IllegalArgumentException("[Error]: Buyer is required.");
         }
 
         Transaction transaction = transactions.stream()
-                .filter(t -> t.getAuction().getId() == auctionId
+                .filter(t -> t.getAuction().getAuctionId() == auctionId
                         && t.getBuyer().isEqual(buyer)
                         && t.getStatus() == Transaction.TransactionStatus.PENDING)
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(
                         "[Error]: No pending transaction found for this auction."));
 
-        transaction.markCompleted();
+        // SỬA LỖI BIÊN DỊCH: Thay vì gọi .markCompleted() chứa logic tài chính cũ,
+        // ở phía Client ta chỉ gán trực tiếp trạng thái COMPLETED nhận từ luồng API Server về.
+        transaction.setStatus(Transaction.TransactionStatus.COMPLETED);
         transaction.getAuction().transitionTo(Auction.AuctionStatus.PAID);
         return transaction;
     }
@@ -128,19 +130,19 @@ public class AuctionManager {
 
     private Auction findActiveAuction(int auctionId) {
         return activeSessions.stream()
-                .filter(auction -> auction.getId() == auctionId)
+                .filter(auction -> auction.getAuctionId() == auctionId)
                 .findFirst()
                 .orElse(null);
     }
 
     private void moveToCompleted(Auction session) {
-        activeSessions.removeIf(auction -> auction.getId() == session.getId());
-        if (completedSessions.stream().noneMatch(auction -> auction.getId() == session.getId())) {
+        activeSessions.removeIf(auction -> auction.getAuctionId() == session.getAuctionId());
+        if (completedSessions.stream().noneMatch(auction -> auction.getAuctionId() == session.getAuctionId())) {
             completedSessions.add(session);
         }
     }
 
-    private void createPendingTransaction(Auction session, Member winner) {
+    private void createPendingTransaction(Auction session, User winner) {
         double finalPrice = session.getCurrentPrice();
         Transaction transaction = new Transaction(session, winner, session.getOwner(), finalPrice);
         transaction.setTransactionId(nextTransactionId++);

@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class User extends Entity implements Bidder, Seller {
+public class User extends Entity implements Bidder, Seller {
     private FullName fullname;
     private Email email;
     private PhoneNumber phoneNumber;
@@ -25,8 +25,10 @@ public abstract class User extends Entity implements Bidder, Seller {
     private boolean isBlocked = false;
     private LocalDateTime blockedUntil = null;
     private String avatarPath;
+
     private final ObservableList<String> transactions = FXCollections.observableArrayList();
-    //private final UsersDAO userDatabase = DaoFactory.createUsersDAO();
+    private final ObservableList<Item> inventory = FXCollections.observableArrayList();
+
     private double frozenBalance = 0;
 
     public User(String firstName, String lastName, String email, String phoneNumber, String password, double balance, String avatarPath) {
@@ -36,11 +38,9 @@ public abstract class User extends Entity implements Bidder, Seller {
         this.avatarPath = avatarPath;
         this.balance = new Balance(balance);
 
-        // Enforce password logic consistently
         setPassword(password);
     }
 
-    // DB hydration constructor
     public User(String firstName, String lastName, String email, String phoneNumber, String password, double balance, boolean isAdmin, boolean isBlocked, LocalDateTime blockedUntil, String avatarPath) {
         this(firstName, lastName, email, phoneNumber, password, balance, avatarPath);
         this.isAdmin = isAdmin;
@@ -48,31 +48,42 @@ public abstract class User extends Entity implements Bidder, Seller {
         this.blockedUntil = blockedUntil;
     }
 
+    public ObservableList<Item> getInventory() {
+        return inventory;
+    }
+
+    public void addItem(Item item) {
+        if (item != null && !inventory.contains(item)) {
+            item.setOwnerId(this.getId());
+            this.inventory.add(item);
+            System.out.println("[System]: Item " + item.getName() + " is now owned by " + this.getFullName());
+        }
+    }
+
+    public void removeItem(Item item) {
+        if (item != null) {
+            this.inventory.remove(item);
+            System.out.println("[System]: Item " + item.getName() + " removed from " + this.getFullName() + "'s inventory.");
+        }
+    }
+
     public void setFirstName(String fstName) {
         this.fullname = new FullName(fstName, fullname.getLastName());
-        //update();
     }
 
     public void setLastName(String lstName) {
         this.fullname = new FullName(fullname.getFirstName(), lstName);
-        //update();
     }
 
     public String getAvatarPath() { return avatarPath; }
     public void setAvatarPath(String avatarPath) { this.avatarPath = avatarPath; }
 
-    //public void update() {
-    //userDatabase.update(this);
-    //}
-
     public void setEmail(String email) {
         this.email = new Email(email);
-        //update();
     }
 
     public void setPhoneNumber(String number) {
         this.phoneNumber = new PhoneNumber(number);
-        //update();
     }
 
     public void setPassword(String pass) {
@@ -83,52 +94,38 @@ public abstract class User extends Entity implements Bidder, Seller {
     }
 
     public boolean depositMoney(double amount) {
-        boolean success = this.balance.deposit(amount);
-        if (success) {
-            //update();
-        }
-        return success;
+        return this.balance.deposit(amount);
     }
 
     public boolean withdrawMoney(double amount) {
-        boolean success = this.balance.withdraw(amount);
-        if (success) {
-            //update();
-        }
-        return success;
+        return this.balance.withdraw(amount);
     }
 
     public boolean freezeMoney(double amount) {
-        if (amount <= 0) {return false;}
-        if (this.balance.showBalance() < amount) {return false;}
+        if (amount <= 0) return false;
+        if (this.balance.showBalance() < amount) return false;
 
         boolean success = this.balance.withdraw(amount);
-        if (!success) {return false;}
+        if (!success) return false;
 
         this.frozenBalance += amount;
-
-        //update();
         return true;
     }
 
     public boolean spendFrozenMoney(double amount) {
-        if (amount <= 0) {return false;}
-        if (frozenBalance < amount) {return false;}
+        if (amount <= 0) return false;
+        if (frozenBalance < amount) return false;
 
         frozenBalance -= amount;
-
-        //update();
         return true;
     }
 
     public boolean unfreezeMoney(double amount) {
-        if (amount <= 0) {return false;}
-        if (frozenBalance < amount) {return false;}
+        if (amount <= 0) return false;
+        if (frozenBalance < amount) return false;
 
         frozenBalance -= amount;
         balance.deposit(amount);
-
-        //update();
         return true;
     }
 
@@ -140,14 +137,12 @@ public abstract class User extends Entity implements Bidder, Seller {
     public void setBlocked(LocalDateTime until) {
         this.isBlocked = true;
         this.blockedUntil = until;
-        //update();
     }
 
     public boolean isBlocked() {
         if (isBlocked && blockedUntil != null && LocalDateTime.now().isAfter(blockedUntil)) {
             this.isBlocked = false;
             this.blockedUntil = null;
-            //update();
         }
         return isBlocked;
     }
@@ -155,7 +150,6 @@ public abstract class User extends Entity implements Bidder, Seller {
     public void isUnblocked() {
         this.isBlocked = false;
         this.blockedUntil = null;
-        //update();
     }
 
     public String getFullName() { return fullname.toString(); }
@@ -165,8 +159,26 @@ public abstract class User extends Entity implements Bidder, Seller {
     public String getPhoneNumber() { return phoneNumber.toString(); }
     public String getPassword() { return password; }
 
-    public abstract String getRole();
-    public abstract boolean isAdmin();
+    // SỬA LỖI: Chuyển đổi phương thức abstract cũ thành phương thức thông thường đồng bộ với Server
+    public String getRole() {
+        return isAdmin ? "Admin" : "Member";
+    }
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.isAdmin = admin;
+    }
+
+    public ObservableList<String> getTransactions() {
+        return transactions;
+    }
+
+    public void addTransaction(String message) {
+        this.transactions.add(message);
+    }
 
     public boolean isEqual(User other) {
         if (other == null) return false;
@@ -208,10 +220,8 @@ public abstract class User extends Entity implements Bidder, Seller {
 
     public List<AuctionHistoryEntry> getTableHistory(List<Auction> auctions) {
         List<AuctionHistoryEntry> history = new ArrayList<>();
-
         for (Auction auction : auctions) {
             String state = null;
-
             if (isOwner(auction)) {
                 state = "MY AUCTION";
             } else if (hasParticipated(auction)) {
@@ -222,7 +232,6 @@ public abstract class User extends Entity implements Bidder, Seller {
                     state = isHighestBidder(auction) ? "LEADING" : "OUTBID";
                 }
             }
-
             if (state != null) {
                 history.add(new AuctionHistoryEntry(
                         auction.getId(),
@@ -237,14 +246,11 @@ public abstract class User extends Entity implements Bidder, Seller {
 
     public List<AuctionAlert> getNotifications(List<Auction> auctions) {
         List<AuctionAlert> alerts = new ArrayList<>();
-
         for (Auction auction : auctions) {
             if (!isInvolvedIn(auction)) {
                 continue;
             }
-
             boolean isWinner = auction.getWinner() != null && auction.getWinner().getId() == this.getId();
-
             if (auction.getStatus() == Auction.AuctionStatus.RUNNING) {
                 if (isOwner(auction)) {
                     alerts.add(new AuctionAlert(NotificationType.MY_AUCTION_RUNNING, auction));
@@ -253,9 +259,7 @@ public abstract class User extends Entity implements Bidder, Seller {
                 } else {
                     alerts.add(new AuctionAlert(NotificationType.OUTBID, auction));
                 }
-            }
-
-            if (auction.getStatus() == Auction.AuctionStatus.FINISHED ||
+            } else if (auction.getStatus() == Auction.AuctionStatus.FINISHED ||
                     auction.getStatus() == Auction.AuctionStatus.PAID) {
                 if (isOwner(auction)) {
                     alerts.add(new AuctionAlert(NotificationType.MY_AUCTION_FINISHED, auction));
@@ -268,8 +272,4 @@ public abstract class User extends Entity implements Bidder, Seller {
         }
         return alerts;
     }
-
-    public ObservableList<String> getTransactions() { return transactions; }
-
-    public void addTransaction(String message) {transactions.add(message);}
 }

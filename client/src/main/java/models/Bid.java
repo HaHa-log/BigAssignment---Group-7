@@ -8,18 +8,18 @@ import java.util.List;
 
 public class Bid extends Entity implements Serializable {
     private final Auction auction;
-    private final Member bidder;
+    private final User bidder;
     private final Price bidPrice;
     private final LocalDateTime bidTime;
 
-    public Bid(Auction auction, Member bidder, Price bidPrice) {
+    public Bid(Auction auction, User bidder, Price bidPrice) {
         this.auction = auction;
         this.bidder = bidder;
         this.bidPrice = bidPrice;
         this.bidTime = LocalDateTime.now();
     }
 
-    public Bid(Auction auction, Member bidder, double bidPrice, LocalDateTime bidTime) {
+    public Bid(Auction auction, User bidder, double bidPrice, LocalDateTime bidTime) {
         this.auction = auction;
         this.bidder = bidder;
         this.bidPrice = new Price(bidPrice);
@@ -44,7 +44,7 @@ public class Bid extends Entity implements Serializable {
         return auction;
     }
 
-    public Member getBidder() {
+    public User getBidder() {
         return bidder;
     }
 

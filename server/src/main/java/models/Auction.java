@@ -78,6 +78,10 @@ public class Auction extends Entity implements Serializable {
         return auctionId;
     }
 
+    public int getAuctionId() {
+        return auctionId;
+    }
+
     public void setAuctionId(int idOfAuction) {
         lock().lock();
         try {
@@ -92,7 +96,7 @@ public class Auction extends Entity implements Serializable {
     }
 
     public int getOwnerId() {
-        return owner.getId();
+        return owner != null ? owner.getId() : 0;
     }
 
     public Item getItem() {
@@ -100,7 +104,7 @@ public class Auction extends Entity implements Serializable {
     }
 
     public int getItemId() {
-        return item.getId();
+        return item != null ? item.getId() : 0;
     }
 
     public LocalDateTime getStartingTime() {
@@ -169,7 +173,10 @@ public class Auction extends Entity implements Serializable {
     }
 
     public List<Bid> getBids() {
-        if (getId() > 0) {
+        if (bids == null) {
+            bids = new ArrayList<>();
+        }
+        if (getId() > 0 && bids.isEmpty()) {
             bids = bidsDb().getByAuctionId(getId());
         }
         return bids;
@@ -241,6 +248,11 @@ public class Auction extends Entity implements Serializable {
         }
     }
 
+    /**
+     * SỬA LỖI ĐỒNG BỘ: Rút bỏ khối lệnh tự động trừ tiền mặt và nhảy trạng thái PAID ngầm.
+     * Khi hết giờ đấu giá, Server chỉ chuyển sang trạng thái FINISHED và gọi AuctionManager
+     * sinh bản ghi Transaction chờ (PENDING) xuống DB MySQL để đợi người mua bấm nút xác nhận.
+     */
     private void refreshTimedStatus() {
         LocalDateTime now = LocalDateTime.now();
         if (status == AuctionStatus.OPEN && startingTime != null && now.isAfter(startingTime)) {
@@ -249,25 +261,15 @@ public class Auction extends Entity implements Serializable {
         if (status == AuctionStatus.RUNNING && endingTime != null && now.isAfter(endingTime)) {
             boolean transitioned = transitionTo(AuctionStatus.FINISHED);
             if (transitioned) {
-                if (winner instanceof User winnerUser) {
-                    double winningPrice = currentPrice;
-                    boolean success = winnerUser.spendFrozenMoney(winningPrice);
-
-                    if (success) {
-                        owner.depositMoney(winningPrice);
-
-                        if (winnerUser.getId() > 0) {usersDb().update(winnerUser);}
-                        if (owner.getId() > 0) {usersDb().update(owner);}
-
-                        transitionTo(AuctionStatus.PAID);
-                    }
-                }
+                // Sinh dòng dữ liệu Giao dịch chờ (PENDING) an toàn trong MySQL
                 AuctionManager.getInstance().closeAuction(this);
+                updateIfPersisted();
             }
         }
     }
 
     private boolean isValidTransition(AuctionStatus next) {
+        if (status == next) return true;
         return switch (status) {
             case OPEN -> next == AuctionStatus.RUNNING || next == AuctionStatus.CANCELED;
             case RUNNING -> next == AuctionStatus.FINISHED || next == AuctionStatus.CANCELED;

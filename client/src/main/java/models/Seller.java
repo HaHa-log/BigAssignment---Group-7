@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 public interface Seller {
     default void createAuction(Item item, LocalDateTime createdAt, LocalDateTime terminatedAt) {
-        if (this instanceof Member owner) {
+        if (this instanceof User owner) {
             if (owner.isBlocked()) {
                 throw new AuthenticationException("Your account is currently blocked and cannot create auctions.");
             }
@@ -20,8 +20,8 @@ public interface Seller {
                 throw new CustomisedException("The auction termination time must be in the future.");
             }
 
-            if (terminatedAt.isBefore(createdAt)) {
-                throw new CustomisedException("Ending time cannot be before starting time.");
+            if (!terminatedAt.isAfter(createdAt)) {
+                throw new CustomisedException("Ending time must be after starting time.");
             }
 
             try {
