@@ -102,10 +102,20 @@ public class AuctionDetailController {
         getTableData(auction);
         updateBidChart();
 
-        if (currentUser != null && currentUser.isWinner(auction)
-                && auction.getStatus() == Auction.AuctionStatus.FINISHED){
-            setupConfirmPane();
+        if (currentUser != null && currentUser.isWinner(auction)) {
+            if (auction.getStatus() == Auction.AuctionStatus.FINISHED) {setupConfirmPane(false);
+
+            } else if (auction.getStatus() == Auction.AuctionStatus.PAID) {setupConfirmPane(true);}
         }
+    }
+
+    private void setupConfirmPane(boolean alreadyConfirmed) {
+        confirmPane.setVisible(true);
+        confirmPane.setManaged(true);
+
+        javafx.scene.control.Button confirmBtn = (javafx.scene.control.Button) confirmPane.getChildren().get(2);
+        if (alreadyConfirmed) {confirmBtn.setDisable(true);confirmBtn.setText("✓ Confirmed");
+        } else {confirmBtn.setDisable(false);confirmBtn.setText("CONFIRM");}
     }
 
     public void getTableData(Auction auction) {
@@ -171,8 +181,10 @@ public class AuctionDetailController {
             }
             auction = auctionApiService.confirmReceipt(auction.getId(), member.getId());
             auctionStatusLabel.setText(auction.getStatus().toString());
-            confirmPane.setVisible(false);
-            confirmPane.setManaged(false);
+
+            javafx.scene.control.Button confirmBtn = (javafx.scene.control.Button) confirmPane.getChildren().get(2);
+            confirmBtn.setDisable(true);
+            confirmBtn.setText("✓ Confirmed");
 
             bidPlacedResultLabel.setTextFill(GREEN);
             bidPlacedResultLabel.setText("Receipt confirmed. Transaction completed.");
