@@ -1,6 +1,5 @@
 package controllers.MainPage.ProfilePage;
 
-import models.Member;
 import models.SessionManager;
 import models.User;
 import controllers.SceneManager;
@@ -116,7 +115,7 @@ public class ProfilePageController {
         try {
             ImageFileValidator.validate(selectedAvatarFile);
 
-            Member updatedUser = userApiService.uploadAvatar(user.getId(), selectedAvatarFile);
+            User updatedUser = userApiService.uploadAvatar(user.getId(), selectedAvatarFile);
             SessionManager.updateCurrentUser(updatedUser);
             user = updatedUser;
 

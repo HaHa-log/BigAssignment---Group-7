@@ -21,14 +21,14 @@ public class SessionManager {
         prefs.put(USER_EMAIL_KEY, user.getEmail());
     }
 
-    public static void updateCurrentUser(Member member) {
+    public static void updateCurrentUser(User member) {
         if (member != null) {
             currentUser = member;
             prefs.put(USER_EMAIL_KEY, member.getEmail());
         }
     }
 
-    public static Member getCurrentUser() {
+    public static User getCurrentUser() {
         return currentUser;
     }
 

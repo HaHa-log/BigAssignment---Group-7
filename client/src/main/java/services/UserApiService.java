@@ -53,7 +53,7 @@ public class UserApiService {
         return UserMapper.toUser(mapper.readValue(send(request).body(), UserResponse.class));
     }
 
-    public Member uploadAvatar(int userId, File avatarFile) throws IOException, InterruptedException {
+    public User uploadAvatar(int userId, File avatarFile) throws IOException, InterruptedException {
         String boundary = "----Boundary" + System.currentTimeMillis();
 
         byte[] fileBytes = java.nio.file.Files.readAllBytes(avatarFile.toPath());
@@ -76,10 +76,10 @@ public class UserApiService {
                 .POST(HttpRequest.BodyPublishers.ofByteArray(body))
                 .build();
 
-        return UserMapper.toMember(mapper.readValue(send(request).body(), UserResponse.class));
+        return UserMapper.toUser(mapper.readValue(send(request).body(), UserResponse.class));
     }
 
-    public Member block(int id) throws IOException, InterruptedException {
+    public User block(int id) throws IOException, InterruptedException {
         return postStateChange(id, "block");
     }
 
