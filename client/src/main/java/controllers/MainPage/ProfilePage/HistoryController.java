@@ -55,7 +55,7 @@ public class HistoryController extends BaseController {
     @FXML
     public void initialize() {
         setupTableColumns();
-        setupTransactionColumns(); // ← thêm
+        setupTransactionColumns(); 
         setupFilter();
         historyTable.setItems(masterData);
         transactionTable.setItems(transactionData); // ← thêm
@@ -94,39 +94,67 @@ public class HistoryController extends BaseController {
         });
 
         colAction.setCellFactory(column -> new TableCell<>() {
-            private final Button confirmButton = new Button("Confirm");
+            private final Button confirmButton = new Button("Confirm Receipt");
+
             {
                 confirmButton.getStyleClass().add("confirm-button");
                 confirmButton.setOnAction(event -> {
                     AuctionHistoryEntry entry = getTableView().getItems().get(getIndex());
-                    try {
-                        Auction targetAuction = AuctionManager.getInstance().getAllSessions().stream()
-                                .filter(a -> a.getId() == entry.auctionId())
-                                .findFirst().orElse(null);
-                        if (targetAuction != null) {
-                            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
-                                    getClass().getResource("/AuctionPageFXML/AuctionDetail.fxml"));
-                            javafx.scene.Parent detailRoot = loader.load();
-                            AuctionDetailController detailController = loader.getController();
-                            detailController.setAuctionData(targetAuction);
-                            SceneManager.switchContent(detailRoot);
+                    confirmButton.setDisable(true);
+                    confirmButton.setText("Processing...");
+
+                    new Thread(() -> {
+                        try {
+                            HttpClient client = HttpClient.newHttpClient();
+                            //  API pending
+                            HttpRequest pendingReq = HttpRequest.newBuilder()
+                                    .uri(URI.create("http://localhost:8080/api/transactions/auction/"
+                                            + entry.auctionId() + "/create-pending"))
+                                    .POST(HttpRequest.BodyPublishers.noBody())
+                                    .build();
+                            client.send(pendingReq, HttpResponse.BodyHandlers.ofString());
+
+                            //  API confirm receipt
+                            String body = "{\"buyerId\":" + user.getId() + "}";
+                            HttpRequest confirmReq = HttpRequest.newBuilder()
+                                    .uri(URI.create("http://localhost:8080/api/transactions/auction/"
+                                            + entry.auctionId() + "/confirm-receipt"))
+                                    .header("Content-Type", "application/json")
+                                    .POST(HttpRequest.BodyPublishers.ofString(body))
+                                    .build();
+                            HttpResponse<String> response = client.send(confirmReq,
+                                    HttpResponse.BodyHandlers.ofString());
+
+                            Platform.runLater(() -> {
+                                if (response.statusCode() == 200) {
+                                    loadHistory();
+                                } else {
+                                    confirmButton.setDisable(false);
+                                    confirmButton.setText("Confirm Receipt");
+                                    System.err.println("[Error]: " + response.body());
+                                }
+                            });
+
+                        } catch (Exception e) {
+                            Platform.runLater(() -> {
+                                confirmButton.setDisable(false);
+                                confirmButton.setText("Confirm Receipt");
+                                e.printStackTrace();
+                            });
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    }).start();
                 });
             }
+
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty) { setGraphic(null); return; }
+
                 AuctionHistoryEntry entry = getTableView().getItems().get(getIndex());
-                Auction current = AuctionManager.getInstance().getAllSessions().stream()
-                        .filter(a -> a.getId() == entry.auctionId())
-                        .findFirst().orElse(null);
-                boolean showConfirm = "WON".equals(entry.userState())
-                        && current != null
-                        && current.getStatus() != Auction.AuctionStatus.PAID;
+
+                boolean showConfirm = "WON".equals(entry.userState()) && "FINISHED".equals(entry.auctionStatus());
+
                 setGraphic(showConfirm ? confirmButton : null);
             }
         });
