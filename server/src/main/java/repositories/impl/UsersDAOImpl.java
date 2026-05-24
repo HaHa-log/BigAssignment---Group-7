@@ -1,7 +1,7 @@
 package repositories.impl;
 
 import models.Admin;
-import models.Member;
+import models.User;
 import config.DB;
 import config.DbException;
 import repositories.UsersDAO;
@@ -16,7 +16,7 @@ public class UsersDAOImpl implements UsersDAO {
     protected UsersDAOImpl() {};
 
     @Override
-    public void save(Member user) {
+    public void save(User user) {
         String sql = "INSERT INTO users "
                 + "(email, phoneNumber, firstName, lastName, password, isAdmin, isBlocked, balance, avatar_path, frozen_balance) "
                 + "VALUES (?, ?, ?, ?, ?, ? , ?, ?, ?, ?)";
@@ -54,7 +54,7 @@ public class UsersDAOImpl implements UsersDAO {
     }
 
     @Override
-    public void delete(Member user) {
+    public void delete(User user) {
         String sql = "DELETE FROM users WHERE users_id = ?";
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
@@ -71,7 +71,7 @@ public class UsersDAOImpl implements UsersDAO {
     }
 
     @Override
-    public void update(Member user) {
+    public void update(User user) {
         String sql = "UPDATE users "
                 +"SET email = ?, phoneNumber = ?, firstName = ?, lastName = ?, password = ?, isAdmin = ?, isBlocked = ?, balance = ?, avatar_path = ?, frozen_balance = ?"
                 + " WHERE users_id = ? ";
@@ -99,7 +99,7 @@ public class UsersDAOImpl implements UsersDAO {
     }
 
     @Override
-    public Member getById(int id) {
+    public User getById(int id) {
         String sql = "SELECT * From users WHERE users_id = ?";
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
@@ -121,7 +121,7 @@ public class UsersDAOImpl implements UsersDAO {
     }
 
     @Override
-    public Member getByEmail(String email) {
+    public User getByEmail(String email) {
         String sql = "SELECT * From users WHERE email = ?";
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
@@ -130,8 +130,8 @@ public class UsersDAOImpl implements UsersDAO {
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()) {
                     if (rs.getBoolean("isAdmin") == false) {
-                        Member member = instantiateMember(rs);
-                        return member;
+                        User user = instantiateMember(rs);
+                        return user;
                     } else if (rs.getBoolean("isAdmin") == true) {
                         Admin admin = instantiateAdmin(rs);
                         return admin;
@@ -145,9 +145,9 @@ public class UsersDAOImpl implements UsersDAO {
     }
 
     @Override
-    public List<Member> getAll() {
+    public List<User> getAll() {
         String sql = "SELECT * FROM users";
-        List<Member> list = new ArrayList<>();
+        List<User> list = new ArrayList<>();
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql);
             ResultSet rs = st.executeQuery()) {
@@ -167,9 +167,9 @@ public class UsersDAOImpl implements UsersDAO {
     }
 
     @Override
-    public List<Member> getAllMember() {
+    public List<User> getAllMember() {
         String sql = "SELECT * FROM users WHERE isAdmin = ?";
-        List<Member> list = new ArrayList<>();
+        List<User> list = new ArrayList<>();
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
 
@@ -207,8 +207,8 @@ public class UsersDAOImpl implements UsersDAO {
     }
 
 
-    private Member instantiateMember(ResultSet rs) throws SQLException {
-        Member obj = new Member(
+    private User instantiateMember(ResultSet rs) throws SQLException {
+        User obj = new User(
                 rs.getString("firstName"),
                 rs.getString("lastName"),
                 rs.getString("email"),

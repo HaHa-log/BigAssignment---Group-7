@@ -16,7 +16,7 @@ public class Item extends Entity {
     private String name;
     private Status status = Status.AVAILABLE;
     private String imagePath;
-    private Member owner;
+    private User owner;
     private final ItemsDAO itemsDb = DaoFactory.createItemDAO();
 
     public Item(String name, double startingPrice, String description) {
@@ -74,11 +74,11 @@ public class Item extends Entity {
         this.imagePath = imagePath;
     }
 
-    public Member getOwner() {
+    public User getOwner() {
         return owner;
     }
 
-    public void setOwner(Member owner) {
+    public void setOwner(User owner) {
         this.owner = owner;
     }
 

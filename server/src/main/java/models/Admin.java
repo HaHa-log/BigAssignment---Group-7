@@ -7,7 +7,7 @@ import repositories.TransactionDAO;
 import repositories.UsersDAO;
 import repositories.impl.DaoFactory;
 
-public class Admin extends Member {
+public class Admin extends User {
     private final UsersDAO userDb = DaoFactory.createUsersDAO();
     private final TransactionDAO transactionDb = DaoFactory.createTransactionDAO();
 
@@ -29,7 +29,7 @@ public class Admin extends Member {
         return "Admin";
     }
 
-    public void blockUser(Member user, LocalDateTime until) {
+    public void blockUser(User user, LocalDateTime until) {
         if (user == null) {
             System.out.println("[Error]: User not found");
             return;
@@ -41,7 +41,7 @@ public class Admin extends Member {
         System.out.println("[Admin]: User with ID " + user.getId() + " blocked until " + until);
     }
 
-    public void unblockUser(Member user) {
+    public void unblockUser(User user) {
         if (user == null) {
             System.out.println("[Error]: User not found");
             return;

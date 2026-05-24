@@ -97,7 +97,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                     ? Timestamp.valueOf(auction.getEndingTime()) : null);
 
             st.setObject(8, auction.getWinner() != null
-                    ? ((Member) auction.getWinner()).getId() : null);
+                    ? ((User) auction.getWinner()).getId() : null);
             st.setInt(9, auction.getId());
 
             st.executeUpdate();
@@ -230,10 +230,10 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 + "LEFT JOIN users u_winner ON a.winner_id = u_winner.users_id";
     }
 
-    private Member instantiateOwner(ResultSet rs) throws SQLException {
+    private User instantiateOwner(ResultSet rs) throws SQLException {
         boolean isAdmin = rs.getBoolean("owner_isAdmin");
 
-        Member obj = isAdmin ? new Admin(
+        User obj = isAdmin ? new Admin(
                 rs.getString("owner_firstName"),
                 rs.getString("owner_lastName"),
                 rs.getString("owner_email"),
@@ -244,7 +244,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 rs.getBoolean("owner_isBlocked"),
                 rs.getObject("owner_blockedUntil", LocalDateTime.class),
                 rs.getString("owner_avatar_path")
-        ) : new Member(
+        ) : new User(
                 rs.getString("owner_firstName"),
                 rs.getString("owner_lastName"),
                 rs.getString("owner_email"),
@@ -262,7 +262,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
     }
 
     private Item instantiateItem(ResultSet rs) throws SQLException {
-        Member owner = instantiateOwner(rs);
+        User owner = instantiateOwner(rs);
         Item obj = new Item(
                 rs.getString("item_name"),
                 rs.getDouble("item_startingPrice"),
@@ -281,7 +281,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
         }
 
         boolean isAdmin = rs.getBoolean("winner_isAdmin");
-        Member obj = isAdmin ? new Admin(
+        User obj = isAdmin ? new Admin(
                 rs.getString("winner_firstName"),
                 rs.getString("winner_lastName"),
                 rs.getString("winner_email"),
@@ -292,7 +292,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 rs.getBoolean("winner_isBlocked"),
                 rs.getObject("winner_blockedUntil", LocalDateTime.class),
                 rs.getString("winner_avatar_path")
-        ) : new Member(
+        ) : new User(
                 rs.getString("winner_firstName"),
                 rs.getString("winner_lastName"),
                 rs.getString("winner_email"),

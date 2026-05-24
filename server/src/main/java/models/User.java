@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Member extends Entity implements Bidder, Seller, AuctionObserver {
+public class User extends Entity implements Bidder, Seller, AuctionObserver {
     private FullName fullname;
     private Email email;
     private PhoneNumber phoneNumber;
@@ -26,7 +26,7 @@ public class Member extends Entity implements Bidder, Seller, AuctionObserver {
     private final TransactionDAO transactionDb = DaoFactory.createTransactionDAO();
     private final ItemsDAO itemsDb = DaoFactory.createItemDAO();
 
-    public Member(String firstName, String lastName, String email, String phoneNumber, String password, double balance, String avatarPath) {
+    public User(String firstName, String lastName, String email, String phoneNumber, String password, double balance, String avatarPath) {
         this.fullname = new FullName(firstName, lastName);
         this.email = new Email(email);
         this.phoneNumber = new PhoneNumber(phoneNumber);
@@ -35,7 +35,7 @@ public class Member extends Entity implements Bidder, Seller, AuctionObserver {
         setPassword(password);
     }
 
-    public Member(String firstName, String lastName, String email, String phoneNumber, String password, double balance, boolean isAdmin, boolean isBlocked, LocalDateTime blockedUntil, String avatarPath) {
+    public User(String firstName, String lastName, String email, String phoneNumber, String password, double balance, boolean isAdmin, boolean isBlocked, LocalDateTime blockedUntil, String avatarPath) {
         this(firstName, lastName, email, phoneNumber, password, balance, avatarPath);
         this.isAdmin = isAdmin;
         this.isBlocked = isBlocked;
@@ -81,7 +81,7 @@ public class Member extends Entity implements Bidder, Seller, AuctionObserver {
     public boolean isAdmin() { return isAdmin; }
 
     public String getRole() {
-        return isAdmin ? "Admin" : "Member";
+        return isAdmin ? "Admin" : "User";
     }
 
     public boolean isBlocked() {
@@ -241,7 +241,7 @@ public class Member extends Entity implements Bidder, Seller, AuctionObserver {
             return;
         }
 
-        String bidderName = ((Member) bidder).getFullName();
+        String bidderName = ((User) bidder).getFullName();
         System.out.println("[Notification]: "
                 + bidderName + " has bidded " + amount
                 + " in auction of ID " + auction.getId()
@@ -281,7 +281,7 @@ public class Member extends Entity implements Bidder, Seller, AuctionObserver {
         list.forEach(transaction -> System.out.println(transaction.toString()));
     }
 
-    public boolean isEqual(Member other) {
+    public boolean isEqual(User other) {
         if (other == null) return false;
         return this.getId() == other.getId();
     }
@@ -289,8 +289,8 @@ public class Member extends Entity implements Bidder, Seller, AuctionObserver {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Member member)) return false;
-        return this.getId() == member.getId();
+        if (!(o instanceof User user)) return false;
+        return this.getId() == user.getId();
     }
 
     @Override

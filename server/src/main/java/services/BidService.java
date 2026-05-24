@@ -4,7 +4,7 @@ import com.group7.dto.bid.*;
 import models.Auction;
 import models.Bid;
 import models.Common.Price;
-import models.Member;
+import models.User;
 import org.springframework.stereotype.Service;
 import repositories.AuctionsDAO;
 import repositories.BidsDAO;
@@ -42,12 +42,12 @@ public class BidService {
         }
 
         Auction auction = requireAuction(auctionId);
-        Member member = usersDAO.getById(request.getBidderId());
-        if (member == null) {
+        User user = usersDAO.getById(request.getBidderId());
+        if (user == null) {
             throw new IllegalArgumentException("[Error]: Bidder is invalid.");
         }
 
-        Bid bid = new Bid(auction, member, new Price(request.getAmount()));
+        Bid bid = new Bid(auction, user, new Price(request.getAmount()));
 
         bidsDAO.save(bid);
         return toResponse(bid);

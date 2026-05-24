@@ -4,7 +4,7 @@ import com.group7.dto.item.ItemRequest;
 import com.group7.dto.item.ItemResponse;
 import com.group7.dto.item.UpdateItemRequest;
 import models.Item;
-import models.Member;
+import models.User;
 import org.springframework.stereotype.Service;
 import repositories.ItemsDAO;
 import repositories.UsersDAO;
@@ -34,7 +34,7 @@ public class ItemService {
     public void createNewItem(ItemRequest request) {
         validateCreateRequest(request);
 
-        Member owner = usersDb.getById(request.getOwnerId());
+        User owner = usersDb.getById(request.getOwnerId());
         if (owner == null) {
             throw new IllegalArgumentException("[Error]: Owner not found or not a member.");
         }

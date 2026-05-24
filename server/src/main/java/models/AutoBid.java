@@ -6,11 +6,11 @@ import java.io.Serializable;
 
 public class AutoBid implements Serializable, Cloneable {
     private Auction auction;
-    private final Member user;
+    private final User user;
     private Price maxBid;
     private double increment;
 
-    public AutoBid(Auction auction, Member user, double maxBid, double increment) {
+    public AutoBid(Auction auction, User user, double maxBid, double increment) {
         this.auction = auction;
         this.user = user;
         this.maxBid = new Price(maxBid);
@@ -25,7 +25,7 @@ public class AutoBid implements Serializable, Cloneable {
         this.auction = auction;
     }
 
-    public Member getUser() {
+    public User getUser() {
         return user;
     }
 

@@ -1,6 +1,6 @@
 package repositories.impl;
 
-import models.Member;
+import models.User;
 import models.Transaction;
 import config.DB;
 import config.DbException;
@@ -192,9 +192,9 @@ public class TransactionDAOImpl implements TransactionDAO {
         Auction auction = auctionsDAO.getById(auctionId);
         if (auction == null) return null;
 
-        Member buyer = userDAO.getById(rs.getInt("buyer_id"));
-        Member seller = userDAO.getById(rs.getInt("seller_id"));
-        if (!(buyer instanceof Member) || !(seller instanceof Member)) return null;
+        User buyer = userDAO.getById(rs.getInt("buyer_id"));
+        User seller = userDAO.getById(rs.getInt("seller_id"));
+        if (!(buyer instanceof User) || !(seller instanceof User)) return null;
 
         Transaction obj = new Transaction(
                 auctionsDAO.getById(rs.getInt("auction_id")),

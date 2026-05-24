@@ -1,7 +1,6 @@
 package services;
 
 import com.group7.dto.transaction.TransactionResponse;
-import config.DbException;
 import models.*;
 import models.Exceptions.IllegalTransactionException;
 import org.springframework.stereotype.Service;
@@ -23,12 +22,12 @@ public class TransactionService {
     public TransactionResponse createPendingTransaction(int auctionId) {
         Auction auction = requireAuction(auctionId);
 
-        Member winner = auction.getWinner();
+        User winner = auction.getWinner();
         if (winner == null) {
             throw new IllegalArgumentException("[Error]: Auction has no winner.");
         }
-        if (!(winner instanceof Member buyer)) {
-            throw new IllegalArgumentException("[Error]: Winner is not a valid Member.");
+        if (!(winner instanceof User buyer)) {
+            throw new IllegalArgumentException("[Error]: Winner is not a valid User.");
         }
 
         Transaction existing = transactionDAO.getPendingByAuctionAndBuyer(auctionId, buyer.getId());
@@ -36,7 +35,7 @@ public class TransactionService {
             return toResponse(existing);
         }
 
-        Member seller = auction.getOwner();
+        User seller = auction.getOwner();
         double finalPrice = auction.getCurrentPrice();
 
         Transaction transaction = new Transaction(auction, buyer, seller, finalPrice);
@@ -45,12 +44,12 @@ public class TransactionService {
     }
     //buyer confirm
     public TransactionResponse confirmReceipt(int auctionId, int buyerId) {
-        Member buyer = usersDAO.getById(buyerId);
-        if (!(buyer instanceof Member member)) {
+        User buyer = usersDAO.getById(buyerId);
+        if (!(buyer instanceof User user)) {
             throw new IllegalArgumentException("[Error]: Buyer is invalid.");
         }
 
-        Transaction transaction = transactionDAO.getPendingByAuctionAndBuyer(auctionId, member.getId());
+        Transaction transaction = transactionDAO.getPendingByAuctionAndBuyer(auctionId, user.getId());
         if (transaction == null) {
             throw new IllegalArgumentException("[Error]: No pending transaction found for this auction.");
         }

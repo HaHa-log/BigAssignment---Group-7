@@ -3,7 +3,7 @@ package repositories.impl;
 import config.DB;
 import config.DbException;
 import models.Bid;
-import models.Member;
+import models.User;
 import repositories.AuctionsDAO;
 import repositories.BidsDAO;
 import repositories.UsersDAO;
@@ -145,7 +145,7 @@ public class BidsDAOImpl implements BidsDAO {
     }
 
     private Bid instantiateBid(ResultSet rs) throws SQLException {
-        Member bidder = bidderDb.getById(rs.getInt("bidder_id"));
+        User bidder = bidderDb.getById(rs.getInt("bidder_id"));
         Bid obj = new Bid(
                 auctionDb.getById(rs.getInt("auction_id")),
                 bidder,

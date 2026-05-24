@@ -38,16 +38,16 @@ public class AuctionService {
             throw new IllegalArgumentException("[Error]: Request body is required.");
         }
 
-        Member member = usersDAO.getById(request.getOwnerId());
-        if (member == null) {
+        User user = usersDAO.getById(request.getOwnerId());
+        if (user == null) {
             throw new IllegalArgumentException("[Error]: Auction owner is invalid.");
         }
 
         Item item = new Item(request.getItemName(), request.getStartingPrice(), request.getDescription());
-        item.setOwner(member);
+        item.setOwner(user);
         item.setImagePath(request.getImagePath());
 
-        Auction auction = new Auction(member, item, request.getStartingTime(), request.getEndingTime());
+        Auction auction = new Auction(user, item, request.getStartingTime(), request.getEndingTime());
         auctionsDAO.save(auction);
         auction.start();
         auctionsDAO.update(auction);
@@ -56,7 +56,7 @@ public class AuctionService {
 
     public AuctionResponse placeBid(int auctionId, int bidderId, double amount) {
         Auction auction = requireAuction(auctionId);
-        Member bidder = usersDAO.getById(bidderId);
+        User bidder = usersDAO.getById(bidderId);
         if (bidder == null) {
             throw new IllegalArgumentException("[Error]: Bidder is invalid.");
         }
@@ -78,8 +78,8 @@ public class AuctionService {
     }
 
     public AuctionResponse confirmReceipt(int auctionId, int buyerId) {
-        Member member = usersDAO.getById(buyerId);
-        if (member == null) {
+        User user = usersDAO.getById(buyerId);
+        if (user == null) {
             throw new IllegalArgumentException("[Error]: Buyer is invalid.");
         }
 
@@ -108,7 +108,7 @@ public class AuctionService {
             itemImg = auction.getItem().getImagePath();
         }
 
-        Member winner = auction.getWinner();
+        User winner = auction.getWinner();
 
         List<com.group7.dto.bid.BidResponse> bidResponses = java.util.Collections.emptyList();
         if (auction.getId() > 0) {

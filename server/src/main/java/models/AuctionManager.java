@@ -78,7 +78,7 @@ public class AuctionManager {
         userConfig.getUser().placeBid(auction, nextPrice);
     }
 
-    public void createAuction(Member owner, Item item, LocalDateTime startingTime, LocalDateTime endingTime) {
+    public void createAuction(User owner, Item item, LocalDateTime startingTime, LocalDateTime endingTime) {
         item.setStatus(Item.Status.IN_AUCTION);
         Auction session = new Auction(owner, item, startingTime, endingTime);
         auctionDb.save(session);
@@ -96,7 +96,7 @@ public class AuctionManager {
             return;
         }
         moveToCompleted(session);
-        Member winner = session.getWinner();
+        User winner = session.getWinner();
         if (winner == null) {
             session.getItem().setStatus(Item.Status.AVAILABLE);
             auctionDb.update(session);
@@ -122,14 +122,14 @@ public class AuctionManager {
         return true;
     }
 
-    public Transaction confirmReceipt(Auction auction, Member buyer) {
+    public Transaction confirmReceipt(Auction auction, User buyer) {
         if (auction == null) {
             throw new IllegalArgumentException("[Error]: Auction is required.");
         }
         return confirmReceipt(auction.getId(), buyer);
     }
 
-    public Transaction confirmReceipt(int auctionId, Member buyer) {
+    public Transaction confirmReceipt(int auctionId, User buyer) {
         if (buyer == null) {
             throw new IllegalArgumentException("[Error]: Buyer is required.");
         }
@@ -162,7 +162,7 @@ public class AuctionManager {
                 continue;
             }
             transaction.getAuction().transitionTo(Auction.AuctionStatus.CANCELED);
-            Member buyer = transaction.getBuyer();
+            User buyer = transaction.getBuyer();
             buyer.unfreezeMoney(transaction.getFinalAmount());
             usersDb.update(buyer);
             System.out.println("[System]: Transaction " + transaction.getTransactionId()
@@ -184,7 +184,7 @@ public class AuctionManager {
         }
     }
 
-    private void createPendingTransaction(Auction session, Member winner) {
+    private void createPendingTransaction(Auction session, User winner) {
         double finalPrice = session.getCurrentPrice();
         if (winner.getFrozenBalance() < finalPrice && winner.freezeMoney(finalPrice - winner.getFrozenBalance())) {
             System.out.println("[System]: Money frozen, moving onto transaction page...");

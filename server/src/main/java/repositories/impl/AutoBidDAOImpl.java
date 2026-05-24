@@ -2,7 +2,7 @@ package repositories.impl;
 
 import models.AutoBid;
 import models.BidStepConfiguration;
-import models.Member;
+import models.User;
 import config.DB;
 import config.DbException;
 import repositories.AuctionsDAO;
@@ -152,7 +152,7 @@ public class AutoBidDAOImpl implements AutoBidDAO {
     }
 
     private AutoBid instantiateAutoBid(ResultSet rs) throws SQLException {
-        Member user = userDb.getById(rs.getInt("user_id"));
+        User user = userDb.getById(rs.getInt("user_id"));
         return new AutoBid(
                 auctionsDAO.getById(rs.getInt("auction_id")),
                 user,

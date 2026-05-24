@@ -12,15 +12,15 @@ public class Transaction {
 
     private int transactionId;
     private final Auction auction;
-    private final Member buyer;
-    private final Member seller;
+    private final User buyer;
+    private final User seller;
     private final double finalAmount;
     private final LocalDateTime paidAt;
     private LocalDateTime completedAt;
     private TransactionStatus status;
     private LocalDateTime expiryTime;
 
-    public Transaction(Auction auction, Member buyer, Member seller, double finalAmount) {
+    public Transaction(Auction auction, User buyer, User seller, double finalAmount) {
         this.auction = auction;
         this.buyer = buyer;
         this.seller = seller;
@@ -31,7 +31,7 @@ public class Transaction {
         this.expiryTime = LocalDateTime.now().plusMinutes(30);
     }
 
-    public Transaction(Auction auction, Member buyer, Member seller, double finalAmount, LocalDateTime paidAt, LocalDateTime completedAt, TransactionStatus status, LocalDateTime expiryTime) {
+    public Transaction(Auction auction, User buyer, User seller, double finalAmount, LocalDateTime paidAt, LocalDateTime completedAt, TransactionStatus status, LocalDateTime expiryTime) {
         this.auction = auction;
         this.buyer = buyer;
         this.seller = seller;
@@ -54,11 +54,11 @@ public class Transaction {
         return auction;
     }
 
-    public Member getBuyer() {
+    public User getBuyer() {
         return buyer;
     }
 
-    public Member getSeller() {
+    public User getSeller() {
         return seller;
     }
 

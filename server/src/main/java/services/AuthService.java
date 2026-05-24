@@ -3,7 +3,7 @@ package services;
 import com.group7.dto.auth.*;
 import models.Common.Email;
 import models.Common.PhoneNumber;
-import models.Member;
+import models.User;
 import org.springframework.stereotype.Service;
 import repositories.UsersDAO;
 import repositories.impl.DaoFactory;
@@ -16,13 +16,13 @@ public class AuthService {
     public AuthResponse register(RegisterRequest request) {
         validateRegisterRequest(request);
 
-        Member existing = userdb.getByEmail(request.getEmail());
+        User existing = userdb.getByEmail(request.getEmail());
         if (existing != null) {
             throw new IllegalArgumentException("[Failure]: An account with this email already exists.");
         }
 
         double initialBalance = 0.0;
-        Member member = new Member(
+        User user = new User(
                 request.getFirstName(),
                 request.getLastName(),
                 request.getEmail(),
@@ -32,9 +32,9 @@ public class AuthService {
                 request.getAvatarPath()
         );
 
-        userdb.save(member);
+        userdb.save(user);
 
-        return toAuthResponse(member);
+        return toAuthResponse(user);
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -46,17 +46,17 @@ public class AuthService {
             throw new IllegalArgumentException("[Failure]: Email and password are required.");
         }
 
-        Member member = userdb.getByEmail(request.getEmail());
+        User user = userdb.getByEmail(request.getEmail());
 
-        if (member == null) {
+        if (user == null) {
             throw new IllegalArgumentException("[Failure]: No account found with this email.");
         }
 
-        if (!member.getPassword().equals(request.getPassword())) {
+        if (!user.getPassword().equals(request.getPassword())) {
             throw new IllegalArgumentException("[Failure]: Incorrect password.");
         }
 
-        return toAuthResponse(member);
+        return toAuthResponse(user);
     }
 
     private void validateRegisterRequest(RegisterRequest request) {
@@ -97,17 +97,17 @@ public class AuthService {
         }
     }
 
-    private AuthResponse toAuthResponse(Member member) {
+    private AuthResponse toAuthResponse(User user) {
         return new AuthResponse(
-                member.getId(),
-                member.getFirstName(),
-                member.getLastName(),
-                member.getFullName(),
-                member.getEmail(),
-                member.getPhoneNumber(),
-                member.getRole(),
-                member.getBalance(),
-                member.getAvatarPath()
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getFullName(),
+                user.getEmail(),
+                user.getPhoneNumber(),
+                user.getRole(),
+                user.getBalance(),
+                user.getAvatarPath()
         );
     }
 
