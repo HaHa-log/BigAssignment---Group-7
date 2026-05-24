@@ -110,6 +110,21 @@ public class AuctionService {
 
         User winner = auction.getWinner();
 
+        List<com.group7.dto.bid.BidResponse> bidResponses = java.util.Collections.emptyList();
+        if (auction.getId() > 0) {
+            List<Bid> bids = bidsDAO.getByAuctionId(auction.getId());
+            if (bids != null) {
+                bidResponses = bids.stream().map(bid -> new com.group7.dto.bid.BidResponse(
+                        bid.getId(),
+                        auction.getId(),
+                        bid.getBidder() != null ? bid.getBidder().getId() : 0,
+                        bid.getBidder() != null ? bid.getBidder().getFullName() : "Unknown",
+                        bid.getBidPrice() != null ? bid.getBidPrice().getPrice() : 0.0,
+                        bid.getBidTime()
+                )).toList();
+            }
+        }
+
         return new AuctionResponse(
                 auction.getId(),
                 auction.getOwnerId(),
@@ -123,8 +138,9 @@ public class AuctionService {
                 auction.getCurrentPrice(),
                 auction.getStartingTime(),
                 auction.getEndingTime(),
-                winner != null ? winner.getId() : null,         // 13. winnerId
-                winner != null ? winner.getFullName() : null    // 14. winnerName
+                winner != null ? winner.getId() : null,
+                winner != null ? winner.getFullName() : null,
+                bidResponses
         );
     }
 }

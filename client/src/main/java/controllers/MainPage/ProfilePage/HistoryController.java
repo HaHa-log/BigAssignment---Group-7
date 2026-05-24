@@ -126,7 +126,7 @@ public class HistoryController extends BaseController {
                         .findFirst().orElse(null);
                 boolean showConfirm = "WON".equals(entry.userState())
                         && current != null
-                        && current.getRawStatus() != Auction.AuctionStatus.PAID;
+                        && current.getStatus() != Auction.AuctionStatus.PAID;
                 setGraphic(showConfirm ? confirmButton : null);
             }
         });

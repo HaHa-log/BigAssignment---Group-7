@@ -3,7 +3,9 @@ package services;
 import models.Auction;
 import models.Item;
 import models.Member;
+import models.Bid; // Added import for Bid
 import com.group7.dto.auction.*;
+import java.util.List; // Added import for List
 
 public final class AuctionMapper {
     private static final String SESSION_PASSWORD_PLACEHOLDER = "server-authenticated";
@@ -36,7 +38,6 @@ public final class AuctionMapper {
         item.setId(response.getItemId());
         item.setOwnerId(response.getOwnerId());
 
-        // --- MAP THE WINNER DIRECTLY FROM THE DTO ---
         Member winner = null;
         if (response.getWinnerId() != null && response.getWinnerId() > 0) {
             String[] winnerNameParts = splitName(response.getWinnerName());
@@ -51,7 +52,6 @@ public final class AuctionMapper {
             );
             winner.setId(response.getWinnerId());
         }
-        // --------------------------------------------
 
         Auction auction = new Auction(
                 owner,
@@ -64,6 +64,37 @@ public final class AuctionMapper {
                 winner
         );
         auction.setAuctionId(response.getId());
+
+        if (response.getBids() != null && !response.getBids().isEmpty()) {
+            List<Bid> domainBids = response.getBids().stream().map(bidDto -> {
+                Member bidder = null;
+                if (bidDto.getBidderId() > 0) {
+                    String[] bidderNameParts = splitName(bidDto.getBidderName());
+                    bidder = new Member(
+                            bidderNameParts[0],
+                            bidderNameParts[1],
+                            "bidder-" + bidDto.getBidderId() + "@server.local",
+                            "0000000000",
+                            SESSION_PASSWORD_PLACEHOLDER,
+                            0,
+                            null
+                    );
+                    bidder.setId(bidDto.getBidderId());
+                }
+
+                return new Bid(
+                        auction,
+                        bidder,
+                        bidDto.getBidPrice(),
+                        bidDto.getBidTime()
+                );
+            }).toList();
+
+            auction.setBids(domainBids);
+        } else {
+            auction.setBids(new java.util.ArrayList<>());
+        }
+
         return auction;
     }
 
