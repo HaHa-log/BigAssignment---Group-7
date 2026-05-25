@@ -36,7 +36,7 @@
                             </children>
                         </StackPane>
 
-                        <StackPane fx:id="itemContainer" maxHeight="1.7976931348623157E308" maxWidth="350.0" minWidth="300.0" onMouseClicked="#toInventory" prefWidth="320.0" style="-fx-background-color: #37427c; -fx-cursor: hand;" styleClass="homepage">
+                        <StackPane fx:id="itemContainer" maxHeight="1.7976931348623157E308" maxWidth="370.0" minWidth="320.0" onMouseClicked="#toInventory" style="-fx-background-color: #37427c; -fx-cursor: hand;" styleClass="homepage">
                             <children>
                                 <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" onMouseClicked="#toInventory" pannable="true" style="-fx-background: transparent; -fx-background-color: transparent;" stylesheets="@/style.css" vbarPolicy="AS_NEEDED">
                                     <content>
