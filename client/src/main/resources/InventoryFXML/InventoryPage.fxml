@@ -3,6 +3,7 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
 
 <VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="15"
       stylesheets="@itemcard.css"
@@ -37,5 +38,25 @@
                 <ProgressIndicator fx:id="loadingSpinner" maxHeight="50.0" maxWidth="50.0" visible="false" />
             </children>
         </StackPane>
+
+        <HBox alignment="CENTER" spacing="30.0">
+            <children>
+                <Button fx:id="btnPrev" disable="true" mnemonicParsing="false" prefWidth="120.0" text="◀ Previous"
+                        style="-fx-background-color: #37427c; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 5;">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Button>
+                <Button fx:id="btnNext" disable="true" mnemonicParsing="false" prefWidth="120.0" text="Next ▶"
+                        style="-fx-background-color: #37427c; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 5;">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Button>
+            </children>
+            <VBox.margin>
+                <Insets bottom="15.0" top="5.0" />
+            </VBox.margin>
+        </HBox>
     </children>
 </VBox>

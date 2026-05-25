@@ -45,24 +45,23 @@ public class ItemService {
         return item;
     }
 
+    public List<ItemResponse> getItemsByOwner(int ownerId, int page, int size) {
+        List<Item> items = itemsDb.getByOwnerId(ownerId, page, size);
+
+        return items.stream().map(item -> {
+            ItemResponse response = new ItemResponse();
+            response.setId(item.getId());
+            response.setName(item.getName());
+            response.setStartingPrice(item.getStartingPrice());
+            response.setDescription(item.getDescription());
+            response.setStatus(item.getStatus() != null ? item.getStatus().name() : "AVAILABLE");
+            response.setImagePath(item.getImagePath());
+            return response;
+        }).toList();
+    }
+
     public List<ItemResponse> getItemsByOwner(int ownerId) {
-        List<Item> databaseItems = itemsDb.getByOwnerId(ownerId);
-        List<ItemResponse> responses = new ArrayList<>();
-
-        for (Item item : databaseItems) {
-            responses.add(new ItemResponse(
-                    item.getId(),
-                    item.getName(),
-                    item.getStartingPrice(),
-                    item.getDescription(),
-                    item.getStatus().name(),
-                    item.getImagePath(),
-                    item.getOwnerId(),
-                    item.getOwner().getFullName()
-            ));
-        }
-
-        return responses;
+        return getItemsByOwner(ownerId, 0, 10); // Mặc định lấy trang đầu, 10 items
     }
 
     public ItemResponse update(int id, UpdateItemRequest req) {

@@ -1,8 +1,10 @@
 package controllers.AuctionPage;
 
 import models.Auction;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.TilePane;
@@ -19,8 +21,20 @@ public class AuctionListController {
     private ComboBox<String> statusFilter;
     @FXML
     private ProgressIndicator loadingSpinner;
+    @FXML
+    private Button btnPrev;
+    @FXML
+    private Button btnNext;
 
     private final AuctionApiService auctionApiService = new AuctionApiService();
+
+    private int currentPage = 0;
+    private final int PAGE_SIZE = 10;
+
+    // --- CƠ CHẾ CACHE ĐỂ CHẶN RELOAD KHI ĐỔI TÀB ---
+    private static List<Auction> cachedAuctions = null;
+    private static int cachedPage = -1;
+    private static String cachedStatus = "ALL";
 
     @FXML
     private void initialize() {
@@ -28,62 +42,118 @@ public class AuctionListController {
         for (Auction.AuctionStatus status : Auction.AuctionStatus.values()) {
             statusFilter.getItems().add(status.name());
         }
-        statusFilter.setValue("ALL");
 
-        statusFilter.setOnAction(e -> populateList());
+        // Khôi phục lại trạng thái filter cũ từ cache (nếu có)
+        statusFilter.setValue(cachedStatus);
 
-        javafx.application.Platform.runLater(() -> {
-            populateList();
+        statusFilter.setOnAction(e -> {
+            currentPage = 0;
+            cachedStatus = statusFilter.getValue();
+            invalidateCacheAndReload(); // Đổi bộ lọc thì bắt buộc phải clear cache để load lại
         });
+
+        btnPrev.setOnAction(e -> handlePrevPage());
+        btnNext.setOnAction(e -> handleNextPage());
+
+        // Kiểm tra xem đã có dữ liệu cache của trang này chưa
+        if (cachedAuctions != null && cachedPage == currentPage) {
+            // Có cache rồi: Hiển thị luôn lên màn hình, không gọi API nữa!
+            renderAuctionUI(cachedAuctions);
+        } else {
+            // Chưa có cache: Tiến hành gọi lên Server
+            Platform.runLater(this::populateList);
+        }
+    }
+
+    private void handlePrevPage() {
+        if (currentPage > 0) {
+            currentPage--;
+            populateList();
+        }
+    }
+
+    private void handleNextPage() {
+        currentPage++;
+        populateList();
+    }
+
+    // Hàm chủ động xóa cache khi người dùng bấm nút Refresh (nếu bạn làm nút refresh sau này) hoặc đổi bộ lọc
+    public void invalidateCacheAndReload() {
+        cachedAuctions = null;
+        populateList();
     }
 
     public void populateList() {
-        String selectedStatus = statusFilter.getValue();
         auctionTilePane.getChildren().clear();
         auctionTilePane.setVisible(false);
         loadingSpinner.setVisible(true);
 
+        btnPrev.setDisable(true);
+        btnNext.setDisable(true);
+        statusFilter.setDisable(true);
+
         Thread thread = new Thread(() -> {
             try {
-                List<Auction> auctions = auctionApiService.getAll();
+                // Gọi API lấy dữ liệu từ Server về
+                List<Auction> auctions = auctionApiService.getAll(currentPage, PAGE_SIZE);
 
-                List<Auction> sortedAuctions = new ArrayList<>(auctions);
-                //Sorting logic for auction
-                sortedAuctions.sort((a1, a2) -> {
-                    boolean isA1Active = a1.getStatus() == Auction.AuctionStatus.OPEN ||
-                            a1.getStatus() == Auction.AuctionStatus.RUNNING;
+                cachedAuctions = auctions;
+                cachedPage = currentPage;
 
-                    boolean isA2Active = a2.getStatus() == Auction.AuctionStatus.OPEN ||
-                            a2.getStatus() == Auction.AuctionStatus.RUNNING;
-                    if (isA1Active && !isA2Active) return 1;
-                    if (!isA1Active && isA2Active) return -1;
-                    return 0;
+                Platform.runLater(() -> {
+                    statusFilter.setDisable(false);
+                    renderAuctionUI(auctions);
                 });
 
-                // Hide spinner as soon as data is fetched
-                javafx.application.Platform.runLater(() -> {
-                    loadingSpinner.setVisible(false);
-                    auctionTilePane.setVisible(true);
-                });
-                for (Auction auction : auctions) {
-                    if (!selectedStatus.equals("ALL") && !auction.getStatus().name().equals(selectedStatus)) {
-                        continue;
-                    }
-
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/AuctionPageFXML/AuctionCard.fxml"));
-                    VBox card = loader.load();
-                    AuctionCardController cardController = loader.getController();
-                    cardController.setAuctionData(auction);
-
-                    javafx.application.Platform.runLater(() -> auctionTilePane.getChildren().add(card));
-                }
             } catch (Exception e) {
                 e.printStackTrace();
-                javafx.application.Platform.runLater(() -> loadingSpinner.setVisible(false));
+                Platform.runLater(() -> {
+                    loadingSpinner.setVisible(false);
+                    statusFilter.setDisable(false);
+                    btnPrev.setDisable(currentPage == 0);
+                    btnNext.setDisable(true);
+                });
             }
         });
 
         thread.setDaemon(true);
         thread.start();
+    }
+
+    private void renderAuctionUI(List<Auction> auctions) {
+        auctionTilePane.getChildren().clear();
+        String selectedStatus = statusFilter.getValue();
+
+        List<Auction> filteredAuctions = new ArrayList<>();
+        for (Auction a : auctions) {
+            if (selectedStatus.equals("ALL") || a.getStatus().name().equals(selectedStatus)) {
+                filteredAuctions.add(a);
+            }
+        }
+
+        filteredAuctions.sort((a1, a2) -> {
+            boolean isA1Active = a1.getStatus() == Auction.AuctionStatus.OPEN || a1.getStatus() == Auction.AuctionStatus.RUNNING;
+            boolean isA2Active = a2.getStatus() == Auction.AuctionStatus.OPEN || a2.getStatus() == Auction.AuctionStatus.RUNNING;
+            if (isA1Active && !isA2Active) return -1;
+            if (!isA1Active && isA2Active) return 1;
+            return 0;
+        });
+
+        try {
+            for (Auction auction : filteredAuctions) {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/AuctionPageFXML/AuctionCard.fxml"));
+                VBox card = loader.load(); // Chạy ở đây cực kỳ an toàn vì renderUI gọi từ Platform.runLater
+                AuctionCardController cardController = loader.getController();
+                cardController.setAuctionData(auction);
+                auctionTilePane.getChildren().add(card);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        loadingSpinner.setVisible(false);
+        auctionTilePane.setVisible(true);
+        btnPrev.setDisable(currentPage == 0);
+        btnNext.setDisable(auctions.size() < PAGE_SIZE || filteredAuctions.isEmpty());
     }
 }

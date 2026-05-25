@@ -8,6 +8,7 @@ import services.AuctionApiService;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.HBox;
@@ -23,9 +24,16 @@ public class InventoryController {
     @FXML private ComboBox<String> statusFilter;
     @FXML private ProgressIndicator loadingSpinner;
 
+    // ĐỒNG BỘ UI: Thêm 2 nút điều hướng phân trang
+    @FXML private Button btnPrev;
+    @FXML private Button btnNext;
+
     private final User user = SessionManager.getCurrentUser();
     private final ItemApiService itemApiService = new ItemApiService();
     private final AuctionApiService auctionApiService = new AuctionApiService();
+
+    private int currentPage = 0;
+    private final int PAGE_SIZE = 20;
 
     @FXML
     private void initialize() {
@@ -34,9 +42,28 @@ public class InventoryController {
             statusFilter.getItems().add(status.name());
         }
         statusFilter.setValue("ALL");
-        statusFilter.setOnAction(e -> populateList());
+
+        statusFilter.setOnAction(e -> {
+            currentPage = 0;
+            populateList();
+        });
+
+        btnPrev.setOnAction(e -> handlePrevPage());
+        btnNext.setOnAction(e -> handleNextPage());
 
         javafx.application.Platform.runLater(this::populateList);
+    }
+
+    private void handlePrevPage() {
+        if (currentPage > 0) {
+            currentPage--;
+            populateList();
+        }
+    }
+
+    private void handleNextPage() {
+        currentPage++;
+        populateList();
     }
 
     public void populateList() {
@@ -45,26 +72,36 @@ public class InventoryController {
         itemList.setVisible(false);
         loadingSpinner.setVisible(true);
 
+        // Khóa tạm thời nút bấm tránh spam click khi đang load dữ liệu
+        btnPrev.setDisable(true);
+        btnNext.setDisable(true);
+
         Thread thread = new Thread(() -> {
             try {
                 if (user == null) return;
 
-                List<Item> items = itemApiService.fetchInventory(user.getId());
-                List<models.Auction> activeAuctions = auctionApiService.getAll();
+                List<Item> items = itemApiService.fetchInventory(user.getId(), currentPage, PAGE_SIZE);
+
+                List<models.Auction> activeAuctions = auctionApiService.getAll(0, 20);
 
                 Map<Integer, models.Auction> auctionMap = activeAuctions.stream()
                         .collect(Collectors.toMap(models.Auction::getItemId, a -> a, (a1, a2) -> a1));
 
+                List<Item> filteredItems = items.stream()
+                        .filter(item -> selectedStatus.equals("ALL") || item.getStatus().name().equals(selectedStatus))
+                        .toList();
+
                 javafx.application.Platform.runLater(() -> {
                     loadingSpinner.setVisible(false);
                     itemList.setVisible(true);
+
+                    // Nút Previous sáng lên nếu không phải trang 0
+                    btnPrev.setDisable(currentPage == 0);
+                    // Nút Next tắt đi nếu số item trả về nhỏ hơn giới hạn PAGE_SIZE (hết dữ liệu)
+                    btnNext.setDisable(items.size() < PAGE_SIZE || filteredItems.isEmpty());
                 });
 
-                for (Item item : items) {
-                    if (!selectedStatus.equals("ALL") && !item.getStatus().name().equals(selectedStatus)) {
-                        continue;
-                    }
-
+                for (Item item : filteredItems) {
                     double dynamicPrice = item.getStartingPrice();
                     if (item.getStatus() == Item.Status.IN_AUCTION && auctionMap.containsKey(item.getId())) {
                         dynamicPrice = auctionMap.get(item.getId()).getCurrentPrice();
@@ -83,7 +120,11 @@ public class InventoryController {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                javafx.application.Platform.runLater(() -> loadingSpinner.setVisible(false));
+                javafx.application.Platform.runLater(() -> {
+                    loadingSpinner.setVisible(false);
+                    btnPrev.setDisable(currentPage == 0);
+                    btnNext.setDisable(true);
+                });
             }
         });
 

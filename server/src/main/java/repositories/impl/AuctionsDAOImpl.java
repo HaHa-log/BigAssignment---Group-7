@@ -166,6 +166,31 @@ public class AuctionsDAOImpl implements AuctionsDAO {
     }
 
     @Override
+    public List<Auction> getAll(int page, int size) {
+        int offset = page * size;
+
+        String sql = getAuctionBaseSQL() + " ORDER BY a.auctions_id DESC LIMIT ? OFFSET ?";
+
+        try (Connection conn = DB.getConnection();
+             PreparedStatement st = conn.prepareStatement(sql)) {
+
+            st.setInt(1, size);
+            st.setInt(2, offset);
+
+            try (ResultSet rs = st.executeQuery()) {
+                List<Auction> list = new ArrayList<>();
+                while (rs.next()) {
+                    list.add(instantiateAuction(rs));
+                }
+                return list;
+            }
+
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+    }
+
+    @Override
     public List<Auction> getActiveAuctions() {
         String sql = getAuctionBaseSQL() + " WHERE a.status = ? OR a.status = ?";
 

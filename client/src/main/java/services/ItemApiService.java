@@ -49,9 +49,11 @@ public class ItemApiService {
         }
     }
 
-    public List<Item> fetchInventory(int ownerId) throws Exception {
+    public List<Item> fetchInventory(int ownerId, int page, int size) throws Exception {
+        String urlWithPaging = baseUrl + "/owner/" + ownerId + "?page=" + page + "&size=" + size;
+
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(baseUrl + "/owner/" + ownerId))
+                .uri(URI.create(urlWithPaging))
                 .GET()
                 .header("Accept", "application/json")
                 .build();
@@ -59,21 +61,19 @@ public class ItemApiService {
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() >= 200 && response.statusCode() < 300) {
-            // Read JSON array into a list of DTOs
             List<ItemResponse> dtoList = objectMapper.readValue(
                     response.body(),
                     new TypeReference<List<ItemResponse>>() {}
             );
 
-            // Map DTOs into real UI-renderable Item domain models
-            List<Item> domainItems = new ArrayList<>();
-            for (ItemResponse dto : dtoList) {
-                domainItems.add(ItemMapper.toItem(dto));
-            }
-            return domainItems;
+            return ItemMapper.toItemList(dtoList);
         } else {
             throw new RuntimeException("Failed to load inventory. Server responded with code: " + response.statusCode());
         }
+    }
+
+    public List<Item> fetchInventory(int ownerId) throws Exception {
+        return fetchInventory(ownerId, 0, 12);
     }
 
     public String getItemImageUrl(String imagePath) {

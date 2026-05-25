@@ -23,6 +23,23 @@ public class AuctionApiService {
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final ObjectMapper mapper = ApiJson.mapper();
 
+    public List<Auction> getAll(int page, int size) throws IOException, InterruptedException {
+        String urlWithPaging = BASE_URL + "?page=" + page + "&size=" + size;
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(urlWithPaging))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = send(request);
+        List<AuctionResponse> auctions = mapper.readValue(
+                response.body(),
+                new TypeReference<List<AuctionResponse>>() {}
+        );
+
+        return AuctionMapper.toAuctionList(auctions);
+    }
+
     public List<Auction> getAll() throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL))
@@ -34,7 +51,7 @@ public class AuctionApiService {
                 response.body(),
                 new TypeReference<List<AuctionResponse>>() {}
         );
-        return auctions.stream().map(AuctionMapper::toAuction).toList();
+        return AuctionMapper.toAuctionList(auctions);
     }
 
     public Auction getById(int auctionId) throws IOException, InterruptedException {

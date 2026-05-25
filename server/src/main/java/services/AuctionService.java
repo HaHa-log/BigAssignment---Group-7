@@ -11,6 +11,8 @@ import repositories.UsersDAO;
 import repositories.impl.DaoFactory;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class AuctionService {
@@ -18,16 +20,39 @@ public class AuctionService {
     private final UsersDAO usersDAO = DaoFactory.createUsersDAO();
     private final BidsDAO bidsDAO = DaoFactory.createBidsDAO();
     private final ItemService itemService = new ItemService();
-    private final TransactionService transactionService; // ← thêm
+    private final TransactionService transactionService;
 
     public AuctionService(TransactionService transactionService) {
         this.transactionService = transactionService;
     }
 
-    public List<AuctionResponse> getAll() {
-        return auctionsDAO.getAll().stream()
-                .map(this::toResponse)
+    // PHÂN TRANG
+    public List<AuctionResponse> getAll(int page, int size) {
+        // Chỉ lấy đúng số lượng Auction cần thiết ở Database
+        List<Auction> pageAuctions = auctionsDAO.getAll(page, size);
+        if (pageAuctions.isEmpty()) {
+            return java.util.Collections.emptyList();
+        }
+
+        // Gom tất cả ID của trang hiện tại lại
+        List<Integer> auctionIds = pageAuctions.stream().map(Auction::getId).toList();
+
+        // Tải toàn bộ Bids của các ID này trong MỘT lần truy vấn duy nhất
+        Map<Integer, List<Bid>> bidsGroupedByAuction = auctionIds.stream()
+                .flatMap(id -> {
+                    List<Bid> bList = bidsDAO.getByAuctionId(id);
+                    return bList != null ? bList.stream() : java.util.stream.Stream.empty();
+                })
+                .collect(Collectors.groupingBy(bid -> bid.getAuction() != null ? bid.getAuction().getId() : 0));
+
+        return pageAuctions.stream()
+                .map(auction -> toResponseWithCachedBids(auction, bidsGroupedByAuction.get(auction.getId())))
                 .toList();
+    }
+
+    // Giữ nguyên overload không tham số cũ phòng trường hợp các Service khác hoặc Test Code đang gọi tới
+    public List<AuctionResponse> getAll() {
+        return getAll(0, 100);
     }
 
     public AuctionResponse getById(int id) {
@@ -48,10 +73,10 @@ public class AuctionService {
                 request.getOwnerId()
         );
 
-        Item item = itemService.createNewItem(itemRequest); //Kiểm tra xem item, owner có hợp lệ không nhưng chưa lưu item
+        Item item = itemService.createNewItem(itemRequest);
 
         Auction auction = new Auction(item.getOwner(), item, request.getStartingTime(), request.getEndingTime());
-        auctionsDAO.save(auction);  //Lưu auction và lưu item
+        auctionsDAO.save(auction);
         auction.start();
         auctionsDAO.update(auction);
         return toResponse(auction);
@@ -86,10 +111,9 @@ public class AuctionService {
             throw new IllegalArgumentException("[Error]: Buyer is invalid.");
         }
 
-        transactionService.confirmReceipt(auctionId, buyerId); // ← thay dòng này
+        transactionService.confirmReceipt(auctionId, buyerId);
         return toResponse(requireAuction(auctionId));
     }
-
 
     private Auction requireAuction(int id) {
         Auction auction = auctionsDAO.getById(id);
@@ -99,7 +123,16 @@ public class AuctionService {
         return auction;
     }
 
+    // API đơn lẻ (getById, create, placeBid...)
     private AuctionResponse toResponse(Auction auction) {
+        List<Bid> bids = java.util.Collections.emptyList();
+        if (auction.getId() > 0) {
+            bids = bidsDAO.getByAuctionId(auction.getId());
+        }
+        return toResponseWithCachedBids(auction, bids);
+    }
+
+    private AuctionResponse toResponseWithCachedBids(Auction auction, List<Bid> bids) {
         String ownerName = (auction.getOwner() != null) ? auction.getOwner().getFullName() : "Unknown Owner";
 
         String itemName = "";
@@ -114,18 +147,15 @@ public class AuctionService {
         User winner = auction.getWinner();
 
         List<com.group7.dto.bid.BidResponse> bidResponses = java.util.Collections.emptyList();
-        if (auction.getId() > 0) {
-            List<Bid> bids = bidsDAO.getByAuctionId(auction.getId());
-            if (bids != null) {
-                bidResponses = bids.stream().map(bid -> new com.group7.dto.bid.BidResponse(
-                        bid.getId(),
-                        auction.getId(),
-                        bid.getBidder() != null ? bid.getBidder().getId() : 0,
-                        bid.getBidder() != null ? bid.getBidder().getFullName() : "Unknown",
-                        bid.getBidPrice() != null ? bid.getBidPrice().getPrice() : 0.0,
-                        bid.getBidTime()
-                )).toList();
-            }
+        if (bids != null && !bids.isEmpty()) {
+            bidResponses = bids.stream().map(bid -> new com.group7.dto.bid.BidResponse(
+                    bid.getId(),
+                    auction.getId(),
+                    bid.getBidder() != null ? bid.getBidder().getId() : 0,
+                    bid.getBidder() != null ? bid.getBidder().getFullName() : "Unknown",
+                    bid.getBidPrice() != null ? bid.getBidPrice().getPrice() : 0.0,
+                    bid.getBidTime()
+            )).toList();
         }
 
         return new AuctionResponse(

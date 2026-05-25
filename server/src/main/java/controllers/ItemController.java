@@ -40,8 +40,11 @@ public class ItemController {
     }
 
     @GetMapping("/owner/{ownerId}")
-    public ResponseEntity<List<ItemResponse>> getInventoryByOwner(@PathVariable int ownerId) {
-        List<ItemResponse> responses = itemService.getItemsByOwner(ownerId);
+    public ResponseEntity<List<ItemResponse>> getInventoryByOwner(
+            @PathVariable int ownerId,
+            @RequestParam(defaultValue = "0") int page,       // Thêm tham số page
+            @RequestParam(defaultValue = "12") int size) {     // Thêm tham số size
+        List<ItemResponse> responses = itemService.getItemsByOwner(ownerId, page, size);
         return ResponseEntity.ok(responses);
     }
 

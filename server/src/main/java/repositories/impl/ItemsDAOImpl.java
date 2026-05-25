@@ -18,16 +18,20 @@ public class ItemsDAOImpl implements ItemsDAO {
     @Override
     public void save(Item item) {
         String sql = "INSERT INTO items "
-                + "(name, startingPrice, description, imagePath, owner_id) "
-                + "VALUES (?, ?, ?, ?, ?)";
+                + "(name, startingPrice, description, status, imagePath, owner_id) "
+                + "VALUES (?, ?, ?, ?, ?, ?)";
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             st.setString(1, item.getName());
             st.setDouble(2, item.getStartingPrice());
             st.setString(3, item.getDescription());
-            st.setString(4, item.getImagePath());
-            st.setInt(5, item.getOwnerId());
+
+            // Đảm bảo có trạng thái mặc định nếu trạng thái của item bị null
+            st.setString(4, item.getStatus() != null ? item.getStatus().name() : "AVAILABLE");
+
+            st.setString(5, item.getImagePath());
+            st.setInt(6, item.getOwnerId());
 
             int rowsAffected = st.executeUpdate();
             if (rowsAffected > 0) {
@@ -40,7 +44,6 @@ public class ItemsDAOImpl implements ItemsDAO {
             } else {
                 throw new DbException("Unexpected Error ! No rows affected !");
             }
-
             System.out.println("[System]: Item " + item.getName() + " saved to database.");
         } catch(SQLException ex){
             throw new DbException(ex.getMessage());
@@ -162,6 +165,33 @@ public class ItemsDAOImpl implements ItemsDAO {
         }
     }
 
+    @Override
+    public List<Item> getByOwnerId(int ownerId, int page, int size) {
+        int offset = page * size;
+
+        String sql = getAuctionBaseSQL() + " WHERE i.owner_id = ? ORDER BY i.items_id DESC LIMIT ? OFFSET ?";
+
+        List<Item> list = new ArrayList<>();
+
+        try (Connection conn = DB.getConnection();
+             PreparedStatement st = conn.prepareStatement(sql)) {
+
+            st.setInt(1, ownerId);
+            st.setInt(2, size);
+            st.setInt(3, offset);
+
+            try (ResultSet rs = st.executeQuery()) {
+                while (rs.next()) {
+                    list.add(instantiateItem(rs));
+                }
+            }
+            return list;
+
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+    }
+
     private String getAuctionBaseSQL() {
         return "SELECT "
                 + "i.items_id, "
@@ -200,11 +230,23 @@ public class ItemsDAOImpl implements ItemsDAO {
 
     private Item instantiateItem(ResultSet rs) throws SQLException {
         User owner = instantiateMember(rs);
+
+        String statusStr = rs.getString("status");
+        Item.Status status = Item.Status.AVAILABLE;
+
+        if (statusStr != null) {
+            try {
+                status = Item.Status.valueOf(statusStr);
+            } catch (IllegalArgumentException e) {
+                System.err.println("[Warning]: Sai lệch Enum Status của Item ID " + rs.getInt("items_id"));
+            }
+        }
+
         Item obj = new Item(
                 rs.getString("name"),
                 rs.getDouble("startingPrice"),
                 rs.getString("description"),
-                Item.Status.valueOf(rs.getString("status")),
+                status,
                 rs.getString("imagePath")
         );
 
