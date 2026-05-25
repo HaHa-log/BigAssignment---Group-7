@@ -2,6 +2,7 @@ package services;
 
 import com.group7.dto.auction.*;
 import com.group7.dto.item.ItemRequest;
+import config.BidWebSocketHandler;
 import models.*;
 import models.Common.Price;
 import org.springframework.stereotype.Service;
@@ -21,9 +22,11 @@ public class AuctionService {
     private final BidsDAO bidsDAO = DaoFactory.createBidsDAO();
     private final ItemService itemService = new ItemService();
     private final TransactionService transactionService;
+    private final BidWebSocketHandler webSocketHandler;
 
-    public AuctionService(TransactionService transactionService) {
+    public AuctionService(TransactionService transactionService,BidWebSocketHandler webSocketHandler) {
         this.transactionService = transactionService;
+        this.webSocketHandler = webSocketHandler;
     }
 
     // PHÂN TRANG
@@ -73,6 +76,9 @@ public class AuctionService {
 
         Bid bid = new Bid(auction, bidder, new Price(amount));
         bidsDAO.save(bid);
+
+        //  Broadcast the new price to all clients watching this auction
+        webSocketHandler.broadcastBid(auctionId, auction.getCurrentPrice());
 
         models.AuctionManager.getInstance().processAutoBids(auction, null);
 

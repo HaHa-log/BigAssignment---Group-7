@@ -23,6 +23,7 @@ public class SceneManager {
     private static Preferences prefs = Preferences.userNodeForPackage(SceneManager.class);
     private static final String REMEMBER_KEY = "rememberUser";
     private static final UserApiService userApiService = new UserApiService();
+    private static Object currentController;
 
 
 
@@ -66,18 +67,21 @@ public class SceneManager {
 
     public static void switchContent(String fxmlPath) {
 
-
-
-
-
         try {
-            Parent node = FXMLLoader.load(SceneManager.class.getResource(fxmlPath));
-            currentContentPath = fxmlPath;
-            try {
-                contentArea.getChildren().setAll(node);
-            } catch (NullPointerException e) {
-                System.err.println("Location is null!");
+
+            // Close websocket AuctionDetailController cũ
+            if (currentController instanceof controllers.AuctionPage.AuctionDetailController controller) {
+                controller.closeWebSocket();
             }
+
+            FXMLLoader loader = new FXMLLoader(SceneManager.class.getResource(fxmlPath));
+
+            Parent node = loader.load();
+
+            currentController = loader.getController();
+            currentContentPath = fxmlPath;
+
+            contentArea.getChildren().setAll(node);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -93,10 +97,17 @@ public class SceneManager {
     }
 
     public static void switchScene(String fxmlPath) {
+
         try {
+            // đóng websocket trước khi rời scene
+            if (currentController instanceof controllers.AuctionPage.AuctionDetailController controller) {
+                controller.closeWebSocket();
+            }
+            FXMLLoader loader = new FXMLLoader(SceneManager.class.getResource(fxmlPath));
 
+            Parent root = loader.load();
+            currentController = loader.getController();
 
-            Parent root = FXMLLoader.load(SceneManager.class.getResource(fxmlPath));
             stage.setScene(new Scene(root));
             if (fxmlPath.contains("DemoPage")) {
                 stage.setFullScreen(false);

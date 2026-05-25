@@ -1,5 +1,6 @@
 package controllers.AuctionPage;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.group7.dto.bid.AutoBidRequest;
 import models.*;
 import models.Exceptions.CustomisedException;
@@ -17,6 +18,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import services.AuctionApiService;
 import services.ItemApiService;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.WebSocket;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.CompletableFuture;
 
 import static javafx.scene.paint.Color.GREEN;
 import static javafx.scene.paint.Color.RED;
@@ -48,6 +54,8 @@ public class AuctionDetailController {
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM HH:mm");
     private final AuctionApiService auctionApiService = new AuctionApiService();
     private final ItemApiService itemApiService = new ItemApiService();
+    private WebSocket webSocket;
+    private static final String WS_BASE = "ws://localhost:8080/ws/auctions/";
 
     private User currentUser = SessionManager.getCurrentUser();
     private Auction auction;
@@ -111,6 +119,7 @@ public class AuctionDetailController {
             } else if (auction.getStatus() == Auction.AuctionStatus.PAID) {
                 setupConfirmPane(true);}
         }
+        connectWebSocket();
     }
 
     private void setupConfirmPane(boolean alreadyConfirmed) {
@@ -172,6 +181,54 @@ public class AuctionDetailController {
             bidHistoryChart.getData().clear();
             bidHistoryChart.getData().add(series);
         });
+    }
+
+    private void connectWebSocket() {
+        if (auction == null) return;
+
+        HttpClient.newHttpClient()
+                .newWebSocketBuilder()
+                .buildAsync(URI.create(WS_BASE + auction.getId() + "/bids"),
+                        new WebSocket.Listener() {
+                            @Override
+                            public CompletionStage<?> onText(WebSocket ws, CharSequence data, boolean last) {
+                                try {
+                                    ObjectMapper mapper = new ObjectMapper();
+                                    var node = mapper.readTree(data.toString());
+                                    double newPrice = node.get("currentPrice").asDouble();
+
+                                    javafx.application.Platform.runLater(() -> {
+                                        currentPriceLabel.setText("Current price: $" + newPrice);
+                                        // Reload bid chart
+                                        try {auction = new services.AuctionApiService().getById(auction.getId());
+                                            updateBidChart();
+                                        } catch (Exception e) {e.printStackTrace();}
+                                    });
+                                } catch (Exception e) {e.printStackTrace();}
+
+                                ws.request(1);
+                                return CompletableFuture.completedFuture(null);
+                            }
+
+                            @Override
+                            public void onOpen(WebSocket ws) {
+                                System.out.println("[WS]: Connected to auction " + auction.getId());
+                                ws.request(1);
+                            }
+
+                            @Override
+                            public CompletionStage<?> onClose(WebSocket ws, int statusCode, String reason) {
+                                System.out.println("[WS]: Disconnected from auction " + auction.getId());
+                                return CompletableFuture.completedFuture(null);
+                            }
+                        })
+                .thenAccept(ws -> this.webSocket = ws);
+    }
+
+    public void closeWebSocket() {
+        if (webSocket != null && !webSocket.isInputClosed()) {
+            webSocket.sendClose(WebSocket.NORMAL_CLOSURE, "leaving page");
+        }
     }
 
     private void setupConfirmPane() {
