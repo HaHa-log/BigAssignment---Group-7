@@ -77,10 +77,9 @@ public class AuctionService {
         Bid bid = new Bid(auction, bidder, new Price(amount));
         bidsDAO.save(bid);
 
-        //  Broadcast the new price to all clients watching this auction
-        webSocketHandler.broadcastBid(auctionId, auction.getCurrentPrice());
-
         models.AuctionManager.getInstance().processAutoBids(auction, null);
+
+        webSocketHandler.broadcastBid(auctionId, auction.getCurrentPrice());
 
         return toResponse(auctionsDAO.getById(auctionId));
     }

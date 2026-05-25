@@ -184,45 +184,61 @@ public class AuctionDetailController {
     }
 
     private void connectWebSocket() {
+
         if (auction == null) return;
+
+        if (webSocket != null && !webSocket.isInputClosed()) {return;}
 
         HttpClient.newHttpClient()
                 .newWebSocketBuilder()
                 .buildAsync(URI.create(WS_BASE + auction.getId() + "/bids"),
                         new WebSocket.Listener() {
+
                             @Override
-                            public CompletionStage<?> onText(WebSocket ws, CharSequence data, boolean last) {
-                                try {
+                            public void onOpen(WebSocket ws) {
+                                System.out.println("[CLIENT WS]: Connected to auction " + auction.getId());
+                                ws.request(1);
+                            }
+
+                            @Override
+                            public CompletionStage<?> onText(
+                                    WebSocket ws,
+                                    CharSequence data,
+                                    boolean last) {
+                                try {System.out.println("[CLIENT WS]: " + data);
                                     ObjectMapper mapper = new ObjectMapper();
+
                                     var node = mapper.readTree(data.toString());
+
                                     double newPrice = node.get("currentPrice").asDouble();
 
                                     javafx.application.Platform.runLater(() -> {
                                         currentPriceLabel.setText("Current price: $" + newPrice);
-                                        // Reload bid chart
-                                        try {auction = new services.AuctionApiService().getById(auction.getId());
+
+                                        try {auction = new AuctionApiService().getById(auction.getId());
                                             updateBidChart();
-                                        } catch (Exception e) {e.printStackTrace();}
-                                    });
+
+                                        } catch (Exception e) {e.printStackTrace();}});
+
                                 } catch (Exception e) {e.printStackTrace();}
 
                                 ws.request(1);
-                                return CompletableFuture.completedFuture(null);
-                            }
-
-                            @Override
-                            public void onOpen(WebSocket ws) {
-                                System.out.println("[WS]: Connected to auction " + auction.getId());
-                                ws.request(1);
-                            }
+                                return CompletableFuture.completedFuture(null);}
 
                             @Override
                             public CompletionStage<?> onClose(WebSocket ws, int statusCode, String reason) {
-                                System.out.println("[WS]: Disconnected from auction " + auction.getId());
+                                System.out.println("[CLIENT WS]: Closed " + statusCode + " " + reason);
+                                webSocket = null;
                                 return CompletableFuture.completedFuture(null);
                             }
-                        })
-                .thenAccept(ws -> this.webSocket = ws);
+
+                            @Override
+                            public void onError(WebSocket ws, Throwable error) {
+                                System.out.println("[CLIENT WS ERROR]");
+                                error.printStackTrace();}})
+                .thenAccept(ws -> {
+                    this.webSocket = ws;
+                    System.out.println("[CLIENT WS]: saved");});
     }
 
     public void closeWebSocket() {

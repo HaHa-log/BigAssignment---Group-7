@@ -39,23 +39,30 @@ public class BidWebSocketHandler extends TextWebSocketHandler {
     }
 
     // Gọi từ AuctionService khi có bid mới
-    public void broadcastBid(int auctionId, double newPrice) {
-        Set<WebSocketSession> sessions = auctionSessions.get(auctionId);
-        if (sessions == null || sessions.isEmpty()) return;
+    public void broadcastBid(
+            int auctionId,
+            double newPrice
+    ) {
 
-        try {
-            String message = mapper.writeValueAsString(Map.of(
-                    "auctionId", auctionId,
-                    "currentPrice", newPrice
-            ));
+        Set<WebSocketSession> sessions = auctionSessions.get(auctionId);
+
+        System.out.println("[WS] auction " + auctionId + " sessions = " + (sessions == null ? 0 : sessions.size()));
+
+        if (sessions == null || sessions.isEmpty()) {
+            System.out.println("[WS] no client connected");
+            return;}
+        try {String message = mapper.writeValueAsString(
+                            Map.of("auctionId", auctionId, "currentPrice", newPrice));
+            System.out.println("[WS] sending: " + message);
+
             TextMessage textMessage = new TextMessage(message);
+
             for (WebSocketSession session : sessions) {
-                if (session.isOpen()) {
-                    session.sendMessage(textMessage);
-                }
+                System.out.println("[WS] open=" + session.isOpen());
+
+                if (session.isOpen()) {session.sendMessage(textMessage);}
             }
-        } catch (Exception e) {
-            System.err.println("[WS Error]: " + e.getMessage());
+        } catch (Exception e) {e.printStackTrace();
         }
     }
 
