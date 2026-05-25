@@ -22,13 +22,14 @@ public class TransactionLifecycleTest {
     @BeforeEach
     void setUp() {
         buyer = mock(User.class);
-        when(buyer.getId()).thenReturn(2);
-        when(buyer.getEmail()).thenReturn("admin@gmail.com");
-        when(buyer.getPhoneNumber()).thenReturn("0123456789");
-        when(buyer.getFirstName()).thenReturn("Admin");
-        when(buyer.getLastName()).thenReturn("123");
-        when(buyer.getFullName()).thenReturn("Admin 123");
-        when(buyer.getPassword()).thenReturn("111111");
+        when(buyer.getId()).thenReturn(9);
+        when(buyer.getEmail()).thenReturn("maiuyen@gmail.com");
+        when(buyer.getPhoneNumber()).thenReturn("0842377626");
+        when(buyer.getFirstName()).thenReturn("Uyen");
+        when(buyer.getLastName()).thenReturn("Tran");
+        when(buyer.getFullName()).thenReturn("Tran Uyen");
+        when(buyer.getPassword()).thenReturn("123456789");
+        when(buyer.getBalance()).thenReturn(200390.5);
 
         seller = mock(User.class);
         when(seller.getId()).thenReturn(2);

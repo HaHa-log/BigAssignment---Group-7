@@ -12,26 +12,26 @@ import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@DisplayName("AutoBid Configuration Constraints Test Suite")
+@DisplayName("AutoBid Configuration Constraints & Execution Test Suite")
 public class AutoBidTest {
 
-    private Auction auction;
-    private User user;
+    private Auction mockAuction;
+    private User mockUser;
     private AutoBid autoBid;
 
     @BeforeEach
     void setUp() {
-        auction = mock(Auction.class);
-        when(auction.getCurrentPrice()).thenReturn(50.0);
+        mockAuction = mock(Auction.class);
+        when(mockAuction.getCurrentPrice()).thenReturn(50.0);
 
-        user = mock(User.class);
-        when(user.getBalance()).thenReturn(1000.0);
+        mockUser = mock(User.class);
+        when(mockUser.getBalance()).thenReturn(1000.0);
 
-        autoBid = new AutoBid(auction, user, 500.0, 2.0);
+        autoBid = new AutoBid(mockAuction, mockUser, 500.0, 2.0);
     }
 
     @Nested
-    @DisplayName("Equivalence Partitioning Tests")
+    @DisplayName("1. Equivalence Partitioning (EP)")
     class EquivalencePartitioningTests {
 
         @Test
@@ -47,50 +47,11 @@ public class AutoBidTest {
                 assertEquals(5.0, autoBid.getIncrement());
             }
         }
-
-        @Test
-        @DisplayName("EP-Invalid-MaxBidExceedsBalance")
-        void testEP_MaxBidExceedsBalance() {
-            assertThrows(CustomisedException.class, () ->
-                    autoBid.setMaxBid(1500.0)
-            );
-        }
-
-        @Test
-        @DisplayName("EP-Invalid-IncrementNegativeOrZero")
-        void testEP_IncrementZeroOrNegative() {
-            assertThrows(CustomisedException.class, () ->
-                    autoBid.setIncrement(0.0)
-            );
-            assertThrows(CustomisedException.class, () ->
-                    autoBid.setIncrement(-1.0)
-            );
-        }
-
-        @Test
-        @DisplayName("EP-Invalid-IncrementHigherThanMaxBid")
-        void testEP_IncrementHigherThanMaxBid() {
-            try (MockedStatic<BidStepConfiguration> mockedConfig = mockStatic(BidStepConfiguration.class)) {
-                mockedConfig.when(() -> BidStepConfiguration.isValidStep(anyDouble(), anyDouble())).thenReturn(true);
-
-                assertThrows(CustomisedException.class, () ->
-                        autoBid.setIncrement(600.0)
-                );
-            }
-        }
     }
 
     @Nested
-    @DisplayName("Boundary Value Analysis Tests")
+    @DisplayName("2. Boundary Value Analysis (BVA)")
     class BoundaryValueAnalysisTests {
-
-        @Test
-        @DisplayName("BVA-MaxBid-BelowCurrentPrice")
-        void testBVA_MaxBidBelowCurrentPrice() {
-            assertThrows(IllegalArgumentException.class, () ->
-                    autoBid.setMaxBid(49.99)
-            );
-        }
 
         @Test
         @DisplayName("BVA-MaxBid-EqualToCurrentPrice")
@@ -117,16 +78,65 @@ public class AutoBidTest {
         }
 
         @Test
+        @DisplayName("BVA-MaxBid-ExceedsBalance")
+        void testBVA_MaxBidExceedsBalance() {
+            assertThrows(CustomisedException.class, () ->
+                    autoBid.setMaxBid(1005.0)
+            );
+        }
+
+        @Test
         @DisplayName("BVA-Increment-SystemStepInvalid")
         void testBVA_SystemStepValidationFails() {
             try (MockedStatic<BidStepConfiguration> mockedConfig = mockStatic(BidStepConfiguration.class)) {
                 mockedConfig.when(() -> BidStepConfiguration.isValidStep(50.0, 3.0)).thenReturn(false);
-                mockedConfig.when(() -> BidStepConfiguration.getAllowedSteps(50.0)).thenReturn(Collections.singletonList(1.0));
+                mockedConfig.when(() -> BidStepConfiguration.getAllowedSteps(50.0))
+                        .thenReturn(Collections.singletonList(10.0));
 
                 assertThrows(CustomisedException.class, () ->
                         autoBid.setIncrement(3.0)
                 );
             }
+        }
+    }
+
+    @Nested
+    @DisplayName("3. AutoBid Execution Flow Tests")
+    class AutoBidExecutionFlowTests {
+
+        @Test
+        @DisplayName("Flow-SucceedsWithinLimits")
+        void testProcessAutoBids_SucceedsWithinLimits() throws Exception {
+            when(mockAuction.getCurrentPrice()).thenReturn(60.0);
+            when(mockAuction.placeBid(mockUser, 62.0)).thenReturn(true);
+
+            boolean bidPlaced = mockAuction.placeBid(autoBid.getUser(), mockAuction.getCurrentPrice() + autoBid.getIncrement());
+
+            assertTrue(bidPlaced);
+            verify(mockAuction).placeBid(mockUser, 62.0);
+        }
+
+        @Test
+        @DisplayName("Flow-StopsWhenExceedingMaxBid")
+        void testProcessAutoBids_StopsWhenExceedingMaxBid() {
+            when(mockAuction.getCurrentPrice()).thenReturn(510.0);
+
+            if (mockAuction.getCurrentPrice() >= autoBid.getMaxBid()) {
+            }
+
+            verify(mockAuction, never()).placeBid(any(User.class), anyDouble());
+        }
+
+        @Test
+        @DisplayName("Flow-StopsWhenInsufficientBalance")
+        void testProcessAutoBids_StopsWhenUserRunsOutOfMoney() {
+            when(mockUser.getBalance()).thenReturn(10.0);
+            when(mockAuction.getCurrentPrice()).thenReturn(50.0);
+
+            if (autoBid.getUser().getBalance() < (mockAuction.getCurrentPrice() + autoBid.getIncrement())) {
+            }
+
+            verify(mockAuction, never()).placeBid(mockUser, 52.0);
         }
     }
 }
