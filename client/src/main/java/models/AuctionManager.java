@@ -91,6 +91,28 @@ public class AuctionManager {
         return true;
     }
 
+    public void checkAndCancelExpiredTransactions() {
+        List<Transaction> pendingTransactions = transactions.stream()
+                .filter(t -> t.getStatus() == Transaction.TransactionStatus.PENDING)
+                .toList();
+
+        for (Transaction transaction : pendingTransactions) {
+            if (!transaction.isExpired()) {
+                continue;
+            }
+
+            transaction.getAuction().transitionTo(Auction.AuctionStatus.CANCELED);
+
+            User buyer = transaction.getBuyer();
+            if (buyer != null) {
+                buyer.unfreezeMoney(transaction.getFinalAmount());
+            }
+
+            System.out.println("[System]: Transaction " + transaction.getTransactionId()
+                    + " has expired. Money refunded to buyer.");
+        }
+    }
+
     public Transaction confirmReceipt(Auction auction, User buyer) {
         if (auction == null) {
             throw new IllegalArgumentException("[Error]: Auction is required.");
@@ -111,8 +133,6 @@ public class AuctionManager {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "[Error]: No pending transaction found for this auction."));
 
-        // SỬA LỖI BIÊN DỊCH: Thay vì gọi .markCompleted() chứa logic tài chính cũ,
-        // ở phía Client ta chỉ gán trực tiếp trạng thái COMPLETED nhận từ luồng API Server về.
         transaction.setStatus(Transaction.TransactionStatus.COMPLETED);
         transaction.getAuction().transitionTo(Auction.AuctionStatus.PAID);
         return transaction;
