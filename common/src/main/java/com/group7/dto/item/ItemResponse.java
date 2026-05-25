@@ -9,6 +9,8 @@ public class ItemResponse {
     private String imagePath;
     private int ownerId;
     private String ownerName;
+    private Integer activeAuctionId;
+    private Double currentAuctionPrice;
 
     public ItemResponse() {}
 
@@ -85,5 +87,21 @@ public class ItemResponse {
 
     public void setOwnerName(String ownerName) {
         this.ownerName = ownerName;
+    }
+
+    public Integer getActiveAuctionId() {
+        return activeAuctionId;
+    }
+
+    public void setActiveAuctionId(Integer activeAuctionId) {
+        this.activeAuctionId = activeAuctionId;
+    }
+
+    public Double getCurrentAuctionPrice() {
+        return currentAuctionPrice;
+    }
+
+    public void setCurrentAuctionPrice(Double currentAuctionPrice) {
+        this.currentAuctionPrice = currentAuctionPrice;
     }
 }

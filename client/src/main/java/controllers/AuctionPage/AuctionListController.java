@@ -31,7 +31,7 @@ public class AuctionListController {
     private int currentPage = 0;
     private final int PAGE_SIZE = 10;
 
-    // --- CƠ CHẾ CACHE ĐỂ CHẶN RELOAD KHI ĐỔI TÀB ---
+    // --- CƠ CHẾ CACHE ĐỂ CHẶN RELOAD KHI ĐỔI TAB ---
     private static List<Auction> cachedAuctions = null;
     private static int cachedPage = -1;
     private static String cachedStatus = "ALL";
@@ -95,7 +95,8 @@ public class AuctionListController {
         Thread thread = new Thread(() -> {
             try {
                 // Gọi API lấy dữ liệu từ Server về
-                List<Auction> auctions = auctionApiService.getAll(currentPage, PAGE_SIZE);
+                String selectedStatus = statusFilter.getValue();
+                List<Auction> auctions = auctionApiService.getAll(currentPage, PAGE_SIZE, selectedStatus);
 
                 cachedAuctions = auctions;
                 cachedPage = currentPage;
@@ -122,14 +123,8 @@ public class AuctionListController {
 
     private void renderAuctionUI(List<Auction> auctions) {
         auctionTilePane.getChildren().clear();
-        String selectedStatus = statusFilter.getValue();
 
-        List<Auction> filteredAuctions = new ArrayList<>();
-        for (Auction a : auctions) {
-            if (selectedStatus.equals("ALL") || a.getStatus().name().equals(selectedStatus)) {
-                filteredAuctions.add(a);
-            }
-        }
+        List<Auction> filteredAuctions = new ArrayList<>(auctions);
 
         filteredAuctions.sort((a1, a2) -> {
             boolean isA1Active = a1.getStatus() == Auction.AuctionStatus.OPEN || a1.getStatus() == Auction.AuctionStatus.RUNNING;

@@ -127,26 +127,6 @@ public class AuctionsDAOImpl implements AuctionsDAO {
     }
 
     @Override
-    public List<Auction> getByStatus(String status) {
-        String sql = getAuctionBaseSQL() + " WHERE a.status = ? ";
-
-        try (Connection conn = DB.getConnection();
-             PreparedStatement st = conn.prepareStatement(sql)) {
-            st.setString(1, status);
-
-            try (ResultSet rs = st.executeQuery()) {
-                List<Auction> list = new ArrayList<>();
-                while (rs.next()) {
-                    list.add(instantiateAuction(rs));
-                }
-                return list;
-            }
-        } catch (SQLException e) {
-            throw new DbException(e.getMessage());
-        }
-    }
-
-    @Override
     public List<Auction> getAll() {
         String sql = getAuctionBaseSQL();
 
@@ -166,16 +146,29 @@ public class AuctionsDAOImpl implements AuctionsDAO {
     }
 
     @Override
-    public List<Auction> getAll(int page, int size) {
-        int offset = page * size;
+    public List<Auction> getAll(int page, int size, String status) {
+        int safePage = Math.max(page, 0);
+        int safeSize = Math.max(size, 1);
+        int offset = safePage * safeSize;
 
-        String sql = getAuctionBaseSQL() + " ORDER BY a.auctions_id DESC LIMIT ? OFFSET ?";
+        boolean filterStatus = status != null
+                && !status.isBlank()
+                && !"ALL".equalsIgnoreCase(status);
+
+        String sql = getAuctionBaseSQL()
+                + (filterStatus ? " WHERE a.status = ? " : " ")
+                + " ORDER BY a.auctions_id DESC LIMIT ? OFFSET ?";
 
         try (Connection conn = DB.getConnection();
              PreparedStatement st = conn.prepareStatement(sql)) {
 
-            st.setInt(1, size);
-            st.setInt(2, offset);
+            //Xử lý tham số động (if (filterStatus))
+            int index = 1;
+            if (filterStatus) {
+                st.setString(index++, status.toUpperCase());
+            }
+            st.setInt(index++, safeSize);
+            st.setInt(index, offset);
 
             try (ResultSet rs = st.executeQuery()) {
                 List<Auction> list = new ArrayList<>();
@@ -184,7 +177,6 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 }
                 return list;
             }
-
         } catch (SQLException e) {
             throw new DbException(e.getMessage());
         }

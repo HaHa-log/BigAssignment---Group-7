@@ -18,6 +18,8 @@ public class Item extends Entity {
     private LocalDateTime updatedAt;
     private String imagePath;
     private int ownerId;
+    private Integer activeAuctionId;
+    private Double currentAuctionPrice;
 
     public Item(String name, double startingPrice, String description) {
         this.name = name;
@@ -99,6 +101,23 @@ public class Item extends Entity {
     public String getImagePath() {
         return imagePath;
     }
+
+    public Integer getActiveAuctionId() {
+        return activeAuctionId;
+    }
+
+    public void setActiveAuctionId(Integer activeAuctionId) {
+        this.activeAuctionId = activeAuctionId;
+    }
+
+    public Double getCurrentAuctionPrice() {
+        return currentAuctionPrice;
+    }
+
+    public void setCurrentAuctionPrice(Double currentAuctionPrice) {
+        this.currentAuctionPrice = currentAuctionPrice;
+    }
+
 
     @Override
     public String toString() {

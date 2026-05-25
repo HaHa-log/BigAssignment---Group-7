@@ -194,21 +194,24 @@ public class ItemsDAOImpl implements ItemsDAO {
 
     private String getAuctionBaseSQL() {
         return "SELECT "
-                + "i.items_id, "
-                + "i.name,"
-                + "i.startingPrice, "
-                + "i.description, "
-                + "i.status, "
-                + "i.imagePath, "
-                + "i.owner_id, "
-                + "u_owner.firstName AS owner_firstName, u_owner.lastName AS owner_lastName, "
-                + "u_owner.email AS owner_email, u_owner.phoneNumber AS owner_phoneNumber, "
-                + "u_owner.password AS owner_password, u_owner.balance AS owner_balance, "
-                + "u_owner.isAdmin AS owner_isAdmin, u_owner.isBlocked AS owner_isBlocked, "
+                + "i.items_id, i.name, i.startingPrice, i.description, "
+                + "i.status, i.imagePath, i.owner_id, "
+                + "u_owner.firstName AS owner_firstName, "
+                + "u_owner.lastName AS owner_lastName, "
+                + "u_owner.email AS owner_email, "
+                + "u_owner.phoneNumber AS owner_phoneNumber, "
+                + "u_owner.password AS owner_password, "
+                + "u_owner.balance AS owner_balance, "
+                + "u_owner.isAdmin AS owner_isAdmin, "
+                + "u_owner.isBlocked AS owner_isBlocked, "
                 + "u_owner.blockedUntil AS owner_blockedUntil, "
-                + "u_owner.avatar_path AS owner_avatar_path "
+                + "u_owner.avatar_path AS owner_avatar_path, "
+                + "a.auctions_id AS active_auction_id, "
+                + "a.currentPrice AS auction_current_price "
                 + "FROM items i "
-                + "LEFT JOIN users u_owner ON u_owner.users_id = i.owner_id";
+                + "LEFT JOIN users u_owner ON u_owner.users_id = i.owner_id "
+                + "LEFT JOIN auctions a ON a.item_id = i.items_id "
+                + "AND a.status IN ('OPEN', 'RUNNING')";
     }
 
     private User instantiateMember(ResultSet rs) throws SQLException {
@@ -250,6 +253,15 @@ public class ItemsDAOImpl implements ItemsDAO {
                 rs.getString("imagePath")
         );
 
+        int activeAuctionId = rs.getInt("active_auction_id");
+        if (!rs.wasNull()) {
+            obj.setActiveAuctionId(activeAuctionId);
+        }
+
+        double auctionPrice = rs.getDouble("auction_current_price");
+        if (!rs.wasNull()) {
+            obj.setCurrentAuctionPrice(auctionPrice);
+        }
         obj.setId(rs.getInt("items_id"));
         obj.setOwner(owner);
         return obj;

@@ -27,32 +27,13 @@ public class AuctionService {
     }
 
     // PHÂN TRANG
-    public List<AuctionResponse> getAll(int page, int size) {
+    public List<AuctionResponse> getAll(int page, int size,String status) {
         // Chỉ lấy đúng số lượng Auction cần thiết ở Database
-        List<Auction> pageAuctions = auctionsDAO.getAll(page, size);
-        if (pageAuctions.isEmpty()) {
-            return java.util.Collections.emptyList();
-        }
-
-        // Gom tất cả ID của trang hiện tại lại
-        List<Integer> auctionIds = pageAuctions.stream().map(Auction::getId).toList();
-
-        // Tải toàn bộ Bids của các ID này trong MỘT lần truy vấn duy nhất
-        Map<Integer, List<Bid>> bidsGroupedByAuction = auctionIds.stream()
-                .flatMap(id -> {
-                    List<Bid> bList = bidsDAO.getByAuctionId(id);
-                    return bList != null ? bList.stream() : java.util.stream.Stream.empty();
-                })
-                .collect(Collectors.groupingBy(bid -> bid.getAuction() != null ? bid.getAuction().getId() : 0));
+        List<Auction> pageAuctions = auctionsDAO.getAll(page, size, "ALL");
 
         return pageAuctions.stream()
-                .map(auction -> toResponseWithCachedBids(auction, bidsGroupedByAuction.get(auction.getId())))
+                .map(auction -> toResponseWithCachedBids(auction, java.util.Collections.emptyList()))
                 .toList();
-    }
-
-    // Giữ nguyên overload không tham số cũ phòng trường hợp các Service khác hoặc Test Code đang gọi tới
-    public List<AuctionResponse> getAll() {
-        return getAll(0, 100);
     }
 
     public AuctionResponse getById(int id) {

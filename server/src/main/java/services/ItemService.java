@@ -10,7 +10,6 @@ import repositories.ItemsDAO;
 import repositories.UsersDAO;
 import repositories.impl.DaoFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -56,6 +55,8 @@ public class ItemService {
             response.setDescription(item.getDescription());
             response.setStatus(item.getStatus() != null ? item.getStatus().name() : "AVAILABLE");
             response.setImagePath(item.getImagePath());
+            response.setActiveAuctionId(item.getActiveAuctionId());
+            response.setCurrentAuctionPrice(item.getCurrentAuctionPrice());
             return response;
         }).toList();
     }

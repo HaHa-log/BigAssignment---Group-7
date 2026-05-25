@@ -15,6 +15,8 @@ public class Item extends Entity {
     private Status status = Status.AVAILABLE;
     private String imagePath;
     private User owner;
+    private Integer activeAuctionId;
+    private Double currentAuctionPrice;
 
     public Item(String name, double startingPrice, String description) {
         this.name = name;
@@ -85,6 +87,22 @@ public class Item extends Entity {
 
     public void setOwnerId(int id) {
         this.owner.setId(id);
+    }
+
+    public Integer getActiveAuctionId() {
+        return activeAuctionId;
+    }
+
+    public void setActiveAuctionId(Integer activeAuctionId) {
+        this.activeAuctionId = activeAuctionId;
+    }
+
+    public Double getCurrentAuctionPrice() {
+        return currentAuctionPrice;
+    }
+
+    public void setCurrentAuctionPrice(Double currentAuctionPrice) {
+        this.currentAuctionPrice = currentAuctionPrice;
     }
 
     public boolean isAvailable() {

@@ -23,8 +23,12 @@ public class AuctionApiService {
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final ObjectMapper mapper = ApiJson.mapper();
 
-    public List<Auction> getAll(int page, int size) throws IOException, InterruptedException {
-        String urlWithPaging = BASE_URL + "?page=" + page + "&size=" + size;
+    public List<Auction> getAll(int page, int size, String status) throws IOException, InterruptedException {
+        String urlWithPaging = BASE_URL + "?page=" + page + "&size=" + size
+                + "&status=" + java.net.URLEncoder.encode(
+                status == null ? "ALL" : status,
+                java.nio.charset.StandardCharsets.UTF_8
+        );
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(urlWithPaging))
@@ -36,7 +40,6 @@ public class AuctionApiService {
                 response.body(),
                 new TypeReference<List<AuctionResponse>>() {}
         );
-
         return AuctionMapper.toAuctionList(auctions);
     }
 

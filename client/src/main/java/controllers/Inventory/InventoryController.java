@@ -82,11 +82,6 @@ public class InventoryController {
 
                 List<Item> items = itemApiService.fetchInventory(user.getId(), currentPage, PAGE_SIZE);
 
-                List<models.Auction> activeAuctions = auctionApiService.getAll(0, 20);
-
-                Map<Integer, models.Auction> auctionMap = activeAuctions.stream()
-                        .collect(Collectors.toMap(models.Auction::getItemId, a -> a, (a1, a2) -> a1));
-
                 List<Item> filteredItems = items.stream()
                         .filter(item -> selectedStatus.equals("ALL") || item.getStatus().name().equals(selectedStatus))
                         .toList();
@@ -99,25 +94,30 @@ public class InventoryController {
                     btnPrev.setDisable(currentPage == 0);
                     // Nút Next tắt đi nếu số item trả về nhỏ hơn giới hạn PAGE_SIZE (hết dữ liệu)
                     btnNext.setDisable(items.size() < PAGE_SIZE || filteredItems.isEmpty());
-                });
 
-                for (Item item : filteredItems) {
-                    double dynamicPrice = item.getStartingPrice();
-                    if (item.getStatus() == Item.Status.IN_AUCTION && auctionMap.containsKey(item.getId())) {
-                        dynamicPrice = auctionMap.get(item.getId()).getCurrentPrice();
+                    for (Item item : filteredItems) {
+                        double displayPrice = item.getCurrentAuctionPrice() != null
+                                ? item.getCurrentAuctionPrice()
+                                : item.getStartingPrice();
+
+                        try {
+                            FXMLLoader loader = new FXMLLoader(
+                                    getClass().getResource("/InventoryFXML/ItemCard.fxml")
+                            );
+                            HBox card = loader.load();
+                            ItemCardController controller = loader.getController();
+                            controller.setItemData(item, displayPrice);
+                            itemList.getChildren().add(card);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
 
-                    final double finalPrice = dynamicPrice;
-
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/InventoryFXML/ItemCard.fxml"));
-                    HBox card = loader.load();
-                    ItemCardController cardController = loader.getController();
-
-                    javafx.application.Platform.runLater(() -> {
-                        cardController.setItemData(item, finalPrice);
-                        itemList.getChildren().add(card);
-                    });
-                }
+                    loadingSpinner.setVisible(false);
+                    itemList.setVisible(true);
+                    btnPrev.setDisable(currentPage == 0);
+                    btnNext.setDisable(items.size() < PAGE_SIZE);
+                });
             } catch (Exception e) {
                 e.printStackTrace();
                 javafx.application.Platform.runLater(() -> {

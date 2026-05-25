@@ -21,10 +21,10 @@ public class AuctionController {
     @GetMapping
     public ResponseEntity<?> getAll(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "ALL") String status) {
 
-        java.util.List<AuctionResponse> auctions = auctionService.getAll(page, size);
-        return ResponseEntity.ok(auctions);
+        return ResponseEntity.ok(auctionService.getAll(page, size, status));
     }
 
     @GetMapping("/{id}")

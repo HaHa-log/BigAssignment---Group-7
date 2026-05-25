@@ -8,7 +8,5 @@ public interface AuctionsDAO extends DAO<Auction> {
 
     List<Auction> getActiveAuctions();
 
-    List<Auction> getByStatus(String status);
-
-    List<Auction> getAll(int page, int size);
+    List<Auction> getAll(int page, int size, String status);
 }
