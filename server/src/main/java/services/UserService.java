@@ -127,7 +127,7 @@ public class UserService {
 
     public List<NotificationResponse> getNotifications(int id) {
         User user = requireUser(id);
-        List<Auction> allAuctions = auctionsDAO.getAll();
+        List<Auction> allAuctions = auctionsDAO.getAllByUserId(id);
 
         return user.getNotifications(allAuctions).stream()
                 .map(alert -> new NotificationResponse(
@@ -140,7 +140,7 @@ public class UserService {
 
     public List<HistoryEntryResponse> getAuctionHistory(int id) {
         User user = requireUser(id);
-        List<Auction> allAuctions = auctionsDAO.getAll();
+        List<Auction> allAuctions = auctionsDAO.getAllByUserId(id);
         return user.getTableHistory(allAuctions).stream()
                 .map(entry -> new HistoryEntryResponse(
                         entry.auctionId(),

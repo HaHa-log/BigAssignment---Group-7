@@ -3,8 +3,8 @@ package controllers.MainPage.HomePage;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.group7.dto.user.NotificationResponse;
+import config.ApiConfig;
 import models.*;
-import models.Common.AuctionAlert;
 import controllers.MainPage.ProfilePage.BaseController;
 
 import javafx.collections.FXCollections;
@@ -130,7 +130,7 @@ public class NotificationController extends BaseController {
             protected ObservableList<String> call() throws Exception {
                 HttpClient client = HttpClient.newHttpClient();
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create("http://localhost:8080/api/users/"
+                        .uri(URI.create(ApiConfig.baseUrl() + "/api/users/"
                                 + user.getId() + "/notifications"))
                         .GET().build();
 

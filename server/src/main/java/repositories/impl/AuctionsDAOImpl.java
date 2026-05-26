@@ -183,6 +183,30 @@ public class AuctionsDAOImpl implements AuctionsDAO {
     }
 
     @Override
+    public List<Auction> getAllByUserId(int userId) {
+        String sql = getAuctionBaseSQL() + " WHERE a.owner_id = ?"
+                    + " OR a.winner_id = ?"
+                    + " OR b.user_id = ?";
+
+        try (Connection conn = DB.getConnection();
+             PreparedStatement st = conn.prepareStatement(sql)) {
+            st.setInt(1, userId);
+            st.setInt(2, userId);
+            st.setInt(3, userId);
+
+            try (ResultSet rs = st.executeQuery()) {
+                List<Auction> list = new ArrayList<>();
+                while (rs.next()) {
+                    list.add(instantiateAuction(rs));
+                }
+                return list;
+            }
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+    }
+
+    @Override
     public List<Auction> getActiveAuctions() {
         String sql = getAuctionBaseSQL() + " WHERE a.status = ? OR a.status = ?";
 
