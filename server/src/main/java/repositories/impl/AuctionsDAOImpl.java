@@ -184,9 +184,13 @@ public class AuctionsDAOImpl implements AuctionsDAO {
 
     @Override
     public List<Auction> getAllByUserId(int userId) {
-        String sql = getAuctionBaseSQL() + " WHERE a.owner_id = ?"
-                    + " OR a.winner_id = ?"
-                    + " OR b.user_id = ?";
+        String sql = getAuctionBaseSQL()
+                + " LEFT JOIN bids b ON a.auctions_id = b.auction_id"
+                + " WHERE a.owner_id = ?"
+                + " OR a.winner_id = ?"
+                + " OR b.bidder_id = ?"
+                + " GROUP BY a.auctions_id";
+
 
         try (Connection conn = DB.getConnection();
              PreparedStatement st = conn.prepareStatement(sql)) {
