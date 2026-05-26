@@ -32,6 +32,10 @@ public class SessionManager {
         return currentUser;
     }
 
+    public static void setCurrentUser(User user) {
+        currentUser = user;
+    }
+
     public static void logoutCurrentUser() {
         currentUser = null;
         prefs.remove(USER_EMAIL_KEY);
