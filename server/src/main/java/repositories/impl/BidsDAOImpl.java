@@ -22,14 +22,15 @@ public class BidsDAOImpl implements BidsDAO {
     @Override
     public void save(Bid bid) {
         String sql = "INSERT INTO bids "
-                + "(auction_id, bidder_id, bidPrice) "
-                + "VALUES (?, ?, ?)";
+                + "(auction_id, bidder_id, bidPrice, bidTime) "
+                + "VALUES (?, ?, ?, ?)";
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             st.setInt(1, bid.getAuction().getId());
             st.setInt(2, bid.getBidder().getId());
             st.setDouble(3, bid.getBidPrice().getPrice());
+            setLocalDateTime(st, 4, bid.getBidTime());
             int rowsAffected = st.executeUpdate();
             if (rowsAffected > 0) {
                 try (ResultSet rs = st.getGeneratedKeys()) {
@@ -75,8 +76,7 @@ public class BidsDAOImpl implements BidsDAO {
             st.setInt(1, bid.getAuction().getId());
             st.setInt(2, bid.getBidder().getId());
             st.setDouble(3, bid.getBidPrice().getPrice());
-            st.setTimestamp(4, bid.getBidTime() != null
-                    ? Timestamp.valueOf(bid.getBidTime()) : null);
+            setLocalDateTime(st, 4, bid.getBidTime());
             st.setInt(5, bid.getId());
 
             st.executeUpdate();
@@ -154,5 +154,13 @@ public class BidsDAOImpl implements BidsDAO {
         );
         obj.setId(rs.getInt("bids_id"));
         return obj;
+    }
+
+    private void setLocalDateTime(PreparedStatement st, int index, LocalDateTime value) throws SQLException {
+        if (value == null) {
+            st.setNull(index, Types.TIMESTAMP);
+            return;
+        }
+        st.setObject(index, value);
     }
 }

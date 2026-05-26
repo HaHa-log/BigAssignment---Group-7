@@ -39,10 +39,8 @@ public class AuctionsDAOImpl implements AuctionsDAO {
             st.setInt(2, auction.getItem().getId());
             st.setDouble(3, auction.getStartingPrice());
             st.setDouble(4, auction.getCurrentPrice());
-            st.setTimestamp(5, auction.getStartingTime() != null
-                    ? Timestamp.valueOf(auction.getStartingTime()) : null);
-            st.setTimestamp(6, auction.getEndingTime() != null
-                    ? Timestamp.valueOf(auction.getEndingTime()) : null);
+            setLocalDateTime(st, 5, auction.getStartingTime());
+            setLocalDateTime(st, 6, auction.getEndingTime());
 
             int rowsAffected = st.executeUpdate();
             if (rowsAffected > 0) {
@@ -91,10 +89,8 @@ public class AuctionsDAOImpl implements AuctionsDAO {
             st.setString(3, auction.getStatus().name());
             st.setDouble(4, auction.getStartingPrice());
             st.setDouble(5, auction.getCurrentPrice());
-            st.setTimestamp(6, auction.getStartingTime() != null
-                    ? Timestamp.valueOf(auction.getStartingTime()) : null);
-            st.setTimestamp(7, auction.getEndingTime() != null
-                    ? Timestamp.valueOf(auction.getEndingTime()) : null);
+            setLocalDateTime(st, 6, auction.getStartingTime());
+            setLocalDateTime(st, 7, auction.getEndingTime());
 
             st.setObject(8, auction.getWinner() != null
                     ? ((User) auction.getWinner()).getId() : null);
@@ -247,6 +243,14 @@ public class AuctionsDAOImpl implements AuctionsDAO {
 
         obj.setAuctionId(rs.getInt("auctions_id"));
         return obj;
+    }
+
+    private void setLocalDateTime(PreparedStatement st, int index, LocalDateTime value) throws SQLException {
+        if (value == null) {
+            st.setNull(index, Types.TIMESTAMP);
+            return;
+        }
+        st.setObject(index, value);
     }
 
     private String getAuctionBaseSQL() {

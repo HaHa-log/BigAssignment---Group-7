@@ -32,12 +32,10 @@ public class TransactionDAOImpl implements TransactionDAO {
             st.setInt(2, transaction.getBuyer().getId());
             st.setInt(3, transaction.getSeller().getId());
             st.setDouble(4, transaction.getFinalAmount());
-            st.setTimestamp(5, transaction.getPaidAt() != null
-                    ? Timestamp.valueOf(transaction.getPaidAt()) : null);
-            st.setTimestamp(6, transaction.getCompletedAt() != null
-                    ? Timestamp.valueOf(transaction.getCompletedAt()) : null);
+            setLocalDateTime(st, 5, transaction.getPaidAt());
+            setLocalDateTime(st, 6, transaction.getCompletedAt());
             st.setString(7, transaction.getStatus().name());
-            st.setTimestamp(8, transaction.getExpiryTime() != null ? Timestamp.valueOf(transaction.getExpiryTime()) : null);
+            setLocalDateTime(st, 8, transaction.getExpiryTime());
 
             int rowsAffected = st.executeUpdate();
             if (rowsAffected > 0) {
@@ -86,12 +84,10 @@ public class TransactionDAOImpl implements TransactionDAO {
             st.setInt(2, transaction.getBuyer().getId());
             st.setInt(3, transaction.getSeller().getId());
             st.setDouble(4, transaction.getFinalAmount());
-            st.setTimestamp(5, transaction.getPaidAt() != null
-                    ? Timestamp.valueOf(transaction.getPaidAt()) : null);
-            st.setTimestamp(6, transaction.getCompletedAt() != null
-                    ? Timestamp.valueOf(transaction.getCompletedAt()) : null);
+            setLocalDateTime(st, 5, transaction.getPaidAt());
+            setLocalDateTime(st, 6, transaction.getCompletedAt());
             st.setString(7, transaction.getStatus().name());
-            st.setTimestamp(8, transaction.getExpiryTime() != null ? Timestamp.valueOf(transaction.getExpiryTime()) : null);
+            setLocalDateTime(st, 8, transaction.getExpiryTime());
             st.setInt(9, transaction.getTransactionId());
 
             st.executeUpdate();
@@ -204,10 +200,18 @@ public class TransactionDAOImpl implements TransactionDAO {
                 rs.getObject("paidAt", LocalDateTime.class),
                 rs.getObject("completedAt", LocalDateTime.class),
                 Transaction.TransactionStatus.valueOf(rs.getString("status")),
-                rs.getTimestamp("expiry_time") != null ? rs.getTimestamp("expiry_time").toLocalDateTime() : null
+                rs.getObject("expiry_time", LocalDateTime.class)
         );
 
         obj.setTransactionId(rs.getInt("transaction_id"));
         return obj;
+    }
+
+    private void setLocalDateTime(PreparedStatement st, int index, LocalDateTime value) throws SQLException {
+        if (value == null) {
+            st.setNull(index, Types.TIMESTAMP);
+            return;
+        }
+        st.setObject(index, value);
     }
 }
