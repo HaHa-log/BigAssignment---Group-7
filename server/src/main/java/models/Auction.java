@@ -43,7 +43,7 @@ public class Auction extends Entity implements Serializable {
     private transient AutoBidDAO autoBidDb;
 
     public enum AuctionStatus {
-        OPEN, RUNNING, FINISHED, PAID, CANCELED
+        OPEN, RUNNING, FINISHED, PAID, CANCELLED
     }
 
     public Auction(User owner, Item item, LocalDateTime startingTime, LocalDateTime endingTime) {
@@ -271,10 +271,10 @@ public class Auction extends Entity implements Serializable {
     private boolean isValidTransition(AuctionStatus next) {
         if (status == next) return true;
         return switch (status) {
-            case OPEN -> next == AuctionStatus.RUNNING || next == AuctionStatus.CANCELED;
-            case RUNNING -> next == AuctionStatus.FINISHED || next == AuctionStatus.CANCELED;
-            case FINISHED -> next == AuctionStatus.PAID || next == AuctionStatus.CANCELED;
-            case PAID, CANCELED -> false;
+            case OPEN -> next == AuctionStatus.RUNNING || next == AuctionStatus.CANCELLED;
+            case RUNNING -> next == AuctionStatus.FINISHED || next == AuctionStatus.CANCELLED;
+            case FINISHED -> next == AuctionStatus.PAID || next == AuctionStatus.CANCELLED;
+            case PAID, CANCELLED -> false;
         };
     }
 

@@ -78,18 +78,20 @@ public class AuctionManager {
         userConfig.getUser().placeBid(auction, nextPrice);
     }
 
-    public void createAuction(User owner, Item item, LocalDateTime startingTime, LocalDateTime endingTime) {
+    public Auction createAuction(User owner, Item item, LocalDateTime startingTime, LocalDateTime endingTime) {
         item.setStatus(Item.Status.IN_AUCTION);
         Auction session = new Auction(owner, item, startingTime, endingTime);
         auctionDb.save(session);
         activeSessions.add(session);
         session.start();
+
+        return session;
     }
 
     public void closeAuction(Auction session) {
         if (session == null || session.getStatus() == Auction.AuctionStatus.FINISHED
                 || session.getStatus() == Auction.AuctionStatus.PAID
-                || session.getStatus() == Auction.AuctionStatus.CANCELED) {
+                || session.getStatus() == Auction.AuctionStatus.CANCELLED) {
             return;
         }
 
@@ -136,7 +138,7 @@ public class AuctionManager {
             return false;
         }
         canceledAuction.getItem().setStatus(Item.Status.AVAILABLE);
-        canceledAuction.transitionTo(Auction.AuctionStatus.CANCELED);
+        canceledAuction.transitionTo(Auction.AuctionStatus.CANCELLED);
         moveToCompleted(canceledAuction);
         auctionDb.update(canceledAuction);
         System.out.println("Auction canceled!");
@@ -192,7 +194,7 @@ public class AuctionManager {
             if (!transaction.isExpired()) {
                 continue;
             }
-            transaction.getAuction().transitionTo(Auction.AuctionStatus.CANCELED);
+            transaction.getAuction().transitionTo(Auction.AuctionStatus.CANCELLED);
             User buyer = transaction.getBuyer();
             buyer.unfreezeMoney(transaction.getFinalAmount());
             usersDb.update(buyer);

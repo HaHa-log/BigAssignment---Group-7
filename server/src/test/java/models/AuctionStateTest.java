@@ -1,7 +1,6 @@
 package models;
 
 import models.Auction.AuctionStatus;
-import models.Exceptions.CustomisedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -79,20 +78,20 @@ public class AuctionStateTest {
     class BoundaryValueAnalysisTests {
 
         @Test
-        @DisplayName("BVA-TerminalState-Paid: PAID is terminal, cannot transition to CANCELED")
+        @DisplayName("BVA-TerminalState-Paid: PAID is terminal, cannot transition to CANCELLED")
         void testBVA_TerminalStatePaid() {
             auction.transitionTo(AuctionStatus.RUNNING);
             auction.transitionTo(AuctionStatus.FINISHED);
             auction.transitionTo(AuctionStatus.PAID);
 
-            boolean transitioned = auction.transitionTo(AuctionStatus.CANCELED);
+            boolean transitioned = auction.transitionTo(AuctionStatus.CANCELLED);
             assertFalse(transitioned);
         }
 
         @Test
-        @DisplayName("BVA-TerminalState-Canceled: CANCELED is terminal, cannot reactivate")
+        @DisplayName("BVA-TerminalState-Canceled: CANCELLED is terminal, cannot reactivate")
         void testBVA_TerminalStateCanceled() {
-            auction.transitionTo(AuctionStatus.CANCELED);
+            auction.transitionTo(AuctionStatus.CANCELLED);
 
             boolean transitioned = auction.transitionTo(AuctionStatus.RUNNING);
             assertFalse(transitioned);

@@ -56,7 +56,7 @@
                                           <TextField fx:id="bidAmountInput" promptText="Bid amount" HBox.hgrow="ALWAYS" />
                                        </children>
                                     </HBox>
-                                    <Button mnemonicParsing="false" onAction="#checkBidValidity" text="Make a bid" />
+                                    <Button fx:id="normalBidButton" mnemonicParsing="false" onAction="#checkBidValidity" text="Make a bid" />
                                  </children>
                                  <padding>
                                     <Insets top="10.0" />
@@ -75,7 +75,7 @@
                                           <TextField fx:id="stepInput" layoutX="10.0" layoutY="10.0" promptText="Step" />
                                        </children>
                                     </HBox>
-                                    <Button mnemonicParsing="false" onAction="#checkAutoBidValidity" text="Make a bid" />
+                                    <Button fx:id="autoBidButton" mnemonicParsing="false" onAction="#checkAutoBidValidity" text="Make a bid" />
                                  </children>
                                  <padding>
                                     <Insets top="10.0" />
@@ -88,7 +88,7 @@
                         <Insets top="10.0" />
                      </VBox.margin>
                   </TabPane>
-                  <Label fx:id="bidPlacedResultLabel" text="" wrapText="true">
+                  <Label fx:id="statusLabel" text="" wrapText="true">
                      <font>
                         <Font size="13.0" />
                      </font>
@@ -104,6 +104,12 @@
             <Button mnemonicParsing="false" onAction="#confirm" text="CONFIRM" />
          </children>
       </VBox>
+       <VBox fx:id="cancelPane" alignment="CENTER" managed="false" spacing="5.0" visible="false">
+           <children>
+               <Label text="Delete your CANCEL auction" />
+               <Button mnemonicParsing="false" onAction="#cancel" text="CANCEL" />
+           </children>
+       </VBox>
       <TabPane>
          <tabs>
             <Tab text="Auction Details">

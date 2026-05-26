@@ -12,8 +12,6 @@ import repositories.UsersDAO;
 import repositories.impl.DaoFactory;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class AuctionService {
@@ -24,14 +22,14 @@ public class AuctionService {
     private final TransactionService transactionService;
     private final BidWebSocketHandler webSocketHandler;
 
+    private final AuctionManager auctionManager = AuctionManager.getInstance();
+
     public AuctionService(TransactionService transactionService,BidWebSocketHandler webSocketHandler) {
         this.transactionService = transactionService;
         this.webSocketHandler = webSocketHandler;
     }
 
-    // PHÂN TRANG
     public List<AuctionResponse> getAll(int page, int size,String status) {
-        // Chỉ lấy đúng số lượng Auction cần thiết ở Database
         List<Auction> pageAuctions = auctionsDAO.getAll(page, size, "ALL");
 
         return pageAuctions.stream()
@@ -50,20 +48,20 @@ public class AuctionService {
         }
 
         ItemRequest itemRequest = new ItemRequest(
-                request.getItemName(),
-                request.getStartingPrice(),
-                request.getDescription(),
-                request.getImagePath(),
-                request.getOwnerId()
+                request.getItemName(), request.getStartingPrice(),
+                request.getDescription(), request.getImagePath(), request.getOwnerId()
+        );
+        Item item = itemService.createNewItem(itemRequest);
+        User owner = usersDAO.getById(request.getOwnerId());
+
+        Auction auction = auctionManager.createAuction(
+                owner,
+                item,
+                request.getStartingTime(),
+                request.getEndingTime()
         );
 
-        Item item = itemService.createNewItem(itemRequest);
-
-        Auction auction = new Auction(item.getOwner(), item, request.getStartingTime(), request.getEndingTime());
-        auctionsDAO.save(auction);
-        auction.start();
-        auctionsDAO.update(auction);
-        return toResponse(auction);
+        return toResponse(auctionsDAO.getById(auction.getId()));
     }
 
     public AuctionResponse placeBid(int auctionId, int bidderId, double amount) {
@@ -86,7 +84,7 @@ public class AuctionService {
 
     public AuctionResponse cancel(int auctionId) {
         Auction auction = requireAuction(auctionId);
-        auction.transitionTo(Auction.AuctionStatus.CANCELED);
+        auction.transitionTo(Auction.AuctionStatus.CANCELLED);
         auctionsDAO.update(auction);
         return toResponse(auction);
     }

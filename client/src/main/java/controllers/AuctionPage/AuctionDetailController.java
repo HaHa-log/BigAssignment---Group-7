@@ -3,6 +3,7 @@ package controllers.AuctionPage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.group7.dto.bid.AutoBidRequest;
 import javafx.application.Platform;
+import javafx.scene.control.Button;
 import models.*;
 import models.Exceptions.CustomisedException;
 import javafx.fxml.FXML;
@@ -14,7 +15,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
-import java.io.File;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import services.AuctionApiService;
@@ -30,7 +30,7 @@ import static javafx.scene.paint.Color.RED;
 
 public class AuctionDetailController {
     @FXML
-    private Label bidPlacedResultLabel;
+    private Label statusLabel;
     @FXML
     private TextField bidAmountInput;
     @FXML
@@ -46,11 +46,13 @@ public class AuctionDetailController {
     @FXML
     private LineChart<String, Number> bidHistoryChart;
     @FXML
-    private VBox confirmPane;
+    private VBox confirmPane, cancelPane;
     @FXML
     private TextField maxBidInput;
     @FXML
     private TextField stepInput;
+    @FXML
+    private Button normalBidButton, autoBidButton;
 
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM HH:mm");
     private final AuctionApiService auctionApiService = new AuctionApiService();
@@ -66,7 +68,7 @@ public class AuctionDetailController {
         String bidAmountString = bidAmountInput.getText();
 
         if (bidAmountString == null || bidAmountString.trim().isEmpty()) {
-            bidPlacedResultLabel.setText("Please enter an amount.");
+            statusLabel.setText("Please enter an amount.");
             return;
         }
 
@@ -77,27 +79,20 @@ public class AuctionDetailController {
             }
             double bidAmount = Double.parseDouble(bidAmountString);
             auction = auctionApiService.placeBid(auction.getId(), currentUser.getId(), bidAmount);
-            boolean isSuccess = true;
 
-            if (isSuccess) {
-                bidPlacedResultLabel.setTextFill(GREEN);
-                bidPlacedResultLabel.setText("Bid placed successfully.");
-                currentPriceLabel.setText("Current price: $" + auction.getCurrentPrice());
-
-            } else {
-                bidPlacedResultLabel.setTextFill(RED);
-                bidPlacedResultLabel.setText("Bid failed. Check your balance or bid amount.");
-            }
+            statusLabel.setTextFill(GREEN);
+            statusLabel.setText("Bid placed successfully.");
+            currentPriceLabel.setText("Current price: $" + auction.getCurrentPrice());
 
         } catch (IllegalArgumentException e) {
             String message = e.getMessage();
-            bidPlacedResultLabel.setText(message);
+            statusLabel.setText(message);
         } catch (CustomisedException e) {
             String message = e.getMessage();
-            bidPlacedResultLabel.setText(message);
+            statusLabel.setText(message);
         } catch (Exception e) {
-            bidPlacedResultLabel.setTextFill(RED);
-            bidPlacedResultLabel.setText(e.getMessage());
+            statusLabel.setTextFill(RED);
+            statusLabel.setText(e.getMessage());
         } finally {
             bidAmountInput.clear();
             updateBidChart();
@@ -109,17 +104,32 @@ public class AuctionDetailController {
         this.itemNameLabel.setText(auction.getItem().getName());
         this.startingPriceLabel.setText("Starting price: $" + auction.getStartingPrice());
         this.currentPriceLabel.setText("Current price: $" + auction.getCurrentPrice());
+
+        boolean isRunning = auction.getStatus() != null && auction.getStatus() == Auction.AuctionStatus.RUNNING;
+        if (!isRunning) {
+            normalBidButton.setDisable(true);
+            autoBidButton.setDisable(true);
+
+            statusLabel.setText("Making bid is currently unavailable since auction status is not RUNNING.");
+        }
+
         setItemImage();
         getTableData(auction);
         updateBidChart();
 
-        if (currentUser != null && currentUser.isWinner(auction)) {
-            if (auction.getStatus() == Auction.AuctionStatus.FINISHED) {
-                setupConfirmPane(false);
+        if (currentUser != null) {
+            if (auction.getStatus() == Auction.AuctionStatus.OPEN && currentUser.isOwner(auction)) {
+                setupCancelPane();
+            }
 
-            } else if (auction.getStatus() == Auction.AuctionStatus.PAID) {
-                setupConfirmPane(true);}
+            if (currentUser.isWinner(auction)) {
+                if (auction.getStatus() == Auction.AuctionStatus.FINISHED) {
+                    setupConfirmPane(false);
+                } else if (auction.getStatus() == Auction.AuctionStatus.PAID) {
+                    setupConfirmPane(true);}
+            }
         }
+
         connectWebSocket();
     }
 
@@ -134,6 +144,15 @@ public class AuctionDetailController {
         } else {
             confirmBtn.setDisable(false);
             confirmBtn.setText("CONFIRM");}
+    }
+
+    private void setupCancelPane() {
+        cancelPane.setVisible(true);
+        cancelPane.setManaged(true);
+
+        javafx.scene.control.Button cancelBtn = (javafx.scene.control.Button) cancelPane.getChildren().get(1);
+        cancelBtn.setDisable(false);
+        cancelBtn.setText("CANCEL");
     }
 
     public void getTableData(Auction auction) {
@@ -246,11 +265,6 @@ public class AuctionDetailController {
         }
     }
 
-    private void setupConfirmPane() {
-        confirmPane.setVisible(true);
-        confirmPane.setManaged(true);
-    }
-
     @FXML
     private void confirm() {
         try {
@@ -265,19 +279,37 @@ public class AuctionDetailController {
             confirmBtn.setDisable(true);
             confirmBtn.setText("✓ Confirmed");
 
-            bidPlacedResultLabel.setTextFill(GREEN);
-            bidPlacedResultLabel.setText("Receipt confirmed. Transaction completed.");
+            statusLabel.setTextFill(GREEN);
+            statusLabel.setText("Receipt confirmed. Transaction completed.");
         } catch (Exception e) {
-            bidPlacedResultLabel.setTextFill(RED);
-            bidPlacedResultLabel.setText(e.getMessage());
+            statusLabel.setTextFill(RED);
+            statusLabel.setText(e.getMessage());
+        }
+    }
+
+    @FXML
+    private void cancel() {
+        try {
+            auction = auctionApiService.cancel(auction.getId());
+            auctionStatusLabel.setText(auction.getStatus().toString());
+
+            javafx.scene.control.Button cancelBtn = (javafx.scene.control.Button) cancelPane.getChildren().get(1);
+            cancelBtn.setDisable(true);
+            cancelBtn.setText("✓ Cancelled");
+
+            statusLabel.setTextFill(GREEN);
+            statusLabel.setText("Auction cancelled succesfully!");
+        } catch (Exception e) {
+            statusLabel.setTextFill(RED);
+            statusLabel.setText(e.getMessage());
         }
     }
 
     @FXML
     private void checkAutoBidValidity() {
         if (maxBidInput.getText().isEmpty() || stepInput.getText().isEmpty()) {
-            bidPlacedResultLabel.setTextFill(RED);
-            bidPlacedResultLabel.setText("Please enter Max Bid and Increment.");
+            statusLabel.setTextFill(RED);
+            statusLabel.setText("Please enter Max Bid and Increment.");
             return;
         }
         try {
@@ -296,20 +328,20 @@ public class AuctionDetailController {
 
             auctionApiService.enableAutoBid(auction.getId(), request);
 
-            bidPlacedResultLabel.setTextFill(GREEN);
-            bidPlacedResultLabel.setText("Auto Bid enabled successfully!");
+            statusLabel.setTextFill(GREEN);
+            statusLabel.setText("Auto Bid enabled successfully!");
 
             maxBidInput.clear();
             stepInput.clear();
         } catch (CustomisedException e) {
-            bidPlacedResultLabel.setTextFill(RED);
-            bidPlacedResultLabel.setText(e.getMessage());
+            statusLabel.setTextFill(RED);
+            statusLabel.setText(e.getMessage());
         } catch (NumberFormatException e) {
-            bidPlacedResultLabel.setTextFill(RED);
-            bidPlacedResultLabel.setText("Please enter a valid number.");
+            statusLabel.setTextFill(RED);
+            statusLabel.setText("Please enter a valid number.");
         } catch (Exception e) {
-            bidPlacedResultLabel.setTextFill(RED);
-            bidPlacedResultLabel.setText(e.getMessage());
+            statusLabel.setTextFill(RED);
+            statusLabel.setText(e.getMessage());
         }
     }
 }

@@ -145,4 +145,8 @@ public class User extends Entity implements Bidder, Seller {
         return (auction.getStatus() == Auction.AuctionStatus.FINISHED || auction.getStatus() == Auction.AuctionStatus.PAID)
                 && isHighestBidder(auction);
     }
+
+    public boolean isOwner(Auction auction) {
+        return auction.getOwner() != null && auction.getOwner().equals(this);
+    }
 }
