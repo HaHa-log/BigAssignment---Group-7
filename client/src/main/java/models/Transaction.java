@@ -30,17 +30,6 @@ public class Transaction {
         this.expiryTime = LocalDateTime.now().plusMinutes(30);
     }
 
-    public Transaction(Auction auction, User buyer, User seller, double finalAmount, LocalDateTime paidAt, LocalDateTime completedAt, TransactionStatus status, LocalDateTime expiryTime) {
-        this.auction = auction;
-        this.buyer = buyer;
-        this.seller = seller;
-        this.finalAmount = finalAmount;
-        this.paidAt = paidAt;
-        this.completedAt = completedAt;
-        this.status = status;
-        this.expiryTime = expiryTime;
-    }
-
     public int getTransactionId() {
         return transactionId;
     }
@@ -57,20 +46,8 @@ public class Transaction {
         return buyer;
     }
 
-    public User getSeller() {
-        return seller;
-    }
-
     public double getFinalAmount() {
         return finalAmount;
-    }
-
-    public LocalDateTime getPaidAt() {
-        return paidAt;
-    }
-
-    public LocalDateTime getCompletedAt() {
-        return completedAt;
     }
 
     public TransactionStatus getStatus() {
@@ -79,14 +56,6 @@ public class Transaction {
 
     public void setStatus(TransactionStatus status) {
         this.status = status;
-    }
-
-    public LocalDateTime getExpiryTime() {
-        return expiryTime;
-    }
-
-    public void setExpiryTime(LocalDateTime time) {
-        this.expiryTime = time;
     }
 
     public boolean isExpired() {

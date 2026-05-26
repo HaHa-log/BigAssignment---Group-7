@@ -1,18 +1,11 @@
 package models;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import models.Common.Balance;
-import models.Common.AuctionAlert;
-import models.Common.AuctionHistoryEntry;
 import models.Common.Email;
 import models.Common.FullName;
-import models.Common.NotificationType;
 import models.Common.PhoneNumber;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class User extends Entity implements Bidder, Seller {
@@ -25,9 +18,6 @@ public class User extends Entity implements Bidder, Seller {
     private boolean isBlocked = false;
     private LocalDateTime blockedUntil = null;
     private String avatarPath;
-
-    private final ObservableList<String> transactions = FXCollections.observableArrayList();
-    private final ObservableList<Item> inventory = FXCollections.observableArrayList();
 
     private double frozenBalance = 0;
 
@@ -48,35 +38,9 @@ public class User extends Entity implements Bidder, Seller {
         this.blockedUntil = blockedUntil;
     }
 
-    public ObservableList<Item> getInventory() {
-        return inventory;
+    public String getAvatarPath() {
+        return avatarPath;
     }
-
-    public void addItem(Item item) {
-        if (item != null && !inventory.contains(item)) {
-            item.setOwnerId(this.getId());
-            this.inventory.add(item);
-            System.out.println("[System]: Item " + item.getName() + " is now owned by " + this.getFullName());
-        }
-    }
-
-    public void removeItem(Item item) {
-        if (item != null) {
-            this.inventory.remove(item);
-            System.out.println("[System]: Item " + item.getName() + " removed from " + this.getFullName() + "'s inventory.");
-        }
-    }
-
-    public void setFirstName(String fstName) {
-        this.fullname = new FullName(fstName, fullname.getLastName());
-    }
-
-    public void setLastName(String lstName) {
-        this.fullname = new FullName(fullname.getFirstName(), lstName);
-    }
-
-    public String getAvatarPath() { return avatarPath; }
-    public void setAvatarPath(String avatarPath) { this.avatarPath = avatarPath; }
 
     public void setEmail(String email) {
         this.email = new Email(email);
@@ -97,21 +61,6 @@ public class User extends Entity implements Bidder, Seller {
         return this.balance.deposit(amount);
     }
 
-    public boolean withdrawMoney(double amount) {
-        return this.balance.withdraw(amount);
-    }
-
-    public boolean freezeMoney(double amount) {
-        if (amount <= 0) return false;
-        if (this.balance.showBalance() < amount) return false;
-
-        boolean success = this.balance.withdraw(amount);
-        if (!success) return false;
-
-        this.frozenBalance += amount;
-        return true;
-    }
-
     public boolean spendFrozenMoney(double amount) {
         if (amount <= 0) return false;
         if (frozenBalance < amount) return false;
@@ -120,19 +69,17 @@ public class User extends Entity implements Bidder, Seller {
         return true;
     }
 
-    public boolean unfreezeMoney(double amount) {
-        if (amount <= 0) return false;
-        if (frozenBalance < amount) return false;
-
-        frozenBalance -= amount;
-        balance.deposit(amount);
-        return true;
+    public double getBalance() {
+        return balance.showBalance();
     }
 
-    public double getCurrentBalance() { return this.balance.showBalance(); }
-    public double getBalance() { return balance.showBalance(); }
-    public double getFrozenBalance() { return frozenBalance; }
-    public void setFrozenBalance(double frozenBalance) { this.frozenBalance = frozenBalance; }
+    public double getFrozenBalance() {
+        return frozenBalance;
+    }
+
+    public void setFrozenBalance(double frozenBalance) {
+        this.frozenBalance = frozenBalance;
+    }
 
     public void setBlocked(LocalDateTime until) {
         this.isBlocked = true;
@@ -152,17 +99,23 @@ public class User extends Entity implements Bidder, Seller {
         this.blockedUntil = null;
     }
 
-    public String getFullName() { return fullname.toString(); }
-    public String getFirstName() { return fullname.getFirstName(); }
-    public String getLastName() { return fullname.getLastName(); }
-    public String getEmail() { return email.toString(); }
-    public String getPhoneNumber() { return phoneNumber.toString(); }
-    public String getPassword() { return password; }
+    public String getFullName() {
+        return fullname.toString();
+    }
+
+    public String getEmail() {
+        return email.toString();
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber.toString();
+    }
+
+    public String getPassword() {
+        return password;
+    }
 
     // SỬA LỖI: Chuyển đổi phương thức abstract cũ thành phương thức thông thường đồng bộ với Server
-    public String getRole() {
-        return isAdmin ? "Admin" : "Member";
-    }
 
     public boolean isAdmin() {
         return isAdmin;
@@ -170,19 +123,6 @@ public class User extends Entity implements Bidder, Seller {
 
     public void setAdmin(boolean admin) {
         this.isAdmin = admin;
-    }
-
-    public ObservableList<String> getTransactions() {
-        return transactions;
-    }
-
-    public void addTransaction(String message) {
-        this.transactions.add(message);
-    }
-
-    public boolean isEqual(User other) {
-        if (other == null) return false;
-        return this.getId() == other.getId();
     }
 
     @Override
@@ -204,72 +144,5 @@ public class User extends Entity implements Bidder, Seller {
     public boolean isWinner(Auction auction) {
         return (auction.getStatus() == Auction.AuctionStatus.FINISHED || auction.getStatus() == Auction.AuctionStatus.PAID)
                 && isHighestBidder(auction);
-    }
-
-    public boolean isOwner(Auction auction) {
-        return auction.getOwner().equals(this);
-    }
-
-    public boolean hasParticipated(Auction auction) {
-        return auction.getBids().stream().anyMatch(bid -> bid.getBidder().equals(this));
-    }
-
-    private boolean isInvolvedIn(Auction auction) {
-        return isOwner(auction) || isWinner(auction) || hasParticipated(auction);
-    }
-
-    public List<AuctionHistoryEntry> getTableHistory(List<Auction> auctions) {
-        List<AuctionHistoryEntry> history = new ArrayList<>();
-        for (Auction auction : auctions) {
-            String state = null;
-            if (isOwner(auction)) {
-                state = "MY AUCTION";
-            } else if (hasParticipated(auction)) {
-                if (auction.getStatus() == Auction.AuctionStatus.FINISHED ||
-                        auction.getStatus() == Auction.AuctionStatus.PAID) {
-                    state = isWinner(auction) ? "WON" : "LOST";
-                } else {
-                    state = isHighestBidder(auction) ? "LEADING" : "OUTBID";
-                }
-            }
-            if (state != null) {
-                history.add(new AuctionHistoryEntry(
-                        auction.getId(),
-                        auction.getItem().getName(),
-                        auction.getStatus().toString(),
-                        state
-                ));
-            }
-        }
-        return history;
-    }
-
-    public List<AuctionAlert> getNotifications(List<Auction> auctions) {
-        List<AuctionAlert> alerts = new ArrayList<>();
-        for (Auction auction : auctions) {
-            if (!isInvolvedIn(auction)) {
-                continue;
-            }
-            boolean isWinner = auction.getWinner() != null && auction.getWinner().getId() == this.getId();
-            if (auction.getStatus() == Auction.AuctionStatus.RUNNING) {
-                if (isOwner(auction)) {
-                    alerts.add(new AuctionAlert(NotificationType.MY_AUCTION_RUNNING, auction));
-                } else if (isHighestBidder(auction)) {
-                    alerts.add(new AuctionAlert(NotificationType.LEADING, auction));
-                } else {
-                    alerts.add(new AuctionAlert(NotificationType.OUTBID, auction));
-                }
-            } else if (auction.getStatus() == Auction.AuctionStatus.FINISHED ||
-                    auction.getStatus() == Auction.AuctionStatus.PAID) {
-                if (isOwner(auction)) {
-                    alerts.add(new AuctionAlert(NotificationType.MY_AUCTION_FINISHED, auction));
-                } else if (isWinner) {
-                    alerts.add(new AuctionAlert(NotificationType.WON, auction));
-                } else {
-                    alerts.add(new AuctionAlert(NotificationType.LOST, auction));
-                }
-            }
-        }
-        return alerts;
     }
 }

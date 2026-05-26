@@ -70,5 +70,4 @@ public class AutoBid implements Serializable, Cloneable {
     public Auction getAuction() { return auction; }
     public User getUser() { return user; }
     public double getMaxBid() { return maxBid.getPrice(); }
-    public double getIncrement() { return increment; }
 }
