@@ -156,7 +156,7 @@ public class HistoryController extends BaseController {
 
         colTxAmount.setCellValueFactory(c ->
                 new SimpleStringProperty(
-                        String.format("%,.0f VNĐ", c.getValue().finalAmount())));
+                        String.format("%,.0f $", c.getValue().finalAmount())));
 
         colTxRole.setCellValueFactory(c -> {
             TransactionResponse tx = c.getValue();

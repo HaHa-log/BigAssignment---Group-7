@@ -82,4 +82,8 @@ public class FinanceController extends BaseController {
         frozenBalanceLabel.setText(String.format("%.2f", user.getFrozenBalance()));
         totalBalanceLabel.setText(String.format("%.2f", user.getBalance() + user.getFrozenBalance()));
     }
+    @FXML
+    private void handleShowFrozenDetails() {
+        
+    }
 }

@@ -13,7 +13,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
-import services.ImageFileValidator;
+import utils.ImageFileValidator;
 import services.UserApiService;
 
 import java.io.File;

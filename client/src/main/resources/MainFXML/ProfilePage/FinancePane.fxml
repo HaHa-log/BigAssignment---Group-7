@@ -62,8 +62,24 @@
                     -fx-text-fill: #2563eb;
                "/>
 
-            <Label text="Reserved for auctions"
-                   style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
+            <HBox alignment="CENTER_LEFT"
+                  spacing="10">
+
+                <Label text="Reserved for auctions"
+                       style="-fx-text-fill: #94a3b8;
+                  -fx-font-size: 12;"/>
+
+                <Button fx:id="frozenDetailsButton"
+                        text="Details"
+                        onAction="#handleShowFrozenDetails"
+                        style="
+                        -fx-background-color: transparent;
+                        -fx-text-fill: #2563eb;
+                        -fx-font-size: 12;
+                        -fx-font-weight: bold;
+                        -fx-cursor: hand;
+                        -fx-padding: 0;"/>
+            </HBox>
         </VBox>
 
         <!-- TOTAL -->
