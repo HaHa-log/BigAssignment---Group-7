@@ -2,6 +2,7 @@ package controllers.AuctionPage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.group7.dto.bid.AutoBidRequest;
+import javafx.application.Platform;
 import models.*;
 import models.Exceptions.CustomisedException;
 import javafx.fxml.FXML;
@@ -201,27 +202,25 @@ public class AuctionDetailController {
                             }
 
                             @Override
-                            public CompletionStage<?> onText(
-                                    WebSocket ws,
-                                    CharSequence data,
-                                    boolean last) {
-                                try {System.out.println("[CLIENT WS]: " + data);
+                            public CompletionStage<?> onText(WebSocket ws, CharSequence data, boolean last) {
+                                try {
+                                    System.out.println("[CLIENT WS]: " + data);
                                     ObjectMapper mapper = new ObjectMapper();
-
                                     var node = mapper.readTree(data.toString());
-
                                     double newPrice = node.get("currentPrice").asDouble();
 
-                                    javafx.application.Platform.runLater(() -> {
-                                        currentPriceLabel.setText("Current price: $" + newPrice);
-
-                                        try {auction = new AuctionApiService().getById(auction.getId());
-                                            updateBidChart();
-
-                                        } catch (Exception e) {e.printStackTrace();}});
-
-                                } catch (Exception e) {e.printStackTrace();}
-
+                                    Platform.runLater(() -> currentPriceLabel.setText("Current price: $" + newPrice));
+                                    // Reload auction
+                                    new Thread(() -> {
+                                        try {
+                                            Auction updated = new AuctionApiService().getById(auction.getId());
+                                            Platform.runLater(() -> {auction = updated;updateBidChart();});
+                                        } catch (Exception e) {e.printStackTrace();
+                                        }
+                                    }).start();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                                 ws.request(1);
                                 return CompletableFuture.completedFuture(null);}
 

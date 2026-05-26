@@ -55,14 +55,8 @@ public class AuctionListController {
         btnPrev.setOnAction(e -> handlePrevPage());
         btnNext.setOnAction(e -> handleNextPage());
 
-        // Kiểm tra xem đã có dữ liệu cache của trang này chưa
-        if (cachedAuctions != null && cachedPage == currentPage) {
-            // Có cache rồi: Hiển thị luôn lên màn hình, không gọi API nữa!
-            renderAuctionUI(cachedAuctions);
-        } else {
-            // Chưa có cache: Tiến hành gọi lên Server
-            Platform.runLater(this::populateList);
-        }
+
+        populateList();
     }
 
     private void handlePrevPage() {
@@ -96,7 +90,9 @@ public class AuctionListController {
             try {
                 // Gọi API lấy dữ liệu từ Server về
                 String selectedStatus = statusFilter.getValue();
+                System.out.println("[DEBUG] Loading auctions page=" + currentPage + " status=" + selectedStatus);
                 List<Auction> auctions = auctionApiService.getAll(currentPage, PAGE_SIZE, selectedStatus);
+                System.out.println("[DEBUG] Loaded " + auctions.size() + " auctions");
 
                 cachedAuctions = auctions;
                 cachedPage = currentPage;
