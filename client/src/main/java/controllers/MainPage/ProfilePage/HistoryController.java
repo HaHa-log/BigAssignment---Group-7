@@ -94,35 +94,20 @@ public class HistoryController extends BaseController {
         });
 
         colAction.setCellFactory(column -> new TableCell<>() {
-            private final Button confirmButton = new Button("Confirm Receipt");
+            private final Button actionButton = new Button();
 
             {
-                confirmButton.getStyleClass().add("confirm-button");
-                confirmButton.setOnAction(event -> {
+                actionButton.setOnAction(event -> {
                     AuctionHistoryEntry entry = getTableView().getItems().get(getIndex());
-
+                    // Common logic: Navigate to Detail Page
                     new Thread(() -> {
                         try {
                             services.AuctionApiService apiService = new services.AuctionApiService();
                             Auction auction = apiService.getById(entry.auctionId());
-
-                            Platform.runLater(() -> {
-                                try {
-                                    javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
-                                            getClass().getResource("/AuctionPageFXML/AuctionDetail.fxml"));
-                                    javafx.scene.Parent detailRoot = loader.load();
-                                    AuctionDetailController detailController = loader.getController();
-                                    detailController.setAuctionData(auction);
-                                    SceneManager.switchContent(detailRoot);
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
-                            });
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                            Platform.runLater(() -> navigateToDetail(auction));
+                        } catch (Exception e) { e.printStackTrace(); }
                     }).start();
-                });;
+                });
             }
 
             @Override
@@ -131,15 +116,27 @@ public class HistoryController extends BaseController {
                 if (empty) { setGraphic(null); return; }
 
                 AuctionHistoryEntry entry = getTableView().getItems().get(getIndex());
+                String status = entry.auctionStatus();
+                String state = entry.userState();
 
-                if ("WON".equals(entry.userState()) && "FINISHED".equals(entry.auctionStatus())) {
-                    confirmButton.setDisable(false);
-                    confirmButton.setText("Confirm Receipt");
-                    setGraphic(confirmButton);
-                } else if ("WON".equals(entry.userState()) && "PAID".equals(entry.auctionStatus())) {
-                    confirmButton.setDisable(true);
-                    confirmButton.setText("✓ Confirmed");
-                    setGraphic(confirmButton);
+                if ("WON".equals(state) && "FINISHED".equals(status)) {
+                    actionButton.setDisable(false);
+                    actionButton.setText("Confirm Receipt");
+                    setGraphic(actionButton);
+                } else if ("WON".equals(state) && "PAID".equals(status)) {
+                    actionButton.setDisable(true);
+                    actionButton.setText("✓ Confirmed");
+                    setGraphic(actionButton);
+                }
+                else if ("MY AUCTION".equals(state) && "OPEN".equals(status)) {
+                    actionButton.setDisable(false);
+                    actionButton.setText("Cancel");
+                    setGraphic(actionButton);
+                }
+                else if ("MY AUCTION".equals(state) && "CANCELED".equals(status)) {
+                    actionButton.setDisable(true);
+                    actionButton.setText("Canceled");
+                    setGraphic(actionButton);
                 } else {
                     setGraphic(null);
                 }
@@ -265,5 +262,18 @@ public class HistoryController extends BaseController {
                 })
                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
         historyTable.setItems(filtered);
+    }
+
+    private void navigateToDetail(Auction auction) {
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                    getClass().getResource("/AuctionPageFXML/AuctionDetail.fxml"));
+            javafx.scene.Parent detailRoot = loader.load();
+            AuctionDetailController detailController = loader.getController();
+            detailController.setAuctionData(auction);
+            SceneManager.switchContent(detailRoot);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }

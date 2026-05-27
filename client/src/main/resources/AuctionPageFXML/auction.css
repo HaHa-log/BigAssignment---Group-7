@@ -43,3 +43,28 @@
     -fx-border-color: transparent transparent #C2D7FF transparent;
     -fx-border-width: 1;
 }
+
+.action-pane {
+    -fx-background-color: #f8f9fa; /* Very light gray */
+    -fx-border-color: #dee2e6;     /* Subtle border */
+    -fx-border-width: 1px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-padding: 20px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0); /* Subtle shadow */
+    -fx-margin: 10px;
+}
+
+.confirm-button {
+    -fx-background-color: #28a745; /* Green */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 20px;
+}
+
+.cancel-button {
+    -fx-background-color: #dc3545; /* Red */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 20px;
+}

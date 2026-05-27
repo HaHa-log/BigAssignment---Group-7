@@ -97,17 +97,18 @@
             </VBox>
          </children>
       </HBox>
-      <VBox fx:id="confirmPane" alignment="CENTER" managed="false" spacing="5.0" visible="false">
-         <children>
-            <Label text="Congratulations! You are the winner of this Auction" />
-            <Label layoutX="204.0" layoutY="10.0" text="Click to confirm if you have received the item" />
-            <Button mnemonicParsing="false" onAction="#confirm" text="CONFIRM" />
-         </children>
-      </VBox>
-       <VBox fx:id="cancelPane" alignment="CENTER" managed="false" spacing="5.0" visible="false">
+       <VBox fx:id="confirmPane" alignment="CENTER" managed="false" spacing="10.0" stylesheets="@auction.css" styleClass="action-pane" visible="false">
            <children>
-               <Label text="Delete your CANCEL auction" />
-               <Button mnemonicParsing="false" onAction="#cancel" text="CANCEL" />
+               <Label style="-fx-font-weight: bold;" text="Congratulations! You are the winner of this Auction" />
+               <Label text="Click to confirm if you have received the item" />
+               <Button mnemonicParsing="false" onAction="#confirm" styleClass="confirm-button" text="CONFIRM" />
+           </children>
+       </VBox>
+
+       <VBox fx:id="cancelPane" alignment="CENTER" managed="false" spacing="10.0" stylesheets="@auction.css" styleClass="action-pane" visible="false">
+           <children>
+               <Label style="-fx-font-weight: bold;" text="Cancel your OPEN auction" />
+               <Button mnemonicParsing="false" onAction="#cancel" styleClass="cancel-button" text="CANCEL" />
            </children>
        </VBox>
       <TabPane>
