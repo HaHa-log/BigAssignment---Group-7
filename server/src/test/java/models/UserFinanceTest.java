@@ -35,7 +35,7 @@ public class UserFinanceTest {
         @DisplayName("EP-Invalid-FreezeMoneyExceedingBalance")
         void testEP_InvalidFreezeExceeding() {
             boolean success = user.freezeMoney(1200.0);
-            assertFalse(success);
+            assertFalse(success); // <-- ĐÃ SỬA: Thay từ "false" thành "assertFalse"
             assertEquals(1000.0, user.getBalance());
             assertEquals(0.0, user.getFrozenBalance());
         }
@@ -78,6 +78,37 @@ public class UserFinanceTest {
             assertEquals(200.0, user.getFrozenBalance());
             assertEquals(800.0, user.getBalance());
         }
+
+        @Test
+        @DisplayName("EP-Valid-DepositMoneySuccessfully")
+        void testEP_ValidDeposit() {
+            user.depositMoney(500.0);
+            assertEquals(1500.0, user.getBalance());
+        }
+
+        @Test
+        @DisplayName("EP-Invalid-DepositNegativeAmountThrows")
+        void testEP_InvalidDepositNegative() {
+            assertThrows(IllegalArgumentException.class, () -> {
+                user.depositMoney(-50.0);
+            });
+        }
+
+        @Test
+        @DisplayName("EP-Valid-WithdrawMoneySuccessfully")
+        void testEP_ValidWithdraw() {
+            boolean success = user.withdrawMoney(400.0);
+            assertTrue(success);
+            assertEquals(600.0, user.getBalance());
+        }
+
+        @Test
+        @DisplayName("EP-Invalid-WithdrawMoneyExceedingBalanceThrows")
+        void testEP_InvalidWithdrawExceeding() {
+            assertThrows(IllegalArgumentException.class, () -> {
+                user.withdrawMoney(1500.0);
+            });
+        }
     }
 
     @Nested
@@ -119,6 +150,37 @@ public class UserFinanceTest {
             assertTrue(user.unfreezeMoney(500.0));
             assertEquals(0.0, user.getFrozenBalance());
             assertEquals(1000.0, user.getBalance());
+        }
+
+        @Test
+        @DisplayName("BVA-Deposit-ExactlyZeroAmountThrows")
+        void testBVA_DepositZero() {
+            assertThrows(IllegalArgumentException.class, () -> {
+                user.depositMoney(0.0);
+            });
+        }
+
+        @Test
+        @DisplayName("BVA-Withdraw-ExactlyZeroAmountThrows")
+        void testBVA_WithdrawZero() {
+            assertThrows(IllegalArgumentException.class, () -> {
+                user.withdrawMoney(0.0);
+            });
+        }
+
+        @Test
+        @DisplayName("BVA-Withdraw-ExactTotalBalanceAmount")
+        void testBVA_WithdrawExactBalance() {
+            assertTrue(user.withdrawMoney(1000.0));
+            assertEquals(0.0, user.getBalance());
+        }
+
+        @Test
+        @DisplayName("BVA-Withdraw-JustAboveTotalBalanceThrows")
+        void testBVA_WithdrawJustAboveBalance() {
+            assertThrows(IllegalArgumentException.class, () -> {
+                user.withdrawMoney(1000.01);
+            });
         }
     }
 }
