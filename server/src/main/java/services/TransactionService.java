@@ -45,27 +45,33 @@ public class TransactionService {
     //buyer confirm
     public TransactionResponse confirmReceipt(int auctionId, int buyerId) {
         User buyer = usersDAO.getById(buyerId);
-        if (!(buyer instanceof User user)) {
+        if (buyer == null) {
             throw new IllegalArgumentException("[Error]: Buyer is invalid.");
         }
 
-        Transaction transaction = transactionDAO.getPendingByAuctionAndBuyer(auctionId, user.getId());
+        Auction auction = requireAuction(auctionId);
+        User winner = auction.getWinner();
+        if (winner == null || winner.getId() != buyerId) {
+            throw new IllegalArgumentException("[Error]: You are not the winner of this auction.");
+        }
+
+        Transaction transaction = transactionDAO.getPendingByAuctionAndBuyer(auctionId, buyerId);
         if (transaction == null) {
-            throw new IllegalArgumentException("[Error]: No pending transaction found for this auction.");
+            User seller = usersDAO.getById(auction.getOwner().getId());
+            transaction = new Transaction(auction, buyer, seller, auction.getCurrentPrice());
+            transactionDAO.save(transaction);
         }
 
         try {
-            transaction.markCompleted(); // logic freeze/deduct/deposit đã có sẵn trong model
+            transaction.markCompleted(); // spendFrozenMoney + depositMoney seller
         } catch (IllegalTransactionException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
 
         usersDAO.update(transaction.getBuyer());
         usersDAO.update(transaction.getSeller());
-
         transactionDAO.update(transaction);
 
-        Auction auction = transaction.getAuction();
         auction.transitionTo(Auction.AuctionStatus.PAID);
         auctionsDAO.update(auction);
 
