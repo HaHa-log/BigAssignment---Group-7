@@ -3,18 +3,24 @@ package services;
 import com.group7.dto.user.*;
 import models.Auction;
 import models.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import repositories.AuctionsDAO;
 import repositories.UsersDAO;
-import repositories.impl.DaoFactory;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class UserService {
-    private final UsersDAO usersDAO = DaoFactory.createUsersDAO();
-    private final AuctionsDAO auctionsDAO = DaoFactory.createAuctionsDAO();
+    private final UsersDAO usersDAO;
+    private final AuctionsDAO auctionsDAO;
+
+    @Autowired
+    public UserService(UsersDAO usersDAO, AuctionsDAO auctionsDAO) {
+        this.usersDAO = usersDAO;
+        this.auctionsDAO = auctionsDAO;
+    }
 
     public List<UserResponse> getAll() {
         return usersDAO.getAll().stream()

@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         GlobalExceptionHandlerTest.DummyController.class
 })
 @Import(GlobalExceptionHandler.class)
-class GlobalExceptionHandlerTest {
+public class GlobalExceptionHandlerTest {
 
     @SpringBootApplication
     static class TestConfig {}

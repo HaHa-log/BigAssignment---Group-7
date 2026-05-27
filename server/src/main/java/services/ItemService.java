@@ -5,21 +5,27 @@ import com.group7.dto.item.ItemResponse;
 import com.group7.dto.item.UpdateItemRequest;
 import models.Item;
 import models.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import repositories.ItemsDAO;
 import repositories.UsersDAO;
-import repositories.impl.DaoFactory;
 
 import java.util.List;
 
 @Service
 public class ItemService {
 
-    private final ItemsDAO itemsDb = DaoFactory.createItemDAO();
-    private final UsersDAO usersDb = DaoFactory.createUsersDAO();
+    private final ItemsDAO itemsDAO;
+    private final UsersDAO usersDAO;
+
+    @Autowired
+    public ItemService(ItemsDAO itemsDAO, UsersDAO usersDAO) {
+        this.itemsDAO = itemsDAO;
+        this.usersDAO = usersDAO;
+    }
 
     public List<ItemResponse> getAll() {
-        return itemsDb.getAll().stream().map(this::toResponse).toList();
+        return itemsDAO.getAll().stream().map(this::toResponse).toList();
     }
 
     public ItemResponse getById(int id) {
@@ -27,13 +33,13 @@ public class ItemService {
     }
 
     public List<ItemResponse> getByOwnerId(int ownerId) {
-        return itemsDb.getByOwnerId(ownerId).stream().map(this::toResponse).toList();
+        return itemsDAO.getByOwnerId(ownerId).stream().map(this::toResponse).toList();
     }
 
     public Item createNewItem(ItemRequest request) {
         validateCreateRequest(request);
 
-        User owner = usersDb.getById(request.getOwnerId());
+        User owner = usersDAO.getById(request.getOwnerId());
         if (owner == null) {
             throw new IllegalArgumentException("[Error]: Owner not found or not a member.");
         }
@@ -45,7 +51,7 @@ public class ItemService {
     }
 
     public List<ItemResponse> getItemsByOwner(int ownerId, int page, int size) {
-        List<Item> items = itemsDb.getByOwnerId(ownerId, page, size);
+        List<Item> items = itemsDAO.getByOwnerId(ownerId, page, size);
 
         return items.stream().map(item -> {
             ItemResponse response = new ItemResponse();
@@ -62,7 +68,7 @@ public class ItemService {
     }
 
     public List<ItemResponse> getItemsByOwner(int ownerId) {
-        return getItemsByOwner(ownerId, 0, 10); // Mặc định lấy trang đầu, 10 items
+        return getItemsByOwner(ownerId, 0, 10);
     }
 
     public ItemResponse update(int id, UpdateItemRequest req) {
@@ -87,20 +93,20 @@ public class ItemService {
             item.setStatus(parseStatus(req.getStatus()));
         }
 
-        itemsDb.update(item);
+        itemsDAO.update(item);
         return toResponse(item);
     }
 
     public ItemResponse updateImage(int id, String filename) {
         Item item = requireItem(id);
-        item.setImagePath(filename); // save filename
-        itemsDb.update(item);
+        item.setImagePath(filename);
+        itemsDAO.update(item);
         return toResponse(item);
     }
 
     public void delete(int id) {
         Item item = requireItem(id);
-        itemsDb.delete(item);
+        itemsDAO.delete(item);
     }
 
     private void validateCreateRequest(ItemRequest req) {
@@ -119,7 +125,7 @@ public class ItemService {
     }
 
     private Item requireItem(int id) {
-        Item item = itemsDb.getById(id);
+        Item item = itemsDAO.getById(id);
         if (item == null) {
             throw new IllegalArgumentException("[Error]: Item not found.");
         }

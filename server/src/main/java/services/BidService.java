@@ -5,19 +5,27 @@ import models.Auction;
 import models.Bid;
 import models.Common.Price;
 import models.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import repositories.AuctionsDAO;
 import repositories.BidsDAO;
 import repositories.UsersDAO;
-import repositories.impl.DaoFactory;
 
 import java.util.List;
 
 @Service
 public class BidService {
-    private final BidsDAO bidsDAO = DaoFactory.createBidsDAO();
-    private final AuctionsDAO auctionsDAO = DaoFactory.createAuctionsDAO();
-    private final UsersDAO usersDAO = DaoFactory.createUsersDAO();
+
+    private final BidsDAO bidsDAO;
+    private final AuctionsDAO auctionsDAO;
+    private final UsersDAO usersDAO;
+
+    @Autowired
+    public BidService(BidsDAO bidsDAO, AuctionsDAO auctionsDAO, UsersDAO usersDAO) {
+        this.bidsDAO = bidsDAO;
+        this.auctionsDAO = auctionsDAO;
+        this.usersDAO = usersDAO;
+    }
 
     public List<BidResponse> getAll() {
         return bidsDAO.getAll().stream()

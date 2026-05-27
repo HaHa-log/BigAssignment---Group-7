@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(BidController.class)
-class BidControllerTest {
+public class BidControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

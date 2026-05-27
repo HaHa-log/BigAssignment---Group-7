@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(AuctionController.class)
 @ContextConfiguration(classes = {ServerApplication.class, AuctionController.class})
-class AuctionControllerTest {
+public class AuctionControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

@@ -1,10 +1,10 @@
 package services;
 
 import com.group7.dto.auction.*;
-import com.group7.dto.item.ItemRequest;
 import config.BidWebSocketHandler;
 import models.*;
 import models.Common.Price;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import repositories.AuctionsDAO;
 import repositories.BidsDAO;
@@ -16,23 +16,29 @@ import java.util.List;
 
 @Service
 public class AuctionService {
-    private final AuctionsDAO auctionsDAO = DaoFactory.createAuctionsDAO();
-    private final UsersDAO usersDAO = DaoFactory.createUsersDAO();
-    private final BidsDAO bidsDAO = DaoFactory.createBidsDAO();
-    private final ItemService itemService = new ItemService();
+    private final AuctionsDAO auctionsDAO;
+    private final UsersDAO usersDAO;
+    private final BidsDAO bidsDAO;
+    private final ItemService itemService;
     private final TransactionService transactionService;
     private final BidWebSocketHandler webSocketHandler;
+    private final AuctionManager auctionManager;
 
-    private final AuctionManager auctionManager = AuctionManager.getInstance();
-
-    public AuctionService(TransactionService transactionService,BidWebSocketHandler webSocketHandler) {
+    @Autowired
+    public AuctionService(AuctionsDAO auctionsDAO, UsersDAO usersDAO, BidsDAO bidsDAO,
+                          ItemService itemService, TransactionService transactionService,
+                          BidWebSocketHandler webSocketHandler, AuctionManager auctionManager) {
+        this.auctionsDAO = auctionsDAO;
+        this.usersDAO = usersDAO;
+        this.bidsDAO = bidsDAO;
+        this.itemService = itemService;
         this.transactionService = transactionService;
         this.webSocketHandler = webSocketHandler;
+        this.auctionManager = auctionManager;
     }
 
-    public List<AuctionResponse> getAll(int page, int size,String status) {
+    public List<AuctionResponse> getAll(int page, int size, String status) {
         List<Auction> pageAuctions = auctionsDAO.getAll(page, size, status);
-
         return pageAuctions.stream()
                 .map(auction -> toResponseWithCachedBids(auction, java.util.Collections.emptyList()))
                 .toList();
@@ -59,7 +65,7 @@ public class AuctionService {
             throw new IllegalArgumentException("[Error]: Item owner is missing.");
         }
 
-        Auction auction = auctionManager.createAuction(
+        Auction auction = this.auctionManager.createAuction(
                 owner,
                 item,
                 request.getStartingTime(),
@@ -80,7 +86,7 @@ public class AuctionService {
         Bid bid = new Bid(auction, bidder, new Price(amount));
         bidsDAO.save(bid);
 
-        models.AuctionManager.getInstance().processAutoBids(auction, null);
+        this.auctionManager.processAutoBids(auction, null);
 
         webSocketHandler.broadcastBid(auctionId, auction.getCurrentPrice());
 
@@ -93,7 +99,7 @@ public class AuctionService {
         auctionsDAO.update(auction);
         return toResponse(auction);
     }
-    //Create PENDING for the finance detail
+
     private void finalizeIfExpired(Auction auction) {
         if (auction.getEndingTime() == null) return;
         if (LocalDateTime.now().isBefore(auction.getEndingTime())) return;
@@ -135,7 +141,6 @@ public class AuctionService {
         return auction;
     }
 
-    // API đơn lẻ (getById, create, placeBid...)
     private AuctionResponse toResponse(Auction auction) {
         List<Bid> bids = java.util.Collections.emptyList();
         if (auction.getId() > 0) {
