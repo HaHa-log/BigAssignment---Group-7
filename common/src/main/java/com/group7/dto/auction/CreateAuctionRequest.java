@@ -3,82 +3,24 @@ package com.group7.dto.auction;
 import java.time.LocalDateTime;
 
 public class CreateAuctionRequest {
-    private int ownerId;
-    private String itemName;
-    private String description;
-    private double startingPrice;
+    private int itemId;
     private LocalDateTime startingTime;
     private LocalDateTime endingTime;
-    private String imagePath;
 
-    public CreateAuctionRequest() {
-    }
+    public CreateAuctionRequest() {}
 
-    public CreateAuctionRequest(int ownerId, String itemName, String description,
-                                double startingPrice, LocalDateTime startingTime,
-                                LocalDateTime endingTime, String imagePath) {
-        this.ownerId = ownerId;
-        this.itemName = itemName;
-        this.description = description;
-        this.startingPrice = startingPrice;
+    public CreateAuctionRequest(int itemId, LocalDateTime startingTime, LocalDateTime endingTime) {
+        this.itemId = itemId;
         this.startingTime = startingTime;
         this.endingTime = endingTime;
-        this.imagePath = imagePath;
     }
 
-    public void setOwnerId(int ownerId) {
-        this.ownerId = ownerId;
-    }
+    public int getItemId() { return itemId; }
+    public void setItemId(int itemId) { this.itemId = itemId; }
 
-    public void setItemName(String itemName) {
-        this.itemName = itemName;
-    }
+    public LocalDateTime getStartingTime() { return startingTime; }
+    public void setStartingTime(LocalDateTime startingTime) { this.startingTime = startingTime; }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setStartingPrice(double startingPrice) {
-        this.startingPrice = startingPrice;
-    }
-
-    public void setStartingTime(LocalDateTime startingTime) {
-        this.startingTime = startingTime;
-    }
-
-    public void setEndingTime(LocalDateTime endingTime) {
-        this.endingTime = endingTime;
-    }
-
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
-    }
-
-    public int getOwnerId() {
-        return ownerId;
-    }
-
-    public String getItemName() {
-        return itemName;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public double getStartingPrice() {
-        return startingPrice;
-    }
-
-    public LocalDateTime getStartingTime() {
-        return startingTime;
-    }
-
-    public LocalDateTime getEndingTime() {
-        return endingTime;
-    }
-
-    public String getImagePath() {
-        return imagePath;
-    }
+    public LocalDateTime getEndingTime() { return endingTime; }
+    public void setEndingTime(LocalDateTime endingTime) { this.endingTime = endingTime; }
 }

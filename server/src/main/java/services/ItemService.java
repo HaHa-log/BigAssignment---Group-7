@@ -134,6 +134,10 @@ public class ItemService {
         }
     }
 
+    public Item getDomainItemById(int id) {
+        return requireItem(id);
+    }
+
     private ItemResponse toResponse(Item item) {
         return new ItemResponse(
                 item.getId(),

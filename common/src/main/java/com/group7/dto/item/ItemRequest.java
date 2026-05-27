@@ -9,6 +9,13 @@ public class ItemRequest {
 
     public ItemRequest() {}
 
+    public ItemRequest(String name, double startingPrice, String description, int ownerId) {
+        this.name = name;
+        this.startingPrice = startingPrice;
+        this.description = description;
+        this.ownerId = ownerId;
+    }
+
     public ItemRequest(String name, double startingPrice, String description, String imagePath, int ownerId) {
         this.name = name;
         this.startingPrice = startingPrice;

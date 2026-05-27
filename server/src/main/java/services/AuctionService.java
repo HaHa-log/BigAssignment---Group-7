@@ -47,12 +47,15 @@ public class AuctionService {
             throw new IllegalArgumentException("[Error]: Request body is required.");
         }
 
-        ItemRequest itemRequest = new ItemRequest(
-                request.getItemName(), request.getStartingPrice(),
-                request.getDescription(), request.getImagePath(), request.getOwnerId()
-        );
-        Item item = itemService.createNewItem(itemRequest);
-        User owner = usersDAO.getById(request.getOwnerId());
+        Item item = itemService.getDomainItemById(request.getItemId());
+        if (item == null) {
+            throw new IllegalArgumentException("[Error]: Item not found.");
+        }
+
+        User owner = item.getOwner();
+        if (owner == null) {
+            throw new IllegalArgumentException("[Error]: Item owner is missing.");
+        }
 
         Auction auction = auctionManager.createAuction(
                 owner,

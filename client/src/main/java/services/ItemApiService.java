@@ -2,6 +2,7 @@ package services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.group7.dto.item.ItemRequest;
 import com.group7.dto.item.ItemResponse;
 import config.ApiConfig;
 import models.Item;
@@ -69,6 +70,24 @@ public class ItemApiService {
             return ItemMapper.toItemList(dtoList);
         } else {
             throw new RuntimeException("Failed to load inventory. Server responded with code: " + response.statusCode());
+        }
+    }
+
+    public Item create(ItemRequest request) throws Exception {
+        String jsonBody = objectMapper.writeValueAsString(request);
+
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+                .uri(URI.create(baseUrl))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                .build();
+
+        HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() >= 200 && response.statusCode() < 300) {
+            return objectMapper.readValue(response.body(), Item.class);
+        } else {
+            throw new RuntimeException("Failed to create item: " + response.body());
         }
     }
 
