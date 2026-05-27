@@ -88,7 +88,6 @@ public class AuctionListController {
 
         Thread thread = new Thread(() -> {
             try {
-                // Gọi API lấy dữ liệu từ Server về
                 String selectedStatus = statusFilter.getValue();
                 System.out.println("[DEBUG] Loading auctions page=" + currentPage + " status=" + selectedStatus);
                 List<Auction> auctions = auctionApiService.getAll(currentPage, PAGE_SIZE, selectedStatus);

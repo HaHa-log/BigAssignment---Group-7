@@ -99,23 +99,47 @@ public class AuctionDetailController {
         }
     }
 
-    public void setAuctionData(Auction auction) {
-        this.auction = auction;
-        this.itemNameLabel.setText(auction.getItem().getName());
-        this.startingPriceLabel.setText("Starting price: $" + auction.getStartingPrice());
-        this.currentPriceLabel.setText("Current price: $" + auction.getCurrentPrice());
+    public void setAuctionData(Auction initialAuction) {
+        this.auction = initialAuction;
 
+        this.itemNameLabel.setText(initialAuction.getItem().getName());
+        this.startingPriceLabel.setText("Starting price: $" + initialAuction.getStartingPrice());
+        this.currentPriceLabel.setText("Current price: $" + initialAuction.getCurrentPrice());
+
+        setItemImage();
+        getTableData(initialAuction);
+
+        updateBidChart();
+
+        CompletableFuture.supplyAsync(() -> {
+            try {
+                return auctionApiService.getById(initialAuction.getId());
+            } catch (Exception e) {
+                System.err.println("[ERROR] Lấy chi tiết lịch sử đấu giá thất bại: " + e.getMessage());
+                return null;
+            }
+        }).thenAccept(detailedAuction -> {
+            if (detailedAuction != null) {
+                Platform.runLater(() -> {
+                    this.auction = detailedAuction;
+                    this.currentPriceLabel.setText("Current price: $" + auction.getCurrentPrice());
+
+                    updateBidChart();
+                    configureStatusAndPanes();
+                });
+            }
+        });
+
+        connectWebSocket();
+    }
+
+    private void configureStatusAndPanes() {
         boolean isRunning = auction.getStatus() != null && auction.getStatus() == Auction.AuctionStatus.RUNNING;
         if (!isRunning) {
             normalBidButton.setDisable(true);
             autoBidButton.setDisable(true);
-
             statusLabel.setText("Making bid is currently unavailable since auction status is not RUNNING.");
         }
-
-        setItemImage();
-        getTableData(auction);
-        updateBidChart();
 
         if (currentUser != null) {
             if (auction.getStatus() == Auction.AuctionStatus.OPEN && currentUser.isOwner(auction)) {
@@ -126,12 +150,12 @@ public class AuctionDetailController {
                 if (auction.getStatus() == Auction.AuctionStatus.FINISHED) {
                     setupConfirmPane(false);
                 } else if (auction.getStatus() == Auction.AuctionStatus.PAID) {
-                    setupConfirmPane(true);}
+                    setupConfirmPane(true);
+                }
             }
         }
-
-        connectWebSocket();
     }
+
 
     private void setupConfirmPane(boolean alreadyConfirmed) {
         confirmPane.setVisible(true);
