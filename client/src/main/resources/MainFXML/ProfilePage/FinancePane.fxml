@@ -79,7 +79,37 @@
                         -fx-font-weight: bold;
                         -fx-cursor: hand;
                         -fx-padding: 0;"/>
+                <ProgressIndicator fx:id="frozenLoadingIndicator"
+                                        prefWidth="14"
+                                        prefHeight="14"
+                                        visible="false"
+                                        managed="false"/>
             </HBox>
+
+            <VBox fx:id="frozenDetailsBox" visible="false" managed="false" spacing="8">
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="🔒 Frozen Details"
+                           style="-fx-font-weight: bold; -fx-font-size: 14;"
+                           HBox.hgrow="ALWAYS"/>
+                    <Button text="✕"
+                            onAction="#handleCloseFrozenDetails"
+                            style="-fx-background-color: transparent; -fx-cursor: hand;"/>
+                </HBox>
+
+                <ScrollPane fitToWidth="true" prefHeight="150" hbarPolicy="NEVER">
+                    <content>
+                        <TableView fx:id="frozenTable">
+                            <columns>
+                                <TableColumn fx:id="colFrozenItem"   text="Item"   prefWidth="200"/>
+                                <TableColumn fx:id="colFrozenAmount" text="Amount" prefWidth="120"/>
+                            </columns>
+                            <columnResizePolicy>
+                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                            </columnResizePolicy>
+                        </TableView>
+                    </content>
+                </ScrollPane>
+            </VBox>
         </VBox>
 
         <!-- TOTAL -->

@@ -11,6 +11,7 @@ import repositories.BidsDAO;
 import repositories.UsersDAO;
 import repositories.impl.DaoFactory;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -39,6 +40,7 @@ public class AuctionService {
 
     public AuctionResponse getById(int id) {
         Auction auction = requireAuction(id);
+        finalizeIfExpired(auction);
         return toResponse(auction);
     }
 
@@ -90,6 +92,29 @@ public class AuctionService {
         auction.transitionTo(Auction.AuctionStatus.CANCELED);
         auctionsDAO.update(auction);
         return toResponse(auction);
+    }
+    //Create PENDING for the finance detail
+    private void finalizeIfExpired(Auction auction) {
+        if (auction.getEndingTime() == null) return;
+        if (LocalDateTime.now().isBefore(auction.getEndingTime())) return;
+        if (auction.getStatus() != Auction.AuctionStatus.RUNNING) return;
+
+        auction.transitionTo(Auction.AuctionStatus.FINISHED);
+        auctionsDAO.update(auction);
+
+        User winner = auction.getWinner();
+        if (winner == null) return;
+
+        Transaction existing = DaoFactory.createTransactionDAO()
+                .getPendingByAuctionAndBuyer(auction.getId(), winner.getId());
+        if (existing != null) return;
+
+        User buyer  = usersDAO.getById(winner.getId());
+        User seller = usersDAO.getById(auction.getOwner().getId());
+        if (buyer == null || seller == null) return;
+
+        Transaction t = new Transaction(auction, buyer, seller, auction.getCurrentPrice());
+        DaoFactory.createTransactionDAO().save(t);
     }
 
     public AuctionResponse confirmReceipt(int auctionId, int buyerId) {
