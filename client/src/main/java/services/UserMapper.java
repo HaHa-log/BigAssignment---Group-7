@@ -1,5 +1,6 @@
 package services;
 
+import models.Admin;
 import models.User;
 import com.group7.dto.user.UserResponse;
 
@@ -23,18 +24,32 @@ public final class UserMapper {
                 ? java.time.LocalDateTime.now().plusDays(100)
                 : null;
 
-        User user = new User(
-                nameParts[0],
-                nameParts[1],
-                response.getEmail(),
-                response.getPhoneNumber(),
-                SESSION_PASSWORD_PLACEHOLDER,
-                response.getBalance(),
-                isAdminUser,
-                response.isBlocked(),
-                blockedUntilTime,
-                response.getAvatarPath()
-        );
+        User user;
+
+        if (isAdminUser) {
+            user = new Admin(
+                    nameParts[0],
+                    nameParts[1],
+                    response.getEmail(),
+                    response.getPhoneNumber(),
+                    SESSION_PASSWORD_PLACEHOLDER,
+                    response.getBalance(),
+                    response.getAvatarPath()
+            );
+        } else {
+            user = new User(
+                    nameParts[0],
+                    nameParts[1],
+                    response.getEmail(),
+                    response.getPhoneNumber(),
+                    SESSION_PASSWORD_PLACEHOLDER,
+                    response.getBalance(),
+                    isAdminUser,
+                    response.isBlocked(),
+                    blockedUntilTime,
+                    response.getAvatarPath()
+            );
+        }
 
         user.setId(response.getId());
         user.setFrozenBalance(response.getFrozenBalance());

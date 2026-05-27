@@ -1,9 +1,6 @@
 package controllers.Management;
 
-import models.Admin;
-import models.Auction;
-import models.AuctionManager;
-import models.SessionManager;
+import models.*;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -35,7 +32,6 @@ public class AuctionManagementController extends ManagementController<Auction> {
 
     private final AuctionManager auctionManager = AuctionManager.getInstance();
     private final AuctionApiService auctionApiService = new AuctionApiService();
-    private final Admin admin = (Admin) SessionManager.getCurrentUser();
 
     @Override
     protected void configureColumns() {
@@ -107,7 +103,14 @@ public class AuctionManagementController extends ManagementController<Auction> {
             auctionApiService.cancel(auction.getId());
             handleRefresh();
         } catch (Exception e) {
-            boolean success = admin.cancelAuction(auction.getId());
+            User curentUser = SessionManager.getCurrentUser();
+
+            if (curentUser == null || curentUser.isAdmin()) {
+                System.err.println("Only admin can cancel aucitons.");
+                return;
+            }
+
+            boolean success = auctionManager.cancelAuction(auction.getId());
             if (success) {
                 handleRefresh();
             } else {

@@ -47,5 +47,5 @@ public class DemoPageController{
         User user = SessionManager.getCurrentUser();
         SceneManager.loadLayout();
         SceneManager.switchContent("/MainFXML/HomePage/HomePage.fxml");
-        }
     }
+}
