@@ -15,7 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class BidWebSocketHandler extends TextWebSocketHandler {
 
-    // auctionId → set of sessions đang xem auction đó
     private final Map<Integer, Set<WebSocketSession>> auctionSessions = new ConcurrentHashMap<>();
     private final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
@@ -32,37 +31,47 @@ public class BidWebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         int auctionId = extractAuctionId(session);
         Set<WebSocketSession> sessions = auctionSessions.get(auctionId);
-        if (sessions != null) {
-            sessions.remove(session);
+        if (sessions != null) {sessions.remove(session);
+            if (sessions.isEmpty()) {auctionSessions.remove(auctionId);}
         }
         System.out.println("[WS]: Client disconnected from auction " + auctionId);
     }
 
     // Gọi từ AuctionService khi có bid mới
-    public void broadcastBid(
-            int auctionId,
-            double newPrice
-    ) {
-
+    public void broadcastBid(int auctionId, double newPrice) {
         Set<WebSocketSession> sessions = auctionSessions.get(auctionId);
 
         System.out.println("[WS] auction " + auctionId + " sessions = " + (sessions == null ? 0 : sessions.size()));
 
         if (sessions == null || sessions.isEmpty()) {
             System.out.println("[WS] no client connected");
-            return;}
-        try {String message = mapper.writeValueAsString(
-                            Map.of("auctionId", auctionId, "currentPrice", newPrice));
+            return;
+        }
+        try {
+            String message = mapper.writeValueAsString(Map.of("auctionId", auctionId, "currentPrice", newPrice));
             System.out.println("[WS] sending: " + message);
 
             TextMessage textMessage = new TextMessage(message);
-
             for (WebSocketSession session : sessions) {
-                System.out.println("[WS] open=" + session.isOpen());
+                if (session == null || !session.isOpen()) {
+                    sessions.remove(session);
+                    continue;
+                }
 
-                if (session.isOpen()) {session.sendMessage(textMessage);}
+                try {
+                    session.sendMessage(textMessage);
+                } catch (Exception e) {
+                    sessions.remove(session);
+                    e.printStackTrace();
+                }
             }
-        } catch (Exception e) {e.printStackTrace();
+
+            if (sessions.isEmpty()) {
+                auctionSessions.remove(auctionId);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

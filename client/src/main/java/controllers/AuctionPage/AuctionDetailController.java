@@ -58,7 +58,10 @@ public class AuctionDetailController {
     private final AuctionApiService auctionApiService = new AuctionApiService();
     private final ItemApiService itemApiService = new ItemApiService();
     private WebSocket webSocket;
-    private static final String WS_BASE = config.ApiConfig.baseUrl().replace("http", "ws") + "/ws/auctions/";
+    private volatile boolean wsConnecting = false;
+    private static final HttpClient WS_CLIENT = HttpClient.newHttpClient();
+    private final ObjectMapper wsMapper = new ObjectMapper();
+    private static final String WS_BASE = config.ApiConfig.baseUrl().replaceFirst("^http", "ws") + "/ws/auctions/";
 
     private User currentUser = SessionManager.getCurrentUser();
     private Auction auction;
@@ -228,19 +231,20 @@ public class AuctionDetailController {
     }
 
     private void connectWebSocket() {
-
         if (auction == null) return;
+        if (webSocket != null && !webSocket.isInputClosed() && !webSocket.isOutputClosed()) {return;}
+        if (wsConnecting) {return;}
 
-        if (webSocket != null && !webSocket.isInputClosed()) {return;}
+        wsConnecting = true;
+        int auctionId = auction.getId();
 
-        HttpClient.newHttpClient()
-                .newWebSocketBuilder()
-                .buildAsync(URI.create(WS_BASE + auction.getId() + "/bids"),
+        WS_CLIENT.newWebSocketBuilder()
+                .buildAsync(URI.create(WS_BASE + auctionId + "/bids"),
                         new WebSocket.Listener() {
 
                             @Override
                             public void onOpen(WebSocket ws) {
-                                System.out.println("[CLIENT WS]: Connected to auction " + auction.getId());
+                                System.out.println("[CLIENT WS]: Connected to auction " + auctionId);
                                 ws.request(1);
                             }
 
@@ -248,44 +252,57 @@ public class AuctionDetailController {
                             public CompletionStage<?> onText(WebSocket ws, CharSequence data, boolean last) {
                                 try {
                                     System.out.println("[CLIENT WS]: " + data);
-                                    ObjectMapper mapper = new ObjectMapper();
-                                    var node = mapper.readTree(data.toString());
+
+                                    var node = wsMapper.readTree(data.toString());
                                     double newPrice = node.get("currentPrice").asDouble();
 
-                                    Platform.runLater(() -> currentPriceLabel.setText("Current price: $" + newPrice));
-                                    // Reload auction
-                                    new Thread(() -> {
-                                        try {
-                                            Auction updated = new AuctionApiService().getById(auction.getId());
-                                            Platform.runLater(() -> {auction = updated;updateBidChart();});
-                                        } catch (Exception e) {e.printStackTrace();
-                                        }
-                                    }).start();
+                                    Platform.runLater(() ->
+                                            currentPriceLabel.setText("Current price: $" + newPrice)
+                                    );
+
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
+
                                 ws.request(1);
-                                return CompletableFuture.completedFuture(null);}
+                                return CompletableFuture.completedFuture(null);
+                            }
 
                             @Override
                             public CompletionStage<?> onClose(WebSocket ws, int statusCode, String reason) {
                                 System.out.println("[CLIENT WS]: Closed " + statusCode + " " + reason);
                                 webSocket = null;
+                                wsConnecting = false;
                                 return CompletableFuture.completedFuture(null);
                             }
 
                             @Override
                             public void onError(WebSocket ws, Throwable error) {
                                 System.out.println("[CLIENT WS ERROR]");
-                                error.printStackTrace();}})
+                                error.printStackTrace();
+                                webSocket = null;
+                                wsConnecting = false;
+                            }
+                        })
                 .thenAccept(ws -> {
-                    this.webSocket = ws;
-                    System.out.println("[CLIENT WS]: saved");});
+                    webSocket = ws;
+                    wsConnecting = false;
+                    System.out.println("[CLIENT WS]: saved");
+                })
+                .exceptionally(e -> {
+                    wsConnecting = false;
+                    e.printStackTrace();
+                    return null;
+                });
     }
 
     public void closeWebSocket() {
-        if (webSocket != null && !webSocket.isInputClosed()) {
-            webSocket.sendClose(WebSocket.NORMAL_CLOSURE, "leaving page");
+        WebSocket ws = webSocket;
+        webSocket = null;
+        wsConnecting = false;
+
+        if (ws != null && !ws.isInputClosed() && !ws.isOutputClosed()) {
+            ws.sendClose(WebSocket.NORMAL_CLOSURE, "leaving page");
         }
     }
 

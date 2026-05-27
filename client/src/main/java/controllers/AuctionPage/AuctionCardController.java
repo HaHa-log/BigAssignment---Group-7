@@ -33,8 +33,8 @@ public class AuctionCardController {
 
             AuctionDetailController controller = loader.getController();
 
+            SceneManager.switchContent(detailRoot, controller);
             controller.setAuctionData(this.auction);
-            SceneManager.switchContent(detailRoot);
 
         } catch (IOException e) {
             e.printStackTrace();

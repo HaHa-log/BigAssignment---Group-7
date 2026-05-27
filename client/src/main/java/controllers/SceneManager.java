@@ -65,17 +65,17 @@ public class SceneManager {
         }
     }
 
+    private static void closeCurrentControllerResources() {
+        if (currentController instanceof controllers.AuctionPage.AuctionDetailController controller) {
+            controller.closeWebSocket();
+        }
+    }
+
     public static void switchContent(String fxmlPath) {
-
         try {
-
-            // Close websocket AuctionDetailController cũ
-            if (currentController instanceof controllers.AuctionPage.AuctionDetailController controller) {
-                controller.closeWebSocket();
-            }
+            closeCurrentControllerResources();
 
             FXMLLoader loader = new FXMLLoader(SceneManager.class.getResource(fxmlPath));
-
             Parent node = loader.load();
 
             currentController = loader.getController();
@@ -88,8 +88,15 @@ public class SceneManager {
         }
     }
 
-    public static void switchContent(Parent node) {
-        try{
+    public static void switchContent(Parent node) {switchContent(node, null);}
+
+    public static void switchContent(Parent node, Object controller) {
+        try {
+            closeCurrentControllerResources();
+
+            currentController = controller;
+            currentContentPath = null;
+
             contentArea.getChildren().setAll(node);
         } catch (NullPointerException e) {
             System.err.println("Location is null!");
@@ -97,14 +104,10 @@ public class SceneManager {
     }
 
     public static void switchScene(String fxmlPath) {
-
         try {
-            // đóng websocket trước khi rời scene
-            if (currentController instanceof controllers.AuctionPage.AuctionDetailController controller) {
-                controller.closeWebSocket();
-            }
-            FXMLLoader loader = new FXMLLoader(SceneManager.class.getResource(fxmlPath));
+            closeCurrentControllerResources();
 
+            FXMLLoader loader = new FXMLLoader(SceneManager.class.getResource(fxmlPath));
             Parent root = loader.load();
             currentController = loader.getController();
 
