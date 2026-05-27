@@ -13,14 +13,11 @@ import services.UserApiService;
 import java.time.LocalDateTime;
 import java.util.List;
 
-// ĐỒNG BỘ: Đổi kiểu Generics từ <Member> sang <User>
 public class UserManagementController extends ManagementController<User> {
 
-    // ĐỒNG BỘ: Sử dụng lớp User phẳng cho tài khoản Admin hiện hành thay vì ép kiểu (Admin) cũ gây crash
     private final User admin = SessionManager.getCurrentUser();
     private final UserApiService userApiService = new UserApiService();
 
-    // ĐỒNG BỘ: Sửa đổi toàn bộ các tham số cột TableColumn sang kiểu thực thể <User>
     @FXML
     private TableColumn<User, Integer> userId;
     @FXML
@@ -49,7 +46,6 @@ public class UserManagementController extends ManagementController<User> {
         status.setCellFactory(column -> createBlockedToggleCell());
     }
 
-    // ĐỒNG BỘ: Sửa kiểu trả về của ô cell tương tác sang <User, Boolean>
     private TableCell<User, Boolean> createBlockedToggleCell() {
         return new TableCell<>() {
             private final ToggleButton toggle = new ToggleButton();

@@ -9,8 +9,8 @@
 <TableView xmlns:fx="http://javafx.com/fxml/1" fx:id="table" fx:controller="controllers.Management.AuctionManagementController" styleClass="table">
     <columns>
         <TableColumn fx:id="auctionsId" text="Auction ID" />
-        <TableColumn fx:id="ownerId" text="Owner ID" />
-        <TableColumn fx:id="itemId" text="Item ID" />
+        <TableColumn fx:id="ownerName" text="Owner Name" />
+        <TableColumn fx:id="itemName" text="Item Name" />
         <TableColumn fx:id="status" text="Status" />
         <TableColumn fx:id="startingPrice" text="Start Price" />
         <TableColumn fx:id="currentPrice" text="Current Price" />

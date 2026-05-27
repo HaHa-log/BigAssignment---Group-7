@@ -21,7 +21,9 @@ public class AuctionManagementController extends ManagementController<Auction> {
     @FXML
     private TableView<Auction> table;
     @FXML
-    private TableColumn<Auction, Integer> auctionsId, ownerId, itemId;
+    private TableColumn<Auction, Integer> auctionsId;
+    @FXML
+    private TableColumn<Auction, String> ownerName, itemName;
     @FXML
     private TableColumn<Auction, String> status;
     @FXML
@@ -39,8 +41,8 @@ public class AuctionManagementController extends ManagementController<Auction> {
     protected void configureColumns() {
         auctionsId.setCellValueFactory(new PropertyValueFactory<>("id"));
 
-        ownerId.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getOwner().getId()));
-        itemId.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getItem().getId()));
+        ownerName.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getOwner().getFullName()));
+        itemName.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getItem().getName()));
 
         status.setCellValueFactory(new PropertyValueFactory<>("status"));
         startingPrice.setCellValueFactory(new PropertyValueFactory<>("startingPrice"));
