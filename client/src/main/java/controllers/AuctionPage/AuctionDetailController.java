@@ -58,7 +58,7 @@ public class AuctionDetailController {
     private final AuctionApiService auctionApiService = new AuctionApiService();
     private final ItemApiService itemApiService = new ItemApiService();
     private WebSocket webSocket;
-    private static final String WS_BASE = "ws://localhost:8080/ws/auctions/";
+    private static final String WS_BASE = config.ApiConfig.baseUrl().replace("http", "ws") + "/ws/auctions/";
 
     private User currentUser = SessionManager.getCurrentUser();
     private Auction auction;
