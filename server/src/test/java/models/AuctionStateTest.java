@@ -84,14 +84,14 @@ public class AuctionStateTest {
             auction.transitionTo(AuctionStatus.FINISHED);
             auction.transitionTo(AuctionStatus.PAID);
 
-            boolean transitioned = auction.transitionTo(AuctionStatus.CANCELLED);
+            boolean transitioned = auction.transitionTo(AuctionStatus.CANCELED);
             assertFalse(transitioned);
         }
 
         @Test
         @DisplayName("BVA-TerminalState-Canceled: CANCELLED is terminal, cannot reactivate")
         void testBVA_TerminalStateCanceled() {
-            auction.transitionTo(AuctionStatus.CANCELLED);
+            auction.transitionTo(AuctionStatus.CANCELED);
 
             boolean transitioned = auction.transitionTo(AuctionStatus.RUNNING);
             assertFalse(transitioned);
