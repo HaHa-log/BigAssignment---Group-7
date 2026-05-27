@@ -43,7 +43,7 @@ public class Auction extends Entity implements Serializable {
     private transient AutoBidDAO autoBidDb;
 
     public enum AuctionStatus {
-        OPEN, RUNNING, FINISHED, PAID, CANCELLED
+        OPEN, RUNNING, FINISHED, PAID, CANCELED
     }
 
     public Auction(User owner, Item item, LocalDateTime startingTime, LocalDateTime endingTime) {
@@ -259,22 +259,20 @@ public class Auction extends Entity implements Serializable {
             start();
         }
         if (status == AuctionStatus.RUNNING && endingTime != null && now.isAfter(endingTime)) {
-            boolean transitioned = transitionTo(AuctionStatus.FINISHED);
-            if (transitioned) {
-                // Sinh dòng dữ liệu Giao dịch chờ (PENDING) an toàn trong MySQL
-                AuctionManager.getInstance().closeAuction(this);
-                updateIfPersisted();
-            }
+            this.status = AuctionStatus.FINISHED;
+            System.out.println("[Auction] Time's up! Session auto-shifted to FINISHED. Delegating to AuctionManager...");
+
+            AuctionManager.getInstance().closeAuction(this);
         }
     }
 
     private boolean isValidTransition(AuctionStatus next) {
         if (status == next) return true;
         return switch (status) {
-            case OPEN -> next == AuctionStatus.RUNNING || next == AuctionStatus.CANCELLED;
-            case RUNNING -> next == AuctionStatus.FINISHED || next == AuctionStatus.CANCELLED;
-            case FINISHED -> next == AuctionStatus.PAID || next == AuctionStatus.CANCELLED;
-            case PAID, CANCELLED -> false;
+            case OPEN -> next == AuctionStatus.RUNNING || next == AuctionStatus.CANCELED;
+            case RUNNING -> next == AuctionStatus.FINISHED || next == AuctionStatus.CANCELED;
+            case FINISHED -> next == AuctionStatus.PAID || next == AuctionStatus.CANCELED;
+            case PAID, CANCELED -> false;
         };
     }
 

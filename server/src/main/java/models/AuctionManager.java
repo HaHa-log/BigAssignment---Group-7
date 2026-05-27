@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import repositories.AuctionsDAO;
 import repositories.AutoBidDAO;
+import repositories.ItemsDAO;
 import repositories.TransactionDAO;
 import repositories.UsersDAO;
 import repositories.impl.DaoFactory;
@@ -15,6 +16,7 @@ public class AuctionManager {
     private final AuctionsDAO auctionDb;
     private final TransactionDAO transactionDb;
     private final AutoBidDAO autoBidDb;
+    private final ItemsDAO itemsDb;
     private List<Auction> activeSessions;
     private List<Auction> completedSessions;
 
@@ -22,6 +24,7 @@ public class AuctionManager {
         auctionDb = DaoFactory.createAuctionsDAO();
         transactionDb = DaoFactory.createTransactionDAO();
         autoBidDb = DaoFactory.createAutoBidDAO();
+        this.itemsDb = DaoFactory.createItemDAO();
         activeSessions = new ArrayList<>();
         completedSessions = new ArrayList<>();
     }
@@ -89,21 +92,26 @@ public class AuctionManager {
     }
 
     public void closeAuction(Auction session) {
-        if (session == null || session.getStatus() == Auction.AuctionStatus.FINISHED
+        if (session == null
                 || session.getStatus() == Auction.AuctionStatus.PAID
-                || session.getStatus() == Auction.AuctionStatus.CANCELLED) {
+                || session.getStatus() == Auction.AuctionStatus.CANCELED) {
             return;
         }
 
-        if (!session.transitionTo(Auction.AuctionStatus.FINISHED)) {
-            return;
+        if (session.getStatus() != Auction.AuctionStatus.FINISHED) {
+            if (!session.transitionTo(Auction.AuctionStatus.FINISHED)) {
+                return;
+            }
         }
 
         moveToCompleted(session);
 
         User winner = session.getWinner();
         if (winner == null) {
-            session.getItem().setStatus(Item.Status.AVAILABLE);
+            Item item = session.getItem();
+            item.setStatus(Item.Status.AVAILABLE);
+            itemsDb.update(item);
+
             auctionDb.update(session);
             System.out.println("[System]: Auction #" + session.getAuctionId() + " closed with no winner.");
             return;
@@ -138,7 +146,7 @@ public class AuctionManager {
             return false;
         }
         canceledAuction.getItem().setStatus(Item.Status.AVAILABLE);
-        canceledAuction.transitionTo(Auction.AuctionStatus.CANCELLED);
+        canceledAuction.transitionTo(Auction.AuctionStatus.CANCELED);
         moveToCompleted(canceledAuction);
         auctionDb.update(canceledAuction);
         System.out.println("Auction canceled!");
@@ -194,7 +202,7 @@ public class AuctionManager {
             if (!transaction.isExpired()) {
                 continue;
             }
-            transaction.getAuction().transitionTo(Auction.AuctionStatus.CANCELLED);
+            transaction.getAuction().transitionTo(Auction.AuctionStatus.CANCELED);
             User buyer = transaction.getBuyer();
             buyer.unfreezeMoney(transaction.getFinalAmount());
             usersDb.update(buyer);
