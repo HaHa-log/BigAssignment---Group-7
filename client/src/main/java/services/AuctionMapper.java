@@ -47,8 +47,6 @@ public final class AuctionMapper {
                 response.getStartingPrice(),
                 response.getItemDescription(),
                 Item.Status.IN_AUCTION,
-                response.getStartingTime() != null ? response.getStartingTime() : LocalDateTime.now(),
-                LocalDateTime.now(),
                 response.getItemImagePath()
         );
         item.setId(response.getItemId());

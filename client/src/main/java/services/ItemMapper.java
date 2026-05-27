@@ -21,9 +21,11 @@ public final class ItemMapper {
                 response.getStartingPrice(),
                 response.getDescription(),
                 mappedStatus,
-                LocalDateTime.now(),
-                LocalDateTime.now(),
-                response.getImagePath()
+                response.getImagePath(),
+                response.getOwnerId(),
+                response.getOwnerName(),
+                response.getActiveAuctionId() != null ? response.getActiveAuctionId() : -1,
+                response.getCurrentAuctionPrice() != null ? response.getCurrentAuctionPrice() : response.getStartingPrice()
         );
 
         item.setId(response.getId());

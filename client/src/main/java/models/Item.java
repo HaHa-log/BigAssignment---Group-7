@@ -2,8 +2,6 @@ package models;
 
 import models.Common.Price;
 
-import java.time.LocalDateTime;
-
 public class Item extends Entity {
     private Price startingPrice;
     private String description;
@@ -13,24 +11,31 @@ public class Item extends Entity {
         IN_AUCTION,
         SOLD
     }
-    private Status status = Status.AVAILABLE;
+    private Status status;
     private String imagePath;
     private int ownerId;
+    private String ownerName;
+    private int auctionId;
     private Double currentAuctionPrice;
 
-    public Item(String name, double startingPrice, String description) {
-        this.name = name;
-        this.startingPrice = new Price(startingPrice);
-        this.description = description;
-        this.imagePath = null;
-    }
-
-    public Item(String name, double startingPrice, String description, Status status, LocalDateTime createdAt, LocalDateTime updatedAt, String imagePath) {
+    public Item(String name, double startingPrice, String description, Status status, String imagePath) {
         this.name = name;
         this.startingPrice = new Price(startingPrice);
         this.description = description;
         this.status = status;
         this.imagePath = imagePath;
+    }
+
+    public Item(String name, double startingPrice, String description, Status status, String imagePath, int ownerId, String ownerName, int auctionId, double currentAuctionPrice) {
+        this.name = name;
+        this.startingPrice = new Price(startingPrice);
+        this.description = description;
+        this.status = status;
+        this.imagePath = imagePath;
+        this.ownerId = ownerId;
+        this.ownerName = ownerName;
+        this.auctionId = auctionId;
+        this.currentAuctionPrice = currentAuctionPrice;
     }
 
     public void setStatus(Status status) {

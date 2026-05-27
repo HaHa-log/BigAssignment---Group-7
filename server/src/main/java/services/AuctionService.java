@@ -31,7 +31,7 @@ public class AuctionService {
     }
 
     public List<AuctionResponse> getAll(int page, int size,String status) {
-        List<Auction> pageAuctions = auctionsDAO.getAll(page, size, "ALL");
+        List<Auction> pageAuctions = auctionsDAO.getAll(page, size, status);
 
         return pageAuctions.stream()
                 .map(auction -> toResponseWithCachedBids(auction, java.util.Collections.emptyList()))
