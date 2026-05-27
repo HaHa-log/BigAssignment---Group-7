@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -12,6 +13,7 @@ import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -22,10 +24,12 @@ public class BidWebSocketHandlerTest {
     private BidWebSocketHandler handler;
     private WebSocketSession session1;
     private WebSocketSession session2;
+    private ObjectMapper mapper;
 
     @BeforeEach
     void setUp() {
         handler = new BidWebSocketHandler();
+        mapper = new ObjectMapper();
 
         session1 = mock(WebSocketSession.class);
         session2 = mock(WebSocketSession.class);
@@ -39,13 +43,15 @@ public class BidWebSocketHandlerTest {
     class EquivalencePartitioningTests {
 
         @Test
-        @DisplayName("EP-Valid-ConnectionEstablishedAndClosedSuccessfully")
+        @DisplayName("EP-Valid-ConnectionLifecycleSuccess")
         void testEP_ConnectionLifecycleSuccess() throws Exception {
             handler.afterConnectionEstablished(session1);
 
             when(session1.isOpen()).thenReturn(true);
             handler.broadcastBid(100, 1500.0);
-            verify(session1, times(1)).sendMessage(any(TextMessage.class));
+
+            String expectedJson = mapper.writeValueAsString(Map.of("auctionId", 100, "currentPrice", 1500.0));
+            verify(session1, times(1)).sendMessage(eq(new TextMessage(expectedJson)));
 
             handler.afterConnectionClosed(session1, CloseStatus.NORMAL);
 
@@ -66,8 +72,9 @@ public class BidWebSocketHandlerTest {
 
             handler.broadcastBid(100, 250.5);
 
-            verify(session1, times(1)).sendMessage(any(TextMessage.class));
-            verify(session2, times(1)).sendMessage(any(TextMessage.class));
+            String expectedJson = mapper.writeValueAsString(Map.of("auctionId", 100, "currentPrice", 250.5));
+            verify(session1, times(1)).sendMessage(eq(new TextMessage(expectedJson)));
+            verify(session2, times(1)).sendMessage(eq(new TextMessage(expectedJson)));
         }
 
         @Test
@@ -96,10 +103,11 @@ public class BidWebSocketHandlerTest {
     class BoundaryValueAnalysisTests {
 
         @Test
-        @DisplayName("BVA-Connection-FirstAndSubsequentSessionsToSameAuction")
-        void testBVA_MultipleSessionsSameAuctionId() throws Exception {
-            handler.afterConnectionEstablished(session1);
+        @DisplayName("BVA-Connection-IsolateSessionsByAuctionId")
+        void testBVA_IsolateSessionsByAuctionId() throws Exception {
+            when(session2.getUri()).thenReturn(URI.create("http://localhost:8080/ws/auctions/200/bids"));
 
+            handler.afterConnectionEstablished(session1);
             handler.afterConnectionEstablished(session2);
 
             when(session1.isOpen()).thenReturn(true);
@@ -107,17 +115,19 @@ public class BidWebSocketHandlerTest {
 
             handler.broadcastBid(100, 750.0);
 
-            verify(session1, times(1)).sendMessage(any(TextMessage.class));
-            verify(session2, times(1)).sendMessage(any(TextMessage.class));
+            String expectedJson = mapper.writeValueAsString(Map.of("auctionId", 100, "currentPrice", 750.0));
+            verify(session1, times(1)).sendMessage(eq(new TextMessage(expectedJson)));
+
+            verify(session2, never()).sendMessage(any(TextMessage.class));
         }
 
         @Test
-        @DisplayName("BVA-Broadcast-ExceptionRollbackOnInternalError")
+        @DisplayName("BVA-Broadcast-ExceptionHandlingDoesNotCrashSystem")
         void testBVA_BroadcastExceptionHandling() throws Exception {
             handler.afterConnectionEstablished(session1);
             when(session1.isOpen()).thenReturn(true);
 
-            doThrow(new IOException("Network error")).when(session1).sendMessage(any(TextMessage.class));
+            doThrow(new IOException("Network crash simulation")).when(session1).sendMessage(any(TextMessage.class));
 
             assertDoesNotThrow(() -> {
                 handler.broadcastBid(100, 800.0);
