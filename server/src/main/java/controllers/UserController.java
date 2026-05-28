@@ -1,11 +1,8 @@
 package controllers;
 
-import com.group7.dto.user.HistoryEntryResponse;
-import com.group7.dto.user.NotificationResponse;
-import com.group7.dto.user.ChangePasswordRequest;
-import com.group7.dto.user.UserResponse;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +12,6 @@ import services.UserService;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -30,32 +26,28 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserResponse>> getAll() {
+    public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(userService.getAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getById(@PathVariable int id) {
+    public ResponseEntity<?> getById(@PathVariable int id) {
         return ResponseEntity.ok(userService.getById(id));
     }
 
     @GetMapping("/email/{email:.+}")
-    public ResponseEntity<UserResponse> getByEmail(@PathVariable String email) {
-        return ResponseEntity.ok(userService.getByEmail(email));
+    public ResponseEntity<?> getByEmail(@PathVariable String email) {
+        try {
+            return ResponseEntity.ok(userService.getByEmail(email));
+        } catch (Exception e) {
+            return serverError(e);
+        }
     }
 
     @PostMapping(value = "/{id}/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<UserResponse> uploadAvatar(@PathVariable int id, @RequestPart("file") MultipartFile file) {
+    public ResponseEntity<?> uploadAvatar(@PathVariable int id, @RequestPart("file") MultipartFile file) {
         String filename = fileStorageService.saveAvatar(file, id);
         return ResponseEntity.ok(userService.updateAvatar(id, filename));
-    }
-
-    @PostMapping("/{id}/password")
-    public ResponseEntity<UserResponse> changePassword(
-            @PathVariable int id,
-            @RequestBody ChangePasswordRequest request
-    ) {
-        return ResponseEntity.ok(userService.changePassword(id, request));
     }
 
     @GetMapping("/avatars/{filename}")
@@ -77,47 +69,60 @@ public class UserController {
     }
 
     @PostMapping("/{id}/block")
-    public ResponseEntity<UserResponse> block(@PathVariable int id) {
+    public ResponseEntity<?> block(@PathVariable int id) {
             return ResponseEntity.ok(userService.block(id));
     }
 
     @PostMapping("/{id}/unblock")
-    public ResponseEntity<UserResponse> unblock(@PathVariable int id) {
+    public ResponseEntity<?> unblock(@PathVariable int id) {
         return ResponseEntity.ok(userService.unblock(id));
     }
 
     @PostMapping("/{id}/deposit")
-    public ResponseEntity<UserResponse> deposit(@PathVariable int id, @RequestBody Map<String, Double> body) {
+    public ResponseEntity<?> deposit(@PathVariable int id, @RequestBody Map<String, Double> body) {
         return ResponseEntity.ok(userService.deposit(id, body.get("amount")));
     }
 
     @PostMapping("/{id}/withdraw")
-    public ResponseEntity<UserResponse> withdraw(@PathVariable int id, @RequestBody Map<String, Double> body) {
+    public ResponseEntity<?> withdraw(@PathVariable int id, @RequestBody Map<String, Double> body) {
         return ResponseEntity.ok(userService.withdraw(id, body.get("amount")));
     }
 
     @PostMapping("/{id}/freeze")
-    public ResponseEntity<UserResponse> freeze(@PathVariable int id, @RequestBody Map<String, Double> body) {
+    public ResponseEntity<?> freeze(@PathVariable int id, @RequestBody Map<String, Double> body) {
         return ResponseEntity.ok(userService.freeze(id, body.get("amount")));
     }
 
     @PostMapping("/{id}/unfreeze")
-    public ResponseEntity<UserResponse> unfreeze(@PathVariable int id, @RequestBody Map<String, Double> body) {
+    public ResponseEntity<?> unfreeze(@PathVariable int id, @RequestBody Map<String, Double> body) {
         return ResponseEntity.ok(userService.unfreeze(id, body.get("amount")));
     }
 
     @PostMapping("/{id}/spend-frozen")
-    public ResponseEntity<UserResponse> spendFrozen(@PathVariable int id, @RequestBody Map<String, Double> body) {
+    public ResponseEntity<?> spendFrozen(@PathVariable int id, @RequestBody Map<String, Double> body) {
         return ResponseEntity.ok(userService.spendFrozen(id, body.get("amount")));
     }
 
+    private ResponseEntity<?> serverError(Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", e.getMessage() == null ? "Unexpected server error." : e.getMessage()));
+    }
+
     @GetMapping("/{id}/notifications")
-    public ResponseEntity<List<NotificationResponse>> getNotifications(@PathVariable int id) {
-        return ResponseEntity.ok(userService.getNotifications(id));
+    public ResponseEntity<?> getNotifications(@PathVariable int id) {
+        try {
+            return ResponseEntity.ok(userService.getNotifications(id));
+        } catch (Exception e) {
+            return serverError(e);
+        }
     }
 
     @GetMapping("/{id}/history")
-    public ResponseEntity<List<HistoryEntryResponse>> getAuctionHistory(@PathVariable int id) {
-        return ResponseEntity.ok(userService.getAuctionHistory(id));
+    public ResponseEntity<?> getAuctionHistory(@PathVariable int id) {
+        try {
+            return ResponseEntity.ok(userService.getAuctionHistory(id));
+        } catch (Exception e) {
+            return serverError(e);
+        }
     }
 }

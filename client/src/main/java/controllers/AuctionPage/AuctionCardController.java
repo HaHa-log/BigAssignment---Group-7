@@ -8,7 +8,6 @@ import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import services.ItemApiService;
 
 import java.io.IOException;
 
@@ -25,7 +24,6 @@ public class AuctionCardController {
     private ImageView imageContainer;
 
     private Auction auction;
-    private final ItemApiService itemApiService = new ItemApiService();
 
     @FXML
     private void toAuctionDetail() {
@@ -61,7 +59,7 @@ public class AuctionCardController {
             return;
         }
 
-        String imageUrl = itemApiService.getItemImageUrl(imagePath);
+        String imageUrl = config.ApiConfig.baseUrl() + "/api/items/images/" + imagePath;
         Image image = new Image(imageUrl, true);
         imageContainer.setImage(image);
     }

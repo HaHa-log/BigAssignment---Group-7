@@ -37,21 +37,6 @@ public class UserService {
         return toResponse(user);
     }
 
-    public UserResponse changePassword(int id, ChangePasswordRequest request) {
-        if (request == null || request.getOldPassword() == null || request.getNewPassword() == null) {
-            throw new IllegalArgumentException("Old password and new password are required.");
-        }
-
-        User user = requireUser(id);
-        if (!user.getPassword().equals(request.getOldPassword())) {
-            throw new IllegalArgumentException("Old password failed.");
-        }
-
-        user.setPassword(request.getNewPassword());
-        usersDAO.update(user);
-        return toResponse(user);
-    }
-
     public UserResponse block(int id) {
         User user = requireUser(id);
         user.setBlocked(LocalDateTime.now().plusDays(100));

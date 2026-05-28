@@ -1,5 +1,6 @@
 package controllers.AuctionPage;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.group7.dto.bid.AutoBidRequest;
 import javafx.application.Platform;
 import javafx.scene.control.Button;
@@ -18,6 +19,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import services.AuctionApiService;
 import services.ItemApiService;
+import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
 import java.util.concurrent.CompletionStage;
@@ -58,6 +60,8 @@ public class AuctionDetailController {
     private WebSocket webSocket;
     private volatile boolean wsConnecting = false;
     private static final HttpClient WS_CLIENT = HttpClient.newHttpClient();
+    private final ObjectMapper wsMapper = new ObjectMapper();
+    private static final String WS_BASE = config.ApiConfig.baseUrl().replaceFirst("^http", "ws") + "/ws/auctions/";
 
     private User currentUser = SessionManager.getCurrentUser();
     private Auction auction;
@@ -235,7 +239,7 @@ public class AuctionDetailController {
         int auctionId = auction.getId();
 
         WS_CLIENT.newWebSocketBuilder()
-                .buildAsync(auctionApiService.bidWebSocketUri(auctionId),
+                .buildAsync(URI.create(WS_BASE + auctionId + "/bids"),
                         new WebSocket.Listener() {
 
                             @Override
@@ -248,7 +252,9 @@ public class AuctionDetailController {
                             public CompletionStage<?> onText(WebSocket ws, CharSequence data, boolean last) {
                                 try {
                                     System.out.println("[CLIENT WS]: " + data);
-                                    double newPrice = auctionApiService.readCurrentPriceUpdate(data);
+
+                                    var node = wsMapper.readTree(data.toString());
+                                    double newPrice = node.get("currentPrice").asDouble();
 
                                     Platform.runLater(() ->
                                             currentPriceLabel.setText("Current price: $" + newPrice)

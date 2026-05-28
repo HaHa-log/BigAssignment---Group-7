@@ -16,7 +16,6 @@ import java.net.UnknownHostException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
 import java.util.List;
 
 public class AuctionApiService {
@@ -39,28 +38,25 @@ public class AuctionApiService {
         HttpResponse<String> response = send(request);
         List<AuctionResponse> auctions = mapper.readValue(
                 response.body(),
-                new TypeReference<List<AuctionResponse>>() {}
+                new TypeReference<List<AuctionResponse>>() {
+                }
         );
         return AuctionMapper.toAuctionList(auctions);
     }
 
     public List<Auction> getAll() throws IOException, InterruptedException {
-        return getAll(0, 20, "ALL");
-    }
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL))
+                .GET()
+                .build();
 
-    public List<Auction> getAllForManagement() throws IOException, InterruptedException {
-        int page = 0;
-        int pageSize = 100;
-        List<Auction> allAuctions = new ArrayList<>();
-        List<Auction> batch;
-
-        do {
-            batch = getAll(page, pageSize, "ALL");
-            allAuctions.addAll(batch);
-            page++;
-        } while (batch.size() == pageSize);
-
-        return allAuctions;
+        HttpResponse<String> response = send(request);
+        List<AuctionResponse> auctions = mapper.readValue(
+                response.body(),
+                new TypeReference<List<AuctionResponse>>() {
+                }
+        );
+        return AuctionMapper.toAuctionList(auctions);
     }
 
     public Auction getById(int auctionId) throws IOException, InterruptedException {
@@ -108,14 +104,6 @@ public class AuctionApiService {
                 HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload))
         ).build();
         return AuctionMapper.toAuction(mapper.readValue(send(request).body(), AuctionResponse.class));
-    }
-
-    public URI bidWebSocketUri(int auctionId) {
-        return URI.create(ApiConfig.baseUrl().replaceFirst("^http", "ws") + "/ws/auctions/" + auctionId + "/bids");
-    }
-
-    public double readCurrentPriceUpdate(CharSequence data) throws IOException {
-        return mapper.readTree(data.toString()).get("currentPrice").asDouble();
     }
 
     private HttpRequest.Builder jsonRequest(String url, Object ignoredPayload) {

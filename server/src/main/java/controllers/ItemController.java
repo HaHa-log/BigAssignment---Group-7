@@ -49,12 +49,13 @@ public class ItemController {
     }
 
     @PostMapping
-    public ResponseEntity<ItemResponse> createItem(@RequestBody ItemRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(itemService.createNewItem(request));
+    public ResponseEntity<?> createItem(@RequestBody ItemRequest request) {
+        itemService.createNewItem(request);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ItemResponse> uploadItemImage(@PathVariable int id, @RequestPart("file") MultipartFile file) {
+    public ResponseEntity<?> uploadItemImage(@PathVariable int id, @RequestPart("file") MultipartFile file) {
         String filename = fileStorageService.saveItemImage(file, id);
         return ResponseEntity.ok(itemService.updateImage(id, filename));
     }
