@@ -3,7 +3,6 @@ package services;
 import com.group7.dto.bid.AutoBidRequest;
 import com.group7.dto.bid.AutoBidResponse;
 import models.Auction;
-import models.AuctionManager;
 import models.AutoBid;
 import models.User;
 import org.springframework.stereotype.Service;
@@ -16,24 +15,9 @@ import java.util.List;
 
 @Service
 public class AutoBidService {
-    private final AutoBidDAO autoBidDAO;
-    private final AuctionsDAO auctionsDAO;
-    private final UsersDAO usersDAO;
-    private final AuctionManager auctionManager;
-
-    public AutoBidService() {
-        this.autoBidDAO = DaoFactory.createAutoBidDAO();
-        this.auctionsDAO = DaoFactory.createAuctionsDAO();
-        this.usersDAO = DaoFactory.createUsersDAO();
-        this.auctionManager = AuctionManager.getInstance();
-    }
-
-    public AutoBidService(AutoBidDAO autoBidDAO, AuctionsDAO auctionsDAO, UsersDAO usersDAO, AuctionManager auctionManager) {
-        this.autoBidDAO = autoBidDAO;
-        this.auctionsDAO = auctionsDAO;
-        this.usersDAO = usersDAO;
-        this.auctionManager = auctionManager;
-    }
+    private final AutoBidDAO autoBidDAO = DaoFactory.createAutoBidDAO();
+    private final AuctionsDAO auctionsDAO = DaoFactory.createAuctionsDAO();
+    private final UsersDAO usersDAO = DaoFactory.createUsersDAO();
 
     public AutoBidResponse createOrUpdate(int auctionId, AutoBidRequest request) {
         if (request == null) {
@@ -49,13 +33,15 @@ public class AutoBidService {
         AutoBid autoBid = new AutoBid(auction, user, request.getMaxBid(), request.getIncrement());
         autoBidDAO.save(autoBid);
 
-        this.auctionManager.processAutoBids(auction, autoBid);
+        models.AuctionManager.getInstance().processAutoBids(auction, autoBid);
 
         return toResponse(autoBid);
     }
 
     public List<AutoBidResponse> getByAuctionId(int auctionId) {
-        return autoBidDAO.getByAuctionId(auctionId).stream().map(this::toResponse).toList();
+        return autoBidDAO.getByAuctionId(auctionId).stream()
+                .map(this::toResponse)
+                .toList();
     }
 
     private Auction requireAuction(int id) {
@@ -70,6 +56,13 @@ public class AutoBidService {
         int auctionId = autoBid.getAuction() != null ? autoBid.getAuction().getId() : 0;
         int bidderId = autoBid.getUser() != null ? autoBid.getUser().getId() : 0;
         String bidderName = autoBid.getUser() != null ? autoBid.getUser().getFullName() : null;
-        return new AutoBidResponse(auctionId, bidderId, bidderName, autoBid.getMaxBid(), autoBid.getIncrement());
+
+        return new AutoBidResponse(
+                auctionId,
+                bidderId,
+                bidderName,
+                autoBid.getMaxBid(),
+                autoBid.getIncrement()
+        );
     }
 }

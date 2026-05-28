@@ -11,15 +11,7 @@ import repositories.impl.DaoFactory;
 @Service
 public class AuthService {
 
-    private final UsersDAO userdb;
-
-    public AuthService() {
-        this.userdb = DaoFactory.createUsersDAO();
-    }
-
-    public AuthService(UsersDAO userdb) {
-        this.userdb = userdb;
-    }
+    private final UsersDAO userdb = DaoFactory.createUsersDAO();
 
     public AuthResponse register(RegisterRequest request) {
         validateRegisterRequest(request);

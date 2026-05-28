@@ -3,28 +3,22 @@ package services;
 import com.group7.dto.transaction.TransactionResponse;
 import models.*;
 import models.Exceptions.IllegalTransactionException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import repositories.AuctionsDAO;
 import repositories.TransactionDAO;
 import repositories.UsersDAO;
+import repositories.impl.DaoFactory;
 
 import java.util.List;
 
 @Service
 public class TransactionService {
 
-    private final TransactionDAO transactionDAO;
-    private final AuctionsDAO auctionsDAO;
-    private final UsersDAO usersDAO;
+    private final TransactionDAO transactionDAO = DaoFactory.createTransactionDAO();
+    private final AuctionsDAO auctionsDAO       = DaoFactory.createAuctionsDAO();
+    private final UsersDAO usersDAO             = DaoFactory.createUsersDAO();
 
-    @Autowired
-    public TransactionService(TransactionDAO transactionDAO, AuctionsDAO auctionsDAO, UsersDAO usersDAO) {
-        this.transactionDAO = transactionDAO;
-        this.auctionsDAO = auctionsDAO;
-        this.usersDAO = usersDAO;
-    }
-
+    // auction kết thúc  → tạo PENDING transaction và lưu DB
     public TransactionResponse createPendingTransaction(int auctionId) {
         Auction auction = requireAuction(auctionId);
 
@@ -48,7 +42,7 @@ public class TransactionService {
         transactionDAO.save(transaction);
         return toResponse(transaction);
     }
-
+    //buyer confirm
     public TransactionResponse confirmReceipt(int auctionId, int buyerId) {
         User buyer = usersDAO.getById(buyerId);
         if (buyer == null) {
@@ -69,7 +63,7 @@ public class TransactionService {
         }
 
         try {
-            transaction.markCompleted();
+            transaction.markCompleted(); // spendFrozenMoney + depositMoney seller
         } catch (IllegalTransactionException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
