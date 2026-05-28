@@ -6,20 +6,26 @@ import models.Auction;
 import models.AuctionManager;
 import models.AutoBid;
 import models.User;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import repositories.AuctionsDAO;
 import repositories.AutoBidDAO;
 import repositories.UsersDAO;
+import repositories.impl.DaoFactory;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class AutoBidServiceTest {
 
     @Mock private AutoBidDAO autoBidDAO;
@@ -28,27 +34,45 @@ public class AutoBidServiceTest {
     @Mock private AuctionManager auctionManager;
 
     private AutoBidService autoBidService;
-
     private AutoBidRequest validRequest;
-    private Auction mockAuction;
-    private User mockUser;
+
+    private MockedStatic<DaoFactory> mockedDaoFactory;
+    private MockedStatic<AuctionManager> mockedAuctionManager;
 
     @BeforeEach
     void setUp() {
-        autoBidService = new AutoBidService(autoBidDAO, auctionsDAO, usersDAO, auctionManager);
+        mockedDaoFactory = mockStatic(DaoFactory.class);
+        mockedAuctionManager = mockStatic(AuctionManager.class);
+
+        mockedDaoFactory.when(DaoFactory::createAutoBidDAO).thenReturn(autoBidDAO);
+        mockedDaoFactory.when(DaoFactory::createAuctionsDAO).thenReturn(auctionsDAO);
+        mockedDaoFactory.when(DaoFactory::createUsersDAO).thenReturn(usersDAO);
+        mockedAuctionManager.when(AuctionManager::getInstance).thenReturn(auctionManager);
+
+        autoBidService = new AutoBidService();
 
         validRequest = new AutoBidRequest();
         validRequest.setBidderId(10);
         validRequest.setMaxBid(2000.0);
         validRequest.setIncrement(100.0);
+    }
 
-        mockAuction = mock(Auction.class);
-        mockUser = mock(User.class);
+    @AfterEach
+    void tearDown() {
+        if (mockedDaoFactory != null) {
+            mockedDaoFactory.close();
+        }
+        if (mockedAuctionManager != null) {
+            mockedAuctionManager.close();
+        }
     }
 
     @Test
     @DisplayName("Create AutoBid successfully when Auction and User are valid")
     void createOrUpdate_Success() {
+        Auction mockAuction = mock(Auction.class);
+        User mockUser = mock(User.class);
+
         when(mockAuction.getId()).thenReturn(1);
         when(mockUser.getId()).thenReturn(10);
         when(mockUser.getFullName()).thenReturn("Nguyen A");
@@ -77,6 +101,8 @@ public class AutoBidServiceTest {
         });
 
         assertEquals("[Error]: Auction not found.", exception.getMessage());
+
         verify(autoBidDAO, never()).save(any());
+        verify(usersDAO, never()).getById(anyInt());
     }
 }

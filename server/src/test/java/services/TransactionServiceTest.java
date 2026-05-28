@@ -1,18 +1,24 @@
 package services;
 
 import models.*;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import repositories.*;
+import repositories.impl.DaoFactory;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class TransactionServiceTest {
 
     @Mock private TransactionDAO transactionDAO;
@@ -21,9 +27,23 @@ public class TransactionServiceTest {
 
     private TransactionService transactionService;
 
+    private MockedStatic<DaoFactory> mockedDaoFactory;
+
     @BeforeEach
     void setUp() {
-        transactionService = new TransactionService(transactionDAO, auctionsDAO, usersDAO);
+        mockedDaoFactory = mockStatic(DaoFactory.class);
+        mockedDaoFactory.when(DaoFactory::createTransactionDAO).thenReturn(transactionDAO);
+        mockedDaoFactory.when(DaoFactory::createAuctionsDAO).thenReturn(auctionsDAO);
+        mockedDaoFactory.when(DaoFactory::createUsersDAO).thenReturn(usersDAO);
+
+        transactionService = new TransactionService();
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (mockedDaoFactory != null) {
+            mockedDaoFactory.close();
+        }
     }
 
     @Test
@@ -47,7 +67,8 @@ public class TransactionServiceTest {
         when(transactionDAO.getPendingByAuctionAndBuyer(anyInt(), anyInt())).thenReturn(null);
 
         assertDoesNotThrow(() -> transactionService.createPendingTransaction(auctionId));
-        verify(transactionDAO).save(any(Transaction.class));
+
+        verify(transactionDAO, times(1)).save(any(Transaction.class));
     }
 
     @Test

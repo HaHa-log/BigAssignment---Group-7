@@ -2,19 +2,25 @@ package services;
 
 import com.group7.dto.user.UserResponse;
 import models.User;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import repositories.AuctionsDAO;
 import repositories.UsersDAO;
+import repositories.impl.DaoFactory;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class UserServiceTest {
 
     @Mock private UsersDAO usersDAO;
@@ -22,9 +28,22 @@ public class UserServiceTest {
 
     private UserService userService;
 
+    private MockedStatic<DaoFactory> mockedDaoFactory;
+
     @BeforeEach
     void setUp() {
-        userService = new UserService(usersDAO, auctionsDAO);
+        mockedDaoFactory = mockStatic(DaoFactory.class);
+        mockedDaoFactory.when(DaoFactory::createUsersDAO).thenReturn(usersDAO);
+        mockedDaoFactory.when(DaoFactory::createAuctionsDAO).thenReturn(auctionsDAO);
+
+        userService = new UserService();
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (mockedDaoFactory != null) {
+            mockedDaoFactory.close();
+        }
     }
 
     @Test

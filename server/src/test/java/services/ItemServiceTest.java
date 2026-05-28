@@ -5,19 +5,25 @@ import com.group7.dto.item.ItemResponse;
 import com.group7.dto.item.UpdateItemRequest;
 import models.Item;
 import models.User;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import repositories.ItemsDAO;
 import repositories.UsersDAO;
+import repositories.impl.DaoFactory;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class ItemServiceTest {
 
     @Mock private ItemsDAO itemsDAO;
@@ -25,9 +31,22 @@ public class ItemServiceTest {
 
     private ItemService itemService;
 
+    private MockedStatic<DaoFactory> mockedDaoFactory;
+
     @BeforeEach
     void setUp() {
-        itemService = new ItemService(itemsDAO, usersDAO);
+        mockedDaoFactory = mockStatic(DaoFactory.class);
+        mockedDaoFactory.when(DaoFactory::createItemDAO).thenReturn(itemsDAO);
+        mockedDaoFactory.when(DaoFactory::createUsersDAO).thenReturn(usersDAO);
+
+        itemService = new ItemService();
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (mockedDaoFactory != null) {
+            mockedDaoFactory.close();
+        }
     }
 
     @Test
