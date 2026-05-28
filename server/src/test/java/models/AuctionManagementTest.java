@@ -6,8 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
-
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,16 +26,17 @@ public class AuctionManagementTest {
         owner = spy(realUser);
         doReturn("Admin 123").when(owner).getFullName();
         doReturn("Admin").when(owner).getFirstName();
-        doReturn(false).when(owner).isBlocked();
 
         item = mock(Item.class);
         when(item.getId()).thenReturn(217);
         when(item.getName()).thenReturn("Sample Item Name");
         when(item.getDescription()).thenReturn("Sample Item Description");
+
         when(item.getOwnerId()).thenReturn(10);
+
         when(item.getOwner()).thenReturn(owner);
 
-        sellerInterface = (Seller) owner;
+        sellerInterface = owner;
     }
 
     @Nested
@@ -47,29 +46,18 @@ public class AuctionManagementTest {
         @Test
         @DisplayName("EP-Valid-SellerCreatesAuctionSession")
         void testEP_ValidAuctionCreation() {
-            AuctionManager mockAuctionManager = mock(AuctionManager.class);
+            LocalDateTime start = LocalDateTime.now().plusHours(1);
+            LocalDateTime end = LocalDateTime.now().plusHours(3);
 
-            Auction mockAuction = mock(Auction.class);
-
-            when(mockAuctionManager.createAuction(any(), any(), any(), any())).thenReturn(mockAuction);
-
-            try (MockedStatic<AuctionManager> mockedStaticManager = mockStatic(AuctionManager.class)) {
-                mockedStaticManager.when(AuctionManager::getInstance).thenReturn(mockAuctionManager);
-
-                LocalDateTime start = LocalDateTime.now().plusHours(1);
-                LocalDateTime end = LocalDateTime.now().plusHours(3);
-
-                assertDoesNotThrow(() -> {
-                    sellerInterface.createAuction(item, start, end);
-                });
-            }
+            assertDoesNotThrow(() -> {
+                sellerInterface.createAuction(item, start, end);
+            });
         }
 
         @Test
         @DisplayName("EP-Invalid-SellerIsCurrentlyBlocked")
         void testEP_SellerBlockedThrowsException() {
             doReturn(true).when(owner).isBlocked();
-
             LocalDateTime start = LocalDateTime.now().plusHours(1);
             LocalDateTime end = LocalDateTime.now().plusHours(3);
 
