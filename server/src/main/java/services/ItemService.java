@@ -30,7 +30,7 @@ public class ItemService {
         return itemsDb.getByOwnerId(ownerId).stream().map(this::toResponse).toList();
     }
 
-    public Item createNewItem(ItemRequest request) {
+    public ItemResponse createNewItem(ItemRequest request) {
         validateCreateRequest(request);
 
         User owner = usersDb.getById(request.getOwnerId());
@@ -40,8 +40,10 @@ public class ItemService {
         Item item = new Item(request.getName(), request.getStartingPrice(), request.getDescription());
         item.setOwner(owner);
         item.setStatus(Item.Status.AVAILABLE);
+        item.setImagePath(request.getImagePath());
 
-        return item;
+        itemsDb.save(item);
+        return toResponse(item);
     }
 
     public List<ItemResponse> getItemsByOwner(int ownerId, int page, int size) {
@@ -134,7 +136,7 @@ public class ItemService {
         }
     }
 
-    public Item getDomainItemById(int id) {
+    Item getDomainItemById(int id) {
         return requireItem(id);
     }
 

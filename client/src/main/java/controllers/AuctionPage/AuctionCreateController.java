@@ -62,13 +62,27 @@ public class AuctionCreateController {
 
     @FXML
     private void createItem() {
-        String itemName = itemNameInput.getText();
-        String description = descriptionInput.getText();
-        String startingPriceRaw = startingPriceInput.getText();
+        String itemName = itemNameInput.getText() == null ? "" : itemNameInput.getText().trim();
+        String description = descriptionInput.getText() == null ? "" : descriptionInput.getText().trim();
+        String startingPriceRaw = startingPriceInput.getText() == null ? "" : startingPriceInput.getText().trim();
 
-        if (itemName.trim().isEmpty() || startingPriceRaw.trim().isEmpty()) {
+        if (itemName.isEmpty() || startingPriceRaw.isEmpty()) {
             itemCreateResult.setTextFill(RED);
             itemCreateResult.setText("[Error]: Please fill all required fields");
+            return;
+        }
+
+        double startingPrice;
+        try {
+            startingPrice = Double.parseDouble(startingPriceRaw);
+            if (startingPrice <= 0) {
+                itemCreateResult.setTextFill(RED);
+                itemCreateResult.setText("[Error]: Starting price must be greater than 0");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            itemCreateResult.setTextFill(RED);
+            itemCreateResult.setText("[Error]: Starting price must be a valid number");
             return;
         }
 
@@ -86,9 +100,11 @@ public class AuctionCreateController {
                         description, seller.getId()
                 ));
 
-                if (selectedImageFile == null) {
-                    return null;
-                } else {
+                if (item == null || item.getId() <= 0) {
+                    throw new IllegalStateException("[Error]: Server did not return the created item.");
+                }
+
+                if (selectedImageFile != null) {
                     itemApiService.uploadItemImage(item.getId(), selectedImageFile);
                 }
 
@@ -100,17 +116,18 @@ public class AuctionCreateController {
             itemCreateResult.setTextFill(GREEN);
             itemCreateResult.setText("Item created successfully!");
             clearInputs();
+            loadAvailableItems();
         });
 
         createTask.setOnFailed(e -> {
             Throwable ex = createTask.getException();
-            auctionCreateResult.setTextFill(RED);
+            itemCreateResult.setTextFill(RED);
             if (ex instanceof IllegalArgumentException) {
                 itemCreateResult.setText(ex.getMessage());
             } else if (ex instanceof IOException) {
-                itemCreateResult.setText("File Error: Could not save image.");
+                itemCreateResult.setText("File Error: " + ex.getMessage());
             } else {
-                itemCreateResult.setText("Unexpected error: " + ex.getMessage());
+                itemCreateResult.setText("Error: " + ex.getMessage());
             }
         });
 
@@ -127,9 +144,9 @@ public class AuctionCreateController {
         String eTimeStr = endingTimeInput.getText();
 
         // Basic validation
-        if (startDate == null || endDate == null) {
+        if (selectedItem == null || startDate == null || endDate == null) {
             auctionCreateResult.setTextFill(RED);
-            auctionCreateResult.setText("[Error]: Please fill all required fields");
+            auctionCreateResult.setText("[Error]: Please select an item and fill all required fields");
             return;
         }
 
@@ -179,7 +196,9 @@ public class AuctionCreateController {
         Task<List<Item>> loadTask = new Task<>() {
             @Override
             protected List<Item> call() throws Exception {
-                User user = (User) SessionManager.getCurrentUser();
+                if (!(SessionManager.getCurrentUser() instanceof User user)) {
+                    throw new IllegalArgumentException("[Error]: Session expired! Please log in again.");
+                }
                 List<Item> allItems = itemApiService.fetchInventory(user.getId());
 
                 // Filter the list in the UI layer

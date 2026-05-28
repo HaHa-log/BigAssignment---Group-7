@@ -20,24 +20,24 @@ public class TransactionController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<?> getByUser(@PathVariable int userId) {
+    public ResponseEntity<List<TransactionResponse>> getByUser(@PathVariable int userId) {
         List<TransactionResponse> list = transactionService.getByUserId(userId);
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable int id) {
+    public ResponseEntity<TransactionResponse> getById(@PathVariable int id) {
         return ResponseEntity.ok(transactionService.getById(id));
     }
 
     @PostMapping("/auction/{auctionId}/create-pending")
-    public ResponseEntity<?> createPending(@PathVariable int auctionId) {
+    public ResponseEntity<TransactionResponse> createPending(@PathVariable int auctionId) {
         TransactionResponse response = transactionService.createPendingTransaction(auctionId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/auction/{auctionId}/confirm-receipt")
-    public ResponseEntity<?> confirmReceipt(
+    public ResponseEntity<TransactionResponse> confirmReceipt(
             @PathVariable int auctionId,
             @RequestBody Map<String, Integer> body
     ) {
@@ -46,7 +46,7 @@ public class TransactionController {
     }
 
     @PostMapping("/{id}/refund")
-    public ResponseEntity<?> refund(@PathVariable int id) {
+    public ResponseEntity<TransactionResponse> refund(@PathVariable int id) {
         return ResponseEntity.ok(transactionService.refundTransaction(id));
     }
 }

@@ -85,7 +85,8 @@ public class ItemApiService {
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() >= 200 && response.statusCode() < 300) {
-            return objectMapper.readValue(response.body(), Item.class);
+            ItemResponse dto = objectMapper.readValue(response.body(), ItemResponse.class);
+            return ItemMapper.toItem(dto);
         } else {
             throw new RuntimeException("Failed to create item: " + response.body());
         }

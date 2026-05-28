@@ -1,12 +1,8 @@
 package controllers.MainPage.ProfilePage;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.group7.dto.user.HistoryEntryResponse;
 import com.group7.dto.transaction.TransactionResponse;
 import models.Auction;
-import models.AuctionManager;
 import models.Common.AuctionHistoryEntry;
 import controllers.AuctionPage.AuctionDetailController;
 import controllers.SceneManager;
@@ -18,13 +14,12 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
+import services.AuctionApiService;
+import services.TransactionApiService;
+import services.UserApiService;
 
 public class HistoryController extends BaseController {
 
@@ -48,6 +43,9 @@ public class HistoryController extends BaseController {
 
     private final ObservableList<AuctionHistoryEntry> masterData       = FXCollections.observableArrayList();
     private final ObservableList<TransactionResponse> transactionData  = FXCollections.observableArrayList();
+    private final AuctionApiService auctionApiService = new AuctionApiService();
+    private final TransactionApiService transactionApiService = new TransactionApiService();
+    private final UserApiService userApiService = new UserApiService();
 
     private static final DateTimeFormatter DATE_FMT =
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -102,8 +100,7 @@ public class HistoryController extends BaseController {
                     // Common logic: Navigate to Detail Page
                     new Thread(() -> {
                         try {
-                            services.AuctionApiService apiService = new services.AuctionApiService();
-                            Auction auction = apiService.getById(entry.auctionId());
+                            Auction auction = auctionApiService.getById(entry.auctionId());
                             Platform.runLater(() -> navigateToDetail(auction));
                         } catch (Exception e) { e.printStackTrace(); }
                     }).start();
@@ -197,18 +194,7 @@ public class HistoryController extends BaseController {
 
         new Thread(() -> {
             try {
-                HttpClient client = HttpClient.newHttpClient();
-                ObjectMapper mapper = new ObjectMapper()
-                        .registerModule(new JavaTimeModule()); // ← cần cho LocalDateTime
-
-                // 1. Load auction history
-                HttpRequest histReq = HttpRequest.newBuilder()
-                        .uri(URI.create("http://localhost:8080/api/users/"
-                                + user.getId() + "/history"))
-                        .GET().build();
-                List<HistoryEntryResponse> histResponse = mapper.readValue(
-                        client.send(histReq, HttpResponse.BodyHandlers.ofString()).body(),
-                        new TypeReference<>() {});
+                List<HistoryEntryResponse> histResponse = userApiService.getAuctionHistory(user.getId());
 
                 List<AuctionHistoryEntry> historyData = histResponse.stream()
                         .map(h -> new AuctionHistoryEntry(
@@ -216,16 +202,7 @@ public class HistoryController extends BaseController {
                                 h.auctionStatus(), h.userState()))
                         .toList();
 
-                //  Load transactions
-                HttpRequest txReq = HttpRequest.newBuilder()
-                        .uri(URI.create("http://localhost:8080/api/transactions/user/"
-                                + user.getId()))
-                        .GET().build();
-                String txBody = client.send(txReq, HttpResponse.BodyHandlers.ofString()).body();
-                System.out.println("[DEBUG] Transaction response: " + txBody);
-                List<TransactionResponse> txResponse = mapper.readValue(
-                        client.send(txReq, HttpResponse.BodyHandlers.ofString()).body(),
-                        new TypeReference<>() {});
+                List<TransactionResponse> txResponse = transactionApiService.getByUserId(user.getId());
 
                 Platform.runLater(() -> {
                     masterData.setAll(historyData);

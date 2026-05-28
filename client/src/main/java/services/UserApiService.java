@@ -4,6 +4,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import config.ApiConfig;
 import exceptions.ApiException;
+import com.group7.dto.user.ChangePasswordRequest;
+import com.group7.dto.user.HistoryEntryResponse;
+import com.group7.dto.user.NotificationResponse;
 import com.group7.dto.user.UserResponse;
 import utils.ApiJson;
 import models.User; // ĐỒNG BỘ: Import lớp thực thể User mới
@@ -80,6 +83,13 @@ public class UserApiService {
         return UserMapper.toUser(mapper.readValue(send(request).body(), UserResponse.class));
     }
 
+    public User changePassword(int userId, String oldPassword, String newPassword)
+            throws IOException, InterruptedException {
+        ChangePasswordRequest payload = new ChangePasswordRequest(oldPassword, newPassword);
+        HttpRequest request = jsonPost(BASE_URL + "/" + userId + "/password", payload);
+        return UserMapper.toUser(mapper.readValue(send(request).body(), UserResponse.class));
+    }
+
     public User block(int id) throws IOException, InterruptedException {
         return postStateChange(id, "block");
     }
@@ -115,6 +125,22 @@ public class UserApiService {
         return BASE_URL + "/avatars/" + avatarPath;
     }
 
+    public List<NotificationResponse> getNotifications(int userId) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/" + userId + "/notifications"))
+                .GET()
+                .build();
+        return mapper.readValue(send(request).body(), new TypeReference<List<NotificationResponse>>() {});
+    }
+
+    public List<HistoryEntryResponse> getAuctionHistory(int userId) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/" + userId + "/history"))
+                .GET()
+                .build();
+        return mapper.readValue(send(request).body(), new TypeReference<List<HistoryEntryResponse>>() {});
+    }
+
     // ĐỒNG BỘ: Sửa kiểu trả về sang User và gọi UserMapper.toUser()
     private User postFinanceAction(int id, String action, double amount)
             throws IOException, InterruptedException {
@@ -125,6 +151,14 @@ public class UserApiService {
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
         return UserMapper.toUser(mapper.readValue(send(request).body(), UserResponse.class));
+    }
+
+    private HttpRequest jsonPost(String url, Object payload) throws IOException {
+        return HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload)))
+                .build();
     }
 
     private User postStateChange(int id, String action) throws IOException, InterruptedException {
