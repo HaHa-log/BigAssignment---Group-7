@@ -1,16 +1,28 @@
 package repositories.impl;
 
-import config.DB;
-import config.DbException;
-import models.*;
-import repositories.AuctionsDAO;
-import repositories.ItemsDAO;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import config.DB;
+import config.DbException;
+import models.Admin;
+import models.Auction;
+import models.Bidder;
+import models.Item;
+import models.User;
+import repositories.AuctionsDAO;
+import repositories.ItemsDAO;
+
+/**
+ * Implementation of AuctionsDAO interface for managing auction operations.
+ */
 public class AuctionsDAOImpl implements AuctionsDAO {
     private final ItemsDAO itemsDAO = DaoFactory.createItemDAO();
 
@@ -79,7 +91,8 @@ public class AuctionsDAOImpl implements AuctionsDAO {
     @Override
     public void update(Auction auction) {
         String sql = "UPDATE auctions "
-                + "SET owner_id = ?, item_id = ?, status = ?, startingPrice = ?, currentPrice = ?, startingTime = ?, endingTime = ?, winner_id = ? "
+                + "SET owner_id = ?, item_id = ?, status = ?, startingPrice = ?, "
+                + "currentPrice = ?, startingTime = ?, endingTime = ?, winner_id = ? "
                 + " WHERE auctions_id = ? ";
         try (Connection conn = DB.getConnection();
              PreparedStatement st = conn.prepareStatement(sql)) {
@@ -105,7 +118,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
 
     @Override
     public Auction getById(int id) {
-        String sql = getAuctionBaseSQL() + " WHERE a.auctions_id = ?";
+        String sql = getAuctionBaseSql() + " WHERE a.auctions_id = ?";
 
         try (Connection conn = DB.getConnection();
              PreparedStatement st = conn.prepareStatement(sql)) {
@@ -124,7 +137,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
 
     @Override
     public List<Auction> getAll() {
-        String sql = getAuctionBaseSQL();
+        String sql = getAuctionBaseSql();
 
         try (Connection conn = DB.getConnection();
              PreparedStatement st = conn.prepareStatement(sql);
@@ -151,14 +164,13 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 && !status.isBlank()
                 && !"ALL".equalsIgnoreCase(status);
 
-        String sql = getAuctionBaseSQL()
+        String sql = getAuctionBaseSql()
                 + (filterStatus ? " WHERE a.status = ? " : " ")
                 + " ORDER BY a.auctions_id DESC LIMIT ? OFFSET ?";
 
         try (Connection conn = DB.getConnection();
              PreparedStatement st = conn.prepareStatement(sql)) {
 
-            //Xử lý tham số động (if (filterStatus))
             int index = 1;
             if (filterStatus) {
                 st.setString(index++, status.toUpperCase());
@@ -180,13 +192,12 @@ public class AuctionsDAOImpl implements AuctionsDAO {
 
     @Override
     public List<Auction> getAllByUserId(int userId) {
-        String sql = getAuctionBaseSQL()
+        String sql = getAuctionBaseSql()
                 + " LEFT JOIN bids b ON a.auctions_id = b.auction_id"
                 + " WHERE a.owner_id = ?"
                 + " OR a.winner_id = ?"
                 + " OR b.bidder_id = ?"
                 + " GROUP BY a.auctions_id";
-
 
         try (Connection conn = DB.getConnection();
              PreparedStatement st = conn.prepareStatement(sql)) {
@@ -208,7 +219,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
 
     @Override
     public List<Auction> getActiveAuctions() {
-        String sql = getAuctionBaseSQL() + " WHERE a.status = ? OR a.status = ?";
+        String sql = getAuctionBaseSql() + " WHERE a.status = ? OR a.status = ?";
 
         try (Connection conn = DB.getConnection();
              PreparedStatement st = conn.prepareStatement(sql)) {
@@ -253,7 +264,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
         st.setObject(index, value);
     }
 
-    private String getAuctionBaseSQL() {
+    private String getAuctionBaseSql() {
         return "SELECT a.*, "
                 + "u_owner.users_id AS owner_id, "
                 + "u_owner.firstName AS owner_firstName, u_owner.lastName AS owner_lastName, "

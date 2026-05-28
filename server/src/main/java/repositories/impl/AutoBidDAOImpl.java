@@ -1,14 +1,5 @@
 package repositories.impl;
 
-import models.AutoBid;
-import models.BidStepConfiguration;
-import models.User;
-import config.DB;
-import config.DbException;
-import repositories.AuctionsDAO;
-import repositories.AutoBidDAO;
-import repositories.UsersDAO;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,11 +7,24 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import config.DB;
+import config.DbException;
+import models.AutoBid;
+import models.BidStepConfiguration;
+import models.User;
+import repositories.AuctionsDAO;
+import repositories.AutoBidDAO;
+import repositories.UsersDAO;
+
+/**
+ * Implementation of AutoBidDAO interface for managing auto bid configurations.
+ */
 public class AutoBidDAOImpl implements AutoBidDAO {
     private final UsersDAO userDb = DaoFactory.createUsersDAO();
-    private final AuctionsDAO auctionsDAO = DaoFactory.createAuctionsDAO();
+    private final AuctionsDAO auctionsDao = DaoFactory.createAuctionsDAO();
 
-    protected AutoBidDAOImpl() {}
+    protected AutoBidDAOImpl() {
+    }
 
     @Override
     public void save(AutoBid obj) {
@@ -154,7 +158,7 @@ public class AutoBidDAOImpl implements AutoBidDAO {
     private AutoBid instantiateAutoBid(ResultSet rs) throws SQLException {
         User user = userDb.getById(rs.getInt("user_id"));
         return new AutoBid(
-                auctionsDAO.getById(rs.getInt("auction_id")),
+                auctionsDao.getById(rs.getInt("auction_id")),
                 user,
                 rs.getDouble("max_bid"),
                 rs.getDouble("increment_amount")
