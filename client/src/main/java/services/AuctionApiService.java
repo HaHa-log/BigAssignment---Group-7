@@ -31,16 +31,15 @@ public class AuctionApiService {
                 java.nio.charset.StandardCharsets.UTF_8
         );
 
-        HttpRequest request = HttpRequest.newBuilder()
+        HttpRequest req = HttpRequest.newBuilder()
                 .uri(URI.create(urlWithPaging))
                 .GET()
                 .build();
 
-        HttpResponse<String> response = send(request);
+        HttpResponse<String> response = send(req);
         List<AuctionResponse> auctions = mapper.readValue(
                 response.body(),
-                new TypeReference<List<AuctionResponse>>() {
-                }
+                new TypeReference<List<AuctionResponse>>() {}
         );
         return AuctionMapper.toAuctionList(auctions);
     }
@@ -62,60 +61,53 @@ public class AuctionApiService {
         } while (batch.size() == pageSize);
 
         return allAuctions;
-        HttpResponse<String> response = send(request);
-        List<AuctionResponse> auctions = mapper.readValue(
-                response.body(),
-                new TypeReference<List<AuctionResponse>>() {
-                }
-        );
-        return AuctionMapper.toAuctionList(auctions);
     }
 
     public Auction getById(int auctionId) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder()
+        HttpRequest req = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/" + auctionId))
                 .GET()
                 .build();
-        return AuctionMapper.toAuction(mapper.readValue(send(request).body(), AuctionResponse.class));
+        return AuctionMapper.toAuction(mapper.readValue(send(req).body(), AuctionResponse.class));
     }
 
     public Auction create(CreateAuctionRequest payload) throws IOException, InterruptedException {
-        HttpRequest request = jsonRequest(BASE_URL, payload).POST(
+        HttpRequest req = jsonRequest(BASE_URL, payload).POST(
                 HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload))
         ).build();
-        return AuctionMapper.toAuction(mapper.readValue(send(request).body(), AuctionResponse.class));
+        return AuctionMapper.toAuction(mapper.readValue(send(req).body(), AuctionResponse.class));
     }
 
     public Auction placeBid(int auctionId, int bidderId, double amount) throws IOException, InterruptedException, IllegalArgumentException {
         BidRequest payload = new BidRequest(bidderId, amount);
-        HttpRequest request = jsonRequest(BASE_URL + "/" + auctionId + "/bids", payload).POST(
+        HttpRequest req = jsonRequest(BASE_URL + "/" + auctionId + "/bids", payload).POST(
                 HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload))
         ).build();
-        return AuctionMapper.toAuction(mapper.readValue(send(request).body(), AuctionResponse.class));
+        return AuctionMapper.toAuction(mapper.readValue(send(req).body(), AuctionResponse.class));
     }
 
     public void enableAutoBid(int auctionId, com.group7.dto.bid.AutoBidRequest payload) throws IOException, InterruptedException {
         String url = ApiConfig.baseUrl() + "/api/autobids/" + auctionId;
-        HttpRequest request = jsonRequest(url, payload).POST(
+        HttpRequest req = jsonRequest(url, payload).POST(
                 HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload))
         ).build();
-        send(request);
+        send(req);
     }
 
     public Auction cancel(int auctionId) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder()
+        HttpRequest req = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/" + auctionId + "/cancel"))
                 .POST(HttpRequest.BodyPublishers.noBody())
                 .build();
-        return AuctionMapper.toAuction(mapper.readValue(send(request).body(), AuctionResponse.class));
+        return AuctionMapper.toAuction(mapper.readValue(send(req).body(), AuctionResponse.class));
     }
 
     public Auction confirmReceipt(int auctionId, int buyerId) throws IOException, InterruptedException {
         ConfirmReceiptRequest payload = new ConfirmReceiptRequest(buyerId);
-        HttpRequest request = jsonRequest(BASE_URL + "/" + auctionId + "/confirm-receipt", payload).POST(
+        HttpRequest req = jsonRequest(BASE_URL + "/" + auctionId + "/confirm-receipt", payload).POST(
                 HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload))
         ).build();
-        return AuctionMapper.toAuction(mapper.readValue(send(request).body(), AuctionResponse.class));
+        return AuctionMapper.toAuction(mapper.readValue(send(req).body(), AuctionResponse.class));
     }
 
     public URI bidWebSocketUri(int auctionId) {
