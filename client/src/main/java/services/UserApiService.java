@@ -32,7 +32,8 @@ public class UserApiService {
                 .build();
         List<UserResponse> users = mapper.readValue(
                 send(request).body(),
-                new TypeReference<List<UserResponse>>() {}
+                new TypeReference<List<UserResponse>>() {
+                }
         );
         return users.stream().map(UserMapper::toUser).toList();
     }

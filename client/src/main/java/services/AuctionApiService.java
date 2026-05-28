@@ -38,7 +38,8 @@ public class AuctionApiService {
         HttpResponse<String> response = send(request);
         List<AuctionResponse> auctions = mapper.readValue(
                 response.body(),
-                new TypeReference<List<AuctionResponse>>() {}
+                new TypeReference<List<AuctionResponse>>() {
+                }
         );
         return AuctionMapper.toAuctionList(auctions);
     }
