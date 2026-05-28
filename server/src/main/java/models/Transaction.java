@@ -140,7 +140,7 @@ public class Transaction {
     }
 
     // Refund tiền nếu hết hạn pending
-    public void markExpiredRefund() throws IllegalTransactionException {
+    public boolean markExpiredRefund() throws IllegalTransactionException {
     if (!this.isExpired()) {
         throw new IllegalTransactionException("[Error]: Transaction has not expired yet.");
     }
@@ -150,6 +150,8 @@ public class Transaction {
     buyer.unfreezeMoney(finalAmount);
     this.status = TransactionStatus.REFUNDED;
     System.out.println("[Transaction]: Expired refund for auction " + auction.getId());
+
+    return true;
 }
 
     @Override

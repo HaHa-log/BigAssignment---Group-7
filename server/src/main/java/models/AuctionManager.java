@@ -204,12 +204,12 @@ public class AuctionManager {
             if (!transaction.isExpired()) {
                 continue;
             }
-            transaction.markExpiredRefund();
-            transaction.getAuction().transitionTo(Auction.AuctionStatus.CANCELED);
-            transactionDb.update(transaction);
-            usersDb.update(transaction.getBuyer());
-            System.out.println("[System]: Transaction " + transaction.getTransactionId()
-                    + " has expired. Money refunded to buyer.");
+            if (transaction.getAuction().transitionTo(Auction.AuctionStatus.CANCELED)) {
+                transactionDb.update(transaction);
+                usersDb.update(transaction.getBuyer());
+                System.out.println("[System]: Transaction " + transaction.getTransactionId()
+                        + " has expired. Money refunded to buyer.");
+            }
         }
     }
 
