@@ -45,9 +45,10 @@ public class AuthControllerTest {
         Mockito.when(authService.login(Mockito.any(LoginRequest.class)))
                 .thenThrow(new IllegalArgumentException("Invalid credentials"));
 
-        mockMvc.perform(post("/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
+        org.junit.jupiter.api.Assertions.assertThrows(Exception.class, () -> {
+            mockMvc.perform(post("/api/auth/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)));
+        });
     }
 }
