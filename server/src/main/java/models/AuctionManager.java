@@ -3,6 +3,8 @@ package models;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.scheduling.annotation.Scheduled;
 import repositories.AuctionsDAO;
 import repositories.AutoBidDAO;
 import repositories.ItemsDAO;
@@ -192,6 +194,7 @@ public class AuctionManager {
         return transaction;
     }
 
+    @Scheduled(fixedDelay = 600_000)
     public void checkAndCancelExpiredTransactions() {
         List<Transaction> pendingTransactions = transactionDb.getAll().stream()
                 .filter(t -> t.getStatus() == Transaction.TransactionStatus.PENDING)
