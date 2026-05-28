@@ -62,6 +62,13 @@ public class AuctionApiService {
         } while (batch.size() == pageSize);
 
         return allAuctions;
+        HttpResponse<String> response = send(request);
+        List<AuctionResponse> auctions = mapper.readValue(
+                response.body(),
+                new TypeReference<List<AuctionResponse>>() {
+                }
+        );
+        return AuctionMapper.toAuctionList(auctions);
     }
 
     public Auction getById(int auctionId) throws IOException, InterruptedException {

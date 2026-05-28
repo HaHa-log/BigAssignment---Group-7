@@ -118,7 +118,7 @@ public class Transaction {
             throw new IllegalTransactionException("[System]: Buyer does not have enough balance to complete the payment");
         }
     }
-
+    //Refund tiền nếu hoàn trả hàng
     public void markRefunded() throws IllegalTransactionException {
         if (this.status != TransactionStatus.COMPLETED) {
             throw new IllegalTransactionException("[Error]: Cannot make a refund for incomplete transactions");
@@ -138,6 +138,19 @@ public class Transaction {
             throw new IllegalTransactionException("[Error]: Seller does not have enough balance to issue a refund");
         }
     }
+
+    // Refund tiền nếu hết hạn pending
+    public void markExpiredRefund() throws IllegalTransactionException {
+    if (!this.isExpired()) {
+        throw new IllegalTransactionException("[Error]: Transaction has not expired yet.");
+    }
+    if (this.status != TransactionStatus.PENDING) {
+        throw new IllegalTransactionException("[Error]: Only PENDING transactions can be expired-refunded.");
+    }
+    buyer.unfreezeMoney(finalAmount);
+    this.status = TransactionStatus.REFUNDED;
+    System.out.println("[Transaction]: Expired refund for auction " + auction.getId());
+}
 
     @Override
     public String toString() {
