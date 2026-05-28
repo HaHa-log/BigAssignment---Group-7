@@ -160,6 +160,32 @@ public class TransactionDAOImpl implements TransactionDAO {
             throw new DbException(e.getMessage());
         }
     }
+    @Override
+    public List<Transaction> getPendingTransactions() {
+        String sql = "SELECT * FROM transaction WHERE status = ?";
+    
+        List<Transaction> list = new ArrayList<>();
+    
+        try (Connection conn = DB.getConnection();
+             PreparedStatement st = conn.prepareStatement(sql)) {
+    
+            st.setString(1,Transaction.TransactionStatus.PENDING.name());
+    
+            try (ResultSet rs = st.executeQuery()) {
+                while (rs.next()) {
+                    Transaction t = instantiateTransaction(rs);
+    
+                    if (t != null) {
+                        list.add(t);
+                    }
+                }
+            }
+            return list;
+            
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+    }
 
     @Override
     public List<Transaction> getAll() {
