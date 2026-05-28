@@ -15,7 +15,6 @@ import java.util.List;
 
 public class UserManagementController extends ManagementController<User> {
 
-    private final User admin = SessionManager.getCurrentUser();
     private final UserApiService userApiService = new UserApiService();
 
     @FXML

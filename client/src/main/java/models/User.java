@@ -117,6 +117,10 @@ public class User extends Entity implements Bidder, Seller {
 
     // SỬA LỖI: Chuyển đổi phương thức abstract cũ thành phương thức thông thường đồng bộ với Server
 
+    public String getRole() {
+        return isAdmin ? "Admin" : "User";
+    }
+
     public boolean isAdmin() {
         return isAdmin;
     }
