@@ -5,7 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import java.io.InputStream;
+import services.ItemApiService;
 
 public class ItemCardController {
     @FXML
@@ -20,6 +20,7 @@ public class ItemCardController {
     private ImageView imageContainer;
 
     private Item item;
+    private final ItemApiService itemApiService = new ItemApiService();
 
     public void setItemData(Item item, double displayPrice) {
         this.item = item;
@@ -41,7 +42,7 @@ public class ItemCardController {
             return;
         }
 
-        String imageUrl = config.ApiConfig.baseUrl() + "/api/items/images/" + imagePath;
+        String imageUrl = itemApiService.getItemImageUrl(imagePath);
         imageContainer.setImage(new Image(imageUrl, true));
     }
 }

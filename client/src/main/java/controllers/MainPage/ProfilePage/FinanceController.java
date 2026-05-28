@@ -1,8 +1,5 @@
 package controllers.MainPage.ProfilePage;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.group7.dto.transaction.TransactionResponse;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -10,14 +7,11 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import exceptions.ApiException;
 import models.Auction;
+import models.SessionManager;
 import services.UserApiService;
 import services.AuctionApiService;
+import services.TransactionApiService;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.Collections;
 import java.util.List;
 
 public class FinanceController extends BaseController {
@@ -32,6 +26,8 @@ public class FinanceController extends BaseController {
     @FXML private ProgressIndicator frozenLoadingIndicator;
 
     private final UserApiService userApiService = new UserApiService();
+    private final TransactionApiService transactionApiService = new TransactionApiService();
+    private final AuctionApiService auctionApiService = new AuctionApiService();
 
     @Override
     protected void initData() {
@@ -58,7 +54,8 @@ public class FinanceController extends BaseController {
     private void handleSaveDeposit() {
         try {
             double amount = Double.parseDouble(depositField.getText());
-            user = userApiService.deposit(user.getId(), amount);  // gọi server
+            user = userApiService.deposit(user.getId(), amount);
+            SessionManager.updateCurrentUser(user);
             depositStatus.getStyleClass().setAll("success");
             depositStatus.setText("Deposited " + amount + " successfully!");
             refreshFinance();
@@ -76,7 +73,8 @@ public class FinanceController extends BaseController {
     private void handleSaveWithdraw() {
         try {
             double amount = Double.parseDouble(withdrawField.getText());
-            user = userApiService.withdraw(user.getId(), amount);  // gọi server
+            user = userApiService.withdraw(user.getId(), amount);
+            SessionManager.updateCurrentUser(user);
             withdrawStatus.getStyleClass().setAll("success");
             withdrawStatus.setText("Withdrawn " + amount + " successfully!");
             refreshFinance();
@@ -92,7 +90,8 @@ public class FinanceController extends BaseController {
 
     private void refreshFinance() {
         try {
-            user = userApiService.getById(user.getId());  // fetch lại từ server
+            user = userApiService.getById(user.getId());
+            SessionManager.updateCurrentUser(user);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -120,35 +119,18 @@ public class FinanceController extends BaseController {
 
         new Thread(() -> {
             try {
-                HttpClient client = HttpClient.newHttpClient();
-                ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
-
-                HttpRequest txReq = HttpRequest.newBuilder()
-                        .uri(URI.create(config.ApiConfig.baseUrl()
-                                + "/api/transactions/user/" + user.getId()))
-                        .GET().build();
-                List<TransactionResponse> allTx = mapper.readValue(
-                        client.send(txReq, HttpResponse.BodyHandlers.ofString()).body(),
-                        new com.fasterxml.jackson.core.type.TypeReference<>() {});
-
-                HttpRequest histReq = HttpRequest.newBuilder()
-                        .uri(URI.create(config.ApiConfig.baseUrl()
-                                + "/api/users/" + user.getId() + "/history"))
-                        .GET().build();
-                List<com.group7.dto.user.HistoryEntryResponse> history = mapper.readValue(
-                        client.send(histReq, HttpResponse.BodyHandlers.ofString()).body(),
-                        new com.fasterxml.jackson.core.type.TypeReference<>() {});
+                List<TransactionResponse> allTx = transactionApiService.getByUserId(user.getId());
+                List<com.group7.dto.user.HistoryEntryResponse> history = userApiService.getAuctionHistory(user.getId());
 
                 List<TransactionResponse> pending = allTx.stream()
                         .filter(t -> "PENDING".equals(t.status()))
                         .toList();
 
-                AuctionApiService auctionApi = new AuctionApiService();
                 List<TransactionResponse> leading = history.stream()
                         .filter(h -> "LEADING".equals(h.userState()))
                         .map(h -> {
                             try {
-                                Auction a = auctionApi.getById(h.auctionId());
+                                Auction a = auctionApiService.getById(h.auctionId());
                                 return new TransactionResponse(
                                         0, h.auctionId(), h.itemName(),
                                         user.getId(), user.getFullName(),

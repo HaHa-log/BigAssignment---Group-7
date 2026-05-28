@@ -1,9 +1,6 @@
 package controllers.MainPage.HomePage;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.group7.dto.user.NotificationResponse;
-import config.ApiConfig;
 import models.*;
 import controllers.MainPage.ProfilePage.BaseController;
 
@@ -19,18 +16,16 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Popup;
 
-import java.net.URI;
 import java.net.URL;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.List;
 import javafx.scene.control.ProgressIndicator;
+import services.UserApiService;
 
 public class NotificationController extends BaseController {
     private User getCurrentUser() {return SessionManager.getCurrentUser();}
     private final ObservableList<String> cachedNotifications = FXCollections.observableArrayList();
     private final Popup popup = new Popup();
+    private final UserApiService userApiService = new UserApiService();
     private boolean loaded = false;
 
     @FXML
@@ -128,19 +123,7 @@ public class NotificationController extends BaseController {
         Task<ObservableList<String>> task = new Task<>() {
             @Override
             protected ObservableList<String> call() throws Exception {
-                HttpClient client = HttpClient.newHttpClient();
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(ApiConfig.baseUrl() + "/api/users/"
-                                + user.getId() + "/notifications"))
-                        .GET().build();
-
-                HttpResponse<String> response =
-                        client.send(request, HttpResponse.BodyHandlers.ofString());
-
-                ObjectMapper mapper = new ObjectMapper();
-                List<NotificationResponse> alerts = mapper.readValue(
-                        response.body(), new TypeReference<>() {}
-                );
+                List<NotificationResponse> alerts = userApiService.getNotifications(user.getId());
 
                 ObservableList<String> lines = FXCollections.observableArrayList();
                 for (NotificationResponse alert : alerts) {

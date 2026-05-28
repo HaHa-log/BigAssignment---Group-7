@@ -52,7 +52,7 @@ public class AuctionManagementController extends ManagementController<Auction> {
     @Override
     protected List<Auction> fetchData() {
         try {
-            return auctionApiService.getAll();
+            return auctionApiService.getAllForManagement();
         } catch (Exception e) {
             System.err.println(e.getMessage());
             return auctionManager.getAllSessions();
