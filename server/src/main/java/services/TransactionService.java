@@ -8,6 +8,7 @@ import repositories.AuctionsDAO;
 import repositories.TransactionDAO;
 import repositories.UsersDAO;
 import repositories.impl.DaoFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.List;
 
@@ -99,6 +100,39 @@ public class TransactionService {
                 .stream()
                 .map(this::toResponse)
                 .toList();
+    }
+
+    // Tự động quét các pending hết hạn mỗi 10ph
+    @Scheduled(fixedDelay = 600_000) 
+    public void autoExpireTransactions() {
+    
+        List<Transaction> pendingTransactions =
+                transactionDAO.getPendingTransactions();
+    
+        for (Transaction transaction : pendingTransactions) {
+    
+            if (!transaction.isExpired()) {
+                continue;
+            }
+    
+            try {
+                transaction.markExpiredRefund();
+    
+                usersDAO.update(transaction.getBuyer());
+                transactionDAO.update(transaction);
+    
+                System.out.println(
+                        "[Scheduler]: Refunded expired transaction "
+                                + transaction.getTransactionId()
+                );
+    
+            } catch (Exception e) {
+                System.out.println(
+                        "[Scheduler Error]: "
+                                + e.getMessage()
+                );
+            }
+        }
     }
 
     public TransactionResponse getById(int transactionId) {
