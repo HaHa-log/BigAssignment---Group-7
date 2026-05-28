@@ -61,11 +61,11 @@ public class ItemServiceTest {
         User mockOwner = mock(User.class);
         when(usersDAO.getById(10)).thenReturn(mockOwner);
 
-        Item createdItem = itemService.createNewItem(req);
+        ItemResponse createdItem = itemService.createNewItem(req);
 
         assertNotNull(createdItem);
         assertEquals("Laptop Gaming", createdItem.getName());
-        assertEquals(Item.Status.AVAILABLE, createdItem.getStatus());
+        assertEquals("AVAILABLE", createdItem.getStatus());
     }
 
     @Test
