@@ -195,6 +195,29 @@ public class AuctionManager {
         return transaction;
     }
 
+    @Scheduled(fixedDelay = 1_000)
+    public void checkAndCancelExpiredTransactions() {
+        List<Transaction> pendingTransactions =
+                transactionDb.getAll();
+
+        UsersDAO usersDb = DaoFactory.createUsersDAO();
+
+        for (Transaction transaction : pendingTransactions) {
+            if (!transaction.isExpired()) {
+                continue;
+            }
+            if (transaction.markExpiredRefund()) {
+                Auction auction = transaction.getAuction();
+                auction.transitionTo(Auction.AuctionStatus.CANCELED);
+                transactionDb.update(transaction);
+                usersDb.update(transaction.getBuyer());
+                auctionDb.update(auction);
+                System.out.println("[System]: Transaction " + transaction.getTransactionId()
+                        + " has expired. Money refunded to buyer.");
+            }
+        }
+    }
+
     private Auction findActiveAuction(int auctionId) {
         return getActiveSessions().stream()
                 .filter(auction -> auction.getId() == auctionId)
