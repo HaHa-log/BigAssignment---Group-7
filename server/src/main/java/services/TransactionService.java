@@ -85,7 +85,7 @@ public class TransactionService {
         }
 
         try {
-            transaction.markRefunded();
+            transaction.markExpiredRefund();
         } catch (IllegalTransactionException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
