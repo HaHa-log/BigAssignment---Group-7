@@ -24,22 +24,12 @@ import repositories.ItemsDAO;
  * Implementation of AuctionsDAO interface for managing auction operations.
  */
 public class AuctionsDAOImpl implements AuctionsDAO {
-    private final ItemsDAO itemsDAO = DaoFactory.createItemDAO();
 
     protected AuctionsDAOImpl() {
     }
 
     @Override
     public void save(Auction auction) {
-        Item item = auction.getItem();
-        if (item != null) {
-            if (item.getOwnerId() == 0) {
-                item.setOwnerId(auction.getOwner().getId());
-            }
-            itemsDAO.save(item);
-        } else {
-            throw new DbException("[Error]: Cannot create an auction without an item!");
-        }
 
         String sql = "INSERT INTO auctions "
                 + "(owner_id, item_id, startingPrice, currentPrice, startingTime, endingTime) "
