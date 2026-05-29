@@ -46,24 +46,14 @@ public class User extends Entity implements Bidder, Seller {
     public String getFirstName() { return fullname.getFirstName(); }
     public String getLastName() { return fullname.getLastName(); }
 
-    public void setFirstName(String fstName) {
-        this.fullname = new FullName(fstName, fullname.getLastName());
-    }
-
-    public void setLastName(String lstName) {
-        this.fullname = new FullName(fullname.getFirstName(), lstName);
-    }
-
     public String getEmail() { return email.toString(); }
 
     public void setEmail(String email) {
         this.email = new Email(email);
     }
 
-    public String getPhoneNumber() { return phoneNumber.toString(); }
-
-    public void setPhoneNumber(String number) {
-        this.phoneNumber = new PhoneNumber(number);
+    public String getPhoneNumber() {
+        return phoneNumber.toString();
     }
 
     public String getPassword() { return password; }
@@ -75,10 +65,13 @@ public class User extends Entity implements Bidder, Seller {
         this.password = pass;
     }
 
-    public double getBalance() { return balance.showBalance(); }
-    public double getCurrentBalance() { return this.balance.showBalance(); }
+    public double getBalance() {
+        return balance.showBalance();
+    }
 
-    public boolean isAdmin() { return isAdmin; }
+    public boolean isAdmin() {
+        return isAdmin;
+    }
 
     public String getRole() {
         return isAdmin ? "Admin" : "User";
@@ -102,13 +95,21 @@ public class User extends Entity implements Bidder, Seller {
         this.blockedUntil = null;
     }
 
-    public String getAvatarPath() { return avatarPath; }
-    public void setAvatarPath(String avatarPath) { this.avatarPath = avatarPath; }
+    public String getAvatarPath() {
+        return avatarPath;
+    }
 
-    public List<String> getTransactions() { return transactions; }
+    public void setAvatarPath(String avatarPath) {
+        this.avatarPath = avatarPath;
+    }
 
-    public double getFrozenBalance() { return frozenBalance; }
-    public void setFrozenBalance(double frozenBalance) { this.frozenBalance = frozenBalance; }
+    public double getFrozenBalance() {
+        return frozenBalance;
+    }
+
+    public void setFrozenBalance(double frozenBalance) {
+        this.frozenBalance = frozenBalance;
+    }
 
     public boolean depositMoney(double amount) {
         return this.balance.deposit(amount);
@@ -146,8 +147,6 @@ public class User extends Entity implements Bidder, Seller {
         return true;
     }
 
-    public void addTransaction(String message) { transactions.add(message); }
-
     public boolean isHighestBidder(Auction auction) {
         return auction != null
                 && auction.getWinner() != null
@@ -163,23 +162,15 @@ public class User extends Entity implements Bidder, Seller {
         return auction.getOwner().equals(this);
     }
 
-    public boolean hasParticipated(Auction auction) {
-        return auction.getBids().stream().anyMatch(bid -> bid.getBidder().equals(this));
-    }
-
-    private boolean isInvolvedIn(Auction auction) {
-        return isOwner(auction) || isWinner(auction) || hasParticipated(auction);
-    }
-
     public List<AuctionHistoryEntry> getTableHistory(List<Auction> auctions) {
         List<AuctionHistoryEntry> history = new ArrayList<>();
 
         for (Auction auction : auctions) {
-            String state = null;
+            String state;
 
             if (isOwner(auction)) {
                 state = "MY AUCTION";
-            } else if (hasParticipated(auction)) {
+            } else {
                 if (auction.getStatus() == Auction.AuctionStatus.FINISHED ||
                         auction.getStatus() == Auction.AuctionStatus.PAID) {
                     state = isWinner(auction) ? "WON" : "LOST";
@@ -204,9 +195,6 @@ public class User extends Entity implements Bidder, Seller {
         List<AuctionAlert> alerts = new ArrayList<>();
 
         for (Auction auction : auctions) {
-            if (!isInvolvedIn(auction)) {
-                continue;
-            }
 
             boolean isWinner = auction.getWinner() != null && auction.getWinner().getId() == this.getId();
 
