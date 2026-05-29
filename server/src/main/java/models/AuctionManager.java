@@ -194,7 +194,7 @@ public class AuctionManager {
         return transaction;
     }
 
-    @Scheduled(fixedDelay = 600_000)
+    @Scheduled(fixedDelay = 1_000)
     public void checkAndCancelExpiredTransactions() {
         List<Transaction> pendingTransactions =
                 transactionDb.getAll();
@@ -206,9 +206,11 @@ public class AuctionManager {
                 continue;
             }
             if (transaction.markExpiredRefund()) {
-                transaction.getAuction().transitionTo(Auction.AuctionStatus.CANCELED);
+                Auction auction = transaction.getAuction();
+                auction.transitionTo(Auction.AuctionStatus.CANCELED);
                 transactionDb.update(transaction);
                 usersDb.update(transaction.getBuyer());
+                auctionDb.update(auction);
                 System.out.println("[System]: Transaction " + transaction.getTransactionId()
                         + " has expired. Money refunded to buyer.");
             }
