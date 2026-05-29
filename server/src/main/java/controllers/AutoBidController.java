@@ -3,6 +3,8 @@ package controllers;
 import com.group7.dto.bid.AutoBidRequest;
 import com.group7.dto.bid.AutoBidResponse;
 import java.util.List;
+
+import models.Exceptions.CustomisedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +22,7 @@ public class AutoBidController {
     @PostMapping("/{auctionId}")
     public ResponseEntity<AutoBidResponse> enableAutoBid(
             @PathVariable int auctionId,
-            @RequestBody AutoBidRequest request) {
+            @RequestBody AutoBidRequest request) throws CustomisedException {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(autoBidService.createOrUpdate(auctionId, request));
     }

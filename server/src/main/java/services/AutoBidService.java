@@ -4,6 +4,7 @@ import com.group7.dto.bid.AutoBidRequest;
 import com.group7.dto.bid.AutoBidResponse;
 import models.Auction;
 import models.AutoBid;
+import models.Exceptions.CustomisedException;
 import models.User;
 import org.springframework.stereotype.Service;
 import repositories.AuctionsDAO;
@@ -19,7 +20,7 @@ public class AutoBidService {
     private final AuctionsDAO auctionsDAO = DaoFactory.createAuctionsDAO();
     private final UsersDAO usersDAO = DaoFactory.createUsersDAO();
 
-    public AutoBidResponse createOrUpdate(int auctionId, AutoBidRequest request) {
+    public AutoBidResponse createOrUpdate(int auctionId, AutoBidRequest request) throws IllegalArgumentException, CustomisedException {
         if (request == null) {
             throw new IllegalArgumentException("[Error]: Request body is required.");
         }

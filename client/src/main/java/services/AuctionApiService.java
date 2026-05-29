@@ -7,6 +7,7 @@ import config.ApiConfig;
 import models.Auction;
 import com.group7.dto.auction.*;
 import exceptions.ApiException;
+import models.Exceptions.CustomisedException;
 import utils.ApiJson;
 
 import java.io.IOException;
@@ -86,7 +87,7 @@ public class AuctionApiService {
         return AuctionMapper.toAuction(mapper.readValue(send(req).body(), AuctionResponse.class));
     }
 
-    public void enableAutoBid(int auctionId, com.group7.dto.bid.AutoBidRequest payload) throws IOException, InterruptedException {
+    public void enableAutoBid(int auctionId, com.group7.dto.bid.AutoBidRequest payload) throws IOException, InterruptedException, CustomisedException {
         String url = ApiConfig.baseUrl() + "/api/autobids/" + auctionId;
         HttpRequest req = jsonRequest(url, payload).POST(
                 HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload))
