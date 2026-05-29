@@ -170,6 +170,8 @@ public class User extends Entity implements Bidder, Seller {
 
             if (isOwner(auction)) {
                 state = "MY AUCTION";
+            } else if (auction.getStatus() == Auction.AuctionStatus.CANCELED) {
+                state = "CANCELLED";
             } else {
                 if (auction.getStatus() == Auction.AuctionStatus.FINISHED ||
                         auction.getStatus() == Auction.AuctionStatus.PAID) {
@@ -178,6 +180,7 @@ public class User extends Entity implements Bidder, Seller {
                     state = isHighestBidder(auction) ? "LEADING" : "OUTBID";
                 }
             }
+
 
             if (state != null) {
                 history.add(new AuctionHistoryEntry(
