@@ -187,7 +187,8 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 + " WHERE a.owner_id = ?"
                 + " OR a.winner_id = ?"
                 + " OR b.bidder_id = ?"
-                + " GROUP BY a.auctions_id";
+                + " GROUP BY a.auctions_id"
+                + " ORDER BY a.auctions_id DESC";
 
         try (Connection conn = DB.getConnection();
              PreparedStatement st = conn.prepareStatement(sql)) {
