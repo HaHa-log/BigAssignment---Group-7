@@ -5,6 +5,7 @@ import com.group7.dto.item.ItemRequest;
 import config.BidWebSocketHandler;
 import models.*;
 import models.Common.Price;
+import models.Exceptions.AuthenticationException;
 import models.Exceptions.IllegalTransactionException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -63,8 +64,11 @@ public class AuctionService {
             throw new IllegalArgumentException("[Error]: Item owner is missing.");
         }
 
-        Auction auction = auctionManager.createAuction(
-                owner,
+        if (owner.isBlocked()) {
+            throw new AuthenticationException("Your account is currently blocked and cannot create auctions.");
+        }
+
+        Auction auction = owner.createAuction(
                 item,
                 request.getStartingTime(),
                 request.getEndingTime()

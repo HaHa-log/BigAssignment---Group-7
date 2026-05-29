@@ -1,0 +1,75 @@
+2026-05-29 17:33:34.382 [main] INFO  controllers.AuctionControllerTest - Starting AuctionControllerTest using Java 26 with PID 10864 (started by TrangAnh LapTop in C:\Users\TrangAnh LapTop\BigAssignment---Group-7\server)
+2026-05-29 17:33:34.386 [main] INFO  controllers.AuctionControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-05-29 17:33:36.601 [main] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2026-05-29 17:33:36.602 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2026-05-29 17:33:36.606 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 3 ms
+2026-05-29 17:33:36.645 [main] INFO  controllers.AuctionControllerTest - Started AuctionControllerTest in 3.178 seconds (process running for 8.384)
+2026-05-29 17:33:37.231 [main] INFO  controllers.AuthControllerTest - Starting AuthControllerTest using Java 26 with PID 10864 (started by TrangAnh LapTop in C:\Users\TrangAnh LapTop\BigAssignment---Group-7\server)
+2026-05-29 17:33:37.232 [main] INFO  controllers.AuthControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-05-29 17:33:37.733 [main] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2026-05-29 17:33:37.733 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2026-05-29 17:33:37.734 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 0 ms
+2026-05-29 17:33:37.748 [main] INFO  controllers.AuthControllerTest - Started AuthControllerTest in 0.576 seconds (process running for 9.487)
+2026-05-29 17:33:37.811 [main] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [controllers.AutoBidControllerTest]: AutoBidControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-05-29 17:33:37.862 [main] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration controllers.GlobalExceptionHandlerTest$TestConfig for test class controllers.AutoBidControllerTest
+2026-05-29 17:33:37.910 [main] INFO  controllers.AutoBidControllerTest - Starting AutoBidControllerTest using Java 26 with PID 10864 (started by TrangAnh LapTop in C:\Users\TrangAnh LapTop\BigAssignment---Group-7\server)
+2026-05-29 17:33:37.910 [main] INFO  controllers.AutoBidControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-05-29 17:33:38.480 [main] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2026-05-29 17:33:38.481 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2026-05-29 17:33:38.482 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 1 ms
+2026-05-29 17:33:38.492 [main] INFO  controllers.AutoBidControllerTest - Started AutoBidControllerTest in 0.626 seconds (process running for 10.231)
+2026-05-29 17:33:38.636 [main] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [controllers.BidControllerTest]: BidControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-05-29 17:33:38.682 [main] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration controllers.GlobalExceptionHandlerTest$TestConfig for test class controllers.BidControllerTest
+2026-05-29 17:33:38.894 [main] INFO  controllers.BidControllerTest - Starting BidControllerTest using Java 26 with PID 10864 (started by TrangAnh LapTop in C:\Users\TrangAnh LapTop\BigAssignment---Group-7\server)
+2026-05-29 17:33:38.894 [main] INFO  controllers.BidControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-05-29 17:33:39.657 [main] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2026-05-29 17:33:39.658 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2026-05-29 17:33:39.659 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 0 ms
+2026-05-29 17:33:39.675 [main] INFO  controllers.BidControllerTest - Started BidControllerTest in 0.983 seconds (process running for 11.414)
+2026-05-29 17:33:39.973 [main] INFO  c.GlobalExceptionHandlerTest - Starting GlobalExceptionHandlerTest using Java 26 with PID 10864 (started by TrangAnh LapTop in C:\Users\TrangAnh LapTop\BigAssignment---Group-7\server)
+2026-05-29 17:33:39.974 [main] INFO  c.GlobalExceptionHandlerTest - No active profile set, falling back to 1 default profile: "default"
+2026-05-29 17:33:40.333 [main] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2026-05-29 17:33:40.333 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2026-05-29 17:33:40.334 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 0 ms
+2026-05-29 17:33:40.341 [main] INFO  c.GlobalExceptionHandlerTest - Started GlobalExceptionHandlerTest in 0.475 seconds (process running for 12.08)
+2026-05-29 17:33:40.447 [main] INFO  controllers.HealthControllerTest - Starting HealthControllerTest using Java 26 with PID 10864 (started by TrangAnh LapTop in C:\Users\TrangAnh LapTop\BigAssignment---Group-7\server)
+2026-05-29 17:33:40.447 [main] INFO  controllers.HealthControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-05-29 17:33:40.888 [main] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2026-05-29 17:33:40.891 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2026-05-29 17:33:40.893 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 1 ms
+2026-05-29 17:33:40.900 [main] INFO  controllers.HealthControllerTest - Started HealthControllerTest in 0.486 seconds (process running for 12.638)
+2026-05-29 17:33:40.927 [main] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [controllers.ItemControllerTest]: ItemControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-05-29 17:33:40.946 [main] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration controllers.GlobalExceptionHandlerTest$TestConfig for test class controllers.ItemControllerTest
+2026-05-29 17:33:40.980 [main] INFO  controllers.ItemControllerTest - Starting ItemControllerTest using Java 26 with PID 10864 (started by TrangAnh LapTop in C:\Users\TrangAnh LapTop\BigAssignment---Group-7\server)
+2026-05-29 17:33:40.981 [main] INFO  controllers.ItemControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-05-29 17:33:41.562 [main] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2026-05-29 17:33:41.562 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2026-05-29 17:33:41.563 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 1 ms
+2026-05-29 17:33:41.571 [main] INFO  controllers.ItemControllerTest - Started ItemControllerTest in 0.62 seconds (process running for 13.309)
+2026-05-29 17:33:41.710 [main] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [controllers.TransactionControllerTest]: TransactionControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-05-29 17:33:41.729 [main] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration controllers.GlobalExceptionHandlerTest$TestConfig for test class controllers.TransactionControllerTest
+2026-05-29 17:33:41.764 [main] INFO  c.TransactionControllerTest - Starting TransactionControllerTest using Java 26 with PID 10864 (started by TrangAnh LapTop in C:\Users\TrangAnh LapTop\BigAssignment---Group-7\server)
+2026-05-29 17:33:41.765 [main] INFO  c.TransactionControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-05-29 17:33:42.194 [main] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2026-05-29 17:33:42.195 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2026-05-29 17:33:42.195 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 0 ms
+2026-05-29 17:33:42.202 [main] INFO  c.TransactionControllerTest - Started TransactionControllerTest in 0.47 seconds (process running for 13.941)
+2026-05-29 17:33:42.275 [main] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [controllers.UserControllerTest]: UserControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-05-29 17:33:42.293 [main] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration controllers.GlobalExceptionHandlerTest$TestConfig for test class controllers.UserControllerTest
+2026-05-29 17:33:42.333 [main] INFO  controllers.UserControllerTest - Starting UserControllerTest using Java 26 with PID 10864 (started by TrangAnh LapTop in C:\Users\TrangAnh LapTop\BigAssignment---Group-7\server)
+2026-05-29 17:33:42.333 [main] INFO  controllers.UserControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-05-29 17:33:42.667 [main] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2026-05-29 17:33:42.668 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2026-05-29 17:33:42.669 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 1 ms
+2026-05-29 17:33:42.675 [main] INFO  controllers.UserControllerTest - Started UserControllerTest in 0.378 seconds (process running for 14.413)
+2026-05-29 17:33:43.064 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-05-29 17:33:44.016 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@20c5b5f8
+2026-05-29 17:33:44.020 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-05-29 17:33:44.142 [main] INFO  models.Admin - [Admin]: Could not find auction with ID: -9999
+2026-05-29 17:33:44.150 [main] WARN  models.Admin - [Error]: User not found
+2026-05-29 17:33:44.150 [main] WARN  models.Admin - [Error]: User not found
+2026-05-29 17:33:44.251 [main] INFO  models.Admin - [Admin]: User with ID 3 blocked until 2026-06-05T17:33:44.155752100
+2026-05-29 17:33:44.326 [main] INFO  models.Admin - [Admin]: User with ID 3 unblocked.
+2026-05-29 17:34:37.719 [main] INFO  services.UserService - [Finance]: User ID 1 deposited +500.0 USD. New balance: 500.0
+2026-05-29 17:34:37.729 [main] WARN  services.UserService - [Finance Error]: User ID 2 failed to withdraw 1000.0 USD due to insufficient funds.
+2026-05-29 17:34:37.738 [main] INFO  services.UserService - [Admin Action]: Blocked user ID: 3 (null) until 2026-09-06T17:34:37.738707800
