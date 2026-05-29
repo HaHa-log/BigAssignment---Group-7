@@ -117,7 +117,7 @@ public class TransactionDAOImpl implements TransactionDAO {
 
     @Override
     public List<Transaction> getByUserId(int userId) {
-        String sql = "SELECT * FROM transaction WHERE buyer_id = ? OR seller_id = ?";
+        String sql = "SELECT * FROM transaction WHERE buyer_id = ? OR seller_id = ? ORDER BY paidAt DESC";
         List<Transaction> list = new ArrayList<>();
 
         try (Connection conn = DB.getConnection();
