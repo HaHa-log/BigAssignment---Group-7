@@ -146,9 +146,7 @@ public class Transaction {
         if (!this.isExpired()) {
             return false;
         }
-        if (this.status != TransactionStatus.PENDING) {
-            throw new IllegalTransactionException("[Error]: Only PENDING transactions can be expired-refunded.");
-        }
+
         buyer.unfreezeMoney(finalAmount);
         this.status = TransactionStatus.REFUNDED;
         System.out.println("[Transaction]: Expired refund for auction " + auction.getId());

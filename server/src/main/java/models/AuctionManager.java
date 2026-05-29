@@ -195,7 +195,6 @@ public class AuctionManager {
         return transaction;
     }
 
-    @Scheduled(fixedDelay = 1_000)
     public void checkAndCancelExpiredTransactions() {
         List<Transaction> pendingTransactions =
                 transactionDb.getAll();

@@ -133,31 +133,7 @@ public class AuctionService {
 
     @Scheduled(fixedDelay = 5_000)
     public void checkAndCancelExpiredTransactions() {
-        System.out.println(LocalDateTime.now());
-        List<Transaction> expiredTransactions = transactionDb.getAll();
-
-        if (expiredTransactions.isEmpty()) {
-            return;
-        }
-
-        UsersDAO usersDb = DaoFactory.createUsersDAO(); // Instantiated once outside the loop
-
-        for (Transaction transaction : expiredTransactions) {
-            try {
-                if (transaction.markExpiredRefund()) {
-                    transaction.getAuction().transitionTo(Auction.AuctionStatus.CANCELED);
-
-                    transactionDb.update(transaction);
-                    usersDb.update(transaction.getBuyer());
-                    auctionsDAO.update(transaction.getAuction());
-
-                    System.out.println("[System]: Transaction " + transaction.getTransactionId()
-                            + " has expired. Money refunded to buyer.");
-                }
-            } catch (IllegalTransactionException e) {
-                throw e;
-            }
-        }
+        auctionManager.checkAndCancelExpiredTransactions();
     }
 
     private Auction requireAuction(int id) {
