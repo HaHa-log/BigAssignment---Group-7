@@ -25,7 +25,7 @@ public class HistoryController extends BaseController {
 
     @FXML private ComboBox<String> filterBox;
     @FXML private TableView<AuctionHistoryEntry> historyTable;
-    @FXML private TableView<TransactionResponse> transactionTable; // ← đổi từ ListView
+    @FXML private TableView<TransactionResponse> transactionTable;
     @FXML private ProgressIndicator loadingIndicator;
 
     @FXML private TableColumn<AuctionHistoryEntry, Integer> colAuction;
@@ -164,14 +164,13 @@ public class HistoryController extends BaseController {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
-                getStyleClass().removeAll(
-                        "state-win", "state-lose", "state-default");
+                getStyleClass().removeAll("state-win", "state-lose", "state-owner");
                 if (empty || item == null) { setText(null); return; }
                 setText(item);
                 switch (item) {
                     case "COMPLETED" -> getStyleClass().add("state-win");
                     case "REFUNDED"  -> getStyleClass().add("state-lose");
-                    default          -> getStyleClass().add("state-default"); // PENDING
+                    case "PENDING"  -> getStyleClass().add("state-owner");
                 }
             }
         });
