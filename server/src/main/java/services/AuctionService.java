@@ -5,9 +5,12 @@ import com.group7.dto.item.ItemRequest;
 import config.BidWebSocketHandler;
 import models.*;
 import models.Common.Price;
+import models.Exceptions.IllegalTransactionException;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import repositories.AuctionsDAO;
 import repositories.BidsDAO;
+import repositories.TransactionDAO;
 import repositories.UsersDAO;
 import repositories.impl.DaoFactory;
 
@@ -19,6 +22,7 @@ public class AuctionService {
     private final AuctionsDAO auctionsDAO = DaoFactory.createAuctionsDAO();
     private final UsersDAO usersDAO = DaoFactory.createUsersDAO();
     private final BidsDAO bidsDAO = DaoFactory.createBidsDAO();
+    private final TransactionDAO transactionDb = DaoFactory.createTransactionDAO();
     private final ItemService itemService = new ItemService();
     private final TransactionService transactionService;
     private final BidWebSocketHandler webSocketHandler;
@@ -125,6 +129,35 @@ public class AuctionService {
 
         transactionService.confirmReceipt(auctionId, buyerId);
         return toResponse(requireAuction(auctionId));
+    }
+
+    @Scheduled(fixedDelay = 5_000)
+    public void checkAndCancelExpiredTransactions() {
+        System.out.println(LocalDateTime.now());
+        List<Transaction> expiredTransactions = transactionDb.getAll();
+
+        if (expiredTransactions.isEmpty()) {
+            return;
+        }
+
+        UsersDAO usersDb = DaoFactory.createUsersDAO(); // Instantiated once outside the loop
+
+        for (Transaction transaction : expiredTransactions) {
+            try {
+                if (transaction.markExpiredRefund()) {
+                    transaction.getAuction().transitionTo(Auction.AuctionStatus.CANCELED);
+
+                    transactionDb.update(transaction);
+                    usersDb.update(transaction.getBuyer());
+                    auctionsDAO.update(transaction.getAuction());
+
+                    System.out.println("[System]: Transaction " + transaction.getTransactionId()
+                            + " has expired. Money refunded to buyer.");
+                }
+            } catch (IllegalTransactionException e) {
+                throw e;
+            }
+        }
     }
 
     private Auction requireAuction(int id) {

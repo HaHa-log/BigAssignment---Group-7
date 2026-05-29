@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import models.Exceptions.IllegalTransactionException;
 import org.springframework.scheduling.annotation.Scheduled;
 import repositories.AuctionsDAO;
 import repositories.AutoBidDAO;
@@ -192,27 +193,6 @@ public class AuctionManager {
         DaoFactory.createUsersDAO().update(transaction.getSeller());
 
         return transaction;
-    }
-
-    @Scheduled(fixedDelay = 600_000)
-    public void checkAndCancelExpiredTransactions() {
-        List<Transaction> pendingTransactions =
-                transactionDb.getAll();
-
-        UsersDAO usersDb = DaoFactory.createUsersDAO();
-
-        for (Transaction transaction : pendingTransactions) {
-            if (!transaction.isExpired()) {
-                continue;
-            }
-            if (transaction.markExpiredRefund()) {
-                transaction.getAuction().transitionTo(Auction.AuctionStatus.CANCELED);
-                transactionDb.update(transaction);
-                usersDb.update(transaction.getBuyer());
-                System.out.println("[System]: Transaction " + transaction.getTransactionId()
-                        + " has expired. Money refunded to buyer.");
-            }
-        }
     }
 
     private Auction findActiveAuction(int auctionId) {
