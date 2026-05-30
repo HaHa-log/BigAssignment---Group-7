@@ -3,6 +3,7 @@ package models;
 import models.Exceptions.AuthenticationException;
 import models.Exceptions.CustomisedException;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 public interface Seller {
     boolean isBlocked();
@@ -16,12 +17,17 @@ public interface Seller {
             throw new CustomisedException("Scheduled auctions must have both starting and ending time");
         }
 
+        if (!terminatedAt.isAfter(createdAt)) {
+            throw new CustomisedException("Ending time must be after starting time.");
+        }
+
         if (terminatedAt.isBefore(LocalDateTime.now())) {
             throw new CustomisedException("The auction termination time must be in the future.");
         }
 
-        if (!terminatedAt.isAfter(createdAt)) {
-            throw new CustomisedException("Ending time must be after starting time.");
+        long durationDays = ChronoUnit.DAYS.between(createdAt, terminatedAt);
+        if (durationDays > 30) {
+            throw new CustomisedException("Auction duration cannot exceed 30 days!");
         }
 
         try {
