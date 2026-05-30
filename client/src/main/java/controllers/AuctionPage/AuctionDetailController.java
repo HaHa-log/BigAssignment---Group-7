@@ -181,14 +181,14 @@ public class AuctionDetailController {
         cancelPane.setVisible(true);
         cancelPane.setManaged(true);
 
-        javafx.scene.control.Button confirmBtn = (javafx.scene.control.Button) confirmPane.getChildren().get(2);
+        javafx.scene.control.Button cancelBtn = (javafx.scene.control.Button) cancelPane.getChildren().get(2);
         if (alreadyCanceled) {
             cancelBtn.setDisable(true);
             cancelMessage.setText("Your auction has been canceled");
-            confirmBtn.setText("✓ Canceled");
+            cancelBtn.setText("✓ Canceled");
         } else {
-            confirmBtn.setDisable(false);
-            confirmBtn.setText("CANCEL");}
+            cancelBtn.setDisable(false);
+            cancelBtn.setText("CANCEL");}
     }
 
     public void getTableData(Auction auction) {
