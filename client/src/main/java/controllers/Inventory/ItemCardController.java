@@ -29,9 +29,19 @@ public class ItemCardController {
         this.itemNameLabel.setText(item.getName());
         this.startingPriceLabel.setText("Starting price: $" + item.getStartingPrice());
 
-        this.currentPriceLabel.setText("Current price: $" + displayPrice);
+        updateCurrentPrice(displayPrice);
 
         setItemImage();
+    }
+
+    public void updateCurrentPrice(double newPrice) {
+        javafx.application.Platform.runLater(() -> {
+            this.currentPriceLabel.setText("Current price: $" + newPrice);
+        });
+    }
+
+    public Item getItem() {
+        return this.item;
     }
 
     private void setItemImage() {
