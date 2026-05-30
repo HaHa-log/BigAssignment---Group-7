@@ -1,5 +1,6 @@
 package controllers.AuctionPage;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.group7.dto.bid.AutoBidRequest;
 import javafx.application.Platform;
 import javafx.scene.control.Button;
@@ -261,11 +262,17 @@ public class AuctionDetailController {
                             public CompletionStage<?> onText(WebSocket ws, CharSequence data, boolean last) {
                                 try {
                                     System.out.println("[CLIENT WS]: " + data);
-                                    double newPrice = auctionApiService.readCurrentPriceUpdate(data);
+                                    ObjectMapper mapper = new ObjectMapper();
+                                    var node = mapper.readTree(data.toString());
+                                    double newPrice = node.get("currentPrice").asDouble();
+                                    String status = node.has("status") ? node.get("status").asText() : null;
 
-                                    Platform.runLater(() ->
-                                            currentPriceLabel.setText("Current price: $" + newPrice)
-                                    );
+                                    Platform.runLater(() -> {
+                                        currentPriceLabel.setText("Current price: $" + newPrice);
+                                        if (status != null) {
+                                            auctionStatusLabel.setText(status);
+                                        }
+                                    });
 
                                 } catch (Exception e) {
                                     e.printStackTrace();

@@ -38,7 +38,7 @@ public class BidWebSocketHandler extends TextWebSocketHandler {
     }
 
     // Gọi từ AuctionService khi có bid mới
-    public void broadcastBid(int auctionId, double newPrice) {
+    public void broadcastBid(int auctionId, double newPrice, String status) {
         Set<WebSocketSession> sessions = auctionSessions.get(auctionId);
 
         System.out.println("[WS] auction " + auctionId + " sessions = " + (sessions == null ? 0 : sessions.size()));
@@ -48,7 +48,7 @@ public class BidWebSocketHandler extends TextWebSocketHandler {
             return;
         }
         try {
-            String message = mapper.writeValueAsString(Map.of("auctionId", auctionId, "currentPrice", newPrice));
+            String message = mapper.writeValueAsString(Map.of("auctionId", auctionId, "currentPrice", newPrice, "status", status ));
             System.out.println("[WS] sending: " + message);
 
             TextMessage textMessage = new TextMessage(message);
