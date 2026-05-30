@@ -184,18 +184,26 @@ public class AuctionManager {
 
         UsersDAO usersDb = DaoFactory.createUsersDAO();
 
-        for (Transaction transaction : pendingTransactions) {
-            if (!transaction.isExpired()) {
-                continue;
-            }
-            if (transaction.markExpiredRefund()) {
-                Auction auction = transaction.getAuction();
-                auction.transitionTo(Auction.AuctionStatus.CANCELED);
-                transactionDb.update(transaction);
-                usersDb.update(transaction.getBuyer());
-                auctionDb.update(auction);
-                System.out.println("[System]: Transaction " + transaction.getTransactionId()
-                        + " has expired. Money refunded to buyer.");
+        if (pendingTransactions == null || pendingTransactions.isEmpty()) {
+            return;
+        } else {
+            for (Transaction transaction : pendingTransactions) {
+                if (pendingTransactions == null || pendingTransactions.isEmpty()) {
+                    return;
+                }
+
+                if (!transaction.isExpired()) {
+                    continue;
+                }
+                if (transaction.markExpiredRefund()) {
+                    Auction auction = transaction.getAuction();
+                    auction.transitionTo(Auction.AuctionStatus.CANCELED);
+                    transactionDb.update(transaction);
+                    usersDb.update(transaction.getBuyer());
+                    auctionDb.update(auction);
+                    System.out.println("[System]: Transaction " + transaction.getTransactionId()
+                            + " has expired. Money refunded to buyer.");
+                }
             }
         }
     }
