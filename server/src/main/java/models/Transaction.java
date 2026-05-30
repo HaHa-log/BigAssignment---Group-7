@@ -101,23 +101,25 @@ public class Transaction {
             throw new IllegalTransactionException("[Error]: This transaction has expired (30 mins limit reached)!");
         }
 
-        if (this.status != TransactionStatus.PENDING) {
-            throw new IllegalTransactionException("[Error]: The transaction isn't pending");
-        }
-
-        if (buyer.spendFrozenMoney(finalAmount)) {
-            try {
-                seller.depositMoney(finalAmount);
-                buyer.addItem(auction.getItem());
-                this.status = TransactionStatus.COMPLETED;
-                this.completedAt = LocalDateTime.now();
-                System.out.println("[System]: Transaction completed! " + buyer.getFullName() + " has made a payment of " + finalAmount);
-            } catch (Exception e) {
-                buyer.unfreezeMoney(finalAmount);
-                throw new IllegalTransactionException("[Error]: Failure to transfer payment to seller. Refund issued to buyer");
+        AuctionManager auctionManager = AuctionManager.getInstance();
+        if (auctionManager.confirmReceipt(getAuction(), getBuyer())) {
+            if (this.status != TransactionStatus.PENDING) {
+                throw new IllegalTransactionException("[Error]: The transaction isn't pending");
             }
-        } else {
-            throw new IllegalTransactionException("[System]: Buyer does not have enough balance to complete the payment");
+
+            if (buyer.spendFrozenMoney(finalAmount)) {
+                try {
+                    seller.depositMoney(finalAmount);
+                    this.status = TransactionStatus.COMPLETED;
+                    this.completedAt = LocalDateTime.now();
+                    System.out.println("[System]: Transaction completed! " + buyer.getFullName() + " has made a payment of " + finalAmount);
+                } catch (Exception e) {
+                    buyer.unfreezeMoney(finalAmount);
+                    throw new IllegalTransactionException("[Error]: Failure to transfer payment to seller. Refund issued to buyer");
+                }
+            } else {
+                throw new IllegalTransactionException("[System]: Buyer does not have enough balance to complete the payment");
+            }
         }
     }
     //Refund tiền nếu hoàn trả hàng

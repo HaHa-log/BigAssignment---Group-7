@@ -20,6 +20,7 @@ public class AuctionManager {
     private final TransactionDAO transactionDb;
     private final AutoBidDAO autoBidDb;
     private final ItemsDAO itemsDb;
+    private final UsersDAO userDb;
     private List<Auction> activeSessions;
     private List<Auction> completedSessions;
 
@@ -27,7 +28,8 @@ public class AuctionManager {
         auctionDb = DaoFactory.createAuctionsDAO();
         transactionDb = DaoFactory.createTransactionDAO();
         autoBidDb = DaoFactory.createAutoBidDAO();
-        this.itemsDb = DaoFactory.createItemDAO();
+        itemsDb = DaoFactory.createItemDAO();
+        userDb = DaoFactory.createUsersDAO();
         activeSessions = new ArrayList<>();
         completedSessions = new ArrayList<>();
     }
@@ -139,7 +141,6 @@ public class AuctionManager {
         Transaction transaction = new Transaction(session, winner, session.getOwner(), finalPrice);
         transactionDb.save(transaction);
 
-        session.getItem().setStatus(Item.Status.SOLD);
         System.out.println("[System]: Pending invoice generated for Auction Winner: " + winner.getFullName());
     }
 
@@ -157,43 +158,24 @@ public class AuctionManager {
         return true;
     }
 
-    public Transaction confirmReceipt(Auction auction, User buyer) {
+    public boolean confirmReceipt(Auction auction, User buyer) {
         if (auction == null) {
             throw new IllegalArgumentException("[Error]: Auction is required.");
         }
-        return confirmReceipt(auction.getId(), buyer);
-    }
 
-    public Transaction confirmReceipt(int auctionId, User buyer) {
-        if (buyer == null) {
-            throw new IllegalArgumentException("[Error]: Buyer is required.");
-        }
+        auction.transitionTo(Auction.AuctionStatus.PAID);
 
-        // Ép cập nhật trạng thái thời gian thực tế của DB Server trước khi tìm kiếm hóa đơn
-        Auction auction = auctionDb.getById(auctionId);
-        if (auction != null) {
-            auction.getStatus();
-        }
+        auction.getItem().setStatus(Item.Status.AVAILABLE);
 
-        Transaction transaction = transactionDb.getPendingByAuctionAndBuyer(auctionId, buyer.getId());
-        if (transaction == null) {
-            throw new IllegalArgumentException("[Error]: No pending transaction found for this auction.");
-        }
+        auction.getOwner().removeItem(auction.getItem());
+        auction.getWinner().addItem(auction.getItem());
 
-        if (!buyer.isEqual(transaction.getBuyer())) {
-            throw new IllegalArgumentException("[Error]: Only the buyer can confirm receipt.");
-        }
+        auctionDb.update(auction);
+        itemsDb.update(auction.getItem());
+        userDb.update(buyer);
+        userDb.update(auction.getOwner());
 
-        transaction.markCompleted();
-        transaction.getAuction().transitionTo(Auction.AuctionStatus.PAID);
-
-        // DB update
-        transactionDb.update(transaction);
-        auctionDb.update(transaction.getAuction());
-        DaoFactory.createUsersDAO().update(buyer);
-        DaoFactory.createUsersDAO().update(transaction.getSeller());
-
-        return transaction;
+        return true;
     }
 
     public void checkAndCancelExpiredTransactions() {

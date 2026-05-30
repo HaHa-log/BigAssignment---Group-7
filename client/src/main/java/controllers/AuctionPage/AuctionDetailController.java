@@ -181,7 +181,7 @@ public class AuctionDetailController {
         cancelPane.setVisible(true);
         cancelPane.setManaged(true);
 
-        javafx.scene.control.Button cancelBtn = (javafx.scene.control.Button) cancelPane.getChildren().get(2);
+        javafx.scene.control.Button cancelBtn = (javafx.scene.control.Button) cancelPane.getChildren().get(1);
         if (alreadyCanceled) {
             cancelBtn.setDisable(true);
             cancelMessage.setText("Your auction has been canceled");
