@@ -87,6 +87,7 @@ public class AuctionManager {
     public Auction createAuction(User owner, Item item, LocalDateTime startingTime, LocalDateTime endingTime) {
         item.setStatus(Item.Status.IN_AUCTION);
         Auction session = new Auction(owner, item, startingTime, endingTime);
+        itemsDb.update(item);
         auctionDb.save(session);
         activeSessions.add(session);
         session.start();

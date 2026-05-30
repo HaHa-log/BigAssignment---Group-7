@@ -172,6 +172,7 @@ public class AuctionCreateController {
         };
 
         createTask.setOnSucceeded(e -> {
+            loadAvailableItems();
             auctionCreateResult.setTextFill(GREEN);
             auctionCreateResult.setText("Auction created successfully!");
             clearInputs();
