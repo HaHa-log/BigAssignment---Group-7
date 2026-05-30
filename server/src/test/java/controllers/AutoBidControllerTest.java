@@ -78,7 +78,7 @@ public class AutoBidControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(autoBidRequest)))
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.error").value("Unexpected server error."));
+                .andExpect(jsonPath("$.error").value("Database connection failure"));
     }
 
     @Test
