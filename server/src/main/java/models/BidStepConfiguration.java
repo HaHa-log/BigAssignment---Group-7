@@ -7,8 +7,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import config.DB;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BidStepConfiguration {
+    private static final Logger log = LoggerFactory.getLogger(BidStepConfiguration.class);
+
     public static List<Double> getAllowedSteps(double currentPrice) {
         List<Double> allowedSteps = new ArrayList<>();
         String sql = "SELECT allowed_steps FROM system_bid_steps WHERE ? >= min_price AND ? <= max_price";
@@ -29,7 +33,7 @@ public class BidStepConfiguration {
                 }
             }
         } catch (SQLException e) {
-            System.out.println("[System Error]: Failed to retrieve bid step configuration: " + e.getMessage());
+            log.error("Failed to retrieve bid step configuration: {}", e.getMessage(), e);
             allowedSteps.add(10.0);
         }
         return allowedSteps;

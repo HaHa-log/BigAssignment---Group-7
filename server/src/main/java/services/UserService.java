@@ -11,8 +11,13 @@ import repositories.impl.DaoFactory;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class UserService {
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
+
     private final UsersDAO usersDAO = DaoFactory.createUsersDAO();
     private final AuctionsDAO auctionsDAO = DaoFactory.createAuctionsDAO();
 
@@ -34,6 +39,7 @@ public class UserService {
         User user = requireUser(id);
         user.setAvatarPath(filename);
         usersDAO.update(user);
+        log.info("[User System]: Updated avatar for user ID: {}, file: {}", id, filename);
         return toResponse(user);
     }
 
@@ -44,18 +50,24 @@ public class UserService {
 
         User user = requireUser(id);
         if (!user.getPassword().equals(request.getOldPassword())) {
+            log.warn("[Security Alert]: Failed password change attempt for user ID: {}", id);
             throw new IllegalArgumentException("Old password failed.");
         }
 
         user.setPassword(request.getNewPassword());
         usersDAO.update(user);
+        log.info("[Security]: User ID {} successfully changed password.", id);
         return toResponse(user);
     }
 
     public UserResponse block(int id) {
         User user = requireUser(id);
-        user.setBlocked(LocalDateTime.now().plusDays(100));
+        LocalDateTime blockUntil = LocalDateTime.now().plusDays(100);
+        user.setBlocked(blockUntil);
         usersDAO.update(user);
+
+        log.info("[Admin Action]: Blocked user ID: {} ({}) until {}", user.getId(), user.getEmail(), blockUntil);
+
         return toResponse(user);
     }
 
@@ -63,6 +75,9 @@ public class UserService {
         User user = requireUser(id);
         user.isUnblocked();
         usersDAO.update(user);
+
+        log.info("[Admin Action]: Unblocked user ID: {} ({}) successfully.", user.getId(), user.getEmail());
+
         return toResponse(user);
     }
 
@@ -71,6 +86,7 @@ public class UserService {
         User user = requireUser(id);
         user.depositMoney(amount);
         usersDAO.update(user);
+        log.info("[Finance]: User ID {} deposited +{} USD. New balance: {}", id, amount, user.getBalance());
         return toResponse(user);
     }
 
@@ -78,8 +94,12 @@ public class UserService {
         if (amount <= 0) throw new IllegalArgumentException("Amount must be positive.");
         User user = requireUser(id);
         boolean success = user.withdrawMoney(amount);
-        if (!success) throw new IllegalArgumentException("Insufficient balance.");
+        if (!success) {
+            log.warn("[Finance Error]: User ID {} failed to withdraw {} USD due to insufficient funds.", id, amount);
+            throw new IllegalArgumentException("Insufficient balance.");
+        }
         usersDAO.update(user);
+        log.info("[Finance]: User ID {} withdrew -{} USD. Remaining balance: {}", id, amount, user.getBalance());
         return toResponse(user);
     }
 
@@ -89,6 +109,7 @@ public class UserService {
         boolean success = user.freezeMoney(amount);
         if (!success) throw new IllegalArgumentException("Insufficient balance.");
         usersDAO.update(user);
+        log.info("[Finance]: Frozen {} USD for User ID: {}. Current frozen: {}", amount, id, user.getFrozenBalance());
         return toResponse(user);
     }
 
@@ -98,6 +119,7 @@ public class UserService {
         boolean success = user.unfreezeMoney(amount);
         if (!success) throw new IllegalArgumentException("Insufficient frozen balance.");
         usersDAO.update(user);
+        log.info("[Finance]: Unfrozen {} USD for User ID: {}. Current frozen: {}", amount, id, user.getFrozenBalance());
         return toResponse(user);
     }
 
@@ -107,12 +129,14 @@ public class UserService {
         boolean success = user.spendFrozenMoney(amount);
         if (!success) throw new IllegalArgumentException("Insufficient frozen balance.");
         usersDAO.update(user);
+        log.info("[Finance]: Deducted frozen money: -{} USD from User ID: {} for payment.", amount, id);
         return toResponse(user);
     }
 
     private User requireUser(int id) {
         User user = usersDAO.getById(id);
         if (user == null) {
+            log.warn("[System Query]: User lookup failed for ID: {}", id);
             throw new IllegalArgumentException("[Error]: User not found.");
         }
         return user;
@@ -121,6 +145,7 @@ public class UserService {
     private User requireUser(String email) {
         User user = usersDAO.getByEmail(email);
         if (user == null) {
+            log.warn("[System Query]: User lookup failed for Email: {}", email);
             throw new IllegalArgumentException("[Error]: User not found with email: " + email);
         }
         return user;

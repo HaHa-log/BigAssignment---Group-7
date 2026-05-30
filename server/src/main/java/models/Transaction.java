@@ -3,7 +3,12 @@ package models;
 import models.Exceptions.IllegalTransactionException;
 import java.time.LocalDateTime;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Transaction {
+    private static final Logger log = LoggerFactory.getLogger(Transaction.class);
+
     public enum TransactionStatus {
         PENDING,
         COMPLETED,
@@ -111,7 +116,7 @@ public class Transaction {
                 buyer.addItem(auction.getItem());
                 this.status = TransactionStatus.COMPLETED;
                 this.completedAt = LocalDateTime.now();
-                System.out.println("[System]: Transaction completed! " + buyer.getFullName() + " has made a payment of " + finalAmount);
+                log.info("Transaction completed! {} has made a payment of {}", buyer.getFullName(), finalAmount);
             } catch (Exception e) {
                 buyer.unfreezeMoney(finalAmount);
                 throw new IllegalTransactionException("[Error]: Failure to transfer payment to seller. Refund issued to buyer");
@@ -120,7 +125,7 @@ public class Transaction {
             throw new IllegalTransactionException("[System]: Buyer does not have enough balance to complete the payment");
         }
     }
-    //Refund tiền nếu hoàn trả hàng
+
     public void markRefunded() throws IllegalTransactionException {
         if (this.status != TransactionStatus.COMPLETED) {
             throw new IllegalTransactionException("[Error]: Cannot make a refund for incomplete transactions");
@@ -131,7 +136,7 @@ public class Transaction {
                 buyer.depositMoney(finalAmount);
                 seller.addItem(auction.getItem());
                 this.status = TransactionStatus.REFUNDED;
-                System.out.println("[Transaction]: Refund successful for Auction ID " + auction.getId());
+                log.info("Refund successful for Auction ID {}", auction.getId());
             } catch (Exception e) {
                 seller.depositMoney(finalAmount);
                 throw new IllegalTransactionException("[Error]: Failure to refund during transfer. Seller has been reimbursed.");
@@ -141,7 +146,6 @@ public class Transaction {
         }
     }
 
-    // Refund tiền nếu hết hạn pending
     public boolean markExpiredRefund() throws IllegalTransactionException {
         if (!this.isExpired()) {
             return false;
@@ -149,10 +153,10 @@ public class Transaction {
 
         buyer.unfreezeMoney(finalAmount);
         this.status = TransactionStatus.REFUNDED;
-        System.out.println("[Transaction]: Expired refund for auction " + auction.getId());
+        log.info("Expired refund for auction {}", auction.getId());
 
         return true;
-}
+    }
 
     @Override
     public String toString() {

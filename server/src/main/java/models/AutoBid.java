@@ -3,8 +3,12 @@ package models;
 import models.Common.Price;
 import models.Exceptions.CustomisedException;
 import java.io.Serializable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AutoBid implements Serializable, Cloneable {
+    private static final Logger log = LoggerFactory.getLogger(AutoBid.class);
+
     private Auction auction;
     private final User user;
     private Price maxBid;
@@ -72,7 +76,7 @@ public class AutoBid implements Serializable, Cloneable {
             clonedAutoBid.maxBid = new Price(this.getMaxBid());
             return clonedAutoBid;
         } catch (CloneNotSupportedException e) {
-            System.out.println("[Error]: Failed to clone AutoBid configuration: " + e.getMessage());
+            log.error("Failed to clone AutoBid configuration: {}", e.getMessage(), e);
             return null;
         }
     }

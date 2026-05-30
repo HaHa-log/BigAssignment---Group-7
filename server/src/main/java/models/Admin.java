@@ -7,7 +7,12 @@ import repositories.TransactionDAO;
 import repositories.UsersDAO;
 import repositories.impl.DaoFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Admin extends User {
+    private static final Logger logger = LoggerFactory.getLogger(Admin.class);
+
     private final UsersDAO userDb = DaoFactory.createUsersDAO();
     private final TransactionDAO transactionDb = DaoFactory.createTransactionDAO();
 
@@ -31,36 +36,36 @@ public class Admin extends User {
 
     public void blockUser(User user, LocalDateTime until) {
         if (user == null) {
-            System.out.println("[Error]: User not found");
+            logger.warn("[Error]: User not found");
             return;
         }
 
         user.setBlocked(until);
         userDb.update(user);
 
-        System.out.println("[Admin]: User with ID " + user.getId() + " blocked until " + until);
+        logger.info("[Admin]: User with ID {} blocked until {}", user.getId(), until);
     }
 
     public void unblockUser(User user) {
         if (user == null) {
-            System.out.println("[Error]: User not found");
+            logger.warn("[Error]: User not found");
             return;
         }
 
         user.isUnblocked();
         userDb.update(user);
 
-        System.out.println("[Admin]: User with ID " + user.getId() + " unblocked.");
+        logger.info("[Admin]: User with ID {} unblocked.", user.getId());
     }
 
     public boolean cancelAuction(int auctionId) {
         AuctionManager manager = AuctionManager.getInstance();
         boolean success = manager.cancelAuction(auctionId);
         if (success) {
-            System.out.println("[Admin]: Auction " + auctionId + " has been cancelled.");
+            logger.info("[Admin]: Auction {} has been cancelled.", auctionId);
             return true;
         } else {
-            System.out.println("[Admin]: Could not find auction with ID: " + auctionId);
+            logger.info("[Admin]: Could not find auction with ID: {}", auctionId);
             return false;
         }
     }
@@ -80,12 +85,12 @@ public class Admin extends User {
         }
 
         if (result.isEmpty()) {
-            System.out.println("[System]: No transactions found for member ID: " + memberId);
+            logger.info("[System]: No transactions found for member ID: {}", memberId);
             return;
         }
 
         for (Transaction transaction : result) {
-            System.out.println(transaction.toString());
+            logger.info(transaction.toString());
         }
     }
 }

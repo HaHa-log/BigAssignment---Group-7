@@ -11,6 +11,9 @@ import repositories.BidsDAO;
 import repositories.UsersDAO;
 import repositories.impl.DaoFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,6 +21,7 @@ import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Auction extends Entity implements Serializable {
+    private static final Logger log = LoggerFactory.getLogger(Auction.class);
     private static final long serialVersionUID = 1L;
     private static final int MAX_EXTENDS = 5;
     private static final int SNIPE_WINDOW_MINUTES = 5;
@@ -134,7 +138,7 @@ public class Auction extends Entity implements Serializable {
                 this.startingPrice = startingPrice;
                 this.currentPrice = startingPrice;
             } else {
-                System.out.println("[System]: Cannot change startingPrice when the auction is already started");
+                log.warn("Cannot change startingPrice when the auction is already started");
             }
         } finally {
             lock().unlock();
@@ -169,7 +173,7 @@ public class Auction extends Entity implements Serializable {
         if (!changed) {
             throw new CustomisedException("[System]: Status transition failure from " + this.status + " to " + status);
         }
-        System.out.println("[System]: The auction is now " + this.status);
+        log.info("The auction is now {}", this.status);
     }
 
     public List<Bid> getBids() {
@@ -215,12 +219,12 @@ public class Auction extends Entity implements Serializable {
         lock().lock();
         try {
             if (!isValidTransition(nextStatus)) {
-                System.out.println("[Auction] Cannot change from " + status + " to " + nextStatus);
+                log.warn("Cannot change from {} to {}", status, nextStatus);
                 return false;
             }
             AuctionStatus oldStatus = status;
             status = nextStatus;
-            System.out.println("[Auction] Status changing from: " + oldStatus + " to " + nextStatus);
+            log.info("Status changing from: {} to {}", oldStatus, nextStatus);
             updateIfPersisted();
             return true;
         } finally {
@@ -248,11 +252,6 @@ public class Auction extends Entity implements Serializable {
         }
     }
 
-    /**
-     * SỬA LỖI ĐỒNG BỘ: Rút bỏ khối lệnh tự động trừ tiền mặt và nhảy trạng thái PAID ngầm.
-     * Khi hết giờ đấu giá, Server chỉ chuyển sang trạng thái FINISHED và gọi AuctionManager
-     * sinh bản ghi Transaction chờ (PENDING) xuống DB MySQL để đợi người mua bấm nút xác nhận.
-     */
     private void refreshTimedStatus() {
         LocalDateTime now = LocalDateTime.now();
         if (status == AuctionStatus.OPEN && startingTime != null && now.isAfter(startingTime)) {
@@ -260,8 +259,7 @@ public class Auction extends Entity implements Serializable {
         }
         if (status == AuctionStatus.RUNNING && endingTime != null && now.isAfter(endingTime)) {
             this.status = AuctionStatus.FINISHED;
-            System.out.println("[Auction] Time's up! Session auto-shifted to FINISHED. Delegating to AuctionManager...");
-
+            log.info("Time's up! Session auto-shifted to FINISHED. Delegating to AuctionManager...");
             AuctionManager.getInstance().closeAuction(this);
         }
     }
@@ -297,10 +295,9 @@ public class Auction extends Entity implements Serializable {
             throws InvalidBidException {
         if (previousSelfBid > 0) {
             boolean unfrozen = user.unfreezeMoney(previousSelfBid);
-
             if (unfrozen) {
-
-            System.out.println("[System]: Unfrozen old self-bid of " + previousSelfBid + " for " + user.getFullName());}
+                log.info("Unfrozen old self-bid of {} for {}", previousSelfBid, user.getFullName());
+            }
         }
         if (newBidAmount < 0) {
             throw new InvalidBidException(currentPrice, newBidAmount);
@@ -327,7 +324,7 @@ public class Auction extends Entity implements Serializable {
             if (oldUser.getId() > 0) {
                 usersDb().update(oldUser);
             }
-            System.out.println("[System]: Unfrozen " + oldBidAmount + " for previous winner: " + oldUser.getFullName());
+            log.info("Unfrozen {} for previous winner: {}", oldBidAmount, oldUser.getFullName());
         }
     }
 
@@ -365,7 +362,7 @@ public class Auction extends Entity implements Serializable {
             double minimumAllowedStep = BidStepConfiguration.getAllowedSteps(currentPrice).get(0);
             config.setIncrement(minimumAllowedStep);
             autoBidDb().update(config);
-            System.out.println("[System]: AutoBid increment adjusted to " + minimumAllowedStep);
+            log.info("AutoBid increment adjusted to {}", minimumAllowedStep);
         }
         AuctionManager.getInstance().processAutoBids(this, config);
     }
@@ -380,11 +377,10 @@ public class Auction extends Entity implements Serializable {
             endingTime = now.plusMinutes(SNIPE_WINDOW_MINUTES);
             extendCount++;
             isInCountDown = false;
-            System.out.println("[System]: Auction extended (" + extendCount + "/" + MAX_EXTENDS
-                    + "). New end time: " + endingTime);
+            log.info("Auction extended ({}/{}). New end time: {}", extendCount, MAX_EXTENDS, endingTime);
         } else {
             isInCountDown = true;
-            System.out.println("[System]: Max extensions reached! Final countdown active.");
+            log.info("Max extensions reached! Final countdown active.");
         }
     }
 

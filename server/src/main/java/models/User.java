@@ -5,12 +5,17 @@ import repositories.ItemsDAO;
 import repositories.TransactionDAO;
 import repositories.impl.DaoFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class User extends Entity implements Bidder, Seller {
+    private static final Logger log = LoggerFactory.getLogger(User.class);
+
     private FullName fullname;
     private Email email;
     private PhoneNumber phoneNumber;
@@ -60,6 +65,7 @@ public class User extends Entity implements Bidder, Seller {
 
     public void setPassword(String pass) {
         if (pass == null || pass.length() < 6) {
+            log.error("Failed to set password: Password must have at least 6 characters.");
             throw new IllegalArgumentException("[Error]: Password must have at least 6 characters.");
         }
         this.password = pass;
@@ -81,6 +87,7 @@ public class User extends Entity implements Bidder, Seller {
         if (isBlocked && blockedUntil != null && LocalDateTime.now().isAfter(blockedUntil)) {
             this.isBlocked = false;
             this.blockedUntil = null;
+            log.info("User {} is automatically unblocked due to expiration.", getFullName());
         }
         return isBlocked;
     }
@@ -88,11 +95,13 @@ public class User extends Entity implements Bidder, Seller {
     public void setBlocked(LocalDateTime until) {
         this.isBlocked = true;
         this.blockedUntil = until;
+        log.warn("User {} has been BLOCKED until {}", getFullName(), until);
     }
 
     public void isUnblocked() {
         this.isBlocked = false;
         this.blockedUntil = null;
+        log.info("User {} has been manually UNBLOCKED.", getFullName());
     }
 
     public String getAvatarPath() {
@@ -112,38 +121,62 @@ public class User extends Entity implements Bidder, Seller {
     }
 
     public boolean depositMoney(double amount) {
-        return this.balance.deposit(amount);
+        boolean success = this.balance.deposit(amount);
+        if (success) {
+            log.info("User {} deposited successfully. Amount: ${}", getFullName(), amount);
+        } else {
+            log.warn("User {} deposit failed. Amount: ${}", getFullName(), amount);
+        }
+        return success;
     }
 
     public boolean withdrawMoney(double amount) {
-        return this.balance.withdraw(amount);
+        boolean success = this.balance.withdraw(amount);
+        if (success) {
+            log.info("User {} withdrew successfully. Amount: ${}", getFullName(), amount);
+        } else {
+            log.warn("User {} withdrawal failed. Amount: ${}", getFullName(), amount);
+        }
+        return success;
     }
 
     public boolean freezeMoney(double amount) {
         if (amount <= 0) return false;
-        if (this.balance.showBalance() < amount) return false;
+        if (this.balance.showBalance() < amount) {
+            log.warn("User {} freeze money failed: Insufficient balance (Required: ${}, Available: ${})", getFullName(), amount, getBalance());
+            return false;
+        }
 
         boolean success = this.balance.withdraw(amount);
         if (!success) return false;
 
         this.frozenBalance += amount;
+        log.info("User {} successfully froze ${}. Frozen pool total: ${}", getFullName(), amount, this.frozenBalance);
         return true;
     }
 
     public boolean spendFrozenMoney(double amount) {
         if (amount <= 0) return false;
-        if (frozenBalance < amount) return false;
+        if (frozenBalance < amount) {
+            log.warn("User {} spend frozen money failed: Insufficient frozen pool (Required: ${}, Available: ${})", getFullName(), amount, frozenBalance);
+            return false;
+        }
 
         frozenBalance -= amount;
+        log.info("User {} spent ${} from frozen money pool.", getFullName(), amount);
         return true;
     }
 
     public boolean unfreezeMoney(double amount) {
         if (amount <= 0) return false;
-        if (frozenBalance < amount) return false;
+        if (frozenBalance < amount) {
+            log.warn("User {} unfreeze money failed: Insufficient frozen pool (Required: ${}, Available: ${})", getFullName(), amount, frozenBalance);
+            return false;
+        }
 
         frozenBalance -= amount;
         balance.deposit(amount);
+        log.info("User {} successfully unfroze ${} back to main balance.", getFullName(), amount);
         return true;
     }
 
@@ -180,7 +213,6 @@ public class User extends Entity implements Bidder, Seller {
                     state = isHighestBidder(auction) ? "LEADING" : "OUTBID";
                 }
             }
-
 
             if (state != null) {
                 history.add(new AuctionHistoryEntry(
@@ -231,12 +263,12 @@ public class User extends Entity implements Bidder, Seller {
             if (item.getId() > 0) {
                 itemsDb.update(item);
             }
-            System.out.println("[System]: Item " + item.getName() + " is now owned by " + this.getFullName());
+            log.info("Item '{}' is now assigned ownership to User '{}'", item.getName(), this.getFullName());
         }
     }
 
     public void removeItem(Item item) {
-        System.out.println("[System]: Item " + item.getName() + " removed from " + this.getFullName() + "'s inventory.");
+        log.info("Item '{}' has been removed from User '{}' inventory.", item.getName(), this.getFullName());
     }
 
     public List<Item> getInventory() {
@@ -251,11 +283,12 @@ public class User extends Entity implements Bidder, Seller {
         List<Transaction> list = getMyTransactions();
 
         if (list.isEmpty()) {
-            System.out.println("[System]: No transactions found.");
+            log.info("No transaction records found for User '{}'", getFullName());
             return;
         }
 
-        list.forEach(transaction -> System.out.println(transaction.toString()));
+        log.debug("Printing total {} transactions for User '{}'", list.size(), getFullName());
+        list.forEach(transaction -> log.info("Transaction detail: {}", transaction.toString()));
     }
 
     public boolean isEqual(User other) {

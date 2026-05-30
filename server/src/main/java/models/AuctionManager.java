@@ -13,7 +13,11 @@ import repositories.TransactionDAO;
 import repositories.UsersDAO;
 import repositories.impl.DaoFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class AuctionManager {
+    private static final Logger log = LoggerFactory.getLogger(AuctionManager.class);
     private static AuctionManager instance;
 
     private final AuctionsDAO auctionDb;
@@ -55,7 +59,7 @@ public class AuctionManager {
     public void duplicateAutoBidConfig(int fromAuctionId, int toAuctionId, int userId) {
         AutoBid sample = autoBidDb.getByAuctionAndUser(fromAuctionId, userId);
         if (sample == null) {
-            System.out.println("[System]: No prototype configuration found in auction of ID " + fromAuctionId);
+            log.warn("No prototype configuration found in auction of ID {}", fromAuctionId);
             return;
         }
         AutoBid newConfig = sample.clone();
@@ -65,7 +69,7 @@ public class AuctionManager {
         Auction newAuction = auctionDb.getById(toAuctionId);
         newConfig.setAuction(newAuction);
         autoBidDb.save(newConfig);
-        System.out.println("[System]: AutoBid config duplicated successfully!");
+        log.info("AutoBid config duplicated successfully!");
     }
 
     public void processAutoBids(Auction auction, AutoBid userConfig) {
@@ -77,10 +81,10 @@ public class AuctionManager {
         }
         double nextPrice = auction.getCurrentPrice() + userConfig.getIncrement();
         if (nextPrice > userConfig.getMaxBid()) {
-            System.out.println("[System]: Automatic bidding stopped due to maximum bid limit reached");
+            log.info("Automatic bidding stopped due to maximum bid limit reached");
             return;
         }
-        System.out.println("[System]: Auto-bidding for " + userConfig.getUser().getFullName());
+        log.info("Auto-bidding for {}", userConfig.getUser().getFullName());
         userConfig.getUser().placeBid(auction, nextPrice);
     }
 
@@ -117,21 +121,19 @@ public class AuctionManager {
             itemsDb.update(item);
 
             auctionDb.update(session);
-            System.out.println("[System]: Auction #" + session.getAuctionId() + " closed with no winner.");
+            log.info("Auction #{} closed with no winner.", session.getAuctionId());
             return;
         }
 
-        // Tạo bản ghi giao dịch chờ thanh toán, không xử lý dịch chuyển số dư tài khoản
         createPendingTransaction(session, winner);
         auctionDb.update(session);
-        System.out.println("[System]: Auction #" + session.getAuctionId() + " moved to pending invoice confirmation.");
+        log.info("Auction #{} moved to pending invoice confirmation.", session.getAuctionId());
     }
 
     private void createPendingTransaction(Auction session, User winner) {
-        // KIỂM TRA CHỐNG LỖI TẠO TRÙNG BẢN GHI (Duplicate Record):
         Transaction existingTx = transactionDb.getPendingByAuctionAndBuyer(session.getId(), winner.getId());
         if (existingTx != null) {
-            System.out.println("[System Warning]: Pending transaction already exists in DB for auction ID " + session.getId());
+            log.warn("Pending transaction already exists in DB for auction ID {}", session.getId());
             return;
         }
 
@@ -140,20 +142,20 @@ public class AuctionManager {
         transactionDb.save(transaction);
 
         session.getItem().setStatus(Item.Status.SOLD);
-        System.out.println("[System]: Pending invoice generated for Auction Winner: " + winner.getFullName());
+        log.info("Pending invoice generated for Auction Winner: {}", winner.getFullName());
     }
 
     public boolean cancelAuction(int auctionId) {
         Auction canceledAuction = findActiveAuction(auctionId);
         if (canceledAuction == null) {
-            System.out.println("Unable to find auction id " + auctionId);
+            log.warn("Unable to find auction id {}", auctionId);
             return false;
         }
         canceledAuction.getItem().setStatus(Item.Status.AVAILABLE);
         canceledAuction.transitionTo(Auction.AuctionStatus.CANCELED);
         moveToCompleted(canceledAuction);
         auctionDb.update(canceledAuction);
-        System.out.println("Auction canceled!");
+        log.info("Auction canceled!");
         return true;
     }
 
@@ -169,7 +171,6 @@ public class AuctionManager {
             throw new IllegalArgumentException("[Error]: Buyer is required.");
         }
 
-        // Ép cập nhật trạng thái thời gian thực tế của DB Server trước khi tìm kiếm hóa đơn
         Auction auction = auctionDb.getById(auctionId);
         if (auction != null) {
             auction.getStatus();
@@ -187,7 +188,6 @@ public class AuctionManager {
         transaction.markCompleted();
         transaction.getAuction().transitionTo(Auction.AuctionStatus.PAID);
 
-        // DB update
         transactionDb.update(transaction);
         auctionDb.update(transaction.getAuction());
         DaoFactory.createUsersDAO().update(buyer);
@@ -197,9 +197,7 @@ public class AuctionManager {
     }
 
     public void checkAndCancelExpiredTransactions() {
-        List<Transaction> pendingTransactions =
-                transactionDb.getAll();
-
+        List<Transaction> pendingTransactions = transactionDb.getAll();
         UsersDAO usersDb = DaoFactory.createUsersDAO();
 
         for (Transaction transaction : pendingTransactions) {
@@ -212,8 +210,7 @@ public class AuctionManager {
                 transactionDb.update(transaction);
                 usersDb.update(transaction.getBuyer());
                 auctionDb.update(auction);
-                System.out.println("[System]: Transaction " + transaction.getTransactionId()
-                        + " has expired. Money refunded to buyer.");
+                log.info("Transaction {} has expired. Money refunded to buyer.", transaction.getTransactionId());
             }
         }
     }
