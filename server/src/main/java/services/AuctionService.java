@@ -108,7 +108,7 @@ public class AuctionService {
 
     public AuctionResponse cancel(int auctionId) {
         Auction auction = requireAuction(auctionId);
-        auction.transitionTo(Auction.AuctionStatus.CANCELED);
+        auctionManager.cancelAuction(auctionId);
         auctionsDAO.update(auction);
         return toResponse(auction);
     }

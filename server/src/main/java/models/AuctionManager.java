@@ -157,6 +157,7 @@ public class AuctionManager {
         canceledAuction.getItem().setStatus(Item.Status.AVAILABLE);
         canceledAuction.transitionTo(Auction.AuctionStatus.CANCELED);
         moveToCompleted(canceledAuction);
+        itemsDb.update(canceledAuction.getItem());
         auctionDb.update(canceledAuction);
         log.info("Auction canceled!");
         return true;
