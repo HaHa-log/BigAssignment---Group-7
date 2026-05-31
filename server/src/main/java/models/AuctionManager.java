@@ -58,22 +58,6 @@ public class AuctionManager {
         return auctionDb.getAll();
     }
 
-    public void duplicateAutoBidConfig(int fromAuctionId, int toAuctionId, int userId) {
-        AutoBid sample = autoBidDb.getByAuctionAndUser(fromAuctionId, userId);
-        if (sample == null) {
-            log.warn("No prototype configuration found in auction of ID {}", fromAuctionId);
-            return;
-        }
-        AutoBid newConfig = sample.clone();
-        if (newConfig == null) {
-            return;
-        }
-        Auction newAuction = auctionDb.getById(toAuctionId);
-        newConfig.setAuction(newAuction);
-        autoBidDb.save(newConfig);
-        log.info("AutoBid config duplicated successfully!");
-    }
-
     public void processAutoBids(Auction auction, AutoBid userConfig) {
         if (auction == null || userConfig == null) {
             return;

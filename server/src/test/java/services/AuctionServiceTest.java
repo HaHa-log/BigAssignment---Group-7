@@ -48,9 +48,9 @@ public class AuctionServiceTest {
     void setUp() {
         mockedDaoFactory = mockStatic(DaoFactory.class);
         mockedDaoFactory.when(DaoFactory::createAuctionsDAO).thenReturn(auctionsDAO);
+        mockedDaoFactory.when(DaoFactory::createAutoBidDAO).thenReturn(autoBidDAO);
         mockedDaoFactory.when(DaoFactory::createUsersDAO).thenReturn(usersDAO);
         mockedDaoFactory.when(DaoFactory::createBidsDAO).thenReturn(bidsDAO);
-        mockedDaoFactory.when(DaoFactory::createAutoBidDAO).thenReturn(autoBidDAO); // Đã sửa: Khai báo mock cho hàm static trả về AutoBidDAO
 
         mockedAuctionManager = mockStatic(AuctionManager.class);
         mockedAuctionManager.when(AuctionManager::getInstance).thenReturn(auctionManager);
@@ -73,6 +73,8 @@ public class AuctionServiceTest {
 
         Auction mockAuction = mock(Auction.class);
         User mockBidder = mock(User.class);
+
+        when(auctionsDAO.getByIdWithLock(any(), eq(auctionId))).thenReturn(mockAuction);
 
         when(mockAuction.getStatus()).thenReturn(Auction.AuctionStatus.RUNNING);
         when(mockAuction.getId()).thenReturn(auctionId);

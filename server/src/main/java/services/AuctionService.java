@@ -3,6 +3,8 @@ package services;
 import com.group7.dto.auction.*;
 import com.group7.dto.item.ItemRequest;
 import config.BidWebSocketHandler;
+import config.DB;
+import config.DbException;
 import models.*;
 import models.Common.Price;
 import models.Exceptions.AuthenticationException;
@@ -15,6 +17,8 @@ import repositories.TransactionDAO;
 import repositories.UsersDAO;
 import repositories.impl.DaoFactory;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,14 +35,13 @@ public class AuctionService {
 
     private final AuctionManager auctionManager = AuctionManager.getInstance();
 
-    public AuctionService(TransactionService transactionService,BidWebSocketHandler webSocketHandler) {
+    public AuctionService(TransactionService transactionService, BidWebSocketHandler webSocketHandler) {
         this.transactionService = transactionService;
         this.webSocketHandler = webSocketHandler;
     }
 
-    public List<AuctionResponse> getAll(int page, int size,String status) {
+    public List<AuctionResponse> getAll(int page, int size, String status) {
         List<Auction> pageAuctions = auctionsDAO.getAll(page, size, status);
-
         return pageAuctions.stream()
                 .map(auction -> toResponseWithCachedBids(auction, java.util.Collections.emptyList()))
                 .toList();
@@ -79,31 +82,66 @@ public class AuctionService {
     }
 
     public AuctionResponse placeBid(int auctionId, int bidderId, double amount) {
-        Auction auction = requireAuction(auctionId);
-        auction.setBids(bidsDAO.getByAuctionId(auctionId));
+        try (Connection conn = DB.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                Auction auction = auctionsDAO.getByIdWithLock(conn, auctionId);
+                if (auction == null) {
+                    throw new IllegalArgumentException("[Error]: Auction not found.");
+                }
+                auction.setBids(bidsDAO.getByAuctionId(auctionId));
 
-        User bidder = usersDAO.getById(bidderId);
-        if (bidder == null) {
-            throw new IllegalArgumentException("[Error]: Bidder is invalid.");
+                User bidder = usersDAO.getById(bidderId);
+                if (bidder == null) {
+                    throw new IllegalArgumentException("[Error]: Bidder is invalid.");
+                }
+
+                bidder.placeBid(auction, amount);
+
+                auctionsDAO.updateWithConn(conn, auction);
+                usersDAO.update(bidder);
+
+                User previousWinner = (User) auction.getWinner();
+
+                conn.commit();
+
+            } catch (Exception e) {
+                conn.rollback();
+                throw e;
+            }
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
         }
 
-        bidder.placeBid(auction, amount);
-        // Broadcast
-        webSocketHandler.broadcastBid(auctionId, auction.getCurrentPrice(), auction.getStatus().name());
+        Auction committed = requireAuction(auctionId);
+        committed.setBids(bidsDAO.getByAuctionId(auctionId));
 
-        // Autobids — broadcast
-        List<AutoBid> autoBids = DaoFactory.createAutoBidDAO().getByAuctionId(auctionId, auction);
+        webSocketHandler.broadcastBid(auctionId, committed.getCurrentPrice(), committed.getStatus().name());
+
+        List<AutoBid> autoBids = DaoFactory.createAutoBidDAO().getByAuctionId(auctionId, committed);
         for (AutoBid autoBid : autoBids) {
             if (autoBid.getUser().getId() == bidderId) continue;
-            double priceBefore = auction.getCurrentPrice();
-            AuctionManager.getInstance().processAutoBids(auction, autoBid);
-            double priceAfter = auction.getCurrentPrice();
+            double priceBefore = committed.getCurrentPrice();
+            AuctionManager.getInstance().processAutoBids(committed, autoBid);
+            double priceAfter = committed.getCurrentPrice();
             if (priceAfter > priceBefore) {
-                webSocketHandler.broadcastBid(auctionId, priceAfter, auction.getStatus().name());
+                try (Connection conn = DB.getConnection()) {
+                    conn.setAutoCommit(false);
+                    try {
+                        auctionsDAO.updateWithConn(conn, committed);
+                        conn.commit();
+                    } catch (Exception e) {
+                        conn.rollback();
+                        throw e;
+                    }
+                } catch (SQLException e) {
+                    throw new DbException(e.getMessage());
+                }
+                webSocketHandler.broadcastBid(auctionId, priceAfter, committed.getStatus().name());
             }
         }
 
-        return toResponseWithCachedBids(auction, auction.getBids());
+        return toResponseWithCachedBids(committed, committed.getBids());
     }
 
     public AuctionResponse cancel(int auctionId) {
@@ -112,7 +150,7 @@ public class AuctionService {
         auctionsDAO.update(auction);
         return toResponse(auction);
     }
-    //Create PENDING for the finance detail
+
     private void finalizeIfExpired(Auction auction) {
         if (auction.getEndingTime() == null) return;
         if (LocalDateTime.now().isBefore(auction.getEndingTime())) return;
@@ -141,7 +179,6 @@ public class AuctionService {
         if (user == null) {
             throw new IllegalArgumentException("[Error]: Buyer is invalid.");
         }
-
         transactionService.confirmReceipt(auctionId, buyerId);
         return toResponse(requireAuction(auctionId));
     }
@@ -151,22 +188,11 @@ public class AuctionService {
         auctionManager.checkAndCancelExpiredTransactions();
     }
 
-    private Auction requireAuction(int id) {
-        Auction auction = auctionsDAO.getById(id);
-        if (auction == null) {
-            throw new IllegalArgumentException("[Error]: Auction not found.");
-        }
-        return auction;
-    }
-
     @Scheduled(fixedDelay = 1_000)
     public void refreshStatus() {
         List<Auction> allActive = auctionsDAO.getActiveAuctions();
-
         for (Auction auction : allActive) {
-
             boolean isChanged = auction.refreshTimedStatus();
-
             if (isChanged) {
                 System.out.println("[SERVICE] Status changed for " + auction.getId() + ". Attempting broadcast...");
                 webSocketHandler.broadcastBid(
@@ -179,7 +205,14 @@ public class AuctionService {
         }
     }
 
-    // API đơn lẻ (getById, create, placeBid...)
+    private Auction requireAuction(int id) {
+        Auction auction = auctionsDAO.getById(id);
+        if (auction == null) {
+            throw new IllegalArgumentException("[Error]: Auction not found.");
+        }
+        return auction;
+    }
+
     private AuctionResponse toResponse(Auction auction) {
         List<Bid> bids = java.util.Collections.emptyList();
         if (auction.getId() > 0) {

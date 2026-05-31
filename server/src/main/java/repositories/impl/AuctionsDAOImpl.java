@@ -107,6 +107,37 @@ public class AuctionsDAOImpl implements AuctionsDAO {
     }
 
     @Override
+    public Auction getByIdWithLock(Connection conn, int id) {
+        String sql = getAuctionBaseSql() + " WHERE a.auctions_id = ? FOR UPDATE";
+        try (PreparedStatement st = conn.prepareStatement(sql)) {
+            st.setInt(1, id);
+            try (ResultSet rs = st.executeQuery()) {
+                return rs.next() ? instantiateAuction(rs) : null;
+            }
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+    }
+
+    @Override
+    public void updateWithConn(Connection conn, Auction auction) {
+        String sql = "UPDATE auctions "
+                + "SET currentPrice = ?, winner_id = ?, status = ?, endingTime = ? "
+                + "WHERE auctions_id = ?";
+        try (PreparedStatement st = conn.prepareStatement(sql)) {
+            st.setDouble(1, auction.getCurrentPrice());
+            st.setObject(2, auction.getWinner() != null
+                    ? ((User) auction.getWinner()).getId() : null);
+            st.setString(3, auction.getStatus().name());
+            setLocalDateTime(st, 4, auction.getEndingTime());
+            st.setInt(5, auction.getId());
+            st.executeUpdate();
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+    }
+
+    @Override
     public Auction getById(int id) {
         String sql = getAuctionBaseSql() + " WHERE a.auctions_id = ?";
 
