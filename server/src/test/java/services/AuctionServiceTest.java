@@ -71,13 +71,13 @@ public class AuctionServiceTest {
         Auction mockAuction = mock(Auction.class);
         User mockBidder = mock(User.class);
 
+        when(mockAuction.getStatus()).thenReturn(Auction.AuctionStatus.RUNNING);
         when(mockAuction.getId()).thenReturn(auctionId);
         when(mockAuction.getCurrentPrice()).thenReturn(bidAmount);
 
         when(auctionsDAO.getById(auctionId)).thenReturn(mockAuction);
         when(usersDAO.getById(bidderId)).thenReturn(mockBidder);
         when(bidsDAO.getByAuctionId(auctionId)).thenReturn(Collections.emptyList());
-        when(mockAuction.getStatus()).thenReturn(Auction.AuctionStatus.RUNNING);
 
         AuctionResponse response = auctionService.placeBid(auctionId, bidderId, bidAmount);
 
@@ -87,7 +87,8 @@ public class AuctionServiceTest {
         verify(bidsDAO, times(1)).save(any(Bid.class));
 
         verify(auctionManager, times(1)).processAutoBids(eq(mockAuction), isNull());
-        verify(webSocketHandler, times(1)).broadcastBid(auctionId, bidAmount);
+
+        verify(webSocketHandler, times(1)).broadcastBid(eq(auctionId), eq(bidAmount), anyString());
     }
 
     @Test
