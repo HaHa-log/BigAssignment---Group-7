@@ -53,6 +53,8 @@ public class AuctionDetailController {
     @FXML
     private Button normalBidButton, autoBidButton;
     @FXML
+    private Button confirmButton, cancelButton;
+    @FXML
     private Label confirmMessage1, confirmMessage2, cancelMessage;
 
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM HH:mm");
@@ -152,7 +154,9 @@ public class AuctionDetailController {
         if (isRunning) {
             normalBidButton.setDisable(false);
             autoBidButton.setDisable(false);
-            statusLabel.setText("");
+            if (statusLabel.getText().startsWith("Making bid is currently unavailable")) {
+                statusLabel.setText("");
+            }
         }
 
         if (currentUser != null) {
@@ -179,29 +183,27 @@ public class AuctionDetailController {
         confirmPane.setVisible(true);
         confirmPane.setManaged(true);
 
-        javafx.scene.control.Button cancelBtn = (javafx.scene.control.Button) cancelPane.getChildren().get(2);
         if (alreadyConfirmed) {
-            cancelBtn.setDisable(true);
+            confirmButton.setDisable(true);
             confirmMessage1.setText("Your transaction has been confirmed");
             confirmMessage2.setText("");
-            cancelBtn.setText("✓ Confirmed");
+            confirmButton.setText("✓ Confirmed");
         } else {
-            cancelBtn.setDisable(false);
-            cancelBtn.setText("CONFIRM");}
+            confirmButton.setDisable(false);
+            confirmButton.setText("CONFIRM");}
     }
 
     private void setupCancelPane(boolean alreadyCanceled) {
         cancelPane.setVisible(true);
         cancelPane.setManaged(true);
 
-        javafx.scene.control.Button cancelBtn = (javafx.scene.control.Button) cancelPane.getChildren().get(1);
         if (alreadyCanceled) {
-            cancelBtn.setDisable(true);
+            cancelButton.setDisable(true);
             cancelMessage.setText("Your auction has been canceled");
-            cancelBtn.setText("✓ Canceled");
+            cancelButton.setText("✓ Canceled");
         } else {
-            cancelBtn.setDisable(false);
-            cancelBtn.setText("CANCEL");}
+            cancelButton.setDisable(false);
+            cancelButton.setText("CANCEL");}
     }
 
     public void getTableData(Auction auction) {

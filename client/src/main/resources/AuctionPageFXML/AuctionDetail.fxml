@@ -89,14 +89,14 @@
             <children>
                 <Label fx:id="confirmMessage1" style="-fx-font-weight: bold;" text="Congratulations! You are the winner of this Auction" />
                 <Label fx:id="confirmMessage2" text="Click to confirm if you have received the item" />
-                <Button mnemonicParsing="false" onAction="#confirm" styleClass="confirm-button" text="CONFIRM" />
+                <Button fx:id="confirmButton" mnemonicParsing="false" onAction="#confirm" styleClass="confirm-button" text="CONFIRM" />
             </children>
         </VBox>
 
         <VBox fx:id="cancelPane" alignment="CENTER" managed="false" spacing="10.0" styleClass="action-pane" stylesheets="@auction.css" visible="false">
             <children>
                 <Label fx:id="cancelMessage" style="-fx-font-weight: bold;" text="Cancel your OPEN auction" />
-                <Button mnemonicParsing="false" onAction="#cancel" styleClass="cancel-button" text="CANCEL" />
+                <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#cancel" styleClass="cancel-button" text="CANCEL" />
             </children>
         </VBox>
         <TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
