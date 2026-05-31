@@ -68,16 +68,4 @@ public class AutoBid implements Serializable, Cloneable {
             throw new CustomisedException("[Error]: Invalid increment, increment must be lesser than maximum bid");
         }
     }
-
-    @Override
-    public AutoBid clone() {
-        try {
-            AutoBid clonedAutoBid = (AutoBid) super.clone();
-            clonedAutoBid.maxBid = new Price(this.getMaxBid());
-            return clonedAutoBid;
-        } catch (CloneNotSupportedException e) {
-            log.error("Failed to clone AutoBid configuration: {}", e.getMessage(), e);
-            return null;
-        }
-    }
 }
