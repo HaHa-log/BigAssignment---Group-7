@@ -105,24 +105,25 @@ public class Transaction {
         if (this.isExpired()) {
             throw new IllegalTransactionException("[Error]: This transaction has expired (30 mins limit reached)!");
         }
-
-        if (this.status != TransactionStatus.PENDING) {
-            throw new IllegalTransactionException("[Error]: The transaction isn't pending");
-        }
-
-        if (buyer.spendFrozenMoney(finalAmount)) {
-            try {
-                seller.depositMoney(finalAmount);
-                buyer.addItem(auction.getItem());
-                this.status = TransactionStatus.COMPLETED;
-                this.completedAt = LocalDateTime.now();
-                log.info("Transaction completed! {} has made a payment of {}", buyer.getFullName(), finalAmount);
-            } catch (Exception e) {
-                buyer.unfreezeMoney(finalAmount);
-                throw new IllegalTransactionException("[Error]: Failure to transfer payment to seller. Refund issued to buyer");
+        AuctionManager auctionManager = AuctionManager.getInstance();
+        if (auctionManager.confirmReceipt(getAuction(), getBuyer())) {
+            if (this.status != TransactionStatus.PENDING) {
+                throw new IllegalTransactionException("[Error]: The transaction isn't pending");
             }
-        } else {
-            throw new IllegalTransactionException("[System]: Buyer does not have enough balance to complete the payment");
+
+            if (buyer.spendFrozenMoney(finalAmount)) {
+                try {
+                    seller.depositMoney(finalAmount);
+                    this.status = TransactionStatus.COMPLETED;
+                    this.completedAt = LocalDateTime.now();
+                    log.info("Transaction completed! {} has made a payment of {}", buyer.getFullName(), finalAmount);
+                } catch (Exception e) {
+                    buyer.unfreezeMoney(finalAmount);
+                    throw new IllegalTransactionException("[Error]: Failure to transfer payment to seller. Refund issued to buyer");
+                }
+            } else {
+                throw new IllegalTransactionException("[System]: Buyer does not have enough balance to complete the payment");
+            }
         }
     }
 

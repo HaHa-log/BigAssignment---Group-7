@@ -24,6 +24,7 @@ public class AuctionManager {
     private final TransactionDAO transactionDb;
     private final AutoBidDAO autoBidDb;
     private final ItemsDAO itemsDb;
+    private final UsersDAO userDb;
     private List<Auction> activeSessions;
     private List<Auction> completedSessions;
 
@@ -31,7 +32,8 @@ public class AuctionManager {
         auctionDb = DaoFactory.createAuctionsDAO();
         transactionDb = DaoFactory.createTransactionDAO();
         autoBidDb = DaoFactory.createAutoBidDAO();
-        this.itemsDb = DaoFactory.createItemDAO();
+        itemsDb = DaoFactory.createItemDAO();
+        userDb = DaoFactory.createUsersDAO();
         activeSessions = new ArrayList<>();
         completedSessions = new ArrayList<>();
     }
@@ -141,7 +143,6 @@ public class AuctionManager {
         Transaction transaction = new Transaction(session, winner, session.getOwner(), finalPrice);
         transactionDb.save(transaction);
 
-        session.getItem().setStatus(Item.Status.SOLD);
         log.info("Pending invoice generated for Auction Winner: {}", winner.getFullName());
     }
 
@@ -159,70 +160,64 @@ public class AuctionManager {
         return true;
     }
 
-    public Transaction confirmReceipt(Auction auction, User buyer) {
+    public boolean confirmReceipt(Auction auction, User buyer) {
         if (auction == null) {
             throw new IllegalArgumentException("[Error]: Auction is required.");
         }
-        return confirmReceipt(auction.getId(), buyer);
-    }
 
-    public Transaction confirmReceipt(int auctionId, User buyer) {
-        if (buyer == null) {
-            throw new IllegalArgumentException("[Error]: Buyer is required.");
-        }
-
-        Auction auction = auctionDb.getById(auctionId);
         if (auction != null) {
             auction.getStatus();
         }
+        auction.transitionTo(Auction.AuctionStatus.PAID);
+        auction.getItem().setStatus(Item.Status.AVAILABLE);
 
-        Transaction transaction = transactionDb.getPendingByAuctionAndBuyer(auctionId, buyer.getId());
-        if (transaction == null) {
-            throw new IllegalArgumentException("[Error]: No pending transaction found for this auction.");
-        }
+        auction.getOwner().removeItem(auction.getItem());
+        auction.getWinner().addItem(auction.getItem());
 
-        if (!buyer.isEqual(transaction.getBuyer())) {
-            throw new IllegalArgumentException("[Error]: Only the buyer can confirm receipt.");
-        }
+        auctionDb.update(auction);
+        itemsDb.update(auction.getItem());
+        userDb.update(buyer);
+        userDb.update(auction.getOwner());
 
-        transaction.markCompleted();
-        transaction.getAuction().transitionTo(Auction.AuctionStatus.PAID);
-
-        transactionDb.update(transaction);
-        auctionDb.update(transaction.getAuction());
-        DaoFactory.createUsersDAO().update(buyer);
-        DaoFactory.createUsersDAO().update(transaction.getSeller());
-
-        return transaction;
+        return true;
     }
 
     public void checkAndCancelExpiredTransactions() {
         List<Transaction> pendingTransactions = transactionDb.getAll();
         UsersDAO usersDb = DaoFactory.createUsersDAO();
 
-        for (Transaction transaction : pendingTransactions) {
-            if (!transaction.isExpired()) {
-                continue;
-            }
-            if (transaction.markExpiredRefund()) {
-                Auction auction = transaction.getAuction();
-                auction.transitionTo(Auction.AuctionStatus.CANCELED);
-                transactionDb.update(transaction);
-                usersDb.update(transaction.getBuyer());
-                auctionDb.update(auction);
-                log.info("Transaction {} has expired. Money refunded to buyer.", transaction.getTransactionId());
+
+        if (pendingTransactions == null || pendingTransactions.isEmpty()) {
+            return;
+        } else {
+            for (Transaction transaction : pendingTransactions) {
+                if (pendingTransactions == null || pendingTransactions.isEmpty()) {
+                    return;
+                }
+
+                if (!transaction.isExpired()) {
+                    continue;
+                }
+                if (transaction.markExpiredRefund()) {
+                    Auction auction = transaction.getAuction();
+                    auction.transitionTo(Auction.AuctionStatus.CANCELED);
+                    transactionDb.update(transaction);
+                    usersDb.update(transaction.getBuyer());
+                    auctionDb.update(auction);
+                    System.out.println("[System]: Transaction " + transaction.getTransactionId()
+                            + " has expired. Money refunded to buyer.");
+                }
             }
         }
     }
-
-    private Auction findActiveAuction(int auctionId) {
+    private Auction findActiveAuction ( int auctionId){
         return getActiveSessions().stream()
                 .filter(auction -> auction.getId() == auctionId)
                 .findFirst()
                 .orElse(null);
     }
 
-    private void moveToCompleted(Auction session) {
+    private void moveToCompleted (Auction session){
         activeSessions.removeIf(auction -> auction.getId() == session.getId());
         if (completedSessions.stream().noneMatch(auction -> auction.getId() == session.getId())) {
             completedSessions.add(session);
