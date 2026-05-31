@@ -77,6 +77,7 @@ public class AuctionServiceTest {
         when(auctionsDAO.getById(auctionId)).thenReturn(mockAuction);
         when(usersDAO.getById(bidderId)).thenReturn(mockBidder);
         when(bidsDAO.getByAuctionId(auctionId)).thenReturn(Collections.emptyList());
+        when(mockAuction.getStatus()).thenReturn(Auction.AuctionStatus.RUNNING);
 
         AuctionResponse response = auctionService.placeBid(auctionId, bidderId, bidAmount);
 

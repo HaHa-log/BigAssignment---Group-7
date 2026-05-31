@@ -139,8 +139,10 @@ public class AuctionManager {
             return;
         }
 
+        session.getItem().setStatus(Item.Status.SOLD);
         double finalPrice = session.getCurrentPrice();
         Transaction transaction = new Transaction(session, winner, session.getOwner(), finalPrice);
+        itemsDb.update(session.getItem());
         transactionDb.save(transaction);
 
         log.info("Pending invoice generated for Auction Winner: {}", winner.getFullName());

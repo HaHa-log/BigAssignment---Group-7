@@ -90,7 +90,9 @@ public class AuctionService {
 
         models.AuctionManager.getInstance().processAutoBids(auction, null);
 
-        webSocketHandler.broadcastBid(auctionId, auction.getCurrentPrice(), auction.getStatus().name());        return toResponse(auctionsDAO.getById(auctionId));
+        webSocketHandler.broadcastBid(auctionId, auction.getCurrentPrice(), auction.getStatus().name());
+
+        return toResponse(auctionsDAO.getById(auctionId));
     }
 
     public AuctionResponse cancel(int auctionId) {

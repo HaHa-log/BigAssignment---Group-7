@@ -6,6 +6,7 @@ public class Item extends Entity {
     public enum Status {
         AVAILABLE,
         IN_AUCTION,
+        SOLD
     }
 
     private Price startingPrice;

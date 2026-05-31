@@ -33,7 +33,7 @@ public class Transaction {
         this.paidAt = LocalDateTime.now();
         this.completedAt = null;
         this.status = TransactionStatus.PENDING;
-        this.expiryTime = LocalDateTime.now().plusMinutes(30);
+        this.expiryTime = LocalDateTime.now().plusDays(1);
     }
 
     public Transaction(Auction auction, User buyer, User seller, double finalAmount, LocalDateTime paidAt, LocalDateTime completedAt, TransactionStatus status, LocalDateTime expiryTime) {
@@ -105,11 +105,13 @@ public class Transaction {
         if (this.isExpired()) {
             throw new IllegalTransactionException("[Error]: This transaction has expired (30 mins limit reached)!");
         }
+
+        if (this.status != TransactionStatus.PENDING) {
+            throw new IllegalTransactionException("[Error]: The transaction isn't pending");
+        }
+
         AuctionManager auctionManager = AuctionManager.getInstance();
         if (auctionManager.confirmReceipt(getAuction(), getBuyer())) {
-            if (this.status != TransactionStatus.PENDING) {
-                throw new IllegalTransactionException("[Error]: The transaction isn't pending");
-            }
 
             if (buyer.spendFrozenMoney(finalAmount)) {
                 try {
