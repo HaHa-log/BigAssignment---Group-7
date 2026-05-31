@@ -1,7 +1,7 @@
 package controllers.AuctionPage;
 
 import com.group7.dto.item.ItemRequest;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.*;
 import models.Auction;
 import models.Item;
 import models.SessionManager;
@@ -10,9 +10,6 @@ import models.User;
 import services.AuctionApiService;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
@@ -37,6 +34,7 @@ public class AuctionCreateController {
     @FXML private TextField startingTimeInput, endingTimeInput;
     @FXML private Label fileNameLabel, auctionCreateResult, itemCreateResult;
     @FXML private ImageView imagePreview;
+    @FXML private Button createItemButton, createAuctionButton;
 
     private final AuctionApiService auctionApiService = new AuctionApiService();
     private final ItemApiService itemApiService = new ItemApiService();
@@ -62,6 +60,8 @@ public class AuctionCreateController {
 
     @FXML
     private void createItem() {
+        createItemButton.setDisable(true);
+
         String itemName = itemNameInput.getText() == null ? "" : itemNameInput.getText().trim();
         String description = descriptionInput.getText() == null ? "" : descriptionInput.getText().trim();
         String startingPriceRaw = startingPriceInput.getText() == null ? "" : startingPriceInput.getText().trim();
@@ -117,6 +117,7 @@ public class AuctionCreateController {
             itemCreateResult.setText("Item created successfully!");
             clearInputs();
             loadAvailableItems();
+            createItemButton.setDisable(false);
         });
 
         createTask.setOnFailed(e -> {
@@ -129,6 +130,8 @@ public class AuctionCreateController {
             } else {
                 itemCreateResult.setText("Error: " + ex.getMessage());
             }
+
+            createItemButton.setDisable(false);
         });
 
         new Thread(createTask).start();
@@ -136,37 +139,37 @@ public class AuctionCreateController {
 
     @FXML
     private void createAuction() {
+        createAuctionButton.setDisable(true);
         Item selectedItem = itemDropdown.getValue();
-
         LocalDate startDate = startingDateInput.getValue();
         LocalDate endDate = endingDateInput.getValue();
         String sTimeStr = startingTimeInput.getText();
         String eTimeStr = endingTimeInput.getText();
 
-        // Basic validation
         if (selectedItem == null || startDate == null || endDate == null) {
             auctionCreateResult.setTextFill(RED);
             auctionCreateResult.setText("[Error]: Please select an item and fill all required fields");
+            createAuctionButton.setDisable(false);
             return;
         }
 
-        // Create the Background Task
         Task<Void> createTask = new Task<>() {
             @Override
             protected Void call() throws Exception {
-                if (!(SessionManager.getCurrentUser() instanceof User seller)) {
-                    throw new IllegalArgumentException("[Error]: Session expired! Please log in again.");
-                }
-
+                // Validation logic
                 LocalTime startTime = LocalTime.parse(sTimeStr);
                 LocalTime endTime = LocalTime.parse(eTimeStr);
                 LocalDateTime startFull = startDate.atTime(startTime);
                 LocalDateTime endFull = endDate.atTime(endTime);
 
-                Auction auction = auctionApiService.create(new CreateAuctionRequest(
-                        selectedItem.getId(), startFull, endFull
-                ));
+                if (startFull.isBefore(LocalDateTime.now().minusMinutes(1))) {
+                    throw new IllegalArgumentException("Starting time cannot be in the past");
+                }
+                if (endFull.isBefore(startFull)) {
+                    throw new IllegalArgumentException("End time cannot be before start time");
+                }
 
+                auctionApiService.create(new CreateAuctionRequest(selectedItem.getId(), startFull, endFull));
                 return null;
             }
         };
@@ -175,19 +178,14 @@ public class AuctionCreateController {
             loadAvailableItems();
             auctionCreateResult.setTextFill(GREEN);
             auctionCreateResult.setText("Auction created successfully!");
-            clearInputs();
+            createAuctionButton.setDisable(false);
         });
 
         createTask.setOnFailed(e -> {
             Throwable ex = createTask.getException();
             auctionCreateResult.setTextFill(RED);
-            if (ex instanceof IllegalArgumentException) {
-                auctionCreateResult.setText(ex.getMessage());
-            } else if (ex instanceof java.time.format.DateTimeParseException) {
-                auctionCreateResult.setText("Invalid Time Format (Use HH:mm)");
-            } else {
-                auctionCreateResult.setText("Unexpected error: " + ex.getMessage());
-            }
+            auctionCreateResult.setText(ex.getMessage());
+            createAuctionButton.setDisable(false);
         });
 
         new Thread(createTask).start();

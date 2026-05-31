@@ -114,8 +114,14 @@ public class BidWebSocketHandler extends TextWebSocketHandler {
     }
 
     private int extractAuctionId(WebSocketSession session) {
-        String path = session.getUri().getPath(); // /ws/auctions/{auctionId}/bids
+        String path = session.getUri().getPath();
+        System.out.println("[WS DEBUG] Raw Path: " + path);
         String[] parts = path.split("/");
+        // Add a check to prevent IndexOutOfBoundsException
+        if (parts.length < 4) {
+            System.err.println("[WS ERROR] Unexpected path format: " + path);
+            return -1;
+        }
         return Integer.parseInt(parts[3]);
     }
 }

@@ -16,6 +16,7 @@ import repositories.UsersDAO;
 import repositories.impl.DaoFactory;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -146,6 +147,26 @@ public class AuctionService {
             throw new IllegalArgumentException("[Error]: Auction not found.");
         }
         return auction;
+    }
+
+    @Scheduled(fixedDelay = 1_000)
+    public void refreshStatus() {
+        List<Auction> allActive = auctionsDAO.getActiveAuctions();
+
+        for (Auction auction : allActive) {
+
+            boolean isChanged = auction.refreshTimedStatus();
+
+            if (isChanged) {
+                System.out.println("[SERVICE] Status changed for " + auction.getId() + ". Attempting broadcast...");
+                webSocketHandler.broadcastBid(
+                        auction.getId(),
+                        auction.getCurrentPrice(),
+                        auction.getStatus().toString()
+                );
+                System.out.println("[DEBUG] Auction " + auction.getId() + " transitioned to " + auction.getStatus().name());
+            }
+        }
     }
 
     // API đơn lẻ (getById, create, placeBid...)

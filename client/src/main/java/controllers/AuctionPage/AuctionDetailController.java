@@ -97,7 +97,7 @@ public class AuctionDetailController {
             statusLabel.setText(e.getMessage());
         } finally {
             bidAmountInput.clear();
-            updateBidChart();
+            refreshAuction();
         }
     }
 
@@ -136,11 +136,23 @@ public class AuctionDetailController {
     }
 
     private void configureStatusAndPanes() {
+        cancelPane.setVisible(false);
+        cancelPane.setManaged(false);
+
+        confirmPane.setVisible(false);
+        confirmPane.setManaged(false);
+
         boolean isRunning = auction.getStatus() != null && auction.getStatus() == Auction.AuctionStatus.RUNNING;
         if (!isRunning) {
             normalBidButton.setDisable(true);
             autoBidButton.setDisable(true);
             statusLabel.setText("Making bid is currently unavailable since auction status is not RUNNING.");
+        }
+
+        if (isRunning) {
+            normalBidButton.setDisable(false);
+            autoBidButton.setDisable(false);
+            statusLabel.setText("");
         }
 
         if (currentUser != null) {
@@ -242,8 +254,8 @@ public class AuctionDetailController {
 
     private void connectWebSocket() {
         if (auction == null) return;
-        if (webSocket != null && !webSocket.isInputClosed() && !webSocket.isOutputClosed()) {return;}
-        if (wsConnecting) {return;}
+        if (webSocket != null && !webSocket.isInputClosed() && !webSocket.isOutputClosed()) { return; }
+        if (wsConnecting) { return; }
 
         wsConnecting = true;
         int auctionId = auction.getId();
@@ -260,24 +272,8 @@ public class AuctionDetailController {
 
                             @Override
                             public CompletionStage<?> onText(WebSocket ws, CharSequence data, boolean last) {
-                                try {
-                                    System.out.println("[CLIENT WS]: " + data);
-                                    ObjectMapper mapper = new ObjectMapper();
-                                    var node = mapper.readTree(data.toString());
-                                    double newPrice = node.get("currentPrice").asDouble();
-                                    String status = node.has("status") ? node.get("status").asText() : null;
-
-                                    Platform.runLater(() -> {
-                                        currentPriceLabel.setText("Current price: $" + newPrice);
-                                        if (status != null) {
-                                            auctionStatusLabel.setText(status);
-                                        }
-                                    });
-
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-
+                                // Call the unified refresh method
+                                Platform.runLater(() -> refreshAuction());
                                 ws.request(1);
                                 return CompletableFuture.completedFuture(null);
                             }
@@ -398,5 +394,27 @@ public class AuctionDetailController {
             statusLabel.setTextFill(RED);
             statusLabel.setText(e.getMessage());
         }
+    }
+
+    private void refreshAuction() {
+        CompletableFuture.delayedExecutor(500, java.util.concurrent.TimeUnit.MILLISECONDS)
+                .execute(() -> {
+                    try {
+                        Auction updatedAuction = auctionApiService.getById(auction.getId());
+                        if (updatedAuction != null) {
+                            Platform.runLater(() -> {
+                                System.out.println("[CLIENT] UI Syncing with: " + updatedAuction.getStatus());
+                                this.auction = updatedAuction;
+                                currentPriceLabel.setText("Current price: $" + auction.getCurrentPrice());
+                                auctionStatusLabel.setText(auction.getStatus().toString());
+                                configureStatusAndPanes();
+                                updateBidChart();
+                                getTableData(auction);
+                            });
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 }

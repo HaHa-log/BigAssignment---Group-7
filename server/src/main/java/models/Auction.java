@@ -159,13 +159,7 @@ public class Auction extends Entity implements Serializable {
     }
 
     public AuctionStatus getStatus() {
-        lock().lock();
-        try {
-            refreshTimedStatus();
-            return status;
-        } finally {
-            lock().unlock();
-        }
+        return status;
     }
 
     public void setStatus(AuctionStatus status) {
@@ -252,16 +246,20 @@ public class Auction extends Entity implements Serializable {
         }
     }
 
-    private void refreshTimedStatus() {
+    public boolean refreshTimedStatus() {
         LocalDateTime now = LocalDateTime.now();
         if (status == AuctionStatus.OPEN && startingTime != null && now.isAfter(startingTime)) {
             start();
+            return true;
         }
         if (status == AuctionStatus.RUNNING && endingTime != null && now.isAfter(endingTime)) {
-            this.status = AuctionStatus.FINISHED;
             log.info("Time's up! Session auto-shifted to FINISHED. Delegating to AuctionManager...");
+            transitionTo(AuctionStatus.FINISHED);
             AuctionManager.getInstance().closeAuction(this);
+            return true;
         }
+
+        return false;
     }
 
     private boolean isValidTransition(AuctionStatus next) {
