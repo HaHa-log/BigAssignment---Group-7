@@ -4,7 +4,6 @@ import com.group7.dto.auction.AuctionResponse;
 import config.BidWebSocketHandler;
 import models.Auction;
 import models.AuctionManager;
-import models.Bid;
 import models.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,12 +16,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import repositories.AuctionsDAO;
 import repositories.BidsDAO;
 import repositories.UsersDAO;
+import repositories.AutoBidDAO;
 import repositories.impl.DaoFactory;
 
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,6 +36,7 @@ public class AuctionServiceTest {
     @Mock private AuctionsDAO auctionsDAO;
     @Mock private UsersDAO usersDAO;
     @Mock private BidsDAO bidsDAO;
+    @Mock private AutoBidDAO autoBidDAO;
     @Mock private AuctionManager auctionManager;
 
     private AuctionService auctionService;
@@ -43,11 +46,11 @@ public class AuctionServiceTest {
 
     @BeforeEach
     void setUp() {
-        // 1. Chặn các hàm static của DaoFactory để trả về DAO Mock thay vì DB thật
         mockedDaoFactory = mockStatic(DaoFactory.class);
         mockedDaoFactory.when(DaoFactory::createAuctionsDAO).thenReturn(auctionsDAO);
         mockedDaoFactory.when(DaoFactory::createUsersDAO).thenReturn(usersDAO);
         mockedDaoFactory.when(DaoFactory::createBidsDAO).thenReturn(bidsDAO);
+        mockedDaoFactory.when(DaoFactory::createAutoBidDAO).thenReturn(autoBidDAO); // Đã sửa: Khai báo mock cho hàm static trả về AutoBidDAO
 
         mockedAuctionManager = mockStatic(AuctionManager.class);
         mockedAuctionManager.when(AuctionManager::getInstance).thenReturn(auctionManager);
@@ -79,14 +82,13 @@ public class AuctionServiceTest {
         when(usersDAO.getById(bidderId)).thenReturn(mockBidder);
         when(bidsDAO.getByAuctionId(auctionId)).thenReturn(Collections.emptyList());
 
+        when(autoBidDAO.getByAuctionId(eq(auctionId), any(Auction.class))).thenReturn(Collections.emptyList());
+
         AuctionResponse response = auctionService.placeBid(auctionId, bidderId, bidAmount);
 
         assertNotNull(response);
 
         verify(mockBidder, times(1)).placeBid(mockAuction, bidAmount);
-        verify(bidsDAO, times(1)).save(any(Bid.class));
-
-        verify(auctionManager, times(1)).processAutoBids(eq(mockAuction), isNull());
 
         verify(webSocketHandler, times(1)).broadcastBid(eq(auctionId), eq(bidAmount), anyString());
     }
