@@ -76,31 +76,54 @@ public class AuctionDetailController {
             return;
         }
 
+        double bidAmount;
         try {
-            currentUser = SessionManager.getCurrentUser();
-            if (currentUser == null) {
-                throw new IllegalArgumentException("[Error]: Session expired! Please log in again.");
-            }
-            double bidAmount = Double.parseDouble(bidAmountString);
-            auction = auctionApiService.placeBid(auction.getId(), currentUser.getId(), bidAmount);
-
-            statusLabel.setTextFill(GREEN);
-            statusLabel.setText("Bid placed successfully.");
-            currentPriceLabel.setText("Current price: $" + auction.getCurrentPrice());
-
-        } catch (IllegalArgumentException e) {
-            String message = e.getMessage();
-            statusLabel.setText(message);
-        } catch (CustomisedException e) {
-            String message = e.getMessage();
-            statusLabel.setText(message);
-        } catch (Exception e) {
+            bidAmount = Double.parseDouble(bidAmountString);
+        } catch (NumberFormatException e) {
             statusLabel.setTextFill(RED);
-            statusLabel.setText(e.getMessage());
-        } finally {
-            bidAmountInput.clear();
-            refreshAuction();
+            statusLabel.setText("Please enter a valid number.");
+            return;
         }
+
+        currentUser = SessionManager.getCurrentUser();
+        if (currentUser == null) {
+            statusLabel.setTextFill(RED);
+            statusLabel.setText("[Error]: Session expired! Please log in again.");
+            return;
+        }
+
+        normalBidButton.setDisable(true);
+        statusLabel.setText("Processing...");
+        bidAmountInput.clear();
+
+        new Thread(() -> {
+            try {
+                Auction updated = auctionApiService.placeBid(auction.getId(), currentUser.getId(), bidAmount);
+
+                Platform.runLater(() -> {
+                    auction = updated;
+                    double actualPrice = auction.getCurrentPrice();
+                    currentPriceLabel.setText("Current price: $" + actualPrice);
+
+                    if (actualPrice > bidAmount) {
+                        statusLabel.setTextFill(RED);
+                        statusLabel.setText("Bid placed but you were immediately outbid! Current price: $" + actualPrice);
+                    } else {
+                        statusLabel.setTextFill(GREEN);
+                        statusLabel.setText("Bid placed successfully. You are the highest bidder!");
+                    }
+                    normalBidButton.setDisable(false);
+                    updateBidChart();
+                });
+
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    statusLabel.setTextFill(RED);
+                    statusLabel.setText(e.getMessage());
+                    normalBidButton.setDisable(false);
+                });
+            }
+        }).start();
     }
 
     public void setAuctionData(Auction initialAuction) {
@@ -274,8 +297,21 @@ public class AuctionDetailController {
 
                             @Override
                             public CompletionStage<?> onText(WebSocket ws, CharSequence data, boolean last) {
-                                // Call the unified refresh method
-                                Platform.runLater(() -> refreshAuction());
+                                try {
+                                    ObjectMapper mapper = new ObjectMapper();
+                                    var node = mapper.readTree(data.toString());
+                                    double newPrice = node.get("currentPrice").asDouble();
+                                    String status = node.has("status") ? node.get("status").asText() : null;
+
+                                    Platform.runLater(() -> {
+                                        currentPriceLabel.setText("Current price: $" + newPrice);
+                                        if (status != null) {
+                                            auctionStatusLabel.setText(status);
+                                        }
+                                    });
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                                 ws.request(1);
                                 return CompletableFuture.completedFuture(null);
                             }
@@ -365,37 +401,54 @@ public class AuctionDetailController {
             statusLabel.setText("Please enter Max Bid and Increment.");
             return;
         }
+
+        double maxBid;
+        double increment;
         try {
-            double maxBid = Double.parseDouble(maxBidInput.getText());
-            double increment = Double.parseDouble(stepInput.getText());
-            currentUser = SessionManager.getCurrentUser();
-            if (!(currentUser instanceof User currentMember)) {
-                throw new IllegalArgumentException("[Error]: Only members can enable auto bidding.");
-            }
-
-            AutoBidRequest request = new AutoBidRequest(
-                    currentMember.getId(),
-                    maxBid,
-                    increment
-            );
-
-            auctionApiService.enableAutoBid(auction.getId(), request);
-
-            statusLabel.setTextFill(GREEN);
-            statusLabel.setText("Auto Bid enabled successfully!");
-
-            maxBidInput.clear();
-            stepInput.clear();
-        } catch (CustomisedException e) {
-            statusLabel.setTextFill(RED);
-            statusLabel.setText(e.getMessage());
+            maxBid = Double.parseDouble(maxBidInput.getText());
+            increment = Double.parseDouble(stepInput.getText());
         } catch (NumberFormatException e) {
             statusLabel.setTextFill(RED);
             statusLabel.setText("Please enter a valid number.");
-        } catch (Exception e) {
-            statusLabel.setTextFill(RED);
-            statusLabel.setText(e.getMessage());
+            return;
         }
+
+        currentUser = SessionManager.getCurrentUser();
+        if (!(currentUser instanceof User currentMember)) {
+            statusLabel.setTextFill(RED);
+            statusLabel.setText("[Error]: Only members can enable auto bidding.");
+            return;
+        }
+
+        autoBidButton.setDisable(true);
+        statusLabel.setText("Processing...");
+
+        AutoBidRequest request = new AutoBidRequest(currentMember.getId(), maxBid, increment);
+
+        new Thread(() -> {
+            try {
+                auctionApiService.enableAutoBid(auction.getId(), request);
+                Platform.runLater(() -> {
+                    statusLabel.setTextFill(GREEN);
+                    statusLabel.setText("Auto Bid enabled successfully!");
+                    autoBidButton.setDisable(false);
+                    maxBidInput.clear();
+                    stepInput.clear();
+                });
+            } catch (CustomisedException e) {
+                Platform.runLater(() -> {
+                    statusLabel.setTextFill(RED);
+                    statusLabel.setText(e.getMessage());
+                    autoBidButton.setDisable(false);
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    statusLabel.setTextFill(RED);
+                    statusLabel.setText(e.getMessage());
+                    autoBidButton.setDisable(false);
+                });
+            }
+        }).start();
     }
 
     private void refreshAuction() {
