@@ -9,6 +9,7 @@ import java.util.List;
 
 import config.DB;
 import config.DbException;
+import models.Auction;
 import models.AutoBid;
 import models.BidStepConfiguration;
 import models.User;
@@ -95,7 +96,7 @@ public class AutoBidDAOImpl implements AutoBidDAO {
     }
 
     @Override
-    public List<AutoBid> getByAuctionId(int auctionId) {
+    public List<AutoBid> getByAuctionId(int auctionId, Auction auction) {
         String sql = "SELECT * FROM auto_bids WHERE auction_id = ?";
         List<AutoBid> list = new ArrayList<>();
 

@@ -94,6 +94,9 @@ public class Auction extends Entity implements Serializable {
             lock().unlock();
         }
     }
+    public void setBids(List<Bid> bids) {
+        this.bids = bids;
+    }
 
     public User getOwner() {
         return owner;
@@ -320,13 +323,9 @@ public class Auction extends Entity implements Serializable {
         }
         double oldBidAmount = oldUser.getHighestBid(this);
         if (oldBidAmount > 0) {
-            boolean success = oldUser.unfreezeMoney(oldBidAmount);
-            if (success) {}
+            oldUser.unfreezeMoney(oldBidAmount);
             if (oldUser.getId() > 0) {
-                usersDb().update(oldUser);
-            }
-            if (oldUser.getId() > 0) {
-                usersDb().update(oldUser);
+                usersDb().update(oldUser); 
             }
             log.info("Unfrozen {} for previous winner: {}", oldBidAmount, oldUser.getFullName());
         }

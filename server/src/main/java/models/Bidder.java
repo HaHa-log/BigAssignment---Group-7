@@ -39,21 +39,15 @@ public interface Bidder {
 
     default double getHighestBid(Auction auction) {
         double lastTimeBidAmount = 0;
-
         if (this instanceof User thisUser) {
-            List<Bid> userBids = auction.getId() > 0 ? bidsDb().getByAuctionId(auction.getId()) : auction.getBids();
-            for (Bid existingBid : userBids) {
-                if (existingBid.getBidder() == null) {
-                    continue;
-                }
+            for (Bid existingBid : auction.getBids()) {
+                if (existingBid.getBidder() == null) continue;
                 if (existingBid.getBidder().isEqual(thisUser)) {
                     if (existingBid.getBidPrice().getPrice() > lastTimeBidAmount) {
                         lastTimeBidAmount = existingBid.getBidPrice().getPrice();
                     }
                 }
             }
-            log.debug("Evaluated historical peak bid value for User '{}' on Auction ID {}: ${}",
-                    thisUser.getFullName(), auction.getId(), lastTimeBidAmount);
         }
         return lastTimeBidAmount;
     }
