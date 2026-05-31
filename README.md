@@ -1,75 +1,90 @@
-# BigAssignment --- Group-7
+BigAssignment --- Group-7
+1. Giới thiệu dự án (Project Overview)
+Tên dự án: Hệ thống đấu giá trực tuyến thời gian thực (Real-time Online Auction System)
 
-### 1. Giới thiệu dự án (Project Overview)
-- **Tên dự án:** Phát triển Hệ thống đấu giá trực tuyến (Online Auction System)
-- **Môn học:** Lập trình nâng cao 
-- **Mô tả ngắn:** Một ứng dụng Client-Server cho phép người dùng đăng ký vai trò Bidder, Seller hoặc Admin để thực hiện các phiên đấu giá thời gian thực.
-- **Thành viên nhóm (Team Members):**
-  - Vương Thúy Hằng (25020144) - Backend
-  - Bùi Hà Linh (25020233) - Frontend
-  - Hoàng Ánh Ngọc (25020294) - Backend
-  - Trần Thị Mai Uyên (25020424) - Frontend
-- **Phân công nhiệm vụ cụ thể:** 
+Môn học: Lập trình nâng cao (LTNC)
 
-### 2. Cấu trúc thư mục (Project Structure)
-<img width="932" height="702" alt="Demo_cau_truc_thu_muc_BG_gr7" src="https://github.com/user-attachments/assets/54de963d-9d5a-4690-ad67-cf00d3868af9" />
+Phạm vi hệ thống: Hệ thống phân tán theo mô hình Client - Server xử lý luồng đấu giá đồng thời (Concurrent Bidding), tự động hóa quy trình quản lý ví tiền, đóng băng số dư bảo đảm và cập nhật trạng thái bảng điện realtime qua giao tiếp song công.
 
----
+Thành viên nhóm & Phân công nhiệm vụ (Team Members & Work Division)
+Vương Thúy Hằng (25020144) - Vai trò: Backend
+Hoàng Ánh Ngọc (25020294) - Vai trò: Backend
+Bùi Hà Linh (25020233) - Vai trò: Frontend
+Trần Thị Mai Uyên (25020424) - Vai trò: Frontend
 
-### 3. Các tính năng chính (Core Features)
-- **Quản lý người dùng:** Đăng ký/đăng nhập với các vai trò Bidder, Seller, Admin.
-- **Quản lý sản phẩm:** Thêm/sửa/xóa sản phẩm với thông tin giá, thời gian.
-- **Đấu giá:** Quy trình đặt giá hợp lệ và cập nhật người dẫn đầu.
-- **Kết thúc phiên:** Tự động xác định người thắng và chuyển trạng thái phiên (`OPEN` → `RUNNING` → `FINISHED`).
-- **Tính năng nâng cao (nếu có):** Auto-bidding, Anti-sniping, hoặc Biểu đồ giá trực tiếp.
+2. Công nghệ sử dụng & Yêu cầu hệ thống (Tech Stack & Environment)
+Ngôn ngữ: Java 21 (LTS), CSS (Style FX)
 
----
+Môi trường chạy: JRE/JDK 21 trở lên, MySQL Server (Bản 8.0 hoặc 9.x)
 
-### 4. Công nghệ sử dụng (Tech Stack)
-- **Ngôn ngữ:** Java ,CSS
-- **Giao diện:** JavaFX 
-- **Build tool:** Maven 
-- **Kiểm thử:** JUnit (cho các logic quan trọng như xử lý đấu giá đồng thời)
-- **Công cụ khác:** Scene Builder
+Cấu trúc lõi:
 
----
+Server Side: Spring Boot (Web, Data JPA, WebSocket), HikariCP.
 
-### 5. Hướng dẫn cài đặt và chạy (Installation & Running)
-- **Yêu cầu:** JDK 25, Maven, MySQL reachable from the values in `db.properties`.
-- **Cấu trúc Client-Server:**
-  - `server`: Spring Boot REST API, owns database access and business services.
-  - `client`: JavaFX application, talks to the server through HTTP DTO/services.
-  - `temp`: archived copy of the old monolithic source, no longer part of the Maven reactor.
-- **Cách chạy Server:**
-  ```bash
-  mvn -pl server spring-boot:run
-  ```
-  Health check: `GET http://localhost:8080/api/health`
-- **Cách chạy Client:**
-  ```bash
-  mvn -pl client javafx:run
-  ```
-  By default the client calls `http://localhost:8080`. To point it at another server:
-  ```bash
-  mvn -pl client javafx:run -Dserver.url=http://HOST:8080
-  ```
-- **Auth API hiện có:**
-  - `POST /api/auth/register`
-  - `POST /api/auth/login`
-- **Auction/User API hiện có:**
-  - `GET /api/auctions`
-  - `GET /api/auctions/{id}`
-  - `POST /api/auctions`
-  - `POST /api/auctions/{id}/bids`
-  - `POST /api/auctions/{id}/cancel`
-  - `POST /api/auctions/{id}/confirm-receipt`
-  - `GET /api/users`
-  - `GET /api/users/{id}`
-  - `POST /api/users/{id}/block`
-  - `POST /api/users/{id}/unblock`
+Client Side: JavaFX Controls & FXML.
 
----
+Build tool: Apache Maven
 
+Kiểm thử chất lượng: JUnit 5, Mockito Framework (Kiểm thử phân vùng tương đương EP và phân tích giá trị biên BVA).
 
-### 6. Minh chứng tiến độ
-<img width="3619" height="1910" alt="Diagram_src_BTL_Gr7" src="https://github.com/user-attachments/assets/8ec92873-69a9-48c3-a3bc-3f9fed16cbfc" />
+3. Cấu trúc thư mục (Project Structure)
+Dự án được quản lý theo mô hình Maven Multi-Module Blueprint:
+
+BigAssignment/ (Thư mục gốc của Project)
+├── artifacts/ <-- THƯ MỤC CHỨA SẢN PHẨM ĐÓNG GÓI THỰC THI (.JAR)
+│   ├── server.jar (Fat JAR chứa Spring Boot App + Dependencies)
+│   └── client.jar (Fat JAR chứa JavaFX App + Mồi MainLauncher)
+├── common/ (Module chứa mã nguồn định nghĩa Models, DTOs, Utils dùng chung)
+│   ├── src/main/java/com/group7/dto/
+│   └── pom.xml
+├── server/ (Module xử lý logic lõi nghiệp vụ và lưu trữ dữ liệu Backend)
+│   ├── src/main/java/ (Controllers, Services, Repositories, Configurations)
+│   └── pom.xml
+├── client/ (Module xây dựng giao diện tương tác người dùng Desktop Client)
+│   ├── src/main/java/app/ (ClientApp.java, MainLauncher.java)
+│   ├── src/main/resources/ (Giao diện .fxml, tệp định kiểu .css, hình ảnh)
+│   └── pom.xml
+├── pom.xml (Parent POM quản lý tập trung Dependency Management & Checkstyle)
+└── README.md (Tài liệu hướng dẫn vận hành hệ thống)
+
+4. Vị trí các file .jar thực thi (Executable Artifacts Location)
+Đường dẫn Server: artifacts/server.jar
+Đường dẫn Client: artifacts/client.jar
+
+5. Hướng dẫn chạy
+CẦN MỞ CÁC CỬA SỔ TERMINAL ĐỘC LẬP và thực hiện tuần tự theo các bước sau:
+
+Bước 1: Khởi động mạch Server
+Mở một Terminal mớitại thư mục gốc của dự án và chạy lệnh:
+java -jar artifacts/server.jar
+
+(Đợi Terminal hiển thị logo Spring Boot và thông báo khởi tạo kết nối Port 8080 thành công).
+
+Bước 2: Khởi động Client
+Mở một Terminal độc lập khác tại thư mục gốc của dự án và chạy lệnh:
+java -jar artifacts/client.jar
+
+(Có thể lặp lại bước 2 trên nhiều terminal khác nhau để chạy nhiều client đồng thời).
+
+6. Danh sách các chức năng đã hoàn thành
+Xác thực hệ thống: Đăng ký, đăng nhập tài khoản, người dùng có thể đóng vai trò của cả Seller và Bidder.
+
+Tạo sản phẩm: Seller có thể tạo sản phẩm với các thông tin: tên, mô tả, giá khời điểm.
+
+Tạo phiên đấu giá: Seller có thể tạo phiên đấu giá từ các sản phẩm đã tạo trước đó.
+
+Hỗ trợ nạp/rút tiền: Người dùng có thể nạp/rút tiền vào tài khoản để đấu giá sản phẩm
+
+Hủy phiên: Phiên bị hủy trong các trường hợp: Bị hủy không bất kể trạng thái bởi quản trị viên, bị hủy bời Seller trong trạng thái OPEN, và bị hủy tự động sau khi quá hạn mà người thắng không xác nhận.
+
+Luồng đặt giá Real-time: Cơ chế kết nối song công cập nhật tức thời bảng điện giá hiện tại, thông báo trạng thái người dẫn đầu phiên sang toàn bộ các client đang xem mà không cần tải lại trang.
+
+Tự động hóa Đấu giá (Auto-bidding): Người dùng thiết lập cấu hình giá trần mong muốn và bước nhảy tăng tự động.
+
+Quản lí người dùng: Admin có thể hủy các auction, block/unblock user
+
+Quản lý trạng thái phiên tự động: Lịch trình chạy ngầm quét dọn chuyển đổi trạng thái (OPEN -> RUNNING -> FINISHED). Khóa số dư đóng băng tiền cọc của người thắng phiên bảo vệ quyền lợi giao dịch.
+
+Trực quan hóa dữ liệu lịch sử: Tích hợp đồ thị đường tuyến tính (LineChart) theo thời gian thực mô tả biến động các bước giá đặt trong phiên đấu giá trực quan.
+
+7. Tài liệu báo cáo & Video Demo nghiệp vụ
