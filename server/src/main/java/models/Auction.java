@@ -159,7 +159,13 @@ public class Auction extends Entity implements Serializable {
     }
 
     public AuctionStatus getStatus() {
-        return status;
+        lock().lock();
+        try {
+            refreshTimedStatus();
+            return status;
+        } finally {
+            lock().unlock();
+        }
     }
 
     public void setStatus(AuctionStatus status) {
