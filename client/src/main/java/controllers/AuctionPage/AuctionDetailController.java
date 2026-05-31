@@ -306,7 +306,7 @@ public class AuctionDetailController {
                                     Platform.runLater(() -> {
                                         currentPriceLabel.setText("Current price: $" + newPrice);
                                         if (status != null) {
-                                            auctionStatusLabel.setText(status);
+                                            refreshAuction();
                                         }
                                     });
                                 } catch (Exception e) {
@@ -362,11 +362,10 @@ public class AuctionDetailController {
                 throw new IllegalArgumentException("[Error]: Only members can confirm receipt.");
             }
             auction = auctionApiService.confirmReceipt(auction.getId(), member.getId());
-            auctionStatusLabel.setText(auction.getStatus().toString());
+            refreshAuction();
 
-            javafx.scene.control.Button confirmBtn = (javafx.scene.control.Button) confirmPane.getChildren().get(2);
-            confirmBtn.setDisable(true);
-            confirmBtn.setText("✓ Confirmed");
+            confirmButton.setDisable(true);
+            confirmButton.setText("✓ Confirmed");
 
             statusLabel.setTextFill(GREEN);
             statusLabel.setText("Receipt confirmed. Transaction completed.");
@@ -380,14 +379,14 @@ public class AuctionDetailController {
     private void cancel() {
         try {
             auction = auctionApiService.cancel(auction.getId());
-            auctionStatusLabel.setText(auction.getStatus().toString());
+            refreshAuction();
 
-            javafx.scene.control.Button cancelBtn = (javafx.scene.control.Button) cancelPane.getChildren().get(1);
-            cancelBtn.setDisable(true);
-            cancelBtn.setText("✓ Cancelled");
+            cancelButton.setDisable(true);
+            cancelButton.setText("✓ Cancelled");
 
             statusLabel.setTextFill(GREEN);
             statusLabel.setText("Auction cancelled succesfully!");
+
         } catch (Exception e) {
             statusLabel.setTextFill(RED);
             statusLabel.setText(e.getMessage());

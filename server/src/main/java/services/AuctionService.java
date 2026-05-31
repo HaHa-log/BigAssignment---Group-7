@@ -109,7 +109,7 @@ public class AuctionService {
     public AuctionResponse cancel(int auctionId) {
         Auction auction = requireAuction(auctionId);
         auctionManager.cancelAuction(auctionId);
-        auctionsDAO.update(auction);
+
         return toResponse(auction);
     }
     //Create PENDING for the finance detail
