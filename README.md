@@ -203,6 +203,11 @@ java -jar artifacts/client.jar
 * Biểu đồ LineChart thời gian thực
 * Hiển thị lịch sử biến động giá đấu
 * Theo dõi diễn biến phiên trực quan
+  
+* ### 🤖 Handle - sniping
+
+* Tự động gia hạn phiên đấu giá nếu có người đặt bid ở 5 phút cuối
+* Thời gian gia hạn mỗi lần 5 phút, tối đa 5 lần
 
 ---
 
