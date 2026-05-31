@@ -40,7 +40,8 @@ public class AutoBidService {
     }
 
     public List<AutoBidResponse> getByAuctionId(int auctionId) {
-        return autoBidDAO.getByAuctionId(auctionId).stream()
+        Auction auction = requireAuction(auctionId);
+        return autoBidDAO.getByAuctionId(auctionId, auction).stream()
                 .map(this::toResponse)
                 .toList();
     }

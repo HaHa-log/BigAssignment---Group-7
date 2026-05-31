@@ -80,20 +80,30 @@ public class AuctionService {
 
     public AuctionResponse placeBid(int auctionId, int bidderId, double amount) {
         Auction auction = requireAuction(auctionId);
+        auction.setBids(bidsDAO.getByAuctionId(auctionId));
+
         User bidder = usersDAO.getById(bidderId);
         if (bidder == null) {
             throw new IllegalArgumentException("[Error]: Bidder is invalid.");
         }
+
         bidder.placeBid(auction, amount);
-
-        Bid bid = new Bid(auction, bidder, new Price(amount));
-        bidsDAO.save(bid);
-
-        models.AuctionManager.getInstance().processAutoBids(auction, null);
-
+        // Broadcast
         webSocketHandler.broadcastBid(auctionId, auction.getCurrentPrice(), auction.getStatus().name());
 
-        return toResponse(auctionsDAO.getById(auctionId));
+        // Autobids — broadcast
+        List<AutoBid> autoBids = DaoFactory.createAutoBidDAO().getByAuctionId(auctionId, auction);
+        for (AutoBid autoBid : autoBids) {
+            if (autoBid.getUser().getId() == bidderId) continue;
+            double priceBefore = auction.getCurrentPrice();
+            AuctionManager.getInstance().processAutoBids(auction, autoBid);
+            double priceAfter = auction.getCurrentPrice();
+            if (priceAfter > priceBefore) {
+                webSocketHandler.broadcastBid(auctionId, priceAfter, auction.getStatus().name());
+            }
+        }
+
+        return toResponseWithCachedBids(auction, auction.getBids());
     }
 
     public AuctionResponse cancel(int auctionId) {
