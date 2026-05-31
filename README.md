@@ -213,6 +213,7 @@ java -jar artifacts/client.jar
 
 ### Báo cáo dự án
 
+https://drive.google.com/file/d/1GL3mgR60JDYJwQX-w1JMLA2OH4tJzZ5w/view?usp=sharing 
 
 ### Video Demo
 
