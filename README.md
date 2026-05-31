@@ -213,10 +213,9 @@ java -jar artifacts/client.jar
 
 ### Báo cáo dự án
 
-https://drive.google.com/file/d/1GL3mgR60JDYJwQX-w1JMLA2OH4tJzZ5w/view?usp=sharing 
+- 📄 [Project Report](https://drive.google.com/file/d/1GL3mgR60JDYJwQX-w1JMLA2OH4tJzZ5w/view?usp=sharing)
 
 ### Video Demo
 
-
----
+- 🎥 [Watch Demo Video](https://drive.google.com/file/d/1qzfOFkzVyYAj0xuPr-qjIUmKIgfdZS2d/view)---
 
