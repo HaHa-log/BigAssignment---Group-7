@@ -47,6 +47,11 @@ public class User extends Entity implements Bidder, Seller {
         this.blockedUntil = blockedUntil;
     }
 
+    public User(String firstName, String lastName, String email, String phoneNumber, String password, double balance, boolean isAdmin, boolean isBlocked, LocalDateTime blockedUntil, String avatarPath, double frozenBalance) {
+        this(firstName, lastName, email, phoneNumber, password, balance, isAdmin, isBlocked, blockedUntil, avatarPath);
+        this.frozenBalance = frozenBalance;
+    }
+
     public String getFullName() { return fullname.toString(); }
     public String getFirstName() { return fullname.getFirstName(); }
     public String getLastName() { return fullname.getLastName(); }

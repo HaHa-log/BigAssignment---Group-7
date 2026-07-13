@@ -24,6 +24,10 @@ public class Admin extends User {
         super(firstName, lastName, email, phoneNumber, password, balance, isAdmin, isBlocked, blockedUntil, avatarPath);
     }
 
+    public Admin(String firstName, String lastName, String email, String phoneNumber, String password, double balance, boolean isAdmin, boolean isBlocked, LocalDateTime blockedUntil, String avatarPath, double frozenBalance) {
+        super(firstName, lastName, email, phoneNumber, password, balance, isAdmin, isBlocked, blockedUntil, avatarPath, frozenBalance);
+    }
+
     @Override
     public boolean isAdmin() {
         return true;

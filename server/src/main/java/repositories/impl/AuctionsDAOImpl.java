@@ -373,7 +373,8 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 true,
                 rs.getBoolean("winner_isBlocked"),
                 rs.getObject("winner_blockedUntil", LocalDateTime.class),
-                rs.getString("winner_avatar_path")
+                rs.getString("winner_avatar_path"),
+                rs.getDouble("winner_frozen_balance")
         ) : new User(
                 rs.getString("winner_firstName"),
                 rs.getString("winner_lastName"),
@@ -384,7 +385,8 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 false,
                 rs.getBoolean("winner_isBlocked"),
                 rs.getObject("winner_blockedUntil", LocalDateTime.class),
-                rs.getString("winner_avatar_path")
+                rs.getString("winner_avatar_path"),
+                rs.getDouble("winner_frozen_balance")
         );
 
         obj.setId(rs.getInt("winner_id"));
