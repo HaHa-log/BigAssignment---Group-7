@@ -4,7 +4,7 @@ import models.Transaction;
 
 import java.util.List;
 
-public interface TransactionDAO extends DAO<Transaction> {
+public interface TransactionsDAO extends DAO<Transaction> {
     List<Transaction> getByUserId(int userId);
 
     List<Transaction> getPendingTransactions();

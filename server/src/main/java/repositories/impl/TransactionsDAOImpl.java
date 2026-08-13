@@ -6,7 +6,7 @@ import config.DB;
 import config.DbException;
 import models.Auction;
 import repositories.AuctionsDAO;
-import repositories.TransactionDAO;
+import repositories.TransactionsDAO;
 import repositories.UsersDAO;
 
 import java.sql.*;
@@ -14,11 +14,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TransactionDAOImpl implements TransactionDAO {
+public class TransactionsDAOImpl implements TransactionsDAO {
     UsersDAO userDAO = DaoFactory.createUsersDAO();
     AuctionsDAO auctionsDAO = DaoFactory.createAuctionsDAO();
 
-    protected TransactionDAOImpl() {};
+    protected TransactionsDAOImpl() {};
 
     @Override
     public void save(Transaction transaction) {
@@ -189,7 +189,7 @@ public class TransactionDAOImpl implements TransactionDAO {
 
     @Override
     public List<Transaction> getAll() {
-        String sql = "SELECT * FROM transaction";
+        String sql = "SELECT * FROM transactions";
 
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql);

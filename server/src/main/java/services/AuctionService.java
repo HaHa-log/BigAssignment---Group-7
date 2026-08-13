@@ -1,26 +1,22 @@
 package services;
 
 import com.group7.dto.auction.*;
-import com.group7.dto.item.ItemRequest;
 import config.BidWebSocketHandler;
 import config.DB;
 import config.DbException;
 import models.*;
-import models.Common.Price;
 import models.Exceptions.AuthenticationException;
-import models.Exceptions.IllegalTransactionException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import repositories.AuctionsDAO;
 import repositories.BidsDAO;
-import repositories.TransactionDAO;
+import repositories.TransactionsDAO;
 import repositories.UsersDAO;
 import repositories.impl.DaoFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -28,7 +24,7 @@ public class AuctionService {
     private final AuctionsDAO auctionsDAO = DaoFactory.createAuctionsDAO();
     private final UsersDAO usersDAO = DaoFactory.createUsersDAO();
     private final BidsDAO bidsDAO = DaoFactory.createBidsDAO();
-    private final TransactionDAO transactionDb = DaoFactory.createTransactionDAO();
+    private final TransactionsDAO transactionDb = DaoFactory.createTransactionDAO();
     private final ItemService itemService = new ItemService();
     private final TransactionService transactionService;
     private final BidWebSocketHandler webSocketHandler;

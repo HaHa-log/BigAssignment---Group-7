@@ -3,7 +3,7 @@ package models;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import repositories.TransactionDAO;
+import repositories.TransactionsDAO;
 import repositories.UsersDAO;
 import repositories.impl.DaoFactory;
 
@@ -14,7 +14,7 @@ public class Admin extends User {
     private static final Logger logger = LoggerFactory.getLogger(Admin.class);
 
     private final UsersDAO userDb = DaoFactory.createUsersDAO();
-    private final TransactionDAO transactionDb = DaoFactory.createTransactionDAO();
+    private final TransactionsDAO transactionDb = DaoFactory.createTransactionDAO();
 
     public Admin(String firstName, String lastName, String email, String phoneNumber, String password, double balance, String avatarPath) {
         super(firstName, lastName, email, phoneNumber, password, balance, avatarPath);

@@ -21,7 +21,7 @@ import static org.mockito.Mockito.*;
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class TransactionServiceTest {
 
-    @Mock private TransactionDAO transactionDAO;
+    @Mock private TransactionsDAO transactionsDAO;
     @Mock private AuctionsDAO auctionsDAO;
     @Mock private UsersDAO usersDAO;
 
@@ -32,7 +32,7 @@ public class TransactionServiceTest {
     @BeforeEach
     void setUp() {
         mockedDaoFactory = mockStatic(DaoFactory.class);
-        mockedDaoFactory.when(DaoFactory::createTransactionDAO).thenReturn(transactionDAO);
+        mockedDaoFactory.when(DaoFactory::createTransactionDAO).thenReturn(transactionsDAO);
         mockedDaoFactory.when(DaoFactory::createAuctionsDAO).thenReturn(auctionsDAO);
         mockedDaoFactory.when(DaoFactory::createUsersDAO).thenReturn(usersDAO);
 
@@ -64,11 +64,11 @@ public class TransactionServiceTest {
         when(mockSeller.getFullName()).thenReturn("Owner Seller");
 
         when(mockAuction.getCurrentPrice()).thenReturn(1000.0);
-        when(transactionDAO.getPendingByAuctionAndBuyer(anyInt(), anyInt())).thenReturn(null);
+        when(transactionsDAO.getPendingByAuctionAndBuyer(anyInt(), anyInt())).thenReturn(null);
 
         assertDoesNotThrow(() -> transactionService.createPendingTransaction(auctionId));
 
-        verify(transactionDAO, times(1)).save(any(Transaction.class));
+        verify(transactionsDAO, times(1)).save(any(Transaction.class));
     }
 
     @Test

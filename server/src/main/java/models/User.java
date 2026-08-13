@@ -2,7 +2,7 @@ package models;
 
 import models.Common.*;
 import repositories.ItemsDAO;
-import repositories.TransactionDAO;
+import repositories.TransactionsDAO;
 import repositories.impl.DaoFactory;
 
 import org.slf4j.Logger;
@@ -28,7 +28,7 @@ public class User extends Entity implements Bidder, Seller {
     private final List<String> transactions = new ArrayList<>();
     private double frozenBalance = 0;
 
-    private final TransactionDAO transactionDb = DaoFactory.createTransactionDAO();
+    private final TransactionsDAO transactionDb = DaoFactory.createTransactionDAO();
     private final ItemsDAO itemsDb = DaoFactory.createItemDAO();
 
     public User(String firstName, String lastName, String email, String phoneNumber, String password, double balance, String avatarPath) {

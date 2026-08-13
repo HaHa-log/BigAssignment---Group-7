@@ -5,7 +5,7 @@ import models.*;
 import models.Exceptions.IllegalTransactionException;
 import org.springframework.stereotype.Service;
 import repositories.AuctionsDAO;
-import repositories.TransactionDAO;
+import repositories.TransactionsDAO;
 import repositories.UsersDAO;
 import repositories.impl.DaoFactory;
 
@@ -14,7 +14,7 @@ import java.util.List;
 @Service
 public class TransactionService {
 
-    private final TransactionDAO transactionDAO = DaoFactory.createTransactionDAO();
+    private final TransactionsDAO transactionsDAO = DaoFactory.createTransactionDAO();
     private final AuctionsDAO auctionsDAO       = DaoFactory.createAuctionsDAO();
     private final UsersDAO usersDAO             = DaoFactory.createUsersDAO();
 
@@ -30,7 +30,7 @@ public class TransactionService {
             throw new IllegalArgumentException("[Error]: Winner is not a valid User.");
         }
 
-        Transaction existing = transactionDAO.getPendingByAuctionAndBuyer(auctionId, buyer.getId());
+        Transaction existing = transactionsDAO.getPendingByAuctionAndBuyer(auctionId, buyer.getId());
         if (existing != null) {
             return toResponse(existing);
         }
@@ -39,7 +39,7 @@ public class TransactionService {
         double finalPrice = auction.getCurrentPrice();
 
         Transaction transaction = new Transaction(auction, buyer, seller, finalPrice);
-        transactionDAO.save(transaction);
+        transactionsDAO.save(transaction);
         return toResponse(transaction);
     }
     //buyer confirm
@@ -55,11 +55,11 @@ public class TransactionService {
             throw new IllegalArgumentException("[Error]: You are not the winner of this auction.");
         }
 
-        Transaction transaction = transactionDAO.getPendingByAuctionAndBuyer(auctionId, buyerId);
+        Transaction transaction = transactionsDAO.getPendingByAuctionAndBuyer(auctionId, buyerId);
         if (transaction == null) {
             User seller = usersDAO.getById(auction.getOwner().getId());
             transaction = new Transaction(auction, buyer, seller, auction.getCurrentPrice());
-            transactionDAO.save(transaction);
+            transactionsDAO.save(transaction);
         }
 
         try {
@@ -70,7 +70,7 @@ public class TransactionService {
 
         usersDAO.update(transaction.getBuyer());
         usersDAO.update(transaction.getSeller());
-        transactionDAO.update(transaction);
+        transactionsDAO.update(transaction);
 
         auction.transitionTo(Auction.AuctionStatus.PAID);
         auctionsDAO.update(auction);
@@ -79,7 +79,7 @@ public class TransactionService {
     }
 
     public TransactionResponse refundTransaction(int transactionId) {
-        Transaction transaction = transactionDAO.getById(transactionId);
+        Transaction transaction = transactionsDAO.getById(transactionId);
         if (transaction == null) {
             throw new IllegalArgumentException("[Error]: Transaction not found.");
         }
@@ -90,19 +90,19 @@ public class TransactionService {
             throw new IllegalArgumentException(e.getMessage());
         }
 
-        transactionDAO.update(transaction);
+        transactionsDAO.update(transaction);
         return toResponse(transaction);
     }
 
     public List<TransactionResponse> getByUserId(int userId) {
-        return transactionDAO.getByUserId(userId)
+        return transactionsDAO.getByUserId(userId)
                 .stream()
                 .map(this::toResponse)
                 .toList();
     }
 
     public TransactionResponse getById(int transactionId) {
-        Transaction t = transactionDAO.getById(transactionId);
+        Transaction t = transactionsDAO.getById(transactionId);
         if (t == null) {
             throw new IllegalArgumentException("[Error]: Transaction not found.");
         }

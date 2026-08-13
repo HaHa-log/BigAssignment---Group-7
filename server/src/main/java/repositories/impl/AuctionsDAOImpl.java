@@ -289,26 +289,28 @@ public class AuctionsDAOImpl implements AuctionsDAO {
     private String getAuctionBaseSql() {
         return "SELECT a.*, "
                 + "u_owner.users_id AS owner_id, "
-                + "u_owner.firstName AS owner_firstName, u_owner.lastName AS owner_lastName, "
-                + "u_owner.email AS owner_email, u_owner.phoneNumber AS owner_phoneNumber, "
+                + "u_owner.\"firstName\" AS owner_firstName, u_owner.\"lastName\" AS owner_lastName, "
+                + "u_owner.email AS owner_email, u_owner.\"phoneNumber\" AS owner_phoneNumber, "
                 + "u_owner.password AS owner_password, u_owner.balance AS owner_balance, "
-                + "u_owner.isAdmin AS owner_isAdmin, u_owner.isBlocked AS owner_isBlocked, "
-                + "u_owner.blockedUntil AS owner_blockedUntil, "
+                + "u_owner.\"isAdmin\" AS owner_isAdmin, u_owner.\"isBlocked\" AS owner_isBlocked, "
+                + "u_owner.\"blockedUntil\" AS owner_blockedUntil, "
                 + "u_owner.avatar_path AS owner_avatar_path, "
-                + "i.items_id AS items_id, "
-                + "i.name AS item_name, i.startingPrice AS item_startingPrice, "
+                + "u_owner.frozen_balance AS owner_frozen_balance, "
+                + "i.item_id AS item_id, "
+                + "i.name AS item_name, i.\"startingPrice\" AS item_startingPrice, "
                 + "i.description AS item_description, i.status AS item_status, "
-                + "i.imagePath AS item_imagePath, i.owner_id AS item_owner_id, "
+                + "i.\"imagePath\" AS item_imagePath, i.owner_id AS item_owner_id, "
                 + "u_winner.users_id AS winner_id, "
-                + "u_winner.firstName AS winner_firstName, u_winner.lastName AS winner_lastName, "
-                + "u_winner.email AS winner_email, u_winner.phoneNumber AS winner_phoneNumber, "
+                + "u_winner.\"firstName\" AS winner_firstName, u_winner.\"lastName\" AS winner_lastName, "
+                + "u_winner.email AS winner_email, u_winner.\"phoneNumber\" AS winner_phoneNumber, "
                 + "u_winner.password AS winner_password, u_winner.balance AS winner_balance, "
-                + "u_winner.isAdmin AS winner_isAdmin, u_winner.isBlocked AS winner_isBlocked, "
-                + "u_winner.blockedUntil AS winner_blockedUntil, "
-                + "u_winner.avatar_path AS winner_avatar_path "
+                + "u_winner.\"isAdmin\" AS winner_isAdmin, u_winner.\"isBlocked\" AS winner_isBlocked, "
+                + "u_winner.\"blockedUntil\" AS winner_blockedUntil, "
+                + "u_winner.avatar_path AS owner_avatar_path, "
+                + "u_winner.frozen_balance AS owner_frozen_balance "
                 + "FROM auctions a "
                 + "INNER JOIN users u_owner ON a.owner_id = u_owner.users_id "
-                + "INNER JOIN items i ON a.item_id = i.items_id "
+                + "INNER JOIN items i ON a.item_id = i.item_id "
                 + "LEFT JOIN users u_winner ON a.winner_id = u_winner.users_id";
     }
 
@@ -325,7 +327,8 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 true,
                 rs.getBoolean("owner_isBlocked"),
                 rs.getObject("owner_blockedUntil", LocalDateTime.class),
-                rs.getString("owner_avatar_path")
+                rs.getString("owner_avatar_path"),
+                rs.getDouble("owner_frozen_balance")
         ) : new User(
                 rs.getString("owner_firstName"),
                 rs.getString("owner_lastName"),
@@ -336,7 +339,8 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 false,
                 rs.getBoolean("owner_isBlocked"),
                 rs.getObject("owner_blockedUntil", LocalDateTime.class),
-                rs.getString("owner_avatar_path")
+                rs.getString("owner_avatar_path"),
+                rs.getDouble("owner_frozen_balance")
         );
 
         obj.setId(rs.getInt("owner_id"));
@@ -352,7 +356,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 Item.Status.valueOf(rs.getString("item_status")),
                 rs.getString("item_imagePath")
         );
-        obj.setId(rs.getInt("items_id"));
+        obj.setId(rs.getInt("item_id"));
         obj.setOwner(owner);
         return obj;
     }

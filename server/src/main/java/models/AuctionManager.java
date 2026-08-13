@@ -4,12 +4,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import models.Exceptions.IllegalTransactionException;
-import org.springframework.scheduling.annotation.Scheduled;
 import repositories.AuctionsDAO;
 import repositories.AutoBidDAO;
 import repositories.ItemsDAO;
-import repositories.TransactionDAO;
+import repositories.TransactionsDAO;
 import repositories.UsersDAO;
 import repositories.impl.DaoFactory;
 
@@ -21,7 +19,7 @@ public class AuctionManager {
     private static AuctionManager instance;
 
     private final AuctionsDAO auctionDb;
-    private final TransactionDAO transactionDb;
+    private final TransactionsDAO transactionDb;
     private final AutoBidDAO autoBidDb;
     private final ItemsDAO itemsDb;
     private final UsersDAO userDb;

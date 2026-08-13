@@ -52,7 +52,7 @@ public class ItemsDAOImpl implements ItemsDAO {
 
     @Override
     public void delete(Item item) {
-        String sql = "DELETE FROM items WHERE items_id = ?";
+        String sql = "DELETE FROM items WHERE item_id = ?";
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
 
@@ -71,7 +71,7 @@ public class ItemsDAOImpl implements ItemsDAO {
     public void update(Item item) {
         String sql = "UPDATE items "
                 + "SET name = ?, startingPrice = ?, description = ?, status = ?, imagePath = ?, owner_id = ? "
-                + "WHERE items_id = ? ";
+                + "WHERE item_id = ? ";
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
 
@@ -91,7 +91,7 @@ public class ItemsDAOImpl implements ItemsDAO {
     @Override
     public Item getById(int id) {
         // FIX: Use getAuctionBaseSQL() instead of SELECT *
-        String sql = getAuctionBaseSQL() + " WHERE i.items_id = ?";
+        String sql = getAuctionBaseSQL() + " WHERE i.item_id = ?";
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
 
@@ -169,7 +169,7 @@ public class ItemsDAOImpl implements ItemsDAO {
     public List<Item> getByOwnerId(int ownerId, int page, int size) {
         int offset = page * size;
 
-        String sql = getAuctionBaseSQL() + " WHERE i.owner_id = ? ORDER BY i.items_id DESC LIMIT ? OFFSET ?";
+        String sql = getAuctionBaseSQL() + " WHERE i.owner_id = ? ORDER BY i.item_id DESC LIMIT ? OFFSET ?";
 
         List<Item> list = new ArrayList<>();
 
@@ -194,7 +194,7 @@ public class ItemsDAOImpl implements ItemsDAO {
 
     private String getAuctionBaseSQL() {
         return "SELECT "
-                + "i.items_id, i.name, i.startingPrice, i.description, "
+                + "i.item_id, i.name, i.startingPrice, i.description, "
                 + "i.status, i.imagePath, i.owner_id, "
                 + "u_owner.firstName AS owner_firstName, "
                 + "u_owner.lastName AS owner_lastName, "
@@ -206,6 +206,7 @@ public class ItemsDAOImpl implements ItemsDAO {
                 + "u_owner.isBlocked AS owner_isBlocked, "
                 + "u_owner.blockedUntil AS owner_blockedUntil, "
                 + "u_owner.avatar_path AS owner_avatar_path, "
+                + "u_owner.frozen_balance AS owner_frozen_balance, "
                 + "a.auctions_id AS active_auction_id, "
                 + "a.currentPrice AS auction_current_price "
                 + "FROM items i "
@@ -225,7 +226,8 @@ public class ItemsDAOImpl implements ItemsDAO {
                 rs.getBoolean("owner_isAdmin"),
                 rs.getBoolean("owner_isBlocked"),
                 rs.getObject("owner_blockedUntil", LocalDateTime.class),
-                rs.getString("owner_avatar_path")
+                rs.getString("owner_avatar_path"),
+                rs.getDouble("owner_frozen_balance")
         );
         obj.setId(rs.getInt("owner_id"));
         return obj;
@@ -262,7 +264,7 @@ public class ItemsDAOImpl implements ItemsDAO {
         if (!rs.wasNull()) {
             obj.setCurrentAuctionPrice(auctionPrice);
         }
-        obj.setId(rs.getInt("items_id"));
+        obj.setId(rs.getInt("item_id"));
         obj.setOwner(owner);
         return obj;
     }
