@@ -1,6 +1,7 @@
 package config;
 
 public final class ApiConfig {
+    //get destination url
     private static final String DEFAULT_BASE_URL = "http://localhost:8080";
 
     private ApiConfig() {

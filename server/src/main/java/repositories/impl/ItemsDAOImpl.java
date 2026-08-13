@@ -196,36 +196,36 @@ public class ItemsDAOImpl implements ItemsDAO {
         return "SELECT "
                 + "i.item_id, i.name, i.startingPrice, i.description, "
                 + "i.status, i.imagePath, i.owner_id, "
-                + "u_owner.firstName AS owner_firstName, "
-                + "u_owner.lastName AS owner_lastName, "
+                + "u_owner.first_name AS owner_firstName, "
+                + "u_owner.last_name AS owner_lastName, "
                 + "u_owner.email AS owner_email, "
-                + "u_owner.phoneNumber AS owner_phoneNumber, "
+                + "u_owner.phone_number AS owner_phoneNumber, "
                 + "u_owner.password AS owner_password, "
                 + "u_owner.balance AS owner_balance, "
-                + "u_owner.isAdmin AS owner_isAdmin, "
-                + "u_owner.isBlocked AS owner_isBlocked, "
-                + "u_owner.blockedUntil AS owner_blockedUntil, "
+                + "u_owner.is_admin AS owner_isAdmin, "
+                + "u_owner.is_blocked AS owner_isBlocked, "
+                + "u_owner.blocked_until AS owner_blockedUntil, "
                 + "u_owner.avatar_path AS owner_avatar_path, "
                 + "u_owner.frozen_balance AS owner_frozen_balance, "
-                + "a.auctions_id AS active_auction_id, "
+                + "a.auction_id AS active_auction_id, "
                 + "a.currentPrice AS auction_current_price "
                 + "FROM items i "
                 + "LEFT JOIN users u_owner ON u_owner.users_id = i.owner_id "
-                + "LEFT JOIN auctions a ON a.item_id = i.items_id "
+                + "LEFT JOIN auctions a ON a.item_id = i.item_id "
                 + "AND a.status IN ('OPEN', 'RUNNING')";
     }
 
     private User instantiateMember(ResultSet rs) throws SQLException {
         User obj = new User(
-                rs.getString("owner_firstName"),
-                rs.getString("owner_lastName"),
+                rs.getString("owner_first_name"),
+                rs.getString("owner_last_name"),
                 rs.getString("owner_email"),
-                rs.getString("owner_phoneNumber"),
+                rs.getString("owner_phone_number"),
                 rs.getString("owner_password"),
                 rs.getDouble("owner_balance"),
-                rs.getBoolean("owner_isAdmin"),
-                rs.getBoolean("owner_isBlocked"),
-                rs.getObject("owner_blockedUntil", LocalDateTime.class),
+                rs.getBoolean("owner_is_admin"),
+                rs.getBoolean("owner_is_blocked"),
+                rs.getObject("owner_blocked_until", LocalDateTime.class),
                 rs.getString("owner_avatar_path"),
                 rs.getDouble("owner_frozen_balance")
         );
@@ -243,7 +243,7 @@ public class ItemsDAOImpl implements ItemsDAO {
             try {
                 status = Item.Status.valueOf(statusStr);
             } catch (IllegalArgumentException e) {
-                System.err.println("[Warning]: Sai lệch Enum Status của Item ID " + rs.getInt("items_id"));
+                System.err.println("[Warning]: Sai lệch Enum Status của Item ID " + rs.getInt("item_id"));
             }
         }
 

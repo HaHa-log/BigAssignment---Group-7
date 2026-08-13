@@ -41,7 +41,7 @@ public class AuctionController {
         return ResponseEntity.ok(auctionService.placeBid(id, request.getBidderId(), request.getAmount()));
     }
 
-    @PostMapping("/{id}/cancel")
+    @PutMapping("/{id}/cancel")
     public ResponseEntity<AuctionResponse> cancel(@PathVariable int id) {
         return ResponseEntity.ok(auctionService.cancel(id));
     }

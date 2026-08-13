@@ -63,7 +63,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
 
     @Override
     public void delete(Auction auction) {
-        String sql = "DELETE FROM auctions WHERE auctions_id = ?";
+        String sql = "DELETE FROM auctions WHERE auction_id = ?";
         try (Connection conn = DB.getConnection();
              PreparedStatement st = conn.prepareStatement(sql)) {
 
@@ -83,7 +83,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
         String sql = "UPDATE auctions "
                 + "SET owner_id = ?, item_id = ?, status = ?, startingPrice = ?, "
                 + "currentPrice = ?, startingTime = ?, endingTime = ?, winner_id = ? "
-                + " WHERE auctions_id = ? ";
+                + " WHERE auction_id = ? ";
         try (Connection conn = DB.getConnection();
              PreparedStatement st = conn.prepareStatement(sql)) {
 
@@ -108,7 +108,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
 
     @Override
     public Auction getByIdWithLock(Connection conn, int id) {
-        String sql = getAuctionBaseSql() + " WHERE a.auctions_id = ? FOR UPDATE";
+        String sql = getAuctionBaseSql() + " WHERE a.auction_id = ? FOR UPDATE";
         try (PreparedStatement st = conn.prepareStatement(sql)) {
             st.setInt(1, id);
             try (ResultSet rs = st.executeQuery()) {
@@ -123,7 +123,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
     public void updateWithConn(Connection conn, Auction auction) {
         String sql = "UPDATE auctions "
                 + "SET currentPrice = ?, winner_id = ?, status = ?, endingTime = ? "
-                + "WHERE auctions_id = ?";
+                + "WHERE auction_id = ?";
         try (PreparedStatement st = conn.prepareStatement(sql)) {
             st.setDouble(1, auction.getCurrentPrice());
             st.setObject(2, auction.getWinner() != null
@@ -139,7 +139,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
 
     @Override
     public Auction getById(int id) {
-        String sql = getAuctionBaseSql() + " WHERE a.auctions_id = ?";
+        String sql = getAuctionBaseSql() + " WHERE a.auction_id = ?";
 
         try (Connection conn = DB.getConnection();
              PreparedStatement st = conn.prepareStatement(sql)) {
@@ -187,7 +187,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
 
         String sql = getAuctionBaseSql()
                 + (filterStatus ? " WHERE a.status = ? " : " ")
-                + " ORDER BY a.auctions_id DESC LIMIT ? OFFSET ?";
+                + " ORDER BY a.auction_id DESC LIMIT ? OFFSET ?";
 
         try (Connection conn = DB.getConnection();
              PreparedStatement st = conn.prepareStatement(sql)) {
@@ -214,12 +214,12 @@ public class AuctionsDAOImpl implements AuctionsDAO {
     @Override
     public List<Auction> getAllByUserId(int userId) {
         String sql = getAuctionBaseSql()
-                + " LEFT JOIN bids b ON a.auctions_id = b.auction_id"
+                + " LEFT JOIN bids b ON a.auction_id = b.auction_id"
                 + " WHERE a.owner_id = ?"
                 + " OR a.winner_id = ?"
                 + " OR b.bidder_id = ?"
-                + " GROUP BY a.auctions_id"
-                + " ORDER BY a.auctions_id DESC";
+                + " GROUP BY a.auction_id"
+                + " ORDER BY a.auction_id DESC";
 
         try (Connection conn = DB.getConnection();
              PreparedStatement st = conn.prepareStatement(sql)) {
@@ -274,7 +274,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 winner
         );
 
-        obj.setAuctionId(rs.getInt("auctions_id"));
+        obj.setAuctionId(rs.getInt("auction_id"));
         return obj;
     }
 
@@ -289,11 +289,11 @@ public class AuctionsDAOImpl implements AuctionsDAO {
     private String getAuctionBaseSql() {
         return "SELECT a.*, "
                 + "u_owner.users_id AS owner_id, "
-                + "u_owner.\"firstName\" AS owner_firstName, u_owner.\"lastName\" AS owner_lastName, "
-                + "u_owner.email AS owner_email, u_owner.\"phoneNumber\" AS owner_phoneNumber, "
+                + "u_owner.first_name AS owner_first_name, u_owner.last_name AS owner_last_name, "
+                + "u_owner.email AS owner_email, u_owner.phone_number AS owner_phone_number, "
                 + "u_owner.password AS owner_password, u_owner.balance AS owner_balance, "
-                + "u_owner.\"isAdmin\" AS owner_isAdmin, u_owner.\"isBlocked\" AS owner_isBlocked, "
-                + "u_owner.\"blockedUntil\" AS owner_blockedUntil, "
+                + "u_owner.is_admin AS owner_is_admin, u_owner.is_blocked AS owner_is_blocked, "
+                + "u_owner.blocked_until AS owner_blockedUntil, "
                 + "u_owner.avatar_path AS owner_avatar_path, "
                 + "u_owner.frozen_balance AS owner_frozen_balance, "
                 + "i.item_id AS item_id, "
@@ -301,11 +301,11 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 + "i.description AS item_description, i.status AS item_status, "
                 + "i.\"imagePath\" AS item_imagePath, i.owner_id AS item_owner_id, "
                 + "u_winner.users_id AS winner_id, "
-                + "u_winner.\"firstName\" AS winner_firstName, u_winner.\"lastName\" AS winner_lastName, "
-                + "u_winner.email AS winner_email, u_winner.\"phoneNumber\" AS winner_phoneNumber, "
+                + "u_winner.first_name AS winner_firstName, u_winner.last_name AS winner_lastName, "
+                + "u_winner.email AS winner_email, u_winner.phone_number AS winner_phone_number, "
                 + "u_winner.password AS winner_password, u_winner.balance AS winner_balance, "
-                + "u_winner.\"isAdmin\" AS winner_isAdmin, u_winner.\"isBlocked\" AS winner_isBlocked, "
-                + "u_winner.\"blockedUntil\" AS winner_blockedUntil, "
+                + "u_winner.is_admin AS winner_isAdmin, u_winner.is_blocked AS winner_isBlocked, "
+                + "u_winner.blocked_until AS winner_blockedUntil, "
                 + "u_winner.avatar_path AS owner_avatar_path, "
                 + "u_winner.frozen_balance AS owner_frozen_balance "
                 + "FROM auctions a "

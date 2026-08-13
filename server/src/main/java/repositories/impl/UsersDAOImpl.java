@@ -18,7 +18,7 @@ public class UsersDAOImpl implements UsersDAO {
     @Override
     public void save(User user) {
         String sql = "INSERT INTO users "
-                + "(email, phoneNumber, firstName, lastName, password, isAdmin, isBlocked, balance, avatar_path, frozen_balance) "
+                + "(email, phone_number, first_name, last_name, password, is_admin, is_blocked, balance, avatar_path, frozen_balance) "
                 + "VALUES (?, ?, ?, ?, ?, ? , ?, ?, ?, ?)";
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -73,7 +73,7 @@ public class UsersDAOImpl implements UsersDAO {
     @Override
     public void update(User user) {
         String sql = "UPDATE users "
-                +"SET email = ?, phoneNumber = ?, firstName = ?, lastName = ?, password = ?, isAdmin = ?, isBlocked = ?, balance = ?, avatar_path = ?, frozen_balance = ?"
+                +"SET email = ?, phone_number = ?, first_name = ?, last_name = ?, password = ?, is_admin = ?, is_blocked = ?, balance = ?, avatar_path = ?, frozen_balance = ?"
                 + " WHERE users_id = ? ";
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
@@ -107,7 +107,7 @@ public class UsersDAOImpl implements UsersDAO {
             st.setInt(1, id);
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()){
-                    if (rs.getBoolean("isAdmin")) {
+                    if (rs.getBoolean("is_admin")) {
                         return instantiateAdmin(rs);
                     } else {
                         return instantiateMember(rs);
@@ -129,10 +129,10 @@ public class UsersDAOImpl implements UsersDAO {
             st.setString(1, email);
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()) {
-                    if (rs.getBoolean("isAdmin") == false) {
+                    if (rs.getBoolean("is_admin") == false) {
                         User user = instantiateMember(rs);
                         return user;
-                    } else if (rs.getBoolean("isAdmin") == true) {
+                    } else if (rs.getBoolean("is_admin") == true) {
                         Admin admin = instantiateAdmin(rs);
                         return admin;
                     }
@@ -153,9 +153,9 @@ public class UsersDAOImpl implements UsersDAO {
             ResultSet rs = st.executeQuery()) {
 
             while (rs.next()) {
-                if (rs.getBoolean("isAdmin") == false) {
+                if (rs.getBoolean("is_admin") == false) {
                     list.add(instantiateMember(rs));
-                } else if (rs.getBoolean("isAdmin") == true) {
+                } else if (rs.getBoolean("is_admin") == true) {
                     list.add(instantiateAdmin(rs));
                 }
             }
@@ -168,7 +168,7 @@ public class UsersDAOImpl implements UsersDAO {
 
     @Override
     public List<User> getAllMember() {
-        String sql = "SELECT * FROM users WHERE isAdmin = ?";
+        String sql = "SELECT * FROM users WHERE is_admin = ?";
         List<User> list = new ArrayList<>();
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
@@ -188,7 +188,7 @@ public class UsersDAOImpl implements UsersDAO {
 
     @Override
     public List<Admin> getAllAdmin() {
-        String sql = "SELECT * FROM users WHERE isAdmin = ?";
+        String sql = "SELECT * FROM users WHERE is_admin = ?";
         List<Admin> list = new ArrayList<>();
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
@@ -209,15 +209,15 @@ public class UsersDAOImpl implements UsersDAO {
 
     private User instantiateMember(ResultSet rs) throws SQLException {
         User obj = new User(
-                rs.getString("firstName"),
-                rs.getString("lastName"),
+                rs.getString("first_name"),
+                rs.getString("last_name"),
                 rs.getString("email"),
-                rs.getString("phoneNumber"),
+                rs.getString("phone_number"),
                 rs.getString("password"),
                 rs.getDouble("balance"),
-                rs.getBoolean("isAdmin"),
-                rs.getBoolean("isBlocked"),
-                rs.getObject("blockedUntil", LocalDateTime.class),
+                rs.getBoolean("is_admin"),
+                rs.getBoolean("is_blocked"),
+                rs.getObject("blocked_until", LocalDateTime.class),
                 rs.getString("avatar_path")
         );
         obj.setFrozenBalance(rs.getDouble("frozen_balance"));
@@ -227,15 +227,15 @@ public class UsersDAOImpl implements UsersDAO {
 
     private Admin instantiateAdmin(ResultSet rs) throws SQLException {
         Admin obj = new Admin(
-                rs.getString("firstName"),
-                rs.getString("lastName"),
+                rs.getString("first_name"),
+                rs.getString("last_name"),
                 rs.getString("email"),
-                rs.getString("phoneNumber"),
+                rs.getString("phone_number"),
                 rs.getString("password"),
                 rs.getDouble("balance"),
-                rs.getBoolean("isAdmin"),
-                rs.getBoolean("isBlocked"),
-                rs.getObject("blockedUntil", LocalDateTime.class),
+                rs.getBoolean("is_admin"),
+                rs.getBoolean("is_blocked"),
+                rs.getObject("blocked_until", LocalDateTime.class),
                 rs.getString("avatar_path")
         );
         obj.setFrozenBalance(rs.getDouble("frozen_balance"));

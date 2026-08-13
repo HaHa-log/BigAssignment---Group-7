@@ -43,10 +43,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DbException.class)
     public ResponseEntity<Map<String, String>> handleDb(DbException e) {
+        // 1. Dòng này cực kỳ quan trọng: Ép Server phải in lỗi chi tiết ra tab Console của Spring Boot
+        e.printStackTrace();
+
+        // 2. Lấy thông báo lỗi thật từ Database ném ra
+        String realMessage = e.getMessage() != null ? e.getMessage() : "Database error occurred.";
+
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
                 "exceptionType", "DbException",
-                "error", "Database error occurred.",
-                "message", "Database error occurred."
+                "error", realMessage, // Trả lỗi thật về để xem
+                "message", realMessage
         ));
     }
 

@@ -31,11 +31,12 @@ public class AuthApiService {
                 return mapper.readValue(response.body(), AuthResponse.class);
             }
 
-            if (response.statusCode() == 400) {
-                throw new IllegalArgumentException(extractErrorMessage(response.body()));
+            if (response.statusCode() == 400 || response.statusCode() == 500) {
+                String serverError = extractErrorMessage(response.body());
+                throw new IllegalArgumentException(serverError);
             }
 
-            throw new RuntimeException("Server error (" + response.statusCode() + "): " + response.body());
+            throw new RuntimeException("System error (" + response.statusCode() + ")");
 
         } catch (java.net.ConnectException | java.net.UnknownHostException e) {
             throw new IOException("Cannot connect to server at " + ApiConfig.baseUrl()
