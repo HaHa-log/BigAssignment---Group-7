@@ -9,8 +9,8 @@ import models.Exceptions.AuthenticationException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import repositories.AuctionsDAO;
+import repositories.AutoBidDAO;
 import repositories.BidsDAO;
-import repositories.TransactionsDAO;
 import repositories.UsersDAO;
 import repositories.impl.DaoFactory;
 
@@ -24,7 +24,7 @@ public class AuctionService {
     private final AuctionsDAO auctionsDAO = DaoFactory.createAuctionsDAO();
     private final UsersDAO usersDAO = DaoFactory.createUsersDAO();
     private final BidsDAO bidsDAO = DaoFactory.createBidsDAO();
-    private final TransactionsDAO transactionDb = DaoFactory.createTransactionDAO();
+    private final AutoBidDAO autoBidDAO = DaoFactory.createAutoBidDAO();
     private final ItemService itemService = new ItemService();
     private final TransactionService transactionService;
     private final BidWebSocketHandler webSocketHandler;
@@ -78,6 +78,16 @@ public class AuctionService {
     }
 
     public AuctionResponse placeBid(int auctionId, int bidderId, double amount) {
+        placeManualBidInTransaction(auctionId, bidderId, amount);
+
+        Auction committed = loadCommittedAuctionWithBids(auctionId);
+        broadcastBid(committed);
+        processAutoBids(committed, bidderId);
+
+        return toResponseWithCachedBids(committed, committed.getBids());
+    }
+
+    private void placeManualBidInTransaction(int auctionId, int bidderId, double amount) {
         try (Connection conn = DB.getConnection()) {
             conn.setAutoCommit(false);
             try {
@@ -92,12 +102,10 @@ public class AuctionService {
                     throw new IllegalArgumentException("[Error]: Bidder is invalid.");
                 }
 
-                bidder.placeBid(auction, amount);
+                Auction.BidPlacement placement = auction.placeBidWithoutPersistence(bidder, amount);
 
+                persistBidPlacement(placement);
                 auctionsDAO.updateWithConn(conn, auction);
-                usersDAO.update(bidder);
-
-                User previousWinner = (User) auction.getWinner();
 
                 conn.commit();
 
@@ -108,36 +116,61 @@ public class AuctionService {
         } catch (SQLException e) {
             throw new DbException(e.getMessage());
         }
+    }
 
+    private void persistBidPlacement(Auction.BidPlacement placement) {
+        if (placement.hasPreviousWinner()) {
+            usersDAO.update(placement.previousWinner());
+        }
+        usersDAO.update(placement.bidder());
+        bidsDAO.save(placement.bid());
+    }
+
+    private Auction loadCommittedAuctionWithBids(int auctionId) {
         Auction committed = requireAuction(auctionId);
         committed.setBids(bidsDAO.getByAuctionId(auctionId));
+        return committed;
+    }
 
-        webSocketHandler.broadcastBid(auctionId, committed.getCurrentPrice(), committed.getStatus().name());
+    private void processAutoBids(Auction auction, int manualBidderId) {
+        List<AutoBid> autoBids = autoBidDAO.getByAuctionId(auction.getId(), auction);
 
-        List<AutoBid> autoBids = DaoFactory.createAutoBidDAO().getByAuctionId(auctionId, committed);
         for (AutoBid autoBid : autoBids) {
-            if (autoBid.getUser().getId() == bidderId) continue;
-            double priceBefore = committed.getCurrentPrice();
-            AuctionManager.getInstance().processAutoBids(committed, autoBid);
-            double priceAfter = committed.getCurrentPrice();
-            if (priceAfter > priceBefore) {
-                try (Connection conn = DB.getConnection()) {
-                    conn.setAutoCommit(false);
-                    try {
-                        auctionsDAO.updateWithConn(conn, committed);
-                        conn.commit();
-                    } catch (Exception e) {
-                        conn.rollback();
-                        throw e;
-                    }
-                } catch (SQLException e) {
-                    throw new DbException(e.getMessage());
-                }
-                webSocketHandler.broadcastBid(auctionId, priceAfter, committed.getStatus().name());
+            if (autoBid.getUser().getId() == manualBidderId) {
+                continue;
+            }
+
+            Auction.BidPlacement placement = auctionManager.placeAutoBidWithoutPersistence(auction, autoBid);
+
+            if (placement != null) {
+                persistBidPlacement(placement);
+                persistAuctionInTransaction(auction);
+                broadcastBid(auction);
             }
         }
+    }
 
-        return toResponseWithCachedBids(committed, committed.getBids());
+    private void persistAuctionInTransaction(Auction auction) {
+        try (Connection conn = DB.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                auctionsDAO.updateWithConn(conn, auction);
+                conn.commit();
+            } catch (Exception e) {
+                conn.rollback();
+                throw e;
+            }
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+    }
+
+    private void broadcastBid(Auction auction) {
+        webSocketHandler.broadcastBid(
+                auction.getId(),
+                auction.getCurrentPrice(),
+                auction.getStatus().name()
+        );
     }
 
     public AuctionResponse cancel(int auctionId) {

@@ -6,6 +6,7 @@ import java.util.List;
 
 import repositories.AuctionsDAO;
 import repositories.AutoBidDAO;
+import repositories.BidsDAO;
 import repositories.ItemsDAO;
 import repositories.TransactionsDAO;
 import repositories.UsersDAO;
@@ -21,6 +22,7 @@ public class AuctionManager {
     private final AuctionsDAO auctionDb;
     private final TransactionsDAO transactionDb;
     private final AutoBidDAO autoBidDb;
+    private final BidsDAO bidDb;
     private final ItemsDAO itemsDb;
     private final UsersDAO userDb;
     private List<Auction> activeSessions;
@@ -30,6 +32,7 @@ public class AuctionManager {
         auctionDb = DaoFactory.createAuctionsDAO();
         transactionDb = DaoFactory.createTransactionDAO();
         autoBidDb = DaoFactory.createAutoBidDAO();
+        bidDb = DaoFactory.createBidsDAO();
         itemsDb = DaoFactory.createItemDAO();
         userDb = DaoFactory.createUsersDAO();
         activeSessions = new ArrayList<>();
@@ -56,20 +59,38 @@ public class AuctionManager {
         return auctionDb.getAll();
     }
 
-    public void processAutoBids(Auction auction, AutoBid userConfig) {
+    public Auction.BidPlacement processAutoBids(Auction auction, AutoBid userConfig) {
+        Auction.BidPlacement placement = placeAutoBidWithoutPersistence(auction, userConfig);
+        if (placement == null) {
+            return null;
+        }
+        persistBidPlacement(auction, placement);
+        return placement;
+    }
+
+    public Auction.BidPlacement placeAutoBidWithoutPersistence(Auction auction, AutoBid userConfig) {
         if (auction == null || userConfig == null) {
-            return;
+            return null;
         }
         if (auction.getWinner() != null && auction.getWinner().isEqual(userConfig.getUser())) {
-            return;
+            return null;
         }
         double nextPrice = auction.getCurrentPrice() + userConfig.getIncrement();
         if (nextPrice > userConfig.getMaxBid()) {
             log.info("Automatic bidding stopped due to maximum bid limit reached");
-            return;
+            return null;
         }
         log.info("Auto-bidding for {}", userConfig.getUser().getFullName());
-        userConfig.getUser().placeBid(auction, nextPrice);
+        return auction.placeBidWithoutPersistence(userConfig.getUser(), nextPrice);
+    }
+
+    private void persistBidPlacement(Auction auction, Auction.BidPlacement placement) {
+        if (placement.hasPreviousWinner()) {
+            userDb.update(placement.previousWinner());
+        }
+        userDb.update(placement.bidder());
+        bidDb.save(placement.bid());
+        auctionDb.update(auction);
     }
 
     public Auction createAuction(User owner, Item item, LocalDateTime startingTime, LocalDateTime endingTime) {
@@ -150,9 +171,7 @@ public class AuctionManager {
             throw new IllegalArgumentException("[Error]: Auction is required.");
         }
 
-        if (auction != null) {
-            auction.getStatus();
-        }
+        auction.getStatus();
         auction.transitionTo(Auction.AuctionStatus.PAID);
         auction.getItem().setStatus(Item.Status.AVAILABLE);
 
@@ -169,29 +188,23 @@ public class AuctionManager {
 
     public void checkAndCancelExpiredTransactions() {
         List<Transaction> pendingTransactions = transactionDb.getAll();
-        UsersDAO usersDb = DaoFactory.createUsersDAO();
-
 
         if (pendingTransactions == null || pendingTransactions.isEmpty()) {
             return;
-        } else {
-            for (Transaction transaction : pendingTransactions) {
-                if (pendingTransactions == null || pendingTransactions.isEmpty()) {
-                    return;
-                }
+        }
 
-                if (!transaction.isExpired()) {
-                    continue;
-                }
-                if (transaction.markExpiredRefund()) {
-                    Auction auction = transaction.getAuction();
-                    auction.transitionTo(Auction.AuctionStatus.CANCELED);
-                    transactionDb.update(transaction);
-                    usersDb.update(transaction.getBuyer());
-                    auctionDb.update(auction);
-                    System.out.println("[System]: Transaction " + transaction.getTransactionId()
-                            + " has expired. Money refunded to buyer.");
-                }
+        for (Transaction transaction : pendingTransactions) {
+            if (!transaction.isExpired()) {
+                continue;
+            }
+            if (transaction.markExpiredRefund()) {
+                Auction auction = transaction.getAuction();
+                auction.transitionTo(Auction.AuctionStatus.CANCELED);
+                transactionDb.update(transaction);
+                userDb.update(transaction.getBuyer());
+                auctionDb.update(auction);
+                System.out.println("[System]: Transaction " + transaction.getTransactionId()
+                        + " has expired. Money refunded to buyer.");
             }
         }
     }

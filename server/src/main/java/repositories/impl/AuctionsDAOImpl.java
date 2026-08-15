@@ -32,7 +32,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
     public void save(Auction auction) {
 
         String sql = "INSERT INTO auctions "
-                + "(owner_id, item_id, startingPrice, currentPrice, startingTime, endingTime) "
+                + "(owner_id, item_id, starting_price, current_price, starting_time, ending_time) "
                 + "VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DB.getConnection();
              PreparedStatement st = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -81,8 +81,8 @@ public class AuctionsDAOImpl implements AuctionsDAO {
     @Override
     public void update(Auction auction) {
         String sql = "UPDATE auctions "
-                + "SET owner_id = ?, item_id = ?, status = ?, startingPrice = ?, "
-                + "currentPrice = ?, startingTime = ?, endingTime = ?, winner_id = ? "
+                + "SET owner_id = ?, item_id = ?, status = ?, starting_price = ?, "
+                + "current_price = ?, starting_time = ?, ending_time = ?, winner_id = ? "
                 + " WHERE auction_id = ? ";
         try (Connection conn = DB.getConnection();
              PreparedStatement st = conn.prepareStatement(sql)) {
@@ -122,7 +122,7 @@ public class AuctionsDAOImpl implements AuctionsDAO {
     @Override
     public void updateWithConn(Connection conn, Auction auction) {
         String sql = "UPDATE auctions "
-                + "SET currentPrice = ?, winner_id = ?, status = ?, endingTime = ? "
+                + "SET current_price = ?, winner_id = ?, status = ?, ending_time = ? "
                 + "WHERE auction_id = ?";
         try (PreparedStatement st = conn.prepareStatement(sql)) {
             st.setDouble(1, auction.getCurrentPrice());
@@ -267,10 +267,10 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 item.getOwner(),
                 item,
                 Auction.AuctionStatus.valueOf(rs.getString("status")),
-                rs.getObject("startingTime", LocalDateTime.class),
-                rs.getObject("endingTime", LocalDateTime.class),
-                rs.getDouble("startingPrice"),
-                rs.getDouble("currentPrice"),
+                rs.getObject("starting_time", LocalDateTime.class),
+                rs.getObject("ending_time", LocalDateTime.class),
+                rs.getDouble("starting_price"),
+                rs.getDouble("current_price"),
                 winner
         );
 
@@ -297,15 +297,15 @@ public class AuctionsDAOImpl implements AuctionsDAO {
                 + "u_owner.avatar_path AS owner_avatar_path, "
                 + "u_owner.frozen_balance AS owner_frozen_balance, "
                 + "i.item_id AS item_id, "
-                + "i.name AS item_name, i.\"startingPrice\" AS item_startingPrice, "
+                + "i.name AS item_name, i.starting_price AS item_starting_price, "
                 + "i.description AS item_description, i.status AS item_status, "
-                + "i.\"imagePath\" AS item_imagePath, i.owner_id AS item_owner_id, "
+                + "i.image_path AS item_image_path, i.owner_id AS item_owner_id, "
                 + "u_winner.users_id AS winner_id, "
-                + "u_winner.first_name AS winner_firstName, u_winner.last_name AS winner_lastName, "
+                + "u_winner.first_name AS winner_first_name, u_winner.last_name AS winner_last_name, "
                 + "u_winner.email AS winner_email, u_winner.phone_number AS winner_phone_number, "
                 + "u_winner.password AS winner_password, u_winner.balance AS winner_balance, "
-                + "u_winner.is_admin AS winner_isAdmin, u_winner.is_blocked AS winner_isBlocked, "
-                + "u_winner.blocked_until AS winner_blockedUntil, "
+                + "u_winner.is_admin AS winner_is_admin, u_winner.is_blocked AS winner_is_blocked, "
+                + "u_winner.blocked_until AS winner_blocked_until, "
                 + "u_winner.avatar_path AS owner_avatar_path, "
                 + "u_winner.frozen_balance AS owner_frozen_balance "
                 + "FROM auctions a "
@@ -315,30 +315,30 @@ public class AuctionsDAOImpl implements AuctionsDAO {
     }
 
     private User instantiateOwner(ResultSet rs) throws SQLException {
-        boolean isAdmin = rs.getBoolean("owner_isAdmin");
+        boolean isAdmin = rs.getBoolean("owner_is_admin");
 
         User obj = isAdmin ? new Admin(
-                rs.getString("owner_firstName"),
-                rs.getString("owner_lastName"),
+                rs.getString("owner_first_name"),
+                rs.getString("owner_last_name"),
                 rs.getString("owner_email"),
-                rs.getString("owner_phoneNumber"),
+                rs.getString("owner_phone_number"),
                 rs.getString("owner_password"),
                 rs.getDouble("owner_balance"),
                 true,
-                rs.getBoolean("owner_isBlocked"),
-                rs.getObject("owner_blockedUntil", LocalDateTime.class),
+                rs.getBoolean("owner_is_blocked"),
+                rs.getObject("owner_blocked_until", LocalDateTime.class),
                 rs.getString("owner_avatar_path"),
                 rs.getDouble("owner_frozen_balance")
         ) : new User(
-                rs.getString("owner_firstName"),
-                rs.getString("owner_lastName"),
+                rs.getString("owner_first_name"),
+                rs.getString("owner_last_name"),
                 rs.getString("owner_email"),
-                rs.getString("owner_phoneNumber"),
+                rs.getString("owner_phone_number"),
                 rs.getString("owner_password"),
                 rs.getDouble("owner_balance"),
                 false,
-                rs.getBoolean("owner_isBlocked"),
-                rs.getObject("owner_blockedUntil", LocalDateTime.class),
+                rs.getBoolean("owner_is_blocked"),
+                rs.getObject("owner_blocked_until", LocalDateTime.class),
                 rs.getString("owner_avatar_path"),
                 rs.getDouble("owner_frozen_balance")
         );
@@ -351,10 +351,10 @@ public class AuctionsDAOImpl implements AuctionsDAO {
         User owner = instantiateOwner(rs);
         Item obj = new Item(
                 rs.getString("item_name"),
-                rs.getDouble("item_startingPrice"),
+                rs.getDouble("item_starting_price"),
                 rs.getString("item_description"),
                 Item.Status.valueOf(rs.getString("item_status")),
-                rs.getString("item_imagePath")
+                rs.getString("item_image_path")
         );
         obj.setId(rs.getInt("item_id"));
         obj.setOwner(owner);
@@ -366,31 +366,31 @@ public class AuctionsDAOImpl implements AuctionsDAO {
             return null;
         }
 
-        boolean isAdmin = rs.getBoolean("winner_isAdmin");
+        boolean isAdmin = rs.getBoolean("winner_is_admin");
         User obj = isAdmin ? new Admin(
-                rs.getString("winner_firstName"),
-                rs.getString("winner_lastName"),
-                rs.getString("winner_email"),
-                rs.getString("winner_phoneNumber"),
-                rs.getString("winner_password"),
-                rs.getDouble("winner_balance"),
+                rs.getString("owner_first_name"),
+                rs.getString("owner_last_name"),
+                rs.getString("owner_email"),
+                rs.getString("owner_phone_number"),
+                rs.getString("owner_password"),
+                rs.getDouble("owner_balance"),
                 true,
-                rs.getBoolean("winner_isBlocked"),
-                rs.getObject("winner_blockedUntil", LocalDateTime.class),
-                rs.getString("winner_avatar_path"),
-                rs.getDouble("winner_frozen_balance")
+                rs.getBoolean("owner_is_blocked"),
+                rs.getObject("owner_blocked_until", LocalDateTime.class),
+                rs.getString("owner_avatar_path"),
+                rs.getDouble("owner_frozen_balance")
         ) : new User(
-                rs.getString("winner_firstName"),
-                rs.getString("winner_lastName"),
-                rs.getString("winner_email"),
-                rs.getString("winner_phoneNumber"),
-                rs.getString("winner_password"),
-                rs.getDouble("winner_balance"),
+                rs.getString("owner_first_name"),
+                rs.getString("owner_last_name"),
+                rs.getString("owner_email"),
+                rs.getString("owner_phone_number"),
+                rs.getString("owner_password"),
+                rs.getDouble("owner_balance"),
                 false,
-                rs.getBoolean("winner_isBlocked"),
-                rs.getObject("winner_blockedUntil", LocalDateTime.class),
-                rs.getString("winner_avatar_path"),
-                rs.getDouble("winner_frozen_balance")
+                rs.getBoolean("owner_is_blocked"),
+                rs.getObject("owner_blocked_until", LocalDateTime.class),
+                rs.getString("owner_avatar_path"),
+                rs.getDouble("owner_frozen_balance")
         );
 
         obj.setId(rs.getInt("winner_id"));

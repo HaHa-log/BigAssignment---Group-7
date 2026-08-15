@@ -26,11 +26,8 @@ public class TransactionService {
         if (winner == null) {
             throw new IllegalArgumentException("[Error]: Auction has no winner.");
         }
-        if (!(winner instanceof User buyer)) {
-            throw new IllegalArgumentException("[Error]: Winner is not a valid User.");
-        }
 
-        Transaction existing = transactionsDAO.getPendingByAuctionAndBuyer(auctionId, buyer.getId());
+        Transaction existing = transactionsDAO.getPendingByAuctionAndBuyer(auctionId, winner.getId());
         if (existing != null) {
             return toResponse(existing);
         }
@@ -38,7 +35,7 @@ public class TransactionService {
         User seller = auction.getOwner();
         double finalPrice = auction.getCurrentPrice();
 
-        Transaction transaction = new Transaction(auction, buyer, seller, finalPrice);
+        Transaction transaction = new Transaction(auction, winner, seller, finalPrice);
         transactionsDAO.save(transaction);
         return toResponse(transaction);
     }

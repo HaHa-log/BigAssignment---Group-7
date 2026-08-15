@@ -1,9 +1,5 @@
 package models;
 
-import java.util.List;
-import repositories.BidsDAO;
-import repositories.impl.DaoFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,9 +46,5 @@ public interface Bidder {
             }
         }
         return lastTimeBidAmount;
-    }
-
-    private static BidsDAO bidsDb() {
-        return DaoFactory.createBidsDAO();
     }
 }

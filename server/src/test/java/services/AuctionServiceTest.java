@@ -3,6 +3,7 @@ package services;
 import com.group7.dto.auction.AuctionResponse;
 import config.BidWebSocketHandler;
 import models.Auction;
+import models.Bid;
 import models.AuctionManager;
 import models.User;
 import org.junit.jupiter.api.AfterEach;
@@ -83,6 +84,8 @@ public class AuctionServiceTest {
         when(auctionsDAO.getById(auctionId)).thenReturn(mockAuction);
         when(usersDAO.getById(bidderId)).thenReturn(mockBidder);
         when(bidsDAO.getByAuctionId(auctionId)).thenReturn(Collections.emptyList());
+        when(mockAuction.placeBidWithoutPersistence(mockBidder, bidAmount))
+                .thenReturn(new Auction.BidPlacement(mock(Bid.class), mockBidder, null));
 
         when(autoBidDAO.getByAuctionId(eq(auctionId), any(Auction.class))).thenReturn(Collections.emptyList());
 
@@ -90,7 +93,8 @@ public class AuctionServiceTest {
 
         assertNotNull(response);
 
-        verify(mockBidder, times(1)).placeBid(mockAuction, bidAmount);
+        verify(mockAuction, times(1)).placeBidWithoutPersistence(mockBidder, bidAmount);
+        verify(bidsDAO, times(1)).save(any(Bid.class));
 
         verify(webSocketHandler, times(1)).broadcastBid(eq(auctionId), eq(bidAmount), anyString());
     }

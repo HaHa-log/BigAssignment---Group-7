@@ -50,6 +50,12 @@ public class Auction extends Entity implements Serializable {
         OPEN, RUNNING, FINISHED, PAID, CANCELED
     }
 
+    public record BidPlacement(Bid bid, User bidder, User previousWinner) {
+        public boolean hasPreviousWinner() {
+            return previousWinner != null && !previousWinner.equals(bidder);
+        }
+    }
+
     public Auction(User owner, Item item, LocalDateTime startingTime, LocalDateTime endingTime) {
         this(owner, item, AuctionStatus.OPEN, startingTime, endingTime,
                 item.getStartingPrice(), item.getStartingPrice(), null);
@@ -237,6 +243,14 @@ public class Auction extends Entity implements Serializable {
 
     public boolean placeBid(Bidder bidder, double amount)
             throws AuctionClosedException, AuthenticationException, InvalidBidException, IllegalArgumentException {
+        BidPlacement placement = placeBidWithoutPersistence(bidder, amount);
+        persistBidPlacement(placement);
+        processPreviousWinnerAutoBid(placement.previousWinner(), bidder);
+        return true;
+    }
+
+    public BidPlacement placeBidWithoutPersistence(Bidder bidder, double amount)
+            throws AuctionClosedException, AuthenticationException, InvalidBidException, IllegalArgumentException {
         lock().lock();
         try {
             User user = validateBidder(bidder, amount);
@@ -247,9 +261,8 @@ public class Auction extends Entity implements Serializable {
             replaceSelfBidHold(user, previousSelfBid, bidAmount.getPrice());
             releasePreviousWinnerHold(previousWinner, user);
             applyWinningBid(bidder, bidAmount);
-            persistBid(user, bidAmount);
-            processPreviousWinnerAutoBid(previousWinner, bidder);
-            return true;
+            Bid bid = addBid(user, bidAmount);
+            return new BidPlacement(bid, user, previousWinner instanceof User oldUser ? oldUser : null);
         } finally {
             lock().unlock();
         }
@@ -324,9 +337,6 @@ public class Auction extends Entity implements Serializable {
         double oldBidAmount = oldUser.getHighestBid(this);
         if (oldBidAmount > 0) {
             oldUser.unfreezeMoney(oldBidAmount);
-            if (oldUser.getId() > 0) {
-                usersDb().update(oldUser); 
-            }
             log.info("Unfrozen {} for previous winner: {}", oldBidAmount, oldUser.getFullName());
         }
     }
@@ -335,18 +345,25 @@ public class Auction extends Entity implements Serializable {
         currentPrice = bidAmount.getPrice();
         winner = bidder;
         handleSniping();
-        if (((User) bidder).getId() > 0) {
-            usersDb().update((User) bidder);
-        }
-        updateIfPersisted();
     }
 
-    private void persistBid(User user, Price bidAmount) {
+    private Bid addBid(User user, Price bidAmount) {
         Bid bid = new Bid(this, user, bidAmount);
         bids.add(bid);
-        if (getId() > 0 && user.getId() > 0) {
-            bidsDb().save(bid);
+        return bid;
+    }
+
+    private void persistBidPlacement(BidPlacement placement) {
+        if (placement.hasPreviousWinner() && placement.previousWinner().getId() > 0) {
+            usersDb().update(placement.previousWinner());
         }
+        if (placement.bidder().getId() > 0) {
+            usersDb().update(placement.bidder());
+        }
+        if (getId() > 0 && placement.bidder().getId() > 0) {
+            bidsDb().save(placement.bid());
+        }
+        updateIfPersisted();
     }
 
     private void processPreviousWinnerAutoBid(Bidder previousWinner, Bidder bidder) {

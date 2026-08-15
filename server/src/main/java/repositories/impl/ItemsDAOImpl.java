@@ -18,7 +18,7 @@ public class ItemsDAOImpl implements ItemsDAO {
     @Override
     public void save(Item item) {
         String sql = "INSERT INTO items "
-                + "(name, startingPrice, description, status, imagePath, owner_id) "
+                + "(name, starting_price, description, status, image_path, owner_id) "
                 + "VALUES (?, ?, ?, ?, ?, ?)";
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -70,7 +70,7 @@ public class ItemsDAOImpl implements ItemsDAO {
     @Override
     public void update(Item item) {
         String sql = "UPDATE items "
-                + "SET name = ?, startingPrice = ?, description = ?, status = ?, imagePath = ?, owner_id = ? "
+                + "SET name = ?, starting_price = ?, description = ?, status = ?, image_path = ?, owner_id = ? "
                 + "WHERE item_id = ? ";
         try(Connection conn = DB.getConnection();
             PreparedStatement st = conn.prepareStatement(sql)) {
@@ -194,21 +194,21 @@ public class ItemsDAOImpl implements ItemsDAO {
 
     private String getAuctionBaseSQL() {
         return "SELECT "
-                + "i.item_id, i.name, i.startingPrice, i.description, "
-                + "i.status, i.imagePath, i.owner_id, "
-                + "u_owner.first_name AS owner_firstName, "
-                + "u_owner.last_name AS owner_lastName, "
+                + "i.item_id, i.name, i.starting_price, i.description, "
+                + "i.status, i.image_path, i.owner_id, "
+                + "u_owner.first_name AS owner_first_name, "
+                + "u_owner.last_name AS owner_last_name, "
                 + "u_owner.email AS owner_email, "
-                + "u_owner.phone_number AS owner_phoneNumber, "
+                + "u_owner.phone_number AS owner_phone_number, "
                 + "u_owner.password AS owner_password, "
                 + "u_owner.balance AS owner_balance, "
-                + "u_owner.is_admin AS owner_isAdmin, "
-                + "u_owner.is_blocked AS owner_isBlocked, "
-                + "u_owner.blocked_until AS owner_blockedUntil, "
+                + "u_owner.is_admin AS owner_is_admin, "
+                + "u_owner.is_blocked AS owner_is_blocked, "
+                + "u_owner.blocked_until AS owner_blocked_until, "
                 + "u_owner.avatar_path AS owner_avatar_path, "
                 + "u_owner.frozen_balance AS owner_frozen_balance, "
                 + "a.auction_id AS active_auction_id, "
-                + "a.currentPrice AS auction_current_price "
+                + "a.current_price AS auction_current_price "
                 + "FROM items i "
                 + "LEFT JOIN users u_owner ON u_owner.users_id = i.owner_id "
                 + "LEFT JOIN auctions a ON a.item_id = i.item_id "
@@ -249,10 +249,10 @@ public class ItemsDAOImpl implements ItemsDAO {
 
         Item obj = new Item(
                 rs.getString("name"),
-                rs.getDouble("startingPrice"),
+                rs.getDouble("starting_price"),
                 rs.getString("description"),
                 status,
-                rs.getString("imagePath")
+                rs.getString("image_path")
         );
 
         int activeAuctionId = rs.getInt("active_auction_id");
